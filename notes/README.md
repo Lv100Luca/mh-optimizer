@@ -100,6 +100,15 @@ A request file (`inputs/request.example.json`, snake_case) carries everything:
 
 Decoration slots on armor (base or transcended), on the weapon and on talismans are all part of the loadout model; the optimizer fills them. Decorations are assumed to be available in unlimited quantity.
 
+## 7. Optimizer (implemented in `src/MHWildsOptimizer.Core/Optimize`)
+
+* `Relevance`: the skills, set bonuses and group skills that can change the score under the requested conditions (plus the targets). Everything else is ignored. Target-only skills (e.g. Focus) are capped at the target level.
+* `Candidates`: armor per slot kind and talismans projected onto those features; a piece is dropped when another piece of the same kind is at least as good in every feature (skills, cumulative slot counts, set bonuses, group skill). Rarity 5/6 pieces use their transcended slots when allowed.
+* `DecorationFiller`: exact search over the few decorations per target skill to cover the deficits with the fewest slots (packing biggest jewels into the smallest fitting slot of the right kind), then a greedy fill of the remaining slots by score gain. Decorations are unlimited.
+* `Optimizer`: dynamic programming over skill-state signatures (talisman first, then armor kinds ordered by candidate count). States with identical signature merge (keeping a few predecessors so several concrete builds can be reconstructed); set/group counts that can no longer reach their threshold are zeroed; states that cannot reach the targets even with the best remaining pieces and all possible slots are dropped; a bounded Pareto check removes dominated states; a beam (`options.max_states_per_depth`) caps the rest by partial score + slot value. Final states are decorated and scored once, the best are reconstructed into loadouts and re-scored with the full calculator.
+* Optimize mode: the 294 rollable (set bonus, group skill) pairs are grouped into classes with identical score behaviour (irrelevant sets/groups collapse into "(any other)"), one search per class in parallel, ranked by best build.
+* Measured on the example request (GS, six targets, 62 talismans): 10 s, identical best build to the exhaustive run (214 s).
+
 ## Sources
 
 * API: https://wilds.mhdb.io (docs https://docs.wilds.mhdb.io)

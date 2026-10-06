@@ -19,11 +19,19 @@ Interactive editor (Spectre.Console): pick an existing configuration under `inpu
 dotnet run --project src/MHWildsOptimizer.Cli -- edit
 ```
 
+Inside the editor, "Run optimizer" searches for the best builds and writes them to `inputs/<name>.results.txt`. From the command line:
+
+```bash
+dotnet run --project src/MHWildsOptimizer.Cli -- run inputs/request.example.json
+```
+
 Validate a saved configuration and show the resolved inputs:
 
 ```bash
 dotnet run --project src/MHWildsOptimizer.Cli -- request inputs/request.example.json
 ```
+
+The search is a dynamic program over skill states (talisman, then one armor slot at a time): partial builds with the same relevant skill levels, slot counts and set/group counts are merged, dominated and target-infeasible states are dropped, and every surviving final state gets its decorations (exact cover of the targets, then greedy damage fill) and an EFR + EFE score. `options.max_states_per_depth` (default 100000) bounds the beam; raise it for a slower, more exhaustive run. In optimize mode the 294 rollable pairs collapse into score-equivalent classes that are searched in parallel.
 
 ```bash
 dotnet build
