@@ -1,0 +1,1018 @@
+{
+ "_CommonEffectSetting": {
+  "userdataPath": "GameDesign/Player/ActionData/Common/GlobalParam/Part/PlayerSkillCommonEffectSetting.user"
+ },
+ "_ElementConvertCommonData": {
+  "_DataPack": [
+   120.0,
+   60.0,
+   4.0,
+   6.0,
+   8.0
+  ]
+ },
+ "_ElementConvertWp00Data": {
+  "_DataPack": [
+   5.0,
+   6.0,
+   7.0,
+   8.0,
+   9.0,
+   10.0,
+   10.0,
+   11.0,
+   12.0
+  ]
+ },
+ "_RyukilData": {
+  "_DataPack": [
+   120.0,
+   90.0,
+   150.0,
+   60.0,
+   200.0,
+   80.0,
+   280.0,
+   100.0
+  ]
+ },
+ "_AttrPowerRateData": {
+  "_DataPack": [
+   1.05,
+   1.1,
+   1.15,
+   1.07,
+   1.14,
+   1.21
+  ]
+ },
+ "_PowerAwakeData": {
+  "_DataPack": [
+   120.0,
+   120.0,
+   131.0
+  ]
+ },
+ "_RyunyuData": {
+  "_DataPack": [
+   25.0,
+   3.0
+  ]
+ },
+ "_ContinuousAttackIntervalTimer": 0.0,
+ "_ContinuousAttackWp00Data": {
+  "_DataPack": [
+   5.0,
+   5.0,
+   5.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   14.0,
+   12.0,
+   16.0,
+   16.0,
+   18.0,
+   20.0
+  ]
+ },
+ "_ContinuousAttackWp01Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp02Data": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   3.0,
+   8.0,
+   4.0,
+   10.0,
+   6.0,
+   12.0,
+   8.0,
+   15.0,
+   10.0,
+   18.0,
+   12.0
+  ]
+ },
+ "_ContinuousAttackWp03Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp04Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp05Data": {
+  "_DataPack": [
+   5.0,
+   5.0,
+   5.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   14.0,
+   12.0,
+   16.0,
+   16.0,
+   18.0,
+   20.0
+  ]
+ },
+ "_ContinuousAttackWp06Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp07Data": {
+  "_DataPack": [
+   5.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp08Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp09Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp10Data": {
+  "_DataPack": [
+   4.0,
+   5.0,
+   5.0,
+   8.0,
+   6.0,
+   10.0,
+   8.0,
+   12.0,
+   10.0,
+   15.0,
+   12.0,
+   18.0,
+   14.0
+  ]
+ },
+ "_ContinuousAttackWp11Data": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   3.0,
+   6.0,
+   4.0,
+   7.0,
+   6.0,
+   8.0,
+   8.0,
+   9.0,
+   10.0,
+   10.0,
+   12.0
+  ]
+ },
+ "_ContinuousAttackWp12Data": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   6.0,
+   7.0,
+   8.0,
+   9.0,
+   10.0
+  ]
+ },
+ "_ContinuousAttackWp13Data": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   6.0,
+   7.0,
+   8.0,
+   9.0,
+   10.0
+  ]
+ },
+ "_ContinuousAttackExEmote00Data": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   8.0,
+   10.0,
+   12.0,
+   15.0,
+   18.0
+  ]
+ },
+ "_GuardianAreaData": {
+  "_DataPack": [
+   1.0
+  ]
+ },
+ "_MoraleData": {
+  "_DataPack": [
+   20.0,
+   3.0,
+   6.0
+  ]
+ },
+ "_FirstShot": {
+  "_DataPack": [
+   1.1,
+   1.15,
+   1.3
+  ]
+ },
+ "_BloodJoyData": {
+  "_DataPack": [
+   15.0,
+   5.0
+  ]
+ },
+ "_KnightData": {
+  "_DataPack": [
+   21.0,
+   12.0,
+   12.0
+  ]
+ },
+ "_ViolentData": {
+  "_DataPack": [
+   2.0,
+   45.0,
+   85.0
+  ]
+ },
+ "_ScorchingHeatData": {
+  "_DataPack": [
+   2.4,
+   50.0,
+   100.0,
+   20.0,
+   24.0,
+   30.0,
+   60.0,
+   20.0,
+   60.0,
+   40.0,
+   120.0
+  ]
+ },
+ "_StabbingData": {
+  "_DataPack": [
+   140.0,
+   160.0,
+   220.0,
+   300.0,
+   400.0,
+   50.0,
+   0.5
+  ]
+ },
+ "_RestraintResistanceData": {
+  "_DataPack": [
+   1.5,
+   2.0
+  ]
+ },
+ "_BattoWazaData": {
+  "_DataPack": [
+   10.0,
+   3.0
+  ]
+ },
+ "_BattoPowerData": {
+  "_DataPack": [
+   3.0,
+   5.0,
+   7.0,
+   20.0,
+   60.0,
+   100.0,
+   20.0,
+   20.0,
+   20.0,
+   20.0,
+   10.0,
+   10.0,
+   25.0,
+   25.0,
+   25.0,
+   25.0,
+   25.0,
+   20.0,
+   10.0,
+   10.0
+  ]
+ },
+ "_WpOffData": {
+  "_DataPack": [
+   1.1,
+   1.2,
+   1.4
+  ]
+ },
+ "_Guts_ActiveRemainHealth": 64,
+ "_SlidingPowerUpBeginTime": 1.0,
+ "_AutoRecoverData": {
+  "_DataPack": [
+   1.0,
+   2.0,
+   1.0
+  ]
+ },
+ "_Ballistic_Wp11Data": {
+  "_ParamList": [
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.8,
+     1.15,
+     0.65,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.05,
+     0.85,
+     1.1,
+     0.75,
+     1.15
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.05,
+     0.85,
+     1.1,
+     0.75,
+     1.15
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.05,
+     0.85,
+     1.1,
+     0.75,
+     1.15
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   }
+  ]
+ },
+ "_Ballistic_Wp12Data": {
+  "_ParamList": [
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.55,
+     1.1,
+     0.0,
+     1.15,
+     0.0,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 1,
+    "_SkillAmmoBasicData": [
+     0.83,
+     1.05,
+     0.65,
+     1.15,
+     0.5,
+     1.2
+    ]
+   },
+   {
+    "EnumValue": 2,
+    "_SkillAmmoBasicData": [
+     0.6,
+     1.15,
+     0.0,
+     1.25,
+     0.0,
+     1.35
+    ]
+   },
+   {
+    "EnumValue": 3,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 4,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 5,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 6,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 11,
+    "_SkillAmmoBasicData": [
+     0.85,
+     1.1,
+     0.75,
+     1.15,
+     0.65,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 12,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 13,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 14,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 15,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 16,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 17,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 18,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 19,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 21,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 22,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 23,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 24,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 25,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 26,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 27,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 28,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 29,
+    "_SkillAmmoBasicData": []
+   }
+  ]
+ },
+ "_Ballistic_Wp13Data": {
+  "_ParamList": [
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 1,
+    "_SkillAmmoBasicData": [
+     0.83,
+     1.05,
+     0.65,
+     1.15,
+     0.5,
+     1.2
+    ]
+   },
+   {
+    "EnumValue": 2,
+    "_SkillAmmoBasicData": [
+     0.8,
+     1.15,
+     0.0,
+     1.25,
+     0.0,
+     1.35
+    ]
+   },
+   {
+    "EnumValue": 3,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 4,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 5,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 6,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 0,
+    "_SkillAmmoBasicData": [
+     0.9,
+     1.1,
+     0.85,
+     1.15,
+     0.75,
+     1.25
+    ]
+   },
+   {
+    "EnumValue": 12,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 13,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 14,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 15,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 16,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 17,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 18,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 19,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 21,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 22,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 23,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 24,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 25,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 26,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 27,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 28,
+    "_SkillAmmoBasicData": []
+   },
+   {
+    "EnumValue": 29,
+    "_SkillAmmoBasicData": []
+   }
+  ]
+ },
+ "_Ballistic_Wp11AttackAdd": 5.0,
+ "_Ballistic_Wp12AttackAdd": 5.0,
+ "_Ballistic_Wp13AttackAdd": 5.0,
+ "_AdrenalineRush_ActiveHP": 0.35,
+ "_Hunki_ActiveHP": 0.4,
+ "_Hunki_StamitaRate": 0.5,
+ "_Hunki_MaxCoolTime": 0.0,
+ "_Challenger_MaxLagTimer": 3.0,
+ "_Challenger_MaxInTentLagTimer": 1.5,
+ "_Diligent_ActiveTimeInterval": 300.0,
+ "_Diligent_ActiveTimeIntervalCount": 6,
+ "_Diligent_ActiveAttackParam": [
+  0,
+  4,
+  8,
+  12
+ ],
+ "_Diligent_ActiveDefenseParam": [
+  5,
+  10,
+  15,
+  20
+ ],
+ "_CounterAttack_MaxActiveTime_Lv1": 30.0,
+ "_CounterAttack_MaxActiveTime_Lv2": 35.0,
+ "_CounterAttack_MaxActiveTime_Lv3": 45.0,
+ "_Disaster_MaxActiveTime": 30.0,
+ "_PowerProlongeDarkBlade": {
+  "_DataPack": [
+   1.0,
+   1.0,
+   1.0
+  ]
+ },
+ "_Konshin_MaxStaminaContinueTime": 3.0,
+ "_Konshin_MaxUseStaminaTime": 2.0,
+ "_TechnicalAttack_MaxActiveTime": 30.0,
+ "_Behind_EffectiveRadius": 60.0,
+ "_InsecctGData": {
+  "_DataPack": [
+   3.0,
+   0.5,
+   0.5
+  ]
+ },
+ "_SkillBladeSharp_DodgeMaxCount": 1,
+ "_Skill217or218_MaxTime": 300.0,
+ "_Skill218or217AddDataPack": {
+  "_ParamList": [
+   {
+    "EnumValue": 0,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 1,
+    "_SkillWeaponTypeData": 60.0
+   },
+   {
+    "EnumValue": 2,
+    "_SkillWeaponTypeData": 60.0
+   },
+   {
+    "EnumValue": 3,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 4,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 5,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 6,
+    "_SkillWeaponTypeData": 50.0
+   },
+   {
+    "EnumValue": 7,
+    "_SkillWeaponTypeData": 50.0
+   },
+   {
+    "EnumValue": 8,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 9,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 10,
+    "_SkillWeaponTypeData": 40.0
+   },
+   {
+    "EnumValue": 11,
+    "_SkillWeaponTypeData": 3.0
+   },
+   {
+    "EnumValue": 12,
+    "_SkillWeaponTypeData": 3.0
+   },
+   {
+    "EnumValue": 13,
+    "_SkillWeaponTypeData": 3.0
+   }
+  ]
+ },
+ "_SkillBladeToishiDamage": 1.4,
+ "_SkillBladeToishiElem": 1.25,
+ "_Skill218AttackRate_Gun": 1.4,
+ "_Skill218AttackRate_Bow": 1.25,
+ "_DischargeData": {
+  "_DataPack": [
+   20.0,
+   50.0,
+   40.0,
+   70.0,
+   30.0,
+   70.0,
+   60.0,
+   200.0,
+   100.0,
+   30.0
+  ]
+ },
+ "_SkillAttrConvertElec_BowgunRate": 0.2,
+ "_SkillAttrConvertElec_HeavyWeaponRate": 0.5,
+ "_SkillAttrConvertElec_LightWeaponRate": 0.4,
+ "_RoastCorn_SootAttackRate": 1.35,
+ "_RoastCorn_SootFireAdd": 3,
+ "_DarkBladeData": {
+  "_DataPack": [
+   1.1,
+   30.0,
+   45.0,
+   20.0
+  ]
+ },
+ "_ResonanceData": {
+  "_DataPack": [
+   90.0,
+   4.0,
+   7.0,
+   30.0,
+   3.0
+  ]
+ },
+ "_ResonanceDistCheckTime": 0.5,
+ "_ShieldOptionRadius": 30.0,
+ "_ShieldOptionValue": 30,
+ "_ShieldOptionValue_Resonance": 45,
+ "_ShieldOptionTime": 30.0,
+ "_ShieldOptionTime_Resonance": 45.0,
+ "_CooperationRadius": 30.0,
+ "_CooperationValue": 15,
+ "_CooperationValue_Resonance": 25,
+ "_CooperationTime": 45.0,
+ "_CooperationTime_Resonance": 60.0,
+ "_MagmaHighDamageRate": 0.5,
+ "_ChallengerAttr_BarrierVital": 80.0,
+ "_ChallengerAttr_BarrierLifeTimeSec": 140.0,
+ "_ChallengerAttr_LifeEndNoticeTimeSec": 10.0,
+ "_ChallengerAttr_BarrierCoolTimeSec": 30.0,
+ "_ChallengerAttr_MaxLagTimer": 3.0,
+ "_ChallengerAttr_MaxInTentLagTimer": 1.5,
+ "_SkillAttrConvertWater_BowgunRate": 0.2,
+ "_SkillAttrConvertWater_HeavyWeaponRate": 0.5,
+ "_SkillAttrConvertWater_LightWeaponRate": 0.4
+}

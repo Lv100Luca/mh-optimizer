@@ -1,0 +1,2569 @@
+[
+ {
+  "charm_id": 1,
+  "name": "Windproof Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Windproof",
+    "skill_id": 35,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 1,
+  "name": "Windproof Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Windproof",
+    "skill_id": 35,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 1,
+  "name": "Windproof Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Windproof",
+    "skill_id": 35,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 2,
+  "name": "Maintenance Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Tool Specialist",
+    "skill_id": 90,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 2,
+  "name": "Maintenance Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Tool Specialist",
+    "skill_id": 90,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 2,
+  "name": "Maintenance Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Tool Specialist",
+    "skill_id": 90,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 2,
+  "name": "Maintenance Charm IV",
+  "level": 4,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Tool Specialist",
+    "skill_id": 90,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 3,
+  "name": "Fire Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Fire Resistance",
+    "skill_id": 125,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 3,
+  "name": "Fire Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Fire Resistance",
+    "skill_id": 125,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 3,
+  "name": "Fire Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Fire Resistance",
+    "skill_id": 125,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 4,
+  "name": "Hungerless Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Hunger Resistance",
+    "skill_id": 151,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 4,
+  "name": "Hungerless Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Hunger Resistance",
+    "skill_id": 151,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 4,
+  "name": "Hungerless Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Hunger Resistance",
+    "skill_id": 151,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 5,
+  "name": "Grit Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Heroics",
+    "skill_id": 87,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 5,
+  "name": "Grit Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Heroics",
+    "skill_id": 87,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 5,
+  "name": "Grit Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Heroics",
+    "skill_id": 87,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 5,
+  "name": "Grit Charm IV",
+  "level": 4,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Heroics",
+    "skill_id": 87,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 6,
+  "name": "Light Eater's Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Free Meal",
+    "skill_id": 111,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 6,
+  "name": "Light Eater's Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Free Meal",
+    "skill_id": 111,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 6,
+  "name": "Light Eater's Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Free Meal",
+    "skill_id": 111,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 7,
+  "name": "Leaping Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Evade Extender",
+    "skill_id": 102,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 7,
+  "name": "Leaping Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Evade Extender",
+    "skill_id": 102,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 7,
+  "name": "Leaping Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Evade Extender",
+    "skill_id": 102,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 8,
+  "name": "Unscathed Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Peak Performance",
+    "skill_id": 154,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 8,
+  "name": "Unscathed Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Peak Performance",
+    "skill_id": 154,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 8,
+  "name": "Unscathed Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Peak Performance",
+    "skill_id": 154,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 9,
+  "name": "Sleep Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Sleep Resistance",
+    "skill_id": 64,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 9,
+  "name": "Sleep Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Sleep Resistance",
+    "skill_id": 64,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 9,
+  "name": "Sleep Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Sleep Resistance",
+    "skill_id": 64,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 10,
+  "name": "Glutton's Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Speed Eating",
+    "skill_id": 100,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 10,
+  "name": "Glutton's Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Speed Eating",
+    "skill_id": 100,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 10,
+  "name": "Glutton's Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Speed Eating",
+    "skill_id": 100,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 11,
+  "name": "Challenger Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Agitator",
+    "skill_id": 144,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 11,
+  "name": "Challenger Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Agitator",
+    "skill_id": 144,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 11,
+  "name": "Challenger Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Agitator",
+    "skill_id": 144,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 12,
+  "name": "Evasion Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Evade Window",
+    "skill_id": 77,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 12,
+  "name": "Evasion Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Evade Window",
+    "skill_id": 77,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 12,
+  "name": "Evasion Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Evade Window",
+    "skill_id": 77,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 12,
+  "name": "Evasion Charm IV",
+  "level": 4,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Evade Window",
+    "skill_id": 77,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 13,
+  "name": "Blast Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Blast Resistance",
+    "skill_id": 110,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 13,
+  "name": "Blast Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Blast Resistance",
+    "skill_id": 110,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 13,
+  "name": "Blast Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Blast Resistance",
+    "skill_id": 110,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 14,
+  "name": "Mighty Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Maximum Might",
+    "skill_id": 99,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 14,
+  "name": "Mighty Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Maximum Might",
+    "skill_id": 99,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 14,
+  "name": "Mighty Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Maximum Might",
+    "skill_id": 99,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 15,
+  "name": "Stun Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Stun Resistance",
+    "skill_id": 105,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 15,
+  "name": "Stun Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Stun Resistance",
+    "skill_id": 105,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 15,
+  "name": "Stun Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Stun Resistance",
+    "skill_id": 105,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 16,
+  "name": "Hope Charm",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Recovery Up",
+    "skill_id": 30,
+    "level": 1
+   },
+   {
+    "skill": "Self-Improvement",
+    "skill_id": 138,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 17,
+  "name": "Paralysis Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Paralysis Resistance",
+    "skill_id": 92,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 17,
+  "name": "Paralysis Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Paralysis Resistance",
+    "skill_id": 92,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 17,
+  "name": "Paralysis Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Paralysis Resistance",
+    "skill_id": 92,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 18,
+  "name": "Survival Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Survival Expert",
+    "skill_id": 48,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 18,
+  "name": "Survival Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Survival Expert",
+    "skill_id": 48,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 18,
+  "name": "Survival Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Survival Expert",
+    "skill_id": 48,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 19,
+  "name": "Earplugs Charm I",
+  "level": 1,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Earplugs",
+    "skill_id": 80,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 19,
+  "name": "Earplugs Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Earplugs",
+    "skill_id": 80,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 20,
+  "name": "Thunder Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Thunder Resistance",
+    "skill_id": 156,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 20,
+  "name": "Thunder Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Thunder Resistance",
+    "skill_id": 156,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 20,
+  "name": "Thunder Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Thunder Resistance",
+    "skill_id": 156,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 21,
+  "name": "Surge Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Stamina Surge",
+    "skill_id": 58,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 21,
+  "name": "Surge Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Stamina Surge",
+    "skill_id": 58,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 21,
+  "name": "Surge Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Stamina Surge",
+    "skill_id": 58,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 22,
+  "name": "Power Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Latent Power",
+    "skill_id": 142,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 22,
+  "name": "Power Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Latent Power",
+    "skill_id": 142,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 22,
+  "name": "Power Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Latent Power",
+    "skill_id": 142,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 23,
+  "name": "Defense Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Defense Boost",
+    "skill_id": 118,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 23,
+  "name": "Defense Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Defense Boost",
+    "skill_id": 118,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 23,
+  "name": "Defense Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Defense Boost",
+    "skill_id": 118,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 23,
+  "name": "Defense Charm IV",
+  "level": 4,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Defense Boost",
+    "skill_id": 118,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 23,
+  "name": "Defense Charm V",
+  "level": 5,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Defense Boost",
+    "skill_id": 118,
+    "level": 5
+   }
+  ]
+ },
+ {
+  "charm_id": 24,
+  "name": "Poison Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Poison Resistance",
+    "skill_id": 128,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 24,
+  "name": "Poison Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Poison Resistance",
+    "skill_id": 128,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 24,
+  "name": "Poison Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Poison Resistance",
+    "skill_id": 128,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 25,
+  "name": "Counter Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Counterstrike",
+    "skill_id": 81,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 25,
+  "name": "Counter Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Counterstrike",
+    "skill_id": 81,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 25,
+  "name": "Counter Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Counterstrike",
+    "skill_id": 81,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 26,
+  "name": "Sheathe Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Quick Sheathe",
+    "skill_id": 32,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 26,
+  "name": "Sheathe Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Quick Sheathe",
+    "skill_id": 32,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 26,
+  "name": "Sheathe Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Quick Sheathe",
+    "skill_id": 32,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 27,
+  "name": "Water Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Water Resistance",
+    "skill_id": 84,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 27,
+  "name": "Water Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Water Resistance",
+    "skill_id": 84,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 27,
+  "name": "Water Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Water Resistance",
+    "skill_id": 84,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 28,
+  "name": "Friendship Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Wide-Range",
+    "skill_id": 113,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 28,
+  "name": "Friendship Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Wide-Range",
+    "skill_id": 113,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 28,
+  "name": "Friendship Charm III",
+  "level": 3,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Wide-Range",
+    "skill_id": 113,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 28,
+  "name": "Friendship Charm IV",
+  "level": 4,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Wide-Range",
+    "skill_id": 113,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 28,
+  "name": "Friendship Charm V",
+  "level": 5,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Wide-Range",
+    "skill_id": 113,
+    "level": 5
+   }
+  ]
+ },
+ {
+  "charm_id": 29,
+  "name": "Blight Charm I",
+  "level": 1,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Blight Resistance",
+    "skill_id": 49,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 29,
+  "name": "Blight Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Blight Resistance",
+    "skill_id": 49,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 29,
+  "name": "Blight Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Blight Resistance",
+    "skill_id": 49,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 30,
+  "name": "Extension Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Item Prolonger",
+    "skill_id": 15,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 30,
+  "name": "Extension Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Item Prolonger",
+    "skill_id": 15,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 30,
+  "name": "Extension Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Item Prolonger",
+    "skill_id": 15,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 31,
+  "name": "Ice Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Ice Resistance",
+    "skill_id": 101,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 31,
+  "name": "Ice Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Ice Resistance",
+    "skill_id": 101,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 31,
+  "name": "Ice Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Ice Resistance",
+    "skill_id": 101,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 32,
+  "name": "Breaker Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Partbreaker",
+    "skill_id": 129,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 32,
+  "name": "Breaker Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Partbreaker",
+    "skill_id": 129,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 32,
+  "name": "Breaker Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Partbreaker",
+    "skill_id": 129,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 33,
+  "name": "Sanity Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Antivirus",
+    "skill_id": 18,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 33,
+  "name": "Sanity Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Antivirus",
+    "skill_id": 18,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 33,
+  "name": "Sanity Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Antivirus",
+    "skill_id": 18,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 34,
+  "name": "Intimidator Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Intimidator",
+    "skill_id": 130,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 34,
+  "name": "Intimidator Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Intimidator",
+    "skill_id": 130,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 34,
+  "name": "Intimidator Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Intimidator",
+    "skill_id": 130,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 35,
+  "name": "Impact Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Flinch Free",
+    "skill_id": 108,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 35,
+  "name": "Impact Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Flinch Free",
+    "skill_id": 108,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 35,
+  "name": "Impact Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Flinch Free",
+    "skill_id": 108,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 36,
+  "name": "Mushroom Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Mushroomancer",
+    "skill_id": 52,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 36,
+  "name": "Mushroom Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Mushroomancer",
+    "skill_id": 52,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 36,
+  "name": "Mushroom Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Mushroomancer",
+    "skill_id": 52,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 37,
+  "name": "Counterattack Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Adrenaline Rush",
+    "skill_id": 120,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 37,
+  "name": "Counterattack Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Adrenaline Rush",
+    "skill_id": 120,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 37,
+  "name": "Counterattack Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Adrenaline Rush",
+    "skill_id": 120,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 38,
+  "name": "Marathon Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Marathon Runner",
+    "skill_id": 43,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 38,
+  "name": "Marathon Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Marathon Runner",
+    "skill_id": 43,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 38,
+  "name": "Marathon Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Marathon Runner",
+    "skill_id": 43,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 39,
+  "name": "Tremor Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Tremor Resistance",
+    "skill_id": 46,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 39,
+  "name": "Tremor Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Tremor Resistance",
+    "skill_id": 46,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 39,
+  "name": "Tremor Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Tremor Resistance",
+    "skill_id": 46,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 40,
+  "name": "Chainblade Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Flayer",
+    "skill_id": 38,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 40,
+  "name": "Chainblade Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Flayer",
+    "skill_id": 38,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 40,
+  "name": "Chainblade Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Flayer",
+    "skill_id": 38,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 41,
+  "name": "Phoenix Charm I",
+  "level": 1,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Coalescence",
+    "skill_id": 13,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 41,
+  "name": "Phoenix Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Coalescence",
+    "skill_id": 13,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 41,
+  "name": "Phoenix Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Coalescence",
+    "skill_id": 13,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 42,
+  "name": "Bombardier Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bombardier",
+    "skill_id": 37,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 42,
+  "name": "Bombardier Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bombardier",
+    "skill_id": 37,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 42,
+  "name": "Bombardier Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Bombardier",
+    "skill_id": 37,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 43,
+  "name": "Bleed Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bleeding Resistance",
+    "skill_id": 146,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 43,
+  "name": "Bleed Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bleeding Resistance",
+    "skill_id": 146,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 43,
+  "name": "Bleed Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Bleeding Resistance",
+    "skill_id": 146,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 44,
+  "name": "Convert Charm I",
+  "level": 1,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Convert Element",
+    "skill_id": 152,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 44,
+  "name": "Convert Charm II",
+  "level": 2,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Convert Element",
+    "skill_id": 152,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 45,
+  "name": "Blessing Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Divine Blessing",
+    "skill_id": 122,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 45,
+  "name": "Blessing Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Divine Blessing",
+    "skill_id": 122,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 45,
+  "name": "Blessing Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Divine Blessing",
+    "skill_id": 122,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 46,
+  "name": "Guard Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Iron Skin",
+    "skill_id": 135,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 46,
+  "name": "Guard Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Iron Skin",
+    "skill_id": 135,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 46,
+  "name": "Guard Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Iron Skin",
+    "skill_id": 135,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 47,
+  "name": "Descent Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Ambush",
+    "skill_id": 67,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 47,
+  "name": "Descent Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Ambush",
+    "skill_id": 67,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 47,
+  "name": "Descent Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Ambush",
+    "skill_id": 67,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 48,
+  "name": "Imbibe Charm I",
+  "level": 1,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Elemental Absorption",
+    "skill_id": 133,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 48,
+  "name": "Imbibe Charm II",
+  "level": 2,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Elemental Absorption",
+    "skill_id": 133,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 49,
+  "name": "Escape Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bind Resistance",
+    "skill_id": 147,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 49,
+  "name": "Escape Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Bind Resistance",
+    "skill_id": 147,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 49,
+  "name": "Escape Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Bind Resistance",
+    "skill_id": 147,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 50,
+  "name": "Speed Heal Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Recovery Speed",
+    "skill_id": 31,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 50,
+  "name": "Speed Heal Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Recovery Speed",
+    "skill_id": 31,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 50,
+  "name": "Speed Heal Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Recovery Speed",
+    "skill_id": 31,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 51,
+  "name": "Recovery Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Recovery Up",
+    "skill_id": 30,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 51,
+  "name": "Recovery Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Recovery Up",
+    "skill_id": 30,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 51,
+  "name": "Recovery Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Recovery Up",
+    "skill_id": 30,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 52,
+  "name": "Fitness Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Constitution",
+    "skill_id": 14,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 52,
+  "name": "Fitness Charm II",
+  "level": 2,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Constitution",
+    "skill_id": 14,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 52,
+  "name": "Fitness Charm III",
+  "level": 3,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Constitution",
+    "skill_id": 14,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 52,
+  "name": "Fitness Charm IV",
+  "level": 4,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Constitution",
+    "skill_id": 14,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 52,
+  "name": "Fitness Charm V",
+  "level": 5,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Constitution",
+    "skill_id": 14,
+    "level": 5
+   }
+  ]
+ },
+ {
+  "charm_id": 53,
+  "name": "Fury Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Resentment",
+    "skill_id": 123,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 53,
+  "name": "Fury Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Resentment",
+    "skill_id": 123,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 53,
+  "name": "Fury Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Resentment",
+    "skill_id": 123,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 54,
+  "name": "Geology Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Geologist",
+    "skill_id": 98,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 54,
+  "name": "Geology Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Geologist",
+    "skill_id": 98,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 54,
+  "name": "Geology Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Geologist",
+    "skill_id": 98,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 55,
+  "name": "Botany Charm I",
+  "level": 1,
+  "rarity": 2,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Botanist",
+    "skill_id": 112,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 55,
+  "name": "Botany Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Botanist",
+    "skill_id": 112,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 55,
+  "name": "Botany Charm III",
+  "level": 3,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Botanist",
+    "skill_id": 112,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 55,
+  "name": "Botany Charm IV",
+  "level": 4,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Botanist",
+    "skill_id": 112,
+    "level": 4
+   }
+  ]
+ },
+ {
+  "charm_id": 56,
+  "name": "Dragon Charm I",
+  "level": 1,
+  "rarity": 3,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Dragon Resistance",
+    "skill_id": 1,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 56,
+  "name": "Dragon Charm II",
+  "level": 2,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Dragon Resistance",
+    "skill_id": 1,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 56,
+  "name": "Dragon Charm III",
+  "level": 3,
+  "rarity": 5,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Dragon Resistance",
+    "skill_id": 1,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 57,
+  "name": "Exploiter Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Weakness Exploit",
+    "skill_id": 57,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 57,
+  "name": "Exploiter Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Weakness Exploit",
+    "skill_id": 57,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 57,
+  "name": "Exploiter Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Weakness Exploit",
+    "skill_id": 57,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 58,
+  "name": "Foray Charm I",
+  "level": 1,
+  "rarity": 4,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Foray",
+    "skill_id": 75,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 58,
+  "name": "Foray Charm II",
+  "level": 2,
+  "rarity": 6,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Foray",
+    "skill_id": 75,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 58,
+  "name": "Foray Charm III",
+  "level": 3,
+  "rarity": 7,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Foray",
+    "skill_id": 75,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 59,
+  "name": "Chain Charm I",
+  "level": 1,
+  "rarity": 5,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Burst",
+    "skill_id": 95,
+    "level": 1
+   }
+  ]
+ },
+ {
+  "charm_id": 59,
+  "name": "Chain Charm II",
+  "level": 2,
+  "rarity": 7,
+  "is_max_rank": false,
+  "skills": [
+   {
+    "skill": "Burst",
+    "skill_id": 95,
+    "level": 2
+   }
+  ]
+ },
+ {
+  "charm_id": 59,
+  "name": "Chain Charm III",
+  "level": 3,
+  "rarity": 8,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Burst",
+    "skill_id": 95,
+    "level": 3
+   }
+  ]
+ },
+ {
+  "charm_id": 60,
+  "name": "Rice Ball Charm",
+  "level": 1,
+  "rarity": 6,
+  "is_max_rank": true,
+  "skills": [
+   {
+    "skill": "Rice Ball",
+    "skill_id": 158,
+    "level": 1
+   }
+  ]
+ }
+]

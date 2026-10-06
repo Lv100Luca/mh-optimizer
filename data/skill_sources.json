@@ -1,0 +1,10849 @@
+{
+ "Dragon Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 316,
+    "name": "Sealed Dragon Cloth α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 690,
+    "name": "Ceremonial Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 692,
+    "name": "Ceremonial Coil α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Dragon Res Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Dragon Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Spread/Power Shots": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Spread Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Critical Eye": {
+  "kind": "weapon",
+  "max_level": 5,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Magazine/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Expert Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Grinder/Expert Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Expert Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Sonorous/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Expert Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Poison/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Expert Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 56
+ },
+ "Guardian's Protection": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Blast Functionality": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Blastcoat Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Normal Shots": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Forceshot Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Rapid Morph": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Quickswitch Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Blaze/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/KO Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 14
+ },
+ "Punishing Draw": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Gambit/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Gambit/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Gambit Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Gambit/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Gambit Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Gambit Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 49
+ },
+ "Paralysis Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Paralyzer Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Paralyzer Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Paralyzer Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Lord's Favor": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Fulgur Anjanath's Will": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Poison Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Venom Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Venom Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Venom Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Coalescence": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 11,
+    "name": "Gore Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 314,
+    "name": "Numinous Overlay β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 325,
+    "name": "Numinous Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 326,
+    "name": "Numinous Overlay α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 333,
+    "name": "Expedition Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 506,
+    "name": "G. Fulgur Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 507,
+    "name": "G. Fulgur Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 510,
+    "name": "G. Fulgur Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 536,
+    "name": "G. Fulgur Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 566,
+    "name": "Gore Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 684,
+    "name": "Dahaad Shardbraces γ",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 711,
+    "name": "Gala Suit Jacket α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 713,
+    "name": "Gala Suit Tail α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Phoenix Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Phoenix Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Constitution": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 13,
+    "name": "Gore Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 14,
+    "name": "Gore Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 21,
+    "name": "Guild Ace Earrings α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 22,
+    "name": "Guild Ace Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 23,
+    "name": "Guild Ace Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 24,
+    "name": "Guild Ace Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 25,
+    "name": "Guild Ace Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 41,
+    "name": "Rathalos Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 43,
+    "name": "Rathalos Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 94,
+    "name": "Dober Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 95,
+    "name": "Dober Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 96,
+    "name": "Dober Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 97,
+    "name": "Dober Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 98,
+    "name": "Dober Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 135,
+    "name": "Butterfly Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 136,
+    "name": "Butterfly Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 137,
+    "name": "Butterfly Brachia α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 138,
+    "name": "Butterfly Elytra α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 139,
+    "name": "Butterfly Crura α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 194,
+    "name": "Kut-Ku Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 196,
+    "name": "Kut-Ku Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 198,
+    "name": "Kut-Ku Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 290,
+    "name": "Mizutsune Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 292,
+    "name": "Mizutsune Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 319,
+    "name": "Mizutsune Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 321,
+    "name": "Mizutsune Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 345,
+    "name": "G. Doshaguma Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 348,
+    "name": "G. Doshaguma Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 393,
+    "name": "Kut-Ku Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 395,
+    "name": "Kut-Ku Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 397,
+    "name": "Kut-Ku Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 399,
+    "name": "G. Doshaguma Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 402,
+    "name": "G. Doshaguma Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 453,
+    "name": "Battle Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 538,
+    "name": "Rathalos Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 539,
+    "name": "Rathalos Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 540,
+    "name": "Rathalos Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 568,
+    "name": "Gore Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 569,
+    "name": "Gore Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 605,
+    "name": "Hawkheart Jacket α",
+    "piece": "chest",
+    "level": 4
+   },
+   {
+    "armor_id": 637,
+    "name": "Harvest Trama α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 638,
+    "name": "Harvest Hoja α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 639,
+    "name": "Harvest Raiz α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 656,
+    "name": "Bale Flanchard α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 681,
+    "name": "Blessed Waistchain α",
+    "piece": "waist",
+    "level": 4
+   },
+   {
+    "armor_id": 694,
+    "name": "Azure Age Hair α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 696,
+    "name": "Azure Age Sleeve α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 698,
+    "name": "Azure Age Geta α",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Physique Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Fitness Charm V",
+    "level": 5
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Item Prolonger": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 48,
+    "name": "Chatacabra Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 49,
+    "name": "Chatacabra Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 50,
+    "name": "Chatacabra Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 296,
+    "name": "Sakuratide Bracers α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 298,
+    "name": "Sakuratide Hakama α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 368,
+    "name": "Chatacabra Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 389,
+    "name": "Blango Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 452,
+    "name": "Battle Coil α",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 549,
+    "name": "Leather Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 552,
+    "name": "Leather Pants α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 560,
+    "name": "Damascus Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 606,
+    "name": "Toe Bean Mittens α",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 710,
+    "name": "Gala Suit Top Hat α",
+    "piece": "head",
+    "level": 3
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Enduring Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Extension Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Guard Up": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Shield/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Blaze/Shield Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield/Stream Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Shield Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield/Frost Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Shield Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Shield Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Shield Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 32
+ },
+ "Scale Layering": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Antivirus": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 12,
+    "name": "Gore Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 14,
+    "name": "Gore Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 15,
+    "name": "Gore Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 570,
+    "name": "Gore Greaves β",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Sane Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Sanity Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Flexible Leathercraft": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Imparted Wisdom": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Poison Duration Up": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Poison Jewel [2]",
+    "slot": 2,
+    "level": 1
+   },
+   {
+    "deco": "Poison/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Draw Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Precise Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Attack Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 33
+ },
+ "Critical Boost": {
+  "kind": "weapon",
+  "max_level": 5,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Critical Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Critical Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Critical Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 26
+ },
+ "Rapid Fire Up": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Salvo Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Charge Master": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Charge Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Charge/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Charge Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Charge/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Charge Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 29
+ },
+ "Xu Wu's Vigor": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Guardian Arkveld's Vitality": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Guardian's Pulse": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Leap of Faith": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 146,
+    "name": "Talioth Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 484,
+    "name": "Talioth Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 626,
+    "name": "Diver's Suit α",
+    "piece": "chest",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Dive Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Horn Maestro": {
+  "kind": "weapon",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Sonorous/Attack Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Sonorous/KO Jewel [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Sonorous Jewel [2]",
+    "slot": 2,
+    "level": 1
+   },
+   {
+    "deco": "Sonorous/Expert Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Sonorous/Draw Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Sonorous/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 31
+ },
+ "Recovery Up": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 139,
+    "name": "Butterfly Crura α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 176,
+    "name": "Melahoa Folia α",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 197,
+    "name": "Kut-Ku Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 198,
+    "name": "Kut-Ku Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 200,
+    "name": "Barina Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 201,
+    "name": "Barina Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 301,
+    "name": "Clerk Visor α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 304,
+    "name": "Clerk Belt α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 335,
+    "name": "Barina Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 336,
+    "name": "Barina Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 358,
+    "name": "Doshaguma Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 396,
+    "name": "Kut-Ku Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 397,
+    "name": "Kut-Ku Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 448,
+    "name": "Doshaguma Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 557,
+    "name": "Damascus Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 559,
+    "name": "Damascus Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 608,
+    "name": "Doshagumask α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 666,
+    "name": "Orion Vest α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 667,
+    "name": "Orion Vambraces α",
+    "piece": "arms",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Medicine Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Hope Charm",
+    "level": 1
+   },
+   {
+    "charm": "Recovery Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Recovery Speed": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 79,
+    "name": "Rathian Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 104,
+    "name": "Rathian Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 108,
+    "name": "Rathian Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 137,
+    "name": "Butterfly Brachia α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 175,
+    "name": "Melahoa Branch α",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 206,
+    "name": "Arkvulcan Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 207,
+    "name": "Arkvulcan Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 215,
+    "name": "Gravios Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 218,
+    "name": "Gravios Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 227,
+    "name": "Gravios Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 230,
+    "name": "Gravios Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 309,
+    "name": "Blossom Coat α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 310,
+    "name": "Blossom Boots α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 311,
+    "name": "Numinous Crown β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 315,
+    "name": "Numinous Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 323,
+    "name": "Numinous Crown α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 327,
+    "name": "Numinous Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 524,
+    "name": "Arkvulcan Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 573,
+    "name": "Chainmail Gloves α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 574,
+    "name": "Chainmail Belt α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 575,
+    "name": "Chainmail Pants α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Recovery Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Speed Heal Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Quick Sheathe": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 36,
+    "name": "Alloy Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 39,
+    "name": "Alloy Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 40,
+    "name": "Alloy Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 121,
+    "name": "Duna Wildbraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 154,
+    "name": "Duna Wildbraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 208,
+    "name": "Arkvulcan Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 295,
+    "name": "Sakuratide Robe α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 297,
+    "name": "Sakuratide Obi α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 379,
+    "name": "Commission Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 525,
+    "name": "Arkvulcan Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 605,
+    "name": "Hawkheart Jacket α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 618,
+    "name": "Duna Wildgreaves γ",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 654,
+    "name": "Bale Cuirass α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 695,
+    "name": "Azure Age Haori α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 697,
+    "name": "Azure Age Obi α",
+    "piece": "waist",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Sheath Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Sheathe Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Arkveld's Hunger": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Blossomdance Prayer": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Windproof": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 69,
+    "name": "G. Rathalos Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 70,
+    "name": "G. Rathalos Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 132,
+    "name": "G. Rathalos Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 133,
+    "name": "G. Rathalos Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 158,
+    "name": "Ingot Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 161,
+    "name": "Ingot Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 283,
+    "name": "Guild Cross Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 284,
+    "name": "Guild Cross Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 386,
+    "name": "Udra Miregreaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 489,
+    "name": "Udra Miregreaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 519,
+    "name": "Artian Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 664,
+    "name": "Aviator Shades α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 666,
+    "name": "Orion Vest α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 667,
+    "name": "Orion Vambraces α",
+    "piece": "arms",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Wind Resist Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Windproof Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Slugger": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Dragon/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Gambit/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "KO Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Charge/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Sonorous/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Grinder/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Razor Sharp/KO Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "KO Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Focus/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "KO Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Status/KO Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/KO Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 39
+ },
+ "Bombardier": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 416,
+    "name": "High Metal Coil α",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 501,
+    "name": "Ajarakan Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 503,
+    "name": "Ajarakan Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 561,
+    "name": "Ajarakan Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 563,
+    "name": "Ajarakan Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 600,
+    "name": "Afi Crown α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 604,
+    "name": "Afi Sandals α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 606,
+    "name": "Toe Bean Mittens α",
+    "piece": "arms",
+    "level": 3
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Bomber Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Bombardier Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Flayer": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 360,
+    "name": "G. Arkveld Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 361,
+    "name": "G. Arkveld Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 363,
+    "name": "G. Arkveld Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 457,
+    "name": "King Beetle Elytra α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 458,
+    "name": "King Beetle Crura α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 464,
+    "name": "G. Arkveld Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 465,
+    "name": "G. Arkveld Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 467,
+    "name": "G. Arkveld Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 516,
+    "name": "Artian Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 517,
+    "name": "Artian Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 518,
+    "name": "Artian Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 519,
+    "name": "Artian Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 520,
+    "name": "Artian Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 659,
+    "name": "Dreamwalker Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 660,
+    "name": "Dreamwalker Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 661,
+    "name": "Dreamwalker Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 662,
+    "name": "Dreamwalker Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 663,
+    "name": "Dreamwalker Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 707,
+    "name": "Arkvulcan Vambraces γ",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 708,
+    "name": "Arkvulcan Coil γ",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 709,
+    "name": "Arkvulcan Greaves γ",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Flayer Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Chainblade Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Slicked Blade": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 28
+ },
+ "Blast Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Blast Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Blast Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Blast Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Dragon Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Dragon Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Dragon/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Focus Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Opener Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Shield Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Dragon Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Rzr Sharp/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Dragon Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Cliffhanger": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 668,
+    "name": "Orion Coat α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Climber Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Marathon Runner": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 52,
+    "name": "Bone Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 53,
+    "name": "Bone Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 54,
+    "name": "Bone Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 95,
+    "name": "Dober Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 97,
+    "name": "Dober Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 103,
+    "name": "Gypceros Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 182,
+    "name": "Gypceros Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 453,
+    "name": "Battle Greaves α",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 627,
+    "name": "Diver's Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 629,
+    "name": "Diver's Boots α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Sprinter Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Marathon Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Para Functionality": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Paracoat Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Shock Absorber": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Shockproof Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Tremor Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 38,
+    "name": "Alloy Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 39,
+    "name": "Alloy Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 117,
+    "name": "Dahaad Shardcoil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 118,
+    "name": "Dahaad Shardgreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 218,
+    "name": "Gravios Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 226,
+    "name": "Gravios Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 230,
+    "name": "Gravios Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 240,
+    "name": "Dahaad Shardcoil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 281,
+    "name": "Guild Cross Suit α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 282,
+    "name": "Guild Cross Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 284,
+    "name": "Guild Cross Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 520,
+    "name": "Artian Greaves α",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Footing Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Tremor Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Artillery": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Artillery Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Artillery Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Artillery Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 9
+ },
+ "Survival Expert": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 26,
+    "name": "Vespoid Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 27,
+    "name": "Vespoid Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 30,
+    "name": "Vespoid Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 129,
+    "name": "G. Rathalos Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 131,
+    "name": "G. Rathalos Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 173,
+    "name": "Melahoa Hat α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 302,
+    "name": "Clerk Suit α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 303,
+    "name": "Clerk Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 433,
+    "name": "Vespoid Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 434,
+    "name": "Vespoid Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 437,
+    "name": "Vespoid Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 680,
+    "name": "Eager Wudwud α",
+    "piece": "head",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Survival Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Survival Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Blight Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 287,
+    "name": "Round Glasses α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 333,
+    "name": "Expedition Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 361,
+    "name": "G. Arkveld Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 362,
+    "name": "G. Arkveld Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 465,
+    "name": "G. Arkveld Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 518,
+    "name": "Artian Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 706,
+    "name": "Arkvulcan Mail γ",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 709,
+    "name": "Arkvulcan Greaves γ",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [],
+  "charms": [
+   {
+    "charm": "Blight Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Fire Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Blaze/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Guardian Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Focus Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Shield Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Blaze Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Opener Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Enhancer/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Zoh Shia's Pulse": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Mushroomancer": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 3,
+    "name": "Conga Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 4,
+    "name": "Conga Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 5,
+    "name": "Conga Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 91,
+    "name": "Conga Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 92,
+    "name": "Conga Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 98,
+    "name": "Dober Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 177,
+    "name": "Melahoa Roots α",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 619,
+    "name": "Lovely Shades α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 636,
+    "name": "Harvest Tronco α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 637,
+    "name": "Harvest Trama α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 680,
+    "name": "Eager Wudwud α",
+    "piece": "head",
+    "level": 3
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Fungiform Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Mushroom Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Ballistics": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Precise Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Bolt/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Precise Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Precise Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Precise Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Stat/Precise Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Element/Precise Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Precise Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Precise Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 27
+ },
+ "Gravios's Protection": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Stench Resistance": {
+  "kind": "armor",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Perfume Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Mizutsune's Prowess": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Weakness Exploit": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 47,
+    "name": "Chatacabra Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 50,
+    "name": "Chatacabra Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 66,
+    "name": "G. Rathalos Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 67,
+    "name": "G. Rathalos Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 68,
+    "name": "G. Rathalos Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 70,
+    "name": "G. Rathalos Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 114,
+    "name": "Dahaad Shardhelm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 117,
+    "name": "Dahaad Shardcoil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 129,
+    "name": "G. Rathalos Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 130,
+    "name": "G. Rathalos Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 131,
+    "name": "G. Rathalos Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 132,
+    "name": "G. Rathalos Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 133,
+    "name": "G. Rathalos Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 205,
+    "name": "Arkvulcan Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 207,
+    "name": "Arkvulcan Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 240,
+    "name": "Dahaad Shardcoil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 328,
+    "name": "Rey Sandhelm γ",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 362,
+    "name": "G. Arkveld Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 364,
+    "name": "G. Arkveld Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 370,
+    "name": "Chatacabra Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 466,
+    "name": "G. Arkveld Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 468,
+    "name": "G. Arkveld Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 480,
+    "name": "Nerscylla Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 522,
+    "name": "Arkvulcan Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 524,
+    "name": "Arkvulcan Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 531,
+    "name": "Bulaqchi Specs α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 610,
+    "name": "Lagiacrus Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 611,
+    "name": "Lagiacrus Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 612,
+    "name": "Lagiacrus Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 613,
+    "name": "Lagiacrus Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 621,
+    "name": "Lagiacrus Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 622,
+    "name": "Lagiacrus Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 623,
+    "name": "Lagiacrus Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 624,
+    "name": "Lagiacrus Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 640,
+    "name": "Omega Ear Cuffs α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 684,
+    "name": "Dahaad Shardbraces γ",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 686,
+    "name": "Dahaad Shardgreaves γ",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 687,
+    "name": "Analytic E.Y.E. α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 705,
+    "name": "Arkvulcan Helm γ",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 707,
+    "name": "Arkvulcan Vambraces γ",
+    "piece": "arms",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Tenderizer Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Exploiter Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Stamina Surge": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 94,
+    "name": "Dober Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 96,
+    "name": "Dober Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 99,
+    "name": "Gypceros Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 100,
+    "name": "Gypceros Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 102,
+    "name": "Gypceros Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 125,
+    "name": "Rey Sandmail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 127,
+    "name": "Rey Sandcoil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 168,
+    "name": "Balahara Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 169,
+    "name": "Balahara Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 178,
+    "name": "Gypceros Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 179,
+    "name": "Gypceros Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 181,
+    "name": "Gypceros Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 328,
+    "name": "Rey Sandhelm γ",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 332,
+    "name": "Rey Sandgreaves γ",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 356,
+    "name": "Doshaguma Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 404,
+    "name": "Rey Sandmail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 406,
+    "name": "Rey Sandcoil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 445,
+    "name": "Doshaguma Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 446,
+    "name": "Doshaguma Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 449,
+    "name": "Battle Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 509,
+    "name": "G. Fulgur Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 510,
+    "name": "G. Fulgur Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 535,
+    "name": "G. Fulgur Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 536,
+    "name": "G. Fulgur Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 608,
+    "name": "Doshagumask α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 610,
+    "name": "Lagiacrus Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 611,
+    "name": "Lagiacrus Braces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 621,
+    "name": "Lagiacrus Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 622,
+    "name": "Lagiacrus Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 701,
+    "name": "Sororal Coat α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 704,
+    "name": "Sororal Boots α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Refresh Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Surge Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Guard": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Bandolier/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Grinder/Ironwall Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Stat/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Gambit/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Ironwall Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Ironwall Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Magazine/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Ironwall Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Ironwall Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 107
+ },
+ "Focus": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Focus Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Focus Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Handicraft Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Focus Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Frost Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Stream Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Focus Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Focus Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Dragon Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Focus Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Focus/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 165
+ },
+ "Blindsider": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 99,
+    "name": "Gypceros Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 317,
+    "name": "Shadow Shades α",
+    "piece": "head",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Flash Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Jin Dahaad's Revolt": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Aquatic/Oilsilt Mobility": {
+  "kind": "armor",
+  "max_level": 2,
+  "armor": [
+   {
+    "armor_id": 120,
+    "name": "Duna Wildmail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 122,
+    "name": "Duna Wildcoil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 289,
+    "name": "Mizutsune Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 318,
+    "name": "Mizutsune Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 359,
+    "name": "Piragill Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 371,
+    "name": "Piragill Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 416,
+    "name": "High Metal Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 622,
+    "name": "Lagiacrus Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 623,
+    "name": "Lagiacrus Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 628,
+    "name": "Diver's Belt α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 629,
+    "name": "Diver's Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 671,
+    "name": "Gogmazios Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 676,
+    "name": "Gogmazios Mail β",
+    "piece": "chest",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Mirewalker Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Sleep Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 80,
+    "name": "Comaqchi Accessory β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 86,
+    "name": "Nerscylla Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 420,
+    "name": "Hope Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 450,
+    "name": "Battle Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 454,
+    "name": "King Beetle Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 482,
+    "name": "Nerscylla Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 483,
+    "name": "Nerscylla Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 581,
+    "name": "Comaqchi Accessory α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 660,
+    "name": "Dreamwalker Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 661,
+    "name": "Dreamwalker Braces α",
+    "piece": "arms",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Pep Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Sleep Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Exhaust Functionality": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Draincoat Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Offensive Guard": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Blaze/Guardian Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Guardian/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 69
+ },
+ "Ambush": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 26,
+    "name": "Vespoid Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 28,
+    "name": "Vespoid Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 83,
+    "name": "Nerscylla Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 84,
+    "name": "Nerscylla Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 183,
+    "name": "Xu Wu Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 184,
+    "name": "Xu Wu Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 187,
+    "name": "Xu Wu Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 219,
+    "name": "Mimiphyta α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 439,
+    "name": "Death Stench Brain α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 440,
+    "name": "Death Stench Muscle α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 441,
+    "name": "Death Stench Grip α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 480,
+    "name": "Nerscylla Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 481,
+    "name": "Nerscylla Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 483,
+    "name": "Nerscylla Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 625,
+    "name": "Diver's Mask α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 627,
+    "name": "Diver's Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 651,
+    "name": "Udra Mirecoil γ",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 658,
+    "name": "Kitten Frames α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 659,
+    "name": "Dreamwalker Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 662,
+    "name": "Dreamwalker Coil α",
+    "piece": "waist",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Ambush Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Descent Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Critical Status": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Crit Stat/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Stat Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Stat/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Status Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Crit Stat/Precise Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Status/KO Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Status Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 56
+ },
+ "Special Ammo Boost": {
+  "kind": "weapon",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Trueshot Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Trueshot Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 18
+ },
+ "Doshaguma's Might": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Rathalos's Flare": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Attack Boost": {
+  "kind": "weapon",
+  "max_level": 5,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Attack Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Sonorous/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Attack Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Attack Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Grinder/Attack Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Magazine/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Attack Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 56
+ },
+ "Glory's Favor": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Festival Spirit": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Foray": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 21,
+    "name": "Guild Ace Earrings α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 22,
+    "name": "Guild Ace Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 23,
+    "name": "Guild Ace Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 24,
+    "name": "Guild Ace Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 25,
+    "name": "Guild Ace Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 76,
+    "name": "Rathian Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 77,
+    "name": "Rathian Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 78,
+    "name": "Rathian Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 79,
+    "name": "Rathian Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 105,
+    "name": "Rathian Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 106,
+    "name": "Rathian Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 107,
+    "name": "Rathian Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 108,
+    "name": "Rathian Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 199,
+    "name": "Barina Headgear β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 294,
+    "name": "Sakuratide Headgear α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 295,
+    "name": "Sakuratide Robe α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 296,
+    "name": "Sakuratide Bracers α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 298,
+    "name": "Sakuratide Hakama α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 334,
+    "name": "Barina Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 336,
+    "name": "Barina Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 338,
+    "name": "Barina Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 454,
+    "name": "King Beetle Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 455,
+    "name": "King Beetle Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 456,
+    "name": "King Beetle Brachia α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 477,
+    "name": "Rompopolo Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 581,
+    "name": "Comaqchi Accessory α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 586,
+    "name": "Rompopolo Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 682,
+    "name": "Dahaad Shardhelm γ",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 686,
+    "name": "Dahaad Shardgreaves γ",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Foray Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Foray Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Jump Master": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 220,
+    "name": "G. Seikret Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 365,
+    "name": "G. Seikret Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 658,
+    "name": "Kitten Frames α",
+    "piece": "head",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Leap Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Evade Window": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 11,
+    "name": "Gore Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 12,
+    "name": "Gore Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 13,
+    "name": "Gore Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 27,
+    "name": "Vespoid Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 29,
+    "name": "Vespoid Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 41,
+    "name": "Rathalos Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 45,
+    "name": "Rathalos Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 135,
+    "name": "Butterfly Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 136,
+    "name": "Butterfly Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 137,
+    "name": "Butterfly Brachia α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 138,
+    "name": "Butterfly Elytra α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 139,
+    "name": "Butterfly Crura α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 147,
+    "name": "Hirabami Headdress α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 148,
+    "name": "Hirabami Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 149,
+    "name": "Hirabami Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 150,
+    "name": "Hirabami Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 167,
+    "name": "Balahara Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 170,
+    "name": "Balahara Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 200,
+    "name": "Barina Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 203,
+    "name": "Barina Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 291,
+    "name": "Mizutsune Braces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 320,
+    "name": "Mizutsune Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 335,
+    "name": "Barina Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 338,
+    "name": "Barina Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 339,
+    "name": "Balahara Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 342,
+    "name": "Balahara Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 459,
+    "name": "Hirabami Headdress β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 460,
+    "name": "Hirabami Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 461,
+    "name": "Hirabami Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 462,
+    "name": "Hirabami Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 538,
+    "name": "Rathalos Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 540,
+    "name": "Rathalos Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 541,
+    "name": "Rathalos Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 542,
+    "name": "Rathalos Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 566,
+    "name": "Gore Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 567,
+    "name": "Gore Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 568,
+    "name": "Gore Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 591,
+    "name": "Demon Belt α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 595,
+    "name": "Regios Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 597,
+    "name": "Regios Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 631,
+    "name": "Regios Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 633,
+    "name": "Regios Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 644,
+    "name": "Omega Boots α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 688,
+    "name": "Mirror Visor α",
+    "piece": "head",
+    "level": 4
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Evasion Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Evasion Charm IV",
+    "level": 4
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Sleep Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Sleep Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Sleep Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Sleep Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Sleep Functionality": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Sleepcoat Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Earplugs": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 119,
+    "name": "Duna Wildhelm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 152,
+    "name": "Duna Wildhelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 185,
+    "name": "Xu Wu Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 186,
+    "name": "Xu Wu Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 220,
+    "name": "G. Seikret Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 280,
+    "name": "Guild Cross Circlet α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 281,
+    "name": "Guild Cross Suit α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 283,
+    "name": "Guild Cross Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 350,
+    "name": "G. Ebony Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 353,
+    "name": "G. Ebony Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 365,
+    "name": "G. Seikret Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 381,
+    "name": "Commission Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 476,
+    "name": "Rompopolo Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 511,
+    "name": "G. Ebony Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 512,
+    "name": "G. Ebony Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 515,
+    "name": "G. Ebony Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 516,
+    "name": "Artian Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 545,
+    "name": "Xu Wu Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 546,
+    "name": "Xu Wu Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 585,
+    "name": "Rompopolo Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 587,
+    "name": "Rompopolo Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 614,
+    "name": "Duna Wildhelm γ",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 615,
+    "name": "Duna Wildmail γ",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 645,
+    "name": "Skull Mask α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 668,
+    "name": "Orion Coat α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 669,
+    "name": "Orion Boots α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 680,
+    "name": "Eager Wudwud α",
+    "piece": "head",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Earplugs Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Earplugs Charm II",
+    "level": 2
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Counterstrike": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 18,
+    "name": "Blango Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 315,
+    "name": "Numinous Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 324,
+    "name": "Numinous Shroud α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 327,
+    "name": "Numinous Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 382,
+    "name": "Udra Mirehelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 384,
+    "name": "Udra Mirebraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 388,
+    "name": "Blango Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 390,
+    "name": "Blango Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 392,
+    "name": "Blango Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 485,
+    "name": "Udra Mirehelm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 487,
+    "name": "Udra Mirebraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 582,
+    "name": "Dragonking Eyepatch α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 630,
+    "name": "Regios Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 631,
+    "name": "Regios Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 649,
+    "name": "Udra Miremail γ",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 652,
+    "name": "Udra Miregreaves γ",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 699,
+    "name": "Rompomask α",
+    "piece": "head",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Counter Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Counter Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Critical Element": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Crit Elem/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Elem/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Element Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Elem/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Elem/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Elem/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Element/Precise Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Element Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Crit Elem Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 123
+ },
+ "Charge Up": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Charge Up/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/KO Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up Jewel [2]",
+    "slot": 2,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Expert Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Draw Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 8
+ },
+ "Water Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 236,
+    "name": "Gajau Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 371,
+    "name": "Piragill Greaves α",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Water Res Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Water Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Bludgeoner": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Blunt Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blunt Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Blunt Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Airborne": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Flight Jewel [2]",
+    "slot": 2,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Draw Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Attack Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Expert Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 26
+ },
+ "Heroics": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 184,
+    "name": "Xu Wu Mail α",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 186,
+    "name": "Xu Wu Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 344,
+    "name": "G. Doshaguma Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 346,
+    "name": "G. Doshaguma Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 347,
+    "name": "G. Doshaguma Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 348,
+    "name": "G. Doshaguma Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 398,
+    "name": "G. Doshaguma Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 400,
+    "name": "G. Doshaguma Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 401,
+    "name": "G. Doshaguma Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 402,
+    "name": "G. Doshaguma Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 454,
+    "name": "King Beetle Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 455,
+    "name": "King Beetle Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 456,
+    "name": "King Beetle Brachia α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 457,
+    "name": "King Beetle Elytra α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 458,
+    "name": "King Beetle Crura α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 544,
+    "name": "Xu Wu Mail β",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 546,
+    "name": "Xu Wu Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 554,
+    "name": "Azuz Apron α",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 589,
+    "name": "Demon Garb α",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 601,
+    "name": "Afi Top α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 607,
+    "name": "Pinion Necklace α",
+    "piece": "chest",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Potential Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Grit Charm IV",
+    "level": 4
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Adaptability": {
+  "kind": "armor",
+  "max_level": 2,
+  "armor": [
+   {
+    "armor_id": 115,
+    "name": "Dahaad Shardmail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 116,
+    "name": "Dahaad Shardbraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 238,
+    "name": "Dahaad Shardmail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 239,
+    "name": "Dahaad Shardbraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 294,
+    "name": "Sakuratide Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 297,
+    "name": "Sakuratide Obi α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 517,
+    "name": "Artian Mail α",
+    "piece": "chest",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Adapt Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Buttery Leathercraft": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Tool Specialist": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 107,
+    "name": "Rathian Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 119,
+    "name": "Duna Wildhelm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 120,
+    "name": "Duna Wildmail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 123,
+    "name": "Duna Wildgreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 152,
+    "name": "Duna Wildhelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 153,
+    "name": "Duna Wildmail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 174,
+    "name": "Melahoa Jacket α",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 303,
+    "name": "Clerk Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 304,
+    "name": "Clerk Belt α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 305,
+    "name": "Clerk Shoes α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 380,
+    "name": "Commission Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 616,
+    "name": "Duna Wildbraces γ",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 617,
+    "name": "Duna Wildcoil γ",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 664,
+    "name": "Aviator Shades α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 691,
+    "name": "Ceremonial Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 693,
+    "name": "Ceremonial Greaves α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Maintenance Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Maintenance Charm IV",
+    "level": 4
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Water Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Stream Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Stream Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Stream/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Stream Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Stream Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Shield Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Quickswitch/Stream Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Focus Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Opener Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Stream/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Paralysis Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 28,
+    "name": "Vespoid Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 29,
+    "name": "Vespoid Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 30,
+    "name": "Vespoid Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 175,
+    "name": "Melahoa Branch α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 202,
+    "name": "Barina Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 306,
+    "name": "Blossom Headgear α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 307,
+    "name": "Blossom Vest α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 334,
+    "name": "Barina Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 337,
+    "name": "Barina Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 435,
+    "name": "Vespoid Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 436,
+    "name": "Vespoid Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 455,
+    "name": "King Beetle Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 457,
+    "name": "King Beetle Elytra α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Antipara Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Paralysis Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Rey Dau's Voltage": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Piercing Shots": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Pierce Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Burst": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 2,
+    "name": "Conga Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 5,
+    "name": "Conga Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 93,
+    "name": "Conga Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 146,
+    "name": "Talioth Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 290,
+    "name": "Mizutsune Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 293,
+    "name": "Mizutsune Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 319,
+    "name": "Mizutsune Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 321,
+    "name": "Mizutsune Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 322,
+    "name": "Mizutsune Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 349,
+    "name": "G. Ebony Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 351,
+    "name": "G. Ebony Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 352,
+    "name": "G. Ebony Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 386,
+    "name": "Udra Miregreaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 486,
+    "name": "Udra Miremail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 489,
+    "name": "Udra Miregreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 511,
+    "name": "G. Ebony Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 513,
+    "name": "G. Ebony Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 514,
+    "name": "G. Ebony Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 601,
+    "name": "Afi Top α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 602,
+    "name": "Afi Armguards α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 603,
+    "name": "Afi Wrap α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 604,
+    "name": "Afi Sandals α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 643,
+    "name": "Omega Accessory α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 648,
+    "name": "Udra Mirehelm γ",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 651,
+    "name": "Udra Mirecoil γ",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 673,
+    "name": "Gogmazios Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 678,
+    "name": "Gogmazios Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 700,
+    "name": "Sororal Earrings α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 701,
+    "name": "Sororal Coat α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 702,
+    "name": "Sororal Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 703,
+    "name": "Sororal Coil α",
+    "piece": "waist",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Chain Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Chain Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Whiteflame Torrent": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 28
+ },
+ "Alluring Pelt": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Geologist": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 167,
+    "name": "Balahara Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 168,
+    "name": "Balahara Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 171,
+    "name": "Balahara Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 299,
+    "name": "Strategist Spectacles α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 340,
+    "name": "Balahara Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 555,
+    "name": "Azuz Pants α",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 571,
+    "name": "Chainmail Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 572,
+    "name": "Chainmail Armor α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 573,
+    "name": "Chainmail Gloves α",
+    "piece": "arms",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Geology Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Geology Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Maximum Might": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 125,
+    "name": "Rey Sandmail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 128,
+    "name": "Rey Sandgreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 328,
+    "name": "Rey Sandhelm γ",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 331,
+    "name": "Rey Sandcoil γ",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 377,
+    "name": "Commission Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 404,
+    "name": "Rey Sandmail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 507,
+    "name": "G. Fulgur Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 508,
+    "name": "G. Fulgur Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 509,
+    "name": "G. Fulgur Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 533,
+    "name": "G. Fulgur Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 534,
+    "name": "G. Fulgur Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 553,
+    "name": "Azuz Headdress α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 609,
+    "name": "Lagiacrus Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 612,
+    "name": "Lagiacrus Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 620,
+    "name": "Lagiacrus Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 623,
+    "name": "Lagiacrus Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 653,
+    "name": "Bale Burgeonet α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 655,
+    "name": "Bale Gauntlets α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 672,
+    "name": "Gogmazios Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 677,
+    "name": "Gogmazios Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 712,
+    "name": "Gala Suit Cuffs α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 714,
+    "name": "Gala Suit Slacks α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Mighty Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Mighty Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Speed Eating": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 3,
+    "name": "Conga Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 46,
+    "name": "Chatacabra Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 47,
+    "name": "Chatacabra Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 49,
+    "name": "Chatacabra Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 51,
+    "name": "Bone Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 53,
+    "name": "Bone Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 73,
+    "name": "Kunafa Sash α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 288,
+    "name": "Gourmand's Earring α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 366,
+    "name": "Chatacabra Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 367,
+    "name": "Chatacabra Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 369,
+    "name": "Chatacabra Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 384,
+    "name": "Udra Mirebraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 487,
+    "name": "Udra Mirebraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 488,
+    "name": "Udra Mirecoil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 646,
+    "name": "Gelidron Mask α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 647,
+    "name": "Gelidron Backpack α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 652,
+    "name": "Udra Miregreaves γ",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 671,
+    "name": "Gogmazios Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 676,
+    "name": "Gogmazios Mail β",
+    "piece": "chest",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Gobbler Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Glutton's Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Ice Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 148,
+    "name": "Hirabami Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 151,
+    "name": "Hirabami Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 460,
+    "name": "Hirabami Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 572,
+    "name": "Chainmail Armor α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 574,
+    "name": "Chainmail Belt α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Ice Res Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Ice Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Evade Extender": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 124,
+    "name": "Rey Sandhelm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 135,
+    "name": "Butterfly Vertex α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 136,
+    "name": "Butterfly Thorax α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 138,
+    "name": "Butterfly Elytra α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 147,
+    "name": "Hirabami Headdress α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 169,
+    "name": "Balahara Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 170,
+    "name": "Balahara Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 171,
+    "name": "Balahara Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 291,
+    "name": "Mizutsune Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 300,
+    "name": "Amstrigian α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 318,
+    "name": "Mizutsune Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 320,
+    "name": "Mizutsune Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 330,
+    "name": "Rey Sandbraces γ",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 341,
+    "name": "Balahara Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 343,
+    "name": "Balahara Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 376,
+    "name": "Quematrice Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 403,
+    "name": "Rey Sandhelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 632,
+    "name": "Regios Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 658,
+    "name": "Kitten Frames α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 702,
+    "name": "Sororal Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 703,
+    "name": "Sororal Coil α",
+    "piece": "waist",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Jumping Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Leaping Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Critical Draw": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Grinder/Draw Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Draw Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Flight/Draw Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Magazine/Draw Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Draw Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Poison/Draw Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Sonorous/Draw Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Draw Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Charge Up/Draw Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 92
+ },
+ "Power Prolonger": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Enhancer Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Enhancer/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Enhancer/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Enhancer/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Enhancer/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Enhancer/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 88
+ },
+ "Stun Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 51,
+    "name": "Bone Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 52,
+    "name": "Bone Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 55,
+    "name": "Bone Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 126,
+    "name": "Rey Sandbraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 127,
+    "name": "Rey Sandcoil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 159,
+    "name": "Ingot Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 317,
+    "name": "Shadow Shades α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 332,
+    "name": "Rey Sandgreaves γ",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 354,
+    "name": "Doshaguma Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 356,
+    "name": "Doshaguma Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 406,
+    "name": "Rey Sandcoil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 413,
+    "name": "High Metal Helm α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 421,
+    "name": "Hope Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 422,
+    "name": "Hope Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 443,
+    "name": "Death Stench Heel α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 444,
+    "name": "Doshaguma Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 446,
+    "name": "Doshaguma Braces α",
+    "piece": "arms",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Steadfast Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Stun Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Gore Magala's Tyranny": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Blangonga's Spirit": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Flinch Free": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 15,
+    "name": "Gore Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 37,
+    "name": "Alloy Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 40,
+    "name": "Alloy Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 134,
+    "name": "Kranodath Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 191,
+    "name": "Quematrice Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 193,
+    "name": "Quematrice Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 217,
+    "name": "Gravios Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 228,
+    "name": "Gravios Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 229,
+    "name": "Gravios Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 280,
+    "name": "Guild Cross Circlet α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 282,
+    "name": "Guild Cross Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 372,
+    "name": "Quematrice Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 374,
+    "name": "Quematrice Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 376,
+    "name": "Quematrice Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 417,
+    "name": "High Metal Greaves α",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 500,
+    "name": "Kranodath Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 570,
+    "name": "Gore Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 665,
+    "name": "Orion Cap α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 669,
+    "name": "Orion Boots α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Brace Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Impact Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Load Shells": {
+  "kind": "weapon",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Magazine Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Magazine/Expert Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Magazine/Draw Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Magazine/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Magazine Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Magazine/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Magazine/Attack Jwl [3]",
+    "slot": 3,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 12
+ },
+ "Blast Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 415,
+    "name": "High Metal Braces α",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 504,
+    "name": "Ajarakan Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 562,
+    "name": "Ajarakan Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 564,
+    "name": "Ajarakan Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 603,
+    "name": "Afi Wrap α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 604,
+    "name": "Afi Sandals α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Antiblast Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Blast Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Free Meal": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 1,
+    "name": "Conga Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 4,
+    "name": "Conga Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 72,
+    "name": "Kunafa Cloak α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 288,
+    "name": "Gourmand's Earring α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 354,
+    "name": "Doshaguma Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 358,
+    "name": "Doshaguma Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 444,
+    "name": "Doshaguma Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 448,
+    "name": "Doshaguma Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 451,
+    "name": "Battle Vambraces α",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 637,
+    "name": "Harvest Trama α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 638,
+    "name": "Harvest Hoja α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 646,
+    "name": "Gelidron Mask α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 647,
+    "name": "Gelidron Backpack α",
+    "piece": "chest",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Satiated Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Light Eater's Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Botanist": {
+  "kind": "armor",
+  "max_level": 4,
+  "armor": [
+   {
+    "armor_id": 87,
+    "name": "Sild Hood α",
+    "piece": "head",
+    "level": 3
+   },
+   {
+    "armor_id": 286,
+    "name": "Square Glasses α",
+    "piece": "head",
+    "level": 4
+   },
+   {
+    "armor_id": 548,
+    "name": "Leather Headgear α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 549,
+    "name": "Leather Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 550,
+    "name": "Leather Gloves α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 635,
+    "name": "Harvest Flor α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 638,
+    "name": "Harvest Hoja α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 639,
+    "name": "Harvest Raiz α",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Botany Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Botany Charm IV",
+    "level": 4
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Wide-Range": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 16,
+    "name": "Blango Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 46,
+    "name": "Chatacabra Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 48,
+    "name": "Chatacabra Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 71,
+    "name": "Kunafa Headgear α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 74,
+    "name": "Kunafa Chaps α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 88,
+    "name": "Sild Coat α",
+    "piece": "chest",
+    "level": 4
+   },
+   {
+    "armor_id": 279,
+    "name": "Earrings of Dedication α",
+    "piece": "head",
+    "level": 4
+   },
+   {
+    "armor_id": 300,
+    "name": "Amstrigian α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 388,
+    "name": "Blango Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 391,
+    "name": "Blango Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 474,
+    "name": "Rompopolo Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 478,
+    "name": "Rompopolo Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 556,
+    "name": "Damascus Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 557,
+    "name": "Damascus Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 558,
+    "name": "Damascus Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 559,
+    "name": "Damascus Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 560,
+    "name": "Damascus Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 583,
+    "name": "Rompopolo Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 584,
+    "name": "Rompopolo Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 586,
+    "name": "Rompopolo Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 587,
+    "name": "Rompopolo Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 599,
+    "name": "Half Rim Glasses α",
+    "piece": "head",
+    "level": 5
+   },
+   {
+    "armor_id": 659,
+    "name": "Dreamwalker Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 660,
+    "name": "Dreamwalker Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 663,
+    "name": "Dreamwalker Greaves α",
+    "piece": "legs",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Friendship Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Friendship Charm V",
+    "level": 5
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Entomologist": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 219,
+    "name": "Mimiphyta α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 309,
+    "name": "Blossom Coat α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 438,
+    "name": "Bulaqchi Specs β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 531,
+    "name": "Bulaqchi Specs α",
+    "piece": "head",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Specimen Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Ebony Odogaron's Power": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Poison Functionality": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Poisoncoat Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Razor Sharp": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Rzr Sharp Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Rzr Sharp/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Razor Sharp Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Razor Sharp Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Frost/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Rzr Sharp/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Rzr Sharp/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Razor Sharp/KO Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Blaze/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Defense Boost": {
+  "kind": "armor",
+  "max_level": 7,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Defense Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Defense Charm V",
+    "level": 5
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Handicraft": {
+  "kind": "weapon",
+  "max_level": 5,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Handicraft Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Crit Stat/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Grinder/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Gambit/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Handicraft Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Shield/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Guardian/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Magazine/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Charge/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Handicraft Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Poison/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Handicraft Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Charge Up/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Flight/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Sonorous/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Adrenaline Rush": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 42,
+    "name": "Rathalos Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 44,
+    "name": "Rathalos Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 183,
+    "name": "Xu Wu Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 187,
+    "name": "Xu Wu Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 539,
+    "name": "Rathalos Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 541,
+    "name": "Rathalos Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 542,
+    "name": "Rathalos Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 543,
+    "name": "Xu Wu Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 547,
+    "name": "Xu Wu Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 594,
+    "name": "Regios Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 596,
+    "name": "Regios Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 598,
+    "name": "Regios Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 630,
+    "name": "Regios Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 632,
+    "name": "Regios Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 634,
+    "name": "Regios Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 671,
+    "name": "Gogmazios Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 676,
+    "name": "Gogmazios Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 694,
+    "name": "Azure Age Hair α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 695,
+    "name": "Azure Age Haori α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 696,
+    "name": "Azure Age Sleeve α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 697,
+    "name": "Azure Age Obi α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 698,
+    "name": "Azure Age Geta α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Counterattack Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Counterattack Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Ice Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Frost/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Focus/Frost Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Frost Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Crit Elem/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Focus Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian/Frost Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Frost Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Frost/Opener Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Shield Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Frost Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Frost/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Divine Blessing": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 75,
+    "name": "Rathian Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 77,
+    "name": "Rathian Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 104,
+    "name": "Rathian Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 106,
+    "name": "Rathian Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 157,
+    "name": "Ingot Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 160,
+    "name": "Ingot Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 188,
+    "name": "Suja Sash α",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 301,
+    "name": "Clerk Visor α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 302,
+    "name": "Clerk Suit α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 351,
+    "name": "G. Ebony Braces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 353,
+    "name": "G. Ebony Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 378,
+    "name": "Commission Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 418,
+    "name": "Hope Mask α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 421,
+    "name": "Hope Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 513,
+    "name": "G. Ebony Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 515,
+    "name": "G. Ebony Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 556,
+    "name": "Damascus Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 558,
+    "name": "Damascus Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 640,
+    "name": "Omega Ear Cuffs α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 642,
+    "name": "Omega Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 643,
+    "name": "Omega Accessory α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 681,
+    "name": "Blessed Waistchain α",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 689,
+    "name": "Ceremonial Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 692,
+    "name": "Ceremonial Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 710,
+    "name": "Gala Suit Top Hat α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 711,
+    "name": "Gala Suit Jacket α",
+    "piece": "chest",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Protection Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Blessing Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Resentment": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 101,
+    "name": "Gypceros Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 102,
+    "name": "Gypceros Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 103,
+    "name": "Gypceros Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 157,
+    "name": "Ingot Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 158,
+    "name": "Ingot Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 159,
+    "name": "Ingot Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 160,
+    "name": "Ingot Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 161,
+    "name": "Ingot Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 180,
+    "name": "Gypceros Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 182,
+    "name": "Gypceros Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 316,
+    "name": "Sealed Dragon Cloth α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 382,
+    "name": "Udra Mirehelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 383,
+    "name": "Udra Miremail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 385,
+    "name": "Udra Mirecoil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 439,
+    "name": "Death Stench Brain α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 440,
+    "name": "Death Stench Muscle α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 441,
+    "name": "Death Stench Grip α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 442,
+    "name": "Death Stench Bowels α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 443,
+    "name": "Death Stench Heel α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 485,
+    "name": "Udra Mirehelm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 486,
+    "name": "Udra Miremail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 488,
+    "name": "Udra Mirecoil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 501,
+    "name": "Ajarakan Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 502,
+    "name": "Ajarakan Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 561,
+    "name": "Ajarakan Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 562,
+    "name": "Ajarakan Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 565,
+    "name": "Ajarakan Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 635,
+    "name": "Harvest Flor α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 636,
+    "name": "Harvest Tronco α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 650,
+    "name": "Udra Mirebraces γ",
+    "piece": "arms",
+    "level": 3
+   },
+   {
+    "armor_id": 652,
+    "name": "Udra Miregreaves γ",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 653,
+    "name": "Bale Burgeonet α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 655,
+    "name": "Bale Gauntlets α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 656,
+    "name": "Bale Flanchard α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 657,
+    "name": "Bale Sollerets α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 699,
+    "name": "Rompomask α",
+    "piece": "head",
+    "level": 5
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Furor Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Fury Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Master's Touch": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Mastery Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 33
+ },
+ "Fire Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 192,
+    "name": "Quematrice Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 194,
+    "name": "Kut-Ku Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 195,
+    "name": "Kut-Ku Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 285,
+    "name": "Sealed Eyepatch α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 373,
+    "name": "Quematrice Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 374,
+    "name": "Quematrice Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 375,
+    "name": "Quematrice Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 600,
+    "name": "Afi Crown α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 603,
+    "name": "Afi Wrap α",
+    "piece": "waist",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Fire Res Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Fire Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Speed Sharpening": {
+  "kind": "weapon",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Grinder/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Grinder/Ironwall Jewel [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Grinder/Draw Jewel [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Grinder/Expert Jewel [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Grinder/KO Jewel [3]",
+    "slot": 3,
+    "level": 2
+   },
+   {
+    "deco": "Grinder Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Grinder Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Grinder/Attack Jewel [3]",
+    "slot": 3,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 74
+ },
+ "Thunder Attack": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Bolt/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Handicraft Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Bolt Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/KO Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Ironwall Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Opener Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Focus Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Rzr Sharp Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Crit Elem/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Quickswitch Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Shield/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Focus/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Shield Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Crit Elem Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Guardian Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Guardian/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Quickswitch/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Enhancer/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Rzr Sharp/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bolt/Enhancer Jwl [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Poison Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 100,
+    "name": "Gypceros Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 101,
+    "name": "Gypceros Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 173,
+    "name": "Melahoa Hat α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 308,
+    "name": "Blossom Cuffs α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 310,
+    "name": "Blossom Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 419,
+    "name": "Hope Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 456,
+    "name": "King Beetle Brachia α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 458,
+    "name": "King Beetle Crura α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 475,
+    "name": "Rompopolo Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 479,
+    "name": "Nerscylla Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 481,
+    "name": "Nerscylla Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 584,
+    "name": "Rompopolo Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 585,
+    "name": "Rompopolo Vambraces α",
+    "piece": "arms",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Antidote Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Poison Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Partbreaker": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 134,
+    "name": "Kranodath Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 360,
+    "name": "G. Arkveld Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 413,
+    "name": "High Metal Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 414,
+    "name": "High Metal Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 415,
+    "name": "High Metal Braces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 464,
+    "name": "G. Arkveld Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 503,
+    "name": "Ajarakan Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 504,
+    "name": "Ajarakan Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 505,
+    "name": "Ajarakan Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 563,
+    "name": "Ajarakan Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 564,
+    "name": "Ajarakan Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 565,
+    "name": "Ajarakan Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 588,
+    "name": "Demon Prayer Beads α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 590,
+    "name": "Demon Arm Wraps α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 592,
+    "name": "Demon Pants α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 641,
+    "name": "Omega Suit α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 701,
+    "name": "Sororal Coat α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 702,
+    "name": "Sororal Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 704,
+    "name": "Sororal Boots α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Destroyer Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Breaker Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Intimidator": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 1,
+    "name": "Conga Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 2,
+    "name": "Conga Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 67,
+    "name": "G. Rathalos Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 89,
+    "name": "Conga Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 90,
+    "name": "Conga Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 130,
+    "name": "G. Rathalos Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 131,
+    "name": "G. Rathalos Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 442,
+    "name": "Death Stench Bowels α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 645,
+    "name": "Skull Mask α",
+    "piece": "head",
+    "level": 3
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Intimidator Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Intimidator Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Lord's Soul": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Scaling Prowess": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Elemental Absorption": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 204,
+    "name": "Arkvulcan Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 205,
+    "name": "Arkvulcan Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 313,
+    "name": "Numinous Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 315,
+    "name": "Numinous Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 325,
+    "name": "Numinous Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 327,
+    "name": "Numinous Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 363,
+    "name": "G. Arkveld Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 364,
+    "name": "G. Arkveld Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 468,
+    "name": "G. Arkveld Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 670,
+    "name": "Gogmazios Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 675,
+    "name": "Gogmazios Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 708,
+    "name": "Arkvulcan Coil γ",
+    "piece": "waist",
+    "level": 3
+   }
+  ],
+  "decorations": [],
+  "charms": [
+   {
+    "charm": "Imbibe Charm II",
+    "level": 2
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Protective Polish": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Sharp Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Sharp Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Sharp Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 13
+ },
+ "Iron Skin": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 399,
+    "name": "G. Doshaguma Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 400,
+    "name": "G. Doshaguma Braces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 414,
+    "name": "High Metal Mail α",
+    "piece": "chest",
+    "level": 3
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Def Lock Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Guard Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Mind's Eye": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Mind's Eye Jewel [1]",
+    "slot": 1,
+    "level": 1
+   },
+   {
+    "deco": "Mind's Eye Jwl III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Mind's Eye Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Tetrad Shot": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Bandolier Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Bandolier/Blaze Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier/Frost Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Dragon/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Bolt Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Bandolier Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Bandolier/Dragon Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier/Precise Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bandolier Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 49
+ },
+ "Self-Improvement": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Growth Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Hope Charm",
+    "level": 1
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Neopteron Camouflage": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Opening Shot": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Opener Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Opener Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Precise Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Bolt/Opener Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Dragon/Opener Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Blaze/Opener Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Bolt Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Stream Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Frost Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Blaze Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener/Dragon Jewel [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Frost/Opener Jewel [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Stream/Opener Jwl [3]",
+    "slot": 3,
+    "level": 1
+   },
+   {
+    "deco": "Opener/Ironwall Jwl [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Opener Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 35
+ },
+ "Stamina Thief": {
+  "kind": "weapon",
+  "max_level": 3,
+  "armor": [],
+  "decorations": [
+   {
+    "deco": "Drain Jewel III [3]",
+    "slot": 3,
+    "level": 3
+   },
+   {
+    "deco": "Drain Jewel II [2]",
+    "slot": 2,
+    "level": 2
+   },
+   {
+    "deco": "Drain Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 36
+ },
+ "Latent Power": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 124,
+    "name": "Rey Sandhelm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 126,
+    "name": "Rey Sandbraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 128,
+    "name": "Rey Sandgreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 189,
+    "name": "Quematrice Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 190,
+    "name": "Quematrice Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 329,
+    "name": "Rey Sandmail γ",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 331,
+    "name": "Rey Sandcoil γ",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 355,
+    "name": "Doshaguma Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 357,
+    "name": "Doshaguma Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 372,
+    "name": "Quematrice Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 373,
+    "name": "Quematrice Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 375,
+    "name": "Quematrice Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 403,
+    "name": "Rey Sandhelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 405,
+    "name": "Rey Sandbraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 407,
+    "name": "Rey Sandgreaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 445,
+    "name": "Doshaguma Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 447,
+    "name": "Doshaguma Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 608,
+    "name": "Doshagumask α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 613,
+    "name": "Lagiacrus Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 620,
+    "name": "Lagiacrus Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 624,
+    "name": "Lagiacrus Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 654,
+    "name": "Bale Cuirass α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 655,
+    "name": "Bale Gauntlets α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 657,
+    "name": "Bale Sollerets α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 689,
+    "name": "Ceremonial Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 691,
+    "name": "Ceremonial Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 694,
+    "name": "Azure Age Hair α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 695,
+    "name": "Azure Age Haori α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 696,
+    "name": "Azure Age Sleeve α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 697,
+    "name": "Azure Age Obi α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 698,
+    "name": "Azure Age Geta α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Throttle Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Power Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Outdoorsman": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [
+   {
+    "armor_id": 236,
+    "name": "Gajau Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 286,
+    "name": "Square Glasses α",
+    "piece": "head",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Ranger Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Agitator": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 17,
+    "name": "Blango Mail β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 19,
+    "name": "Blango Coil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 20,
+    "name": "Blango Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 114,
+    "name": "Dahaad Shardhelm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 116,
+    "name": "Dahaad Shardbraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 118,
+    "name": "Dahaad Shardgreaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 195,
+    "name": "Kut-Ku Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 196,
+    "name": "Kut-Ku Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 197,
+    "name": "Kut-Ku Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 237,
+    "name": "Dahaad Shardhelm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 239,
+    "name": "Dahaad Shardbraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 241,
+    "name": "Dahaad Shardgreaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 311,
+    "name": "Numinous Crown β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 312,
+    "name": "Numinous Shroud β",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 314,
+    "name": "Numinous Overlay β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 323,
+    "name": "Numinous Crown α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 324,
+    "name": "Numinous Shroud α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 326,
+    "name": "Numinous Overlay α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 377,
+    "name": "Commission Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 378,
+    "name": "Commission Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 379,
+    "name": "Commission Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 380,
+    "name": "Commission Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 381,
+    "name": "Commission Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 389,
+    "name": "Blango Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 391,
+    "name": "Blango Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 392,
+    "name": "Blango Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 394,
+    "name": "Kut-Ku Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 396,
+    "name": "Kut-Ku Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 506,
+    "name": "G. Fulgur Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 508,
+    "name": "G. Fulgur Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 532,
+    "name": "G. Fulgur Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 595,
+    "name": "Regios Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 597,
+    "name": "Regios Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 598,
+    "name": "Regios Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 607,
+    "name": "Pinion Necklace α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 616,
+    "name": "Duna Wildbraces γ",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 618,
+    "name": "Duna Wildgreaves γ",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 631,
+    "name": "Regios Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 633,
+    "name": "Regios Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 634,
+    "name": "Regios Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 642,
+    "name": "Omega Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 672,
+    "name": "Gogmazios Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 674,
+    "name": "Gogmazios Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 677,
+    "name": "Gogmazios Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 679,
+    "name": "Gogmazios Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 683,
+    "name": "Dahaad Shardmail γ",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 685,
+    "name": "Dahaad Shardcoil γ",
+    "piece": "waist",
+    "level": 3
+   },
+   {
+    "armor_id": 690,
+    "name": "Ceremonial Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 693,
+    "name": "Ceremonial Greaves α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Challenger Jewel [3]",
+    "slot": 3,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Challenger Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Palico Rally": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 71,
+    "name": "Kunafa Headgear α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 72,
+    "name": "Kunafa Cloak α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 73,
+    "name": "Kunafa Sash α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 74,
+    "name": "Kunafa Chaps α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 301,
+    "name": "Clerk Visor α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 303,
+    "name": "Clerk Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 305,
+    "name": "Clerk Shoes α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 390,
+    "name": "Blango Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 593,
+    "name": "Faux Felyne α",
+    "piece": "head",
+    "level": 5
+   }
+  ],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Bleeding Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 176,
+    "name": "Melahoa Folia α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 417,
+    "name": "High Metal Greaves α",
+    "piece": "legs",
+    "level": 3
+   },
+   {
+    "armor_id": 512,
+    "name": "G. Ebony Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 514,
+    "name": "G. Ebony Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 594,
+    "name": "Regios Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 630,
+    "name": "Regios Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 633,
+    "name": "Regios Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 634,
+    "name": "Regios Greaves α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Suture Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Bleed Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Bind Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 82,
+    "name": "Nerscylla Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 85,
+    "name": "Nerscylla Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 115,
+    "name": "Dahaad Shardmail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 238,
+    "name": "Dahaad Shardmail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 280,
+    "name": "Guild Cross Circlet α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 282,
+    "name": "Guild Cross Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 452,
+    "name": "Battle Coil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 479,
+    "name": "Nerscylla Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 482,
+    "name": "Nerscylla Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 685,
+    "name": "Dahaad Shardcoil γ",
+    "piece": "waist",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Escape Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Escape Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Neopteron Alert": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Nu Udra's Mutiny": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Fortifying Pelt": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Hunger Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 398,
+    "name": "G. Doshaguma Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 401,
+    "name": "G. Doshaguma Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 450,
+    "name": "Battle Mail α",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 550,
+    "name": "Leather Gloves α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 551,
+    "name": "Leather Belt α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 552,
+    "name": "Leather Pants α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 626,
+    "name": "Diver's Suit α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 628,
+    "name": "Diver's Belt α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 646,
+    "name": "Gelidron Mask α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 647,
+    "name": "Gelidron Backpack α",
+    "piece": "chest",
+    "level": 2
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Hungerless Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Hungerless Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Convert Element": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 204,
+    "name": "Arkvulcan Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 206,
+    "name": "Arkvulcan Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 208,
+    "name": "Arkvulcan Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 521,
+    "name": "Arkvulcan Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 523,
+    "name": "Arkvulcan Vambraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 525,
+    "name": "Arkvulcan Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 690,
+    "name": "Ceremonial Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 692,
+    "name": "Ceremonial Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 706,
+    "name": "Arkvulcan Mail γ",
+    "piece": "chest",
+    "level": 3
+   }
+  ],
+  "decorations": [],
+  "charms": [
+   {
+    "charm": "Convert Charm II",
+    "level": 2
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Uth Duna's Cover": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Peak Performance": {
+  "kind": "armor",
+  "max_level": 5,
+  "armor": [
+   {
+    "armor_id": 21,
+    "name": "Guild Ace Earrings α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 22,
+    "name": "Guild Ace Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 23,
+    "name": "Guild Ace Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 24,
+    "name": "Guild Ace Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 25,
+    "name": "Guild Ace Boots α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 121,
+    "name": "Duna Wildbraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 122,
+    "name": "Duna Wildcoil α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 123,
+    "name": "Duna Wildgreaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 149,
+    "name": "Hirabami Vambraces α",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 151,
+    "name": "Hirabami Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 154,
+    "name": "Duna Wildbraces β",
+    "piece": "arms",
+    "level": 1
+   },
+   {
+    "armor_id": 155,
+    "name": "Duna Wildcoil β",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 156,
+    "name": "Duna Wildgreaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 214,
+    "name": "Gravios Helm β",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 215,
+    "name": "Gravios Mail β",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 216,
+    "name": "Gravios Vambraces β",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 217,
+    "name": "Gravios Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 226,
+    "name": "Gravios Helm α",
+    "piece": "head",
+    "level": 1
+   },
+   {
+    "armor_id": 227,
+    "name": "Gravios Mail α",
+    "piece": "chest",
+    "level": 1
+   },
+   {
+    "armor_id": 228,
+    "name": "Gravios Vambraces α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 229,
+    "name": "Gravios Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 322,
+    "name": "Mizutsune Greaves α",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 463,
+    "name": "Hirabami Greaves β",
+    "piece": "legs",
+    "level": 1
+   },
+   {
+    "armor_id": 614,
+    "name": "Duna Wildhelm γ",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 615,
+    "name": "Duna Wildmail γ",
+    "piece": "chest",
+    "level": 3
+   },
+   {
+    "armor_id": 670,
+    "name": "Gogmazios Helm α",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 673,
+    "name": "Gogmazios Coil α",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 674,
+    "name": "Gogmazios Greaves α",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 675,
+    "name": "Gogmazios Helm β",
+    "piece": "head",
+    "level": 2
+   },
+   {
+    "armor_id": 678,
+    "name": "Gogmazios Coil β",
+    "piece": "waist",
+    "level": 1
+   },
+   {
+    "armor_id": 679,
+    "name": "Gogmazios Greaves β",
+    "piece": "legs",
+    "level": 2
+   },
+   {
+    "armor_id": 712,
+    "name": "Gala Suit Cuffs α",
+    "piece": "arms",
+    "level": 2
+   },
+   {
+    "armor_id": 713,
+    "name": "Gala Suit Tail α",
+    "piece": "waist",
+    "level": 2
+   },
+   {
+    "armor_id": 714,
+    "name": "Gala Suit Slacks α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Flawless Jewel [2]",
+    "slot": 2,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Unscathed Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Lord's Fury": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Thunder Resistance": {
+  "kind": "armor",
+  "max_level": 3,
+  "armor": [
+   {
+    "armor_id": 621,
+    "name": "Lagiacrus Mail α",
+    "piece": "chest",
+    "level": 2
+   },
+   {
+    "armor_id": 624,
+    "name": "Lagiacrus Greaves α",
+    "piece": "legs",
+    "level": 1
+   }
+  ],
+  "decorations": [
+   {
+    "deco": "Thunder Res Jewel [1]",
+    "slot": 1,
+    "level": 1
+   }
+  ],
+  "charms": [
+   {
+    "charm": "Thunder Charm III",
+    "level": 3
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Master of the Fist": {
+  "kind": "group",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Rice Ball": {
+  "kind": "armor",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [
+   {
+    "charm": "Rice Ball Charm",
+    "level": 1
+   }
+  ],
+  "weapons_innate": 0
+ },
+ "Crackling Cornpopper": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Bladescale Loading": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 6
+ },
+ "Flamefete Prayer": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Leviathan's Fury": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Bladescale Honing": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 22
+ },
+ "Power Stone": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 4
+ },
+ "Convert Thunder Resistance": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 28
+ },
+ "Evading Reload": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 4
+ },
+ "Seregios's Tenacity": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Darkside": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Synthetic Shield": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Dreamspell Prayer": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Grillmaster": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Soul of the Dark Knight": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Omega Resonance": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Synergy": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Gogmapocalypse": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Catburglar": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ },
+ "Lumenhymn Prayer": {
+  "kind": "set",
+  "max_level": 2,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 0
+ },
+ "Convert Water Resistance": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 4
+ },
+ "Shattering Reflection": {
+  "kind": "weapon",
+  "max_level": 1,
+  "armor": [],
+  "decorations": [],
+  "charms": [],
+  "weapons_innate": 2
+ }
+}

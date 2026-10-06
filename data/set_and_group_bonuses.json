@@ -1,0 +1,1785 @@
+{
+ "Alluring Pelt": {
+  "kind": "group",
+  "sets": [
+   "Ajarakan β",
+   "Arkveld β",
+   "Blango β",
+   "Conga β",
+   "Doshaguma β",
+   "Mizutsune β"
+  ],
+  "pieces": [
+   16,
+   17,
+   18,
+   19,
+   20,
+   89,
+   90,
+   91,
+   92,
+   93,
+   289,
+   290,
+   291,
+   292,
+   293,
+   354,
+   355,
+   356,
+   357,
+   358,
+   501,
+   502,
+   503,
+   504,
+   505,
+   521,
+   522,
+   523,
+   524,
+   525
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Diversion",
+    "pieces_required": 3,
+    "description": "Increases the attention drawn to you when attacking a monster."
+   }
+  ],
+  "armor_piece_count": 30
+ },
+ "Arkveld's Hunger": {
+  "kind": "set",
+  "sets": [
+   "Arkveld α",
+   "Arkveld β",
+   "Arkveld γ"
+  ],
+  "pieces": [
+   204,
+   205,
+   206,
+   207,
+   208,
+   521,
+   522,
+   523,
+   524,
+   525,
+   705,
+   706,
+   707,
+   708,
+   709
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Hasten Recovery I",
+    "pieces_required": 2,
+    "description": "Regenerates a small amount of your health as you continually attack a monster. Recovery varies by weapon."
+   },
+   {
+    "level": 2,
+    "name": "Hasten Recovery II",
+    "pieces_required": 4,
+    "description": "Regenerates your health as you continually attack a monster. Recovery varies by weapon."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Blangonga's Spirit": {
+  "kind": "set",
+  "sets": [
+   "Blango α",
+   "Blango β",
+   "Gogmazios β"
+  ],
+  "pieces": [
+   16,
+   17,
+   18,
+   19,
+   20,
+   388,
+   389,
+   390,
+   391,
+   392,
+   677
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "War Cry I",
+    "pieces_required": 2,
+    "description": "Using the To Victory! gesture moderately  increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+   },
+   {
+    "level": 2,
+    "name": "War Cry II",
+    "pieces_required": 4,
+    "description": "Using the To Victory! gesture increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Blossomdance Prayer": {
+  "kind": "set",
+  "sets": [
+   "Sakuratide α"
+  ],
+  "pieces": [
+   294,
+   295,
+   296,
+   297,
+   298
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Blossomdance Boon I",
+    "pieces_required": 2,
+    "description": "During Blossomdance, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Blossomdance Boon II",
+    "pieces_required": 4,
+    "description": "During Blossomdance, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Buttery Leathercraft": {
+  "kind": "group",
+  "sets": [
+   "Amstrigian α",
+   "Chatacabra β",
+   "Gypceros β",
+   "Lagiacrus β",
+   "Piragill β",
+   "Rompomask α",
+   "Rompopolo β",
+   "Talioth β",
+   "Xu Wu β"
+  ],
+  "pieces": [
+   178,
+   179,
+   180,
+   181,
+   182,
+   300,
+   359,
+   366,
+   367,
+   368,
+   369,
+   370,
+   474,
+   475,
+   476,
+   477,
+   478,
+   484,
+   543,
+   544,
+   545,
+   546,
+   547,
+   609,
+   610,
+   611,
+   612,
+   613,
+   699
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Affinity Sliding",
+    "pieces_required": 3,
+    "description": "Increases your affinity temporarily when sliding on terrain."
+   }
+  ],
+  "armor_piece_count": 29
+ },
+ "Doshaguma's Might": {
+  "kind": "set",
+  "sets": [
+   "Doshaguma α",
+   "Doshaguma β",
+   "Doshagumask α",
+   "Gogmazios α",
+   "Guardian Doshaguma α",
+   "Guardian Doshaguma β"
+  ],
+  "pieces": [
+   344,
+   345,
+   346,
+   347,
+   348,
+   354,
+   355,
+   356,
+   357,
+   358,
+   398,
+   399,
+   400,
+   401,
+   402,
+   444,
+   445,
+   446,
+   447,
+   448,
+   608,
+   674
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Powerhouse I",
+    "pieces_required": 2,
+    "description": "Temporarily grants attack +10 after a successful Power Clash or Offset attack"
+   },
+   {
+    "level": 2,
+    "name": "Powerhouse II",
+    "pieces_required": 4,
+    "description": "Temporarily grants attack +25 after a successful Power Clash or Offset attack"
+   }
+  ],
+  "armor_piece_count": 22
+ },
+ "Dreamspell Prayer": {
+  "kind": "set",
+  "sets": [
+   "Dreamwalker α"
+  ],
+  "pieces": [
+   659,
+   660,
+   661,
+   662,
+   663
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Dreamspell Boon I",
+    "pieces_required": 2,
+    "description": "During Dreamspell, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Dreamspell Boon II",
+    "pieces_required": 4,
+    "description": "During Dreamspell, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Ebony Odogaron's Power": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios α",
+   "Guardian Ebony α",
+   "Guardian Ebony β"
+  ],
+  "pieces": [
+   349,
+   350,
+   351,
+   352,
+   353,
+   511,
+   512,
+   513,
+   514,
+   515,
+   673
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Burst Boost I",
+    "pieces_required": 2,
+    "description": "Extends the duration of the Burst skill and grants attack +8 while Burst is active."
+   },
+   {
+    "level": 2,
+    "name": "Burst Boost II",
+    "pieces_required": 4,
+    "description": "Further extends the duration of the Burst skill and grants attack +18 while Burst is active."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Festival Spirit": {
+  "kind": "group",
+  "sets": [
+   "Afi α",
+   "Blossom α",
+   "Ceremonial α",
+   "Diver α",
+   "Dreamwalker α",
+   "Gala Suit α",
+   "Harvest α",
+   "Orion α",
+   "Sakuratide α"
+  ],
+  "pieces": [
+   294,
+   295,
+   296,
+   297,
+   298,
+   306,
+   307,
+   308,
+   309,
+   310,
+   600,
+   601,
+   602,
+   603,
+   604,
+   625,
+   626,
+   627,
+   628,
+   629,
+   635,
+   636,
+   637,
+   638,
+   639,
+   659,
+   660,
+   661,
+   662,
+   663,
+   665,
+   666,
+   667,
+   668,
+   669,
+   689,
+   690,
+   691,
+   692,
+   693,
+   710,
+   711,
+   712,
+   713,
+   714
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Carving Master",
+    "pieces_required": 3,
+    "description": "Lets you carve one additional time from carcasses during quests. (No effect when joining mid-quest.)"
+   }
+  ],
+  "armor_piece_count": 45
+ },
+ "Flamefete Prayer": {
+  "kind": "set",
+  "sets": [
+   "Afi α"
+  ],
+  "pieces": [
+   600,
+   601,
+   602,
+   603,
+   604
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Flamefete Boon I",
+    "pieces_required": 2,
+    "description": "During Flamefete, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Flamefete Boon II",
+    "pieces_required": 4,
+    "description": "During Flamefete, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Flexible Leathercraft": {
+  "kind": "group",
+  "sets": [
+   "Chatacabra α",
+   "Gajau α",
+   "Gelidron α",
+   "Gypceros α",
+   "Lagiacrus α",
+   "Piragill α",
+   "Rompopolo α",
+   "Talioth α",
+   "Xu Wu α"
+  ],
+  "pieces": [
+   46,
+   47,
+   48,
+   49,
+   50,
+   99,
+   100,
+   101,
+   102,
+   103,
+   146,
+   183,
+   184,
+   185,
+   186,
+   187,
+   236,
+   371,
+   583,
+   584,
+   585,
+   586,
+   587,
+   620,
+   621,
+   622,
+   623,
+   624,
+   646,
+   647
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Hunter Gatherer",
+    "pieces_required": 3,
+    "description": "Increases gathering speed, and prevents knock back when gathering or carving."
+   }
+  ],
+  "armor_piece_count": 30
+ },
+ "Fortifying Pelt": {
+  "kind": "group",
+  "sets": [
+   "Ajarakan α",
+   "Arkveld α",
+   "Azure Age α",
+   "Blango α",
+   "Conga α",
+   "Doshaguma α",
+   "Doshagumask α",
+   "Eager Wudwud α",
+   "Mimiphyta α",
+   "Mizutsune α"
+  ],
+  "pieces": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   204,
+   205,
+   206,
+   207,
+   208,
+   219,
+   318,
+   319,
+   320,
+   321,
+   322,
+   388,
+   389,
+   390,
+   391,
+   392,
+   444,
+   445,
+   446,
+   447,
+   448,
+   561,
+   562,
+   563,
+   564,
+   565,
+   608,
+   680,
+   694,
+   695,
+   696,
+   697,
+   698
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Fortify",
+    "pieces_required": 3,
+    "description": "Increases attack and defense after fainting during a quest. (Can be used twice.)"
+   }
+  ],
+  "armor_piece_count": 38
+ },
+ "Fulgur Anjanath's Will": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios α",
+   "Guardian Fulgur α",
+   "Guardian Fulgur β"
+  ],
+  "pieces": [
+   506,
+   507,
+   508,
+   509,
+   510,
+   532,
+   533,
+   534,
+   535,
+   536,
+   672
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Second Wind I",
+    "pieces_required": 2,
+    "description": "Grants an additional Stamina Gauge."
+   },
+   {
+    "level": 2,
+    "name": "Second Wind II",
+    "pieces_required": 4,
+    "description": "Grants an additional long Stamina Gauge."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Glory's Favor": {
+  "kind": "group",
+  "sets": [
+   "Clerk α",
+   "Earrings of Dedication α",
+   "Gourmand's Earring α",
+   "Guild Cross α",
+   "Sororal α"
+  ],
+  "pieces": [
+   279,
+   280,
+   281,
+   282,
+   283,
+   284,
+   288,
+   301,
+   302,
+   303,
+   304,
+   305,
+   700,
+   701,
+   702,
+   703,
+   704
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Luck",
+    "pieces_required": 3,
+    "description": "Increases quest target rewards. (No effect when joining mid-quest.)"
+   }
+  ],
+  "armor_piece_count": 17
+ },
+ "Gogmapocalypse": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios α",
+   "Gogmazios β"
+  ],
+  "pieces": [
+   670,
+   671,
+   672,
+   673,
+   674,
+   675,
+   676,
+   677,
+   678,
+   679
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Mutual Hostility I",
+    "pieces_required": 2,
+    "description": "Increases elemental attack when large monsters become enraged."
+   },
+   {
+    "level": 2,
+    "name": "Mutual Hostility II",
+    "pieces_required": 4,
+    "description": "Level I effect is increased, and you gain a temporary damage barrier. (Barrier reactivates after cooldown.)"
+   }
+  ],
+  "armor_piece_count": 10
+ },
+ "Gore Magala's Tyranny": {
+  "kind": "set",
+  "sets": [
+   "Gore α",
+   "Gore β",
+   "Sororal α"
+  ],
+  "pieces": [
+   11,
+   12,
+   13,
+   14,
+   15,
+   566,
+   567,
+   568,
+   569,
+   570,
+   700,
+   701,
+   702,
+   703,
+   704
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Black Eclipse I",
+    "pieces_required": 2,
+    "description": "Infects you with Frenzy when against large monsters."
+   },
+   {
+    "level": 2,
+    "name": "Black Eclipse II",
+    "pieces_required": 4,
+    "description": "Infects you with Frenzy and raises attack when against large monsters. Attack power increases upon recovery."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Gravios's Protection": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios β",
+   "Gravios α",
+   "Gravios β"
+  ],
+  "pieces": [
+   214,
+   215,
+   216,
+   217,
+   218,
+   226,
+   227,
+   228,
+   229,
+   230,
+   679
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Flawless Armor I",
+    "pieces_required": 2,
+    "description": "Reduces the damage you take by 20% when your health is full."
+   },
+   {
+    "level": 2,
+    "name": "Flawless Armor II",
+    "pieces_required": 4,
+    "description": "Reduces the damage you take by 35% when your health is full."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Guardian Arkveld's Vitality": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios β",
+   "Guardian Arkveld α",
+   "Guardian Arkveld β"
+  ],
+  "pieces": [
+   360,
+   361,
+   362,
+   363,
+   364,
+   464,
+   465,
+   466,
+   467,
+   468,
+   675
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Decimator I",
+    "pieces_required": 2,
+    "description": "Restores a moderate amount of health when destroying a wound on a large monster."
+   },
+   {
+    "level": 2,
+    "name": "Decimator II",
+    "pieces_required": 4,
+    "description": "Restores health when destroying a wound on a large monster."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Guardian's Protection": {
+  "kind": "group",
+  "sets": [
+   "Artian α",
+   "Guardian Arkveld β",
+   "Guardian Doshaguma β",
+   "Guardian Ebony β",
+   "Guardian Fulgur β",
+   "Guardian Rathalos β",
+   "Guardian Seikret β",
+   "Numinous β"
+  ],
+  "pieces": [
+   66,
+   67,
+   68,
+   69,
+   70,
+   220,
+   311,
+   312,
+   313,
+   314,
+   315,
+   344,
+   345,
+   346,
+   347,
+   348,
+   349,
+   350,
+   351,
+   352,
+   353,
+   464,
+   465,
+   466,
+   467,
+   468,
+   516,
+   517,
+   518,
+   519,
+   520,
+   532,
+   533,
+   534,
+   535,
+   536
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Ward of Wyveria",
+    "pieces_required": 3,
+    "description": "Reduces elemental and unique damage while in the Ruins of Wyveria."
+   }
+  ],
+  "armor_piece_count": 36
+ },
+ "Guardian's Pulse": {
+  "kind": "group",
+  "sets": [
+   "Guardian Arkveld α",
+   "Guardian Doshaguma α",
+   "Guardian Ebony α",
+   "Guardian Fulgur α",
+   "Guardian Rathalos α",
+   "Guardian Seikret α",
+   "Numinous α"
+  ],
+  "pieces": [
+   129,
+   130,
+   131,
+   132,
+   133,
+   323,
+   324,
+   325,
+   326,
+   327,
+   360,
+   361,
+   362,
+   363,
+   364,
+   365,
+   398,
+   399,
+   400,
+   401,
+   402,
+   506,
+   507,
+   508,
+   509,
+   510,
+   511,
+   512,
+   513,
+   514,
+   515
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Wylk Burst",
+    "pieces_required": 3,
+    "description": "Increases recovery speed of stamina and red gauge when near Wylkrystals."
+   }
+  ],
+  "armor_piece_count": 31
+ },
+ "Imparted Wisdom": {
+  "kind": "group",
+  "sets": [
+   "Azuz α",
+   "Battle α",
+   "Butterfly α",
+   "Death Stench α",
+   "High Metal α",
+   "King Beetle α",
+   "Kunafa α",
+   "Melahoa α",
+   "Sild α",
+   "Suja α"
+  ],
+  "pieces": [
+   71,
+   72,
+   73,
+   74,
+   87,
+   88,
+   135,
+   136,
+   137,
+   138,
+   139,
+   173,
+   174,
+   175,
+   176,
+   177,
+   188,
+   413,
+   414,
+   415,
+   416,
+   417,
+   439,
+   440,
+   441,
+   442,
+   443,
+   449,
+   450,
+   451,
+   452,
+   453,
+   454,
+   455,
+   456,
+   457,
+   458,
+   553,
+   554,
+   555
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Forager's Luck",
+    "pieces_required": 3,
+    "description": "Increases the chance of finding rare gathering points."
+   }
+  ],
+  "armor_piece_count": 40
+ },
+ "Jin Dahaad's Revolt": {
+  "kind": "set",
+  "sets": [
+   "Dahaad α",
+   "Dahaad β",
+   "Dahaad γ"
+  ],
+  "pieces": [
+   114,
+   115,
+   116,
+   117,
+   118,
+   237,
+   238,
+   239,
+   240,
+   241,
+   682,
+   683,
+   684,
+   685,
+   686
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Binding Counter I",
+    "pieces_required": 2,
+    "description": "Increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+   },
+   {
+    "level": 2,
+    "name": "Binding Counter II",
+    "pieces_required": 4,
+    "description": "Greatly increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Leviathan's Fury": {
+  "kind": "set",
+  "sets": [
+   "Azure Age α",
+   "Lagiacrus α",
+   "Lagiacrus β"
+  ],
+  "pieces": [
+   609,
+   610,
+   611,
+   612,
+   613,
+   620,
+   621,
+   622,
+   623,
+   624,
+   694,
+   695,
+   696,
+   697,
+   698
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Azure Bolt I",
+    "pieces_required": 2,
+    "description": "Temporarily increases affinity and can deal extra thunder damage upon buildup. (Excludes some attacks.)"
+   },
+   {
+    "level": 2,
+    "name": "Azure Bolt II",
+    "pieces_required": 4,
+    "description": "Further increases additional thunder damage and moderately extends the duration affinity is increased."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Lord's Favor": {
+  "kind": "group",
+  "sets": [
+   "Dahaad α",
+   "Nu Udra α",
+   "Rey Dau α",
+   "Uth Duna α"
+  ],
+  "pieces": [
+   114,
+   115,
+   116,
+   117,
+   118,
+   119,
+   120,
+   121,
+   122,
+   123,
+   124,
+   125,
+   126,
+   127,
+   128,
+   485,
+   486,
+   487,
+   488,
+   489
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Inspiration",
+    "pieces_required": 3,
+    "description": "Temporarily increases attack power when using effects like Melody Effects that affect companions in range."
+   }
+  ],
+  "armor_piece_count": 20
+ },
+ "Lord's Fury": {
+  "kind": "group",
+  "sets": [
+   "Dahaad β",
+   "Nu Udra β",
+   "Rey Dau β",
+   "Uth Duna β"
+  ],
+  "pieces": [
+   152,
+   153,
+   154,
+   155,
+   156,
+   237,
+   238,
+   239,
+   240,
+   241,
+   382,
+   383,
+   384,
+   385,
+   386,
+   403,
+   404,
+   405,
+   406,
+   407
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Resuscitate",
+    "pieces_required": 3,
+    "description": "Increases attack when inflicted with ailments."
+   }
+  ],
+  "armor_piece_count": 20
+ },
+ "Lord's Soul": {
+  "kind": "group",
+  "sets": [
+   "Arkveld γ",
+   "Dahaad γ",
+   "Nu Udra γ",
+   "Rey Dau γ",
+   "Uth Duna γ"
+  ],
+  "pieces": [
+   328,
+   329,
+   330,
+   331,
+   332,
+   614,
+   615,
+   616,
+   617,
+   618,
+   648,
+   649,
+   650,
+   651,
+   652,
+   682,
+   683,
+   684,
+   685,
+   686,
+   705,
+   706,
+   707,
+   708,
+   709
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Guts (Tenacity)",
+    "pieces_required": 3,
+    "description": "Boosts attack and lowers defense but lets you survive one lethal hit. Afterwards, boosts defense and res."
+   }
+  ],
+  "armor_piece_count": 25
+ },
+ "Lumenhymn Prayer": {
+  "kind": "set",
+  "sets": [
+   "Ceremonial α"
+  ],
+  "pieces": [
+   689,
+   690,
+   691,
+   692,
+   693
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Lumenhymn Boon I",
+    "pieces_required": 2,
+    "description": "During Lumenhymn, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Lumenhymn Boon II",
+    "pieces_required": 4,
+    "description": "During Lumenhymn, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Master of the Fist": {
+  "kind": "group",
+  "sets": [
+   "Akuma α"
+  ],
+  "pieces": [
+   588,
+   589,
+   590,
+   591,
+   592
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Satsui no Hado",
+    "pieces_required": 3,
+    "description": "Increases power of special actions. Drive Impacts can trigger offset attacks. Further increases power of offset attacks."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Mizutsune's Prowess": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios β",
+   "Mizutsune α",
+   "Mizutsune β"
+  ],
+  "pieces": [
+   289,
+   290,
+   291,
+   292,
+   293,
+   318,
+   319,
+   320,
+   321,
+   322,
+   678
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Bubbly Dance I",
+    "pieces_required": 2,
+    "description": "Prevents major bubbleblight and grants you minor bubbleblight after evading several times."
+   },
+   {
+    "level": 2,
+    "name": "Bubbly Dance II",
+    "pieces_required": 4,
+    "description": "In addition to previous effects, also increases evasion while afflicted with bubbleblight."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Neopteron Alert": {
+  "kind": "group",
+  "sets": [
+   "Bulaqchi α",
+   "Comaqchi α",
+   "Lala Barina α",
+   "Nerscylla α",
+   "Vespoid α"
+  ],
+  "pieces": [
+   26,
+   27,
+   28,
+   29,
+   30,
+   334,
+   335,
+   336,
+   337,
+   338,
+   479,
+   480,
+   481,
+   482,
+   483,
+   531,
+   581
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Honey Hunter",
+    "pieces_required": 3,
+    "description": "Increases the amount of honey you gain from gathering points."
+   }
+  ],
+  "armor_piece_count": 17
+ },
+ "Neopteron Camouflage": {
+  "kind": "group",
+  "sets": [
+   "Bulaqchi β",
+   "Comaqchi β",
+   "Lala Barina β",
+   "Nerscylla β",
+   "Vespoid β"
+  ],
+  "pieces": [
+   80,
+   82,
+   83,
+   84,
+   85,
+   86,
+   199,
+   200,
+   201,
+   202,
+   203,
+   433,
+   434,
+   435,
+   436,
+   437,
+   438
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Fleetfoot",
+    "pieces_required": 3,
+    "description": "Increases movement speed while crouching, and makes it easier to escape large monsters' detection."
+   }
+  ],
+  "armor_piece_count": 17
+ },
+ "Nu Udra's Mutiny": {
+  "kind": "set",
+  "sets": [
+   "Nu Udra α",
+   "Nu Udra β",
+   "Nu Udra γ"
+  ],
+  "pieces": [
+   382,
+   383,
+   384,
+   385,
+   386,
+   485,
+   486,
+   487,
+   488,
+   489,
+   648,
+   649,
+   650,
+   651,
+   652
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Bad Blood I",
+    "pieces_required": 2,
+    "description": "Deals moderate additional damage while the Resentment skill is active."
+   },
+   {
+    "level": 2,
+    "name": "Bad Blood II",
+    "pieces_required": 4,
+    "description": "Deals additional damage while the Resentment skill is active."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Omega Resonance": {
+  "kind": "set",
+  "sets": [
+   "Omega Attire α"
+  ],
+  "pieces": [
+   640,
+   641,
+   642,
+   643,
+   644
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Resonance I",
+    "pieces_required": 2,
+    "description": "(When quest starts) Local and Remote Resonance alternate, increasing attack or affinity when conditions are met."
+   },
+   {
+    "level": 2,
+    "name": "Resonance II",
+    "pieces_required": 4,
+    "description": "Increases the effect of Resonance I, and the effect of the weapon skill Synthetic Shield or the effect of Synergy."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Rathalos's Flare": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios β",
+   "Guardian Rathalos α",
+   "Guardian Rathalos β",
+   "Rathalos α",
+   "Rathalos β"
+  ],
+  "pieces": [
+   41,
+   42,
+   43,
+   44,
+   45,
+   66,
+   67,
+   68,
+   69,
+   70,
+   129,
+   130,
+   131,
+   132,
+   133,
+   538,
+   539,
+   540,
+   541,
+   542,
+   676
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Scorcher I",
+    "pieces_required": 2,
+    "description": "Chance to deal additional fire damage after landing an attack."
+   },
+   {
+    "level": 2,
+    "name": "Scorcher II",
+    "pieces_required": 4,
+    "description": "Increases additional fire damage after landing an attack."
+   }
+  ],
+  "armor_piece_count": 21
+ },
+ "Rey Dau's Voltage": {
+  "kind": "set",
+  "sets": [
+   "Rey Dau α",
+   "Rey Dau β",
+   "Rey Dau γ"
+  ],
+  "pieces": [
+   124,
+   125,
+   126,
+   127,
+   128,
+   328,
+   329,
+   330,
+   331,
+   332,
+   403,
+   404,
+   405,
+   406,
+   407
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Thunderous Roar I",
+    "pieces_required": 2,
+    "description": "Moderately extends the activation time of the Latent Power skill."
+   },
+   {
+    "level": 2,
+    "name": "Thunderous Roar II",
+    "pieces_required": 4,
+    "description": "Extends the activation time of the Latent Power skill."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Scale Layering": {
+  "kind": "group",
+  "sets": [
+   "Balahara β",
+   "Gore β",
+   "Gravios β",
+   "Hirabami β",
+   "Kranodath β",
+   "Kut-Ku β",
+   "Quematrice β",
+   "Rathalos β",
+   "Rathian β",
+   "Seregios β"
+  ],
+  "pieces": [
+   41,
+   42,
+   43,
+   44,
+   45,
+   75,
+   76,
+   77,
+   78,
+   79,
+   189,
+   190,
+   191,
+   192,
+   193,
+   214,
+   215,
+   216,
+   217,
+   218,
+   339,
+   340,
+   341,
+   342,
+   343,
+   393,
+   394,
+   395,
+   396,
+   397,
+   459,
+   460,
+   461,
+   462,
+   463,
+   500,
+   566,
+   567,
+   568,
+   569,
+   570,
+   594,
+   595,
+   596,
+   597,
+   598
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Adrenaline",
+    "pieces_required": 3,
+    "description": "Temporarily reduces stamina depletion when health is at 40% or lower."
+   }
+  ],
+  "armor_piece_count": 46
+ },
+ "Scaling Prowess": {
+  "kind": "group",
+  "sets": [
+   "Balahara α",
+   "Gore α",
+   "Gravios α",
+   "Hirabami α",
+   "Kranodath α",
+   "Kut-Ku α",
+   "Quematrice α",
+   "Rathalos α",
+   "Rathian α",
+   "Seregios α"
+  ],
+  "pieces": [
+   11,
+   12,
+   13,
+   14,
+   15,
+   104,
+   105,
+   106,
+   107,
+   108,
+   134,
+   147,
+   148,
+   149,
+   150,
+   151,
+   167,
+   168,
+   169,
+   170,
+   171,
+   194,
+   195,
+   196,
+   197,
+   198,
+   226,
+   227,
+   228,
+   229,
+   230,
+   372,
+   373,
+   374,
+   375,
+   376,
+   538,
+   539,
+   540,
+   541,
+   542,
+   630,
+   631,
+   632,
+   633,
+   634
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Master Mounter",
+    "pieces_required": 3,
+    "description": "Makes it easier to mount monsters and to wound them once mounted."
+   }
+  ],
+  "armor_piece_count": 46
+ },
+ "Seregios's Tenacity": {
+  "kind": "set",
+  "sets": [
+   "Seregios α",
+   "Seregios β"
+  ],
+  "pieces": [
+   594,
+   595,
+   596,
+   597,
+   598,
+   630,
+   631,
+   632,
+   633,
+   634
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Razor's Edge I",
+    "pieces_required": 2,
+    "description": "Extends the duration of Adrenaline Rush. If triggered again while the skill is active, extends the effect duration once."
+   },
+   {
+    "level": 2,
+    "name": "Razor's Edge II",
+    "pieces_required": 4,
+    "description": "Additionally, if triggered again while the skill is active, further increases attack."
+   }
+  ],
+  "armor_piece_count": 10
+ },
+ "Soul of the Dark Knight": {
+  "kind": "set",
+  "sets": [
+   "Bale Armor α"
+  ],
+  "pieces": [
+   653,
+   654,
+   655,
+   656,
+   657
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Dark Arts",
+    "pieces_required": 2,
+    "description": "Having recoverable damage increases elemental attack, and some great sword Lvl 3 charged slashes are strengthened."
+   },
+   {
+    "level": 2,
+    "name": "The Blackest Night",
+    "pieces_required": 4,
+    "description": "Allows you to perform the special action: The Blackest Night."
+   }
+  ],
+  "armor_piece_count": 5
+ },
+ "Uth Duna's Cover": {
+  "kind": "set",
+  "sets": [
+   "Uth Duna α",
+   "Uth Duna β",
+   "Uth Duna γ"
+  ],
+  "pieces": [
+   119,
+   120,
+   121,
+   122,
+   123,
+   152,
+   153,
+   154,
+   155,
+   156,
+   614,
+   615,
+   616,
+   617,
+   618
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Protective Veil I",
+    "pieces_required": 2,
+    "description": "Increases defense temporarily when using a specialized tool."
+   },
+   {
+    "level": 2,
+    "name": "Protective Veil II",
+    "pieces_required": 4,
+    "description": "Greatly increases defense and resistance temporarily when using a specialized tool."
+   }
+  ],
+  "armor_piece_count": 15
+ },
+ "Xu Wu's Vigor": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios α",
+   "Xu Wu α",
+   "Xu Wu β"
+  ],
+  "pieces": [
+   183,
+   184,
+   185,
+   186,
+   187,
+   543,
+   544,
+   545,
+   546,
+   547,
+   671
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Protein Fiend I",
+    "pieces_required": 2,
+    "description": "Temporarily grants attack +15 after eating items such as well-done steak."
+   },
+   {
+    "level": 2,
+    "name": "Protein Fiend II",
+    "pieces_required": 4,
+    "description": "Temporarily grants attack +30 after eating items such as well-done steak."
+   }
+  ],
+  "armor_piece_count": 11
+ },
+ "Zoh Shia's Pulse": {
+  "kind": "set",
+  "sets": [
+   "Gogmazios α",
+   "Numinous α",
+   "Numinous β"
+  ],
+  "pieces": [
+   311,
+   312,
+   313,
+   314,
+   315,
+   323,
+   324,
+   325,
+   326,
+   327,
+   670
+  ],
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Super Recovery I",
+    "pieces_required": 2,
+    "description": "Allows the Health Gauge to continue to slowly recover up to the max value, even if there is no red portion."
+   },
+   {
+    "level": 2,
+    "name": "Super Recovery II",
+    "pieces_required": 4,
+    "description": "Allows the Health Gauge to continue to recover up to the max value, even if there is no red portion."
+   }
+  ],
+  "armor_piece_count": 11
+ }
+}

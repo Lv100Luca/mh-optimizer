@@ -1,0 +1,4544 @@
+[
+ {
+  "set": "Analytic E.Y.E. α",
+  "set_id": 186,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 687,
+    "name": "Analytic E.Y.E. α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Arkveld α",
+  "set_id": 48,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 204,
+    "name": "Arkvulcan Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 205,
+    "name": "Arkvulcan Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 206,
+    "name": "Arkvulcan Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 207,
+    "name": "Arkvulcan Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 208,
+    "name": "Arkvulcan Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Arkveld's Hunger"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Arkveld β",
+  "set_id": 136,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 521,
+    "name": "Arkvulcan Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 522,
+    "name": "Arkvulcan Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 523,
+    "name": "Arkvulcan Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 524,
+    "name": "Arkvulcan Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 525,
+    "name": "Arkvulcan Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Arkveld's Hunger"
+  ],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Arkveld γ",
+  "set_id": 193,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 705,
+    "name": "Arkvulcan Helm γ"
+   },
+   {
+    "piece": "chest",
+    "id": 706,
+    "name": "Arkvulcan Mail γ"
+   },
+   {
+    "piece": "arms",
+    "id": 707,
+    "name": "Arkvulcan Vambraces γ"
+   },
+   {
+    "piece": "waist",
+    "id": 708,
+    "name": "Arkvulcan Coil γ"
+   },
+   {
+    "piece": "legs",
+    "id": 709,
+    "name": "Arkvulcan Greaves γ"
+   }
+  ],
+  "set_bonus": [
+   "Arkveld's Hunger"
+  ],
+  "group_skill": "Lord's Soul",
+  "piece_count": 5
+ },
+ {
+  "set": "Aviator Shades α",
+  "set_id": 179,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 664,
+    "name": "Aviator Shades α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Azure Age α",
+  "set_id": 190,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 694,
+    "name": "Azure Age Hair α"
+   },
+   {
+    "piece": "chest",
+    "id": 695,
+    "name": "Azure Age Haori α"
+   },
+   {
+    "piece": "arms",
+    "id": 696,
+    "name": "Azure Age Sleeve α"
+   },
+   {
+    "piece": "waist",
+    "id": 697,
+    "name": "Azure Age Obi α"
+   },
+   {
+    "piece": "legs",
+    "id": 698,
+    "name": "Azure Age Geta α"
+   }
+  ],
+  "set_bonus": [
+   "Leviathan's Fury"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Bale Armor α",
+  "set_id": 176,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 653,
+    "name": "Bale Burgeonet α"
+   },
+   {
+    "piece": "chest",
+    "id": 654,
+    "name": "Bale Cuirass α"
+   },
+   {
+    "piece": "arms",
+    "id": 655,
+    "name": "Bale Gauntlets α"
+   },
+   {
+    "piece": "waist",
+    "id": 656,
+    "name": "Bale Flanchard α"
+   },
+   {
+    "piece": "legs",
+    "id": 657,
+    "name": "Bale Sollerets α"
+   }
+  ],
+  "set_bonus": [
+   "Soul of the Dark Knight"
+  ],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Blessed Waistchain α",
+  "set_id": 184,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "waist",
+    "id": 681,
+    "name": "Blessed Waistchain α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Dahaad γ",
+  "set_id": 185,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 682,
+    "name": "Dahaad Shardhelm γ"
+   },
+   {
+    "piece": "chest",
+    "id": 683,
+    "name": "Dahaad Shardmail γ"
+   },
+   {
+    "piece": "arms",
+    "id": 684,
+    "name": "Dahaad Shardbraces γ"
+   },
+   {
+    "piece": "waist",
+    "id": 685,
+    "name": "Dahaad Shardcoil γ"
+   },
+   {
+    "piece": "legs",
+    "id": 686,
+    "name": "Dahaad Shardgreaves γ"
+   }
+  ],
+  "set_bonus": [
+   "Jin Dahaad's Revolt"
+  ],
+  "group_skill": "Lord's Soul",
+  "piece_count": 5
+ },
+ {
+  "set": "Dragonking α",
+  "set_id": 151,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 582,
+    "name": "Dragonking Eyepatch α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Eager Wudwud α",
+  "set_id": 183,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 680,
+    "name": "Eager Wudwud α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 1
+ },
+ {
+  "set": "Gala Suit α",
+  "set_id": 194,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 710,
+    "name": "Gala Suit Top Hat α"
+   },
+   {
+    "piece": "chest",
+    "id": 711,
+    "name": "Gala Suit Jacket α"
+   },
+   {
+    "piece": "arms",
+    "id": 712,
+    "name": "Gala Suit Cuffs α"
+   },
+   {
+    "piece": "waist",
+    "id": 713,
+    "name": "Gala Suit Tail α"
+   },
+   {
+    "piece": "legs",
+    "id": 714,
+    "name": "Gala Suit Slacks α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Gelidron α",
+  "set_id": 173,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 646,
+    "name": "Gelidron Mask α"
+   },
+   {
+    "piece": "chest",
+    "id": 647,
+    "name": "Gelidron Backpack α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 2
+ },
+ {
+  "set": "Gogmazios α",
+  "set_id": 181,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 670,
+    "name": "Gogmazios Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 671,
+    "name": "Gogmazios Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 672,
+    "name": "Gogmazios Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 673,
+    "name": "Gogmazios Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 674,
+    "name": "Gogmazios Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might",
+   "Ebony Odogaron's Power",
+   "Fulgur Anjanath's Will",
+   "Gogmapocalypse",
+   "Xu Wu's Vigor",
+   "Zoh Shia's Pulse"
+  ],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Gogmazios β",
+  "set_id": 182,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 675,
+    "name": "Gogmazios Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 676,
+    "name": "Gogmazios Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 677,
+    "name": "Gogmazios Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 678,
+    "name": "Gogmazios Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 679,
+    "name": "Gogmazios Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Blangonga's Spirit",
+   "Gogmapocalypse",
+   "Gravios's Protection",
+   "Guardian Arkveld's Vitality",
+   "Mizutsune's Prowess",
+   "Rathalos's Flare"
+  ],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Arkveld α",
+  "set_id": 99,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 360,
+    "name": "G. Arkveld Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 361,
+    "name": "G. Arkveld Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 362,
+    "name": "G. Arkveld Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 363,
+    "name": "G. Arkveld Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 364,
+    "name": "G. Arkveld Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Guardian Arkveld's Vitality"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Arkveld β",
+  "set_id": 123,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 464,
+    "name": "G. Arkveld Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 465,
+    "name": "G. Arkveld Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 466,
+    "name": "G. Arkveld Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 467,
+    "name": "G. Arkveld Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 468,
+    "name": "G. Arkveld Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Guardian Arkveld's Vitality"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Guild Ace α",
+  "set_id": 5,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 21,
+    "name": "Guild Ace Earrings α"
+   },
+   {
+    "piece": "chest",
+    "id": 22,
+    "name": "Guild Ace Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 23,
+    "name": "Guild Ace Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 24,
+    "name": "Guild Ace Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 25,
+    "name": "Guild Ace Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Kitten Frames α",
+  "set_id": 177,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 658,
+    "name": "Kitten Frames α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Mirror Visor α",
+  "set_id": 188,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 688,
+    "name": "Mirror Visor α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Nu Udra γ",
+  "set_id": 174,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 648,
+    "name": "Udra Mirehelm γ"
+   },
+   {
+    "piece": "chest",
+    "id": 649,
+    "name": "Udra Miremail γ"
+   },
+   {
+    "piece": "arms",
+    "id": 650,
+    "name": "Udra Mirebraces γ"
+   },
+   {
+    "piece": "waist",
+    "id": 651,
+    "name": "Udra Mirecoil γ"
+   },
+   {
+    "piece": "legs",
+    "id": 652,
+    "name": "Udra Miregreaves γ"
+   }
+  ],
+  "set_bonus": [
+   "Nu Udra's Mutiny"
+  ],
+  "group_skill": "Lord's Soul",
+  "piece_count": 5
+ },
+ {
+  "set": "Numinous α",
+  "set_id": 89,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 323,
+    "name": "Numinous Crown α"
+   },
+   {
+    "piece": "chest",
+    "id": 324,
+    "name": "Numinous Shroud α"
+   },
+   {
+    "piece": "arms",
+    "id": 325,
+    "name": "Numinous Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 326,
+    "name": "Numinous Overlay α"
+   },
+   {
+    "piece": "legs",
+    "id": 327,
+    "name": "Numinous Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Zoh Shia's Pulse"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Numinous β",
+  "set_id": 84,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 311,
+    "name": "Numinous Crown β"
+   },
+   {
+    "piece": "chest",
+    "id": 312,
+    "name": "Numinous Shroud β"
+   },
+   {
+    "piece": "arms",
+    "id": 313,
+    "name": "Numinous Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 314,
+    "name": "Numinous Overlay β"
+   },
+   {
+    "piece": "legs",
+    "id": 315,
+    "name": "Numinous Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Zoh Shia's Pulse"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Omega Attire α",
+  "set_id": 170,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 640,
+    "name": "Omega Ear Cuffs α"
+   },
+   {
+    "piece": "chest",
+    "id": 641,
+    "name": "Omega Suit α"
+   },
+   {
+    "piece": "arms",
+    "id": 642,
+    "name": "Omega Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 643,
+    "name": "Omega Accessory α"
+   },
+   {
+    "piece": "legs",
+    "id": 644,
+    "name": "Omega Boots α"
+   }
+  ],
+  "set_bonus": [
+   "Omega Resonance"
+  ],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Orion α",
+  "set_id": 180,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 665,
+    "name": "Orion Cap α"
+   },
+   {
+    "piece": "chest",
+    "id": 666,
+    "name": "Orion Vest α"
+   },
+   {
+    "piece": "arms",
+    "id": 667,
+    "name": "Orion Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 668,
+    "name": "Orion Coat α"
+   },
+   {
+    "piece": "legs",
+    "id": 669,
+    "name": "Orion Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Rey Dau γ",
+  "set_id": 91,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 328,
+    "name": "Rey Sandhelm γ"
+   },
+   {
+    "piece": "chest",
+    "id": 329,
+    "name": "Rey Sandmail γ"
+   },
+   {
+    "piece": "arms",
+    "id": 330,
+    "name": "Rey Sandbraces γ"
+   },
+   {
+    "piece": "waist",
+    "id": 331,
+    "name": "Rey Sandcoil γ"
+   },
+   {
+    "piece": "legs",
+    "id": 332,
+    "name": "Rey Sandgreaves γ"
+   }
+  ],
+  "set_bonus": [
+   "Rey Dau's Voltage"
+  ],
+  "group_skill": "Lord's Soul",
+  "piece_count": 5
+ },
+ {
+  "set": "Rompomask α",
+  "set_id": 191,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 699,
+    "name": "Rompomask α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Skull Mask α",
+  "set_id": 172,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 645,
+    "name": "Skull Mask α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Sororal α",
+  "set_id": 192,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 700,
+    "name": "Sororal Earrings α"
+   },
+   {
+    "piece": "chest",
+    "id": 701,
+    "name": "Sororal Coat α"
+   },
+   {
+    "piece": "arms",
+    "id": 702,
+    "name": "Sororal Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 703,
+    "name": "Sororal Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 704,
+    "name": "Sororal Boots α"
+   }
+  ],
+  "set_bonus": [
+   "Gore Magala's Tyranny"
+  ],
+  "group_skill": "Glory's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Uth Duna γ",
+  "set_id": 164,
+  "rarity": 8,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 614,
+    "name": "Duna Wildhelm γ"
+   },
+   {
+    "piece": "chest",
+    "id": 615,
+    "name": "Duna Wildmail γ"
+   },
+   {
+    "piece": "arms",
+    "id": 616,
+    "name": "Duna Wildbraces γ"
+   },
+   {
+    "piece": "waist",
+    "id": 617,
+    "name": "Duna Wildcoil γ"
+   },
+   {
+    "piece": "legs",
+    "id": 618,
+    "name": "Duna Wildgreaves γ"
+   }
+  ],
+  "set_bonus": [
+   "Uth Duna's Cover"
+  ],
+  "group_skill": "Lord's Soul",
+  "piece_count": 5
+ },
+ {
+  "set": "Dahaad α",
+  "set_id": 26,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 114,
+    "name": "Dahaad Shardhelm α"
+   },
+   {
+    "piece": "chest",
+    "id": 115,
+    "name": "Dahaad Shardmail α"
+   },
+   {
+    "piece": "arms",
+    "id": 116,
+    "name": "Dahaad Shardbraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 117,
+    "name": "Dahaad Shardcoil α"
+   },
+   {
+    "piece": "legs",
+    "id": 118,
+    "name": "Dahaad Shardgreaves α"
+   }
+  ],
+  "set_bonus": [
+   "Jin Dahaad's Revolt"
+  ],
+  "group_skill": "Lord's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Dahaad β",
+  "set_id": 57,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 237,
+    "name": "Dahaad Shardhelm β"
+   },
+   {
+    "piece": "chest",
+    "id": 238,
+    "name": "Dahaad Shardmail β"
+   },
+   {
+    "piece": "arms",
+    "id": 239,
+    "name": "Dahaad Shardbraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 240,
+    "name": "Dahaad Shardcoil β"
+   },
+   {
+    "piece": "legs",
+    "id": 241,
+    "name": "Dahaad Shardgreaves β"
+   }
+  ],
+  "set_bonus": [
+   "Jin Dahaad's Revolt"
+  ],
+  "group_skill": "Lord's Fury",
+  "piece_count": 5
+ },
+ {
+  "set": "Damascus α",
+  "set_id": 145,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 556,
+    "name": "Damascus Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 557,
+    "name": "Damascus Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 558,
+    "name": "Damascus Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 559,
+    "name": "Damascus Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 560,
+    "name": "Damascus Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Dober α",
+  "set_id": 22,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 94,
+    "name": "Dober Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 95,
+    "name": "Dober Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 96,
+    "name": "Dober Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 97,
+    "name": "Dober Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 98,
+    "name": "Dober Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Gore α",
+  "set_id": 3,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 11,
+    "name": "Gore Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 12,
+    "name": "Gore Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 13,
+    "name": "Gore Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 14,
+    "name": "Gore Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 15,
+    "name": "Gore Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Gore Magala's Tyranny"
+  ],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Gore β",
+  "set_id": 147,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 566,
+    "name": "Gore Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 567,
+    "name": "Gore Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 568,
+    "name": "Gore Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 569,
+    "name": "Gore Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 570,
+    "name": "Gore Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Gore Magala's Tyranny"
+  ],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Lagiacrus α",
+  "set_id": 166,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 620,
+    "name": "Lagiacrus Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 621,
+    "name": "Lagiacrus Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 622,
+    "name": "Lagiacrus Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 623,
+    "name": "Lagiacrus Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 624,
+    "name": "Lagiacrus Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Leviathan's Fury"
+  ],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Lagiacrus β",
+  "set_id": 163,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 609,
+    "name": "Lagiacrus Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 610,
+    "name": "Lagiacrus Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 611,
+    "name": "Lagiacrus Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 612,
+    "name": "Lagiacrus Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 613,
+    "name": "Lagiacrus Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Leviathan's Fury"
+  ],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Nu Udra α",
+  "set_id": 128,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 485,
+    "name": "Udra Mirehelm α"
+   },
+   {
+    "piece": "chest",
+    "id": 486,
+    "name": "Udra Miremail α"
+   },
+   {
+    "piece": "arms",
+    "id": 487,
+    "name": "Udra Mirebraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 488,
+    "name": "Udra Mirecoil α"
+   },
+   {
+    "piece": "legs",
+    "id": 489,
+    "name": "Udra Miregreaves α"
+   }
+  ],
+  "set_bonus": [
+   "Nu Udra's Mutiny"
+  ],
+  "group_skill": "Lord's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Nu Udra β",
+  "set_id": 105,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 382,
+    "name": "Udra Mirehelm β"
+   },
+   {
+    "piece": "chest",
+    "id": 383,
+    "name": "Udra Miremail β"
+   },
+   {
+    "piece": "arms",
+    "id": 384,
+    "name": "Udra Mirebraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 385,
+    "name": "Udra Mirecoil β"
+   },
+   {
+    "piece": "legs",
+    "id": 386,
+    "name": "Udra Miregreaves β"
+   }
+  ],
+  "set_bonus": [
+   "Nu Udra's Mutiny"
+  ],
+  "group_skill": "Lord's Fury",
+  "piece_count": 5
+ },
+ {
+  "set": "Pinion Necklace α",
+  "set_id": 161,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "chest",
+    "id": 607,
+    "name": "Pinion Necklace α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Rey Dau α",
+  "set_id": 28,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 124,
+    "name": "Rey Sandhelm α"
+   },
+   {
+    "piece": "chest",
+    "id": 125,
+    "name": "Rey Sandmail α"
+   },
+   {
+    "piece": "arms",
+    "id": 126,
+    "name": "Rey Sandbraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 127,
+    "name": "Rey Sandcoil α"
+   },
+   {
+    "piece": "legs",
+    "id": 128,
+    "name": "Rey Sandgreaves α"
+   }
+  ],
+  "set_bonus": [
+   "Rey Dau's Voltage"
+  ],
+  "group_skill": "Lord's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Rey Dau β",
+  "set_id": 110,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 403,
+    "name": "Rey Sandhelm β"
+   },
+   {
+    "piece": "chest",
+    "id": 404,
+    "name": "Rey Sandmail β"
+   },
+   {
+    "piece": "arms",
+    "id": 405,
+    "name": "Rey Sandbraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 406,
+    "name": "Rey Sandcoil β"
+   },
+   {
+    "piece": "legs",
+    "id": 407,
+    "name": "Rey Sandgreaves β"
+   }
+  ],
+  "set_bonus": [
+   "Rey Dau's Voltage"
+  ],
+  "group_skill": "Lord's Fury",
+  "piece_count": 5
+ },
+ {
+  "set": "Round Glasses α",
+  "set_id": 74,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 287,
+    "name": "Round Glasses α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Sealed Eyepatch α",
+  "set_id": 71,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 285,
+    "name": "Sealed Eyepatch α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Seregios α",
+  "set_id": 168,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 630,
+    "name": "Regios Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 631,
+    "name": "Regios Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 632,
+    "name": "Regios Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 633,
+    "name": "Regios Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 634,
+    "name": "Regios Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Seregios's Tenacity"
+  ],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Seregios β",
+  "set_id": 155,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 594,
+    "name": "Regios Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 595,
+    "name": "Regios Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 596,
+    "name": "Regios Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 597,
+    "name": "Regios Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 598,
+    "name": "Regios Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Seregios's Tenacity"
+  ],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Shadow Shades α",
+  "set_id": 87,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 317,
+    "name": "Shadow Shades α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Toe Bean Mittens α",
+  "set_id": 160,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "arms",
+    "id": 606,
+    "name": "Toe Bean Mittens α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Uth Duna α",
+  "set_id": 27,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 119,
+    "name": "Duna Wildhelm α"
+   },
+   {
+    "piece": "chest",
+    "id": 120,
+    "name": "Duna Wildmail α"
+   },
+   {
+    "piece": "arms",
+    "id": 121,
+    "name": "Duna Wildbraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 122,
+    "name": "Duna Wildcoil α"
+   },
+   {
+    "piece": "legs",
+    "id": 123,
+    "name": "Duna Wildgreaves α"
+   }
+  ],
+  "set_bonus": [
+   "Uth Duna's Cover"
+  ],
+  "group_skill": "Lord's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Uth Duna β",
+  "set_id": 36,
+  "rarity": 7,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 152,
+    "name": "Duna Wildhelm β"
+   },
+   {
+    "piece": "chest",
+    "id": 153,
+    "name": "Duna Wildmail β"
+   },
+   {
+    "piece": "arms",
+    "id": 154,
+    "name": "Duna Wildbraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 155,
+    "name": "Duna Wildcoil β"
+   },
+   {
+    "piece": "legs",
+    "id": 156,
+    "name": "Duna Wildgreaves β"
+   }
+  ],
+  "set_bonus": [
+   "Uth Duna's Cover"
+  ],
+  "group_skill": "Lord's Fury",
+  "piece_count": 5
+ },
+ {
+  "set": "Ajarakan α",
+  "set_id": 146,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 561,
+    "name": "Ajarakan Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 562,
+    "name": "Ajarakan Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 563,
+    "name": "Ajarakan Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 564,
+    "name": "Ajarakan Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 565,
+    "name": "Ajarakan Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Ajarakan β",
+  "set_id": 132,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 501,
+    "name": "Ajarakan Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 502,
+    "name": "Ajarakan Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 503,
+    "name": "Ajarakan Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 504,
+    "name": "Ajarakan Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 505,
+    "name": "Ajarakan Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Akuma α",
+  "set_id": 153,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 588,
+    "name": "Demon Prayer Beads α"
+   },
+   {
+    "piece": "chest",
+    "id": 589,
+    "name": "Demon Garb α"
+   },
+   {
+    "piece": "arms",
+    "id": 590,
+    "name": "Demon Arm Wraps α"
+   },
+   {
+    "piece": "waist",
+    "id": 591,
+    "name": "Demon Belt α"
+   },
+   {
+    "piece": "legs",
+    "id": 592,
+    "name": "Demon Pants α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Master of the Fist",
+  "piece_count": 5
+ },
+ {
+  "set": "Artian α",
+  "set_id": 135,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 516,
+    "name": "Artian Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 517,
+    "name": "Artian Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 518,
+    "name": "Artian Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 519,
+    "name": "Artian Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 520,
+    "name": "Artian Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Azuz α",
+  "set_id": 144,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 553,
+    "name": "Azuz Headdress α"
+   },
+   {
+    "piece": "chest",
+    "id": 554,
+    "name": "Azuz Apron α"
+   },
+   {
+    "piece": "legs",
+    "id": 555,
+    "name": "Azuz Pants α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 3
+ },
+ {
+  "set": "Battle α",
+  "set_id": 120,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 449,
+    "name": "Battle Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 450,
+    "name": "Battle Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 451,
+    "name": "Battle Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 452,
+    "name": "Battle Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 453,
+    "name": "Battle Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Blango α",
+  "set_id": 107,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 388,
+    "name": "Blango Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 389,
+    "name": "Blango Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 390,
+    "name": "Blango Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 391,
+    "name": "Blango Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 392,
+    "name": "Blango Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Blangonga's Spirit"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Blango β",
+  "set_id": 4,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 16,
+    "name": "Blango Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 17,
+    "name": "Blango Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 18,
+    "name": "Blango Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 19,
+    "name": "Blango Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 20,
+    "name": "Blango Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Blangonga's Spirit"
+  ],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Butterfly α",
+  "set_id": 31,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 135,
+    "name": "Butterfly Vertex α"
+   },
+   {
+    "piece": "chest",
+    "id": 136,
+    "name": "Butterfly Thorax α"
+   },
+   {
+    "piece": "arms",
+    "id": 137,
+    "name": "Butterfly Brachia α"
+   },
+   {
+    "piece": "waist",
+    "id": 138,
+    "name": "Butterfly Elytra α"
+   },
+   {
+    "piece": "legs",
+    "id": 139,
+    "name": "Butterfly Crura α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Clerk α",
+  "set_id": 81,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 301,
+    "name": "Clerk Visor α"
+   },
+   {
+    "piece": "chest",
+    "id": 302,
+    "name": "Clerk Suit α"
+   },
+   {
+    "piece": "arms",
+    "id": 303,
+    "name": "Clerk Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 304,
+    "name": "Clerk Belt α"
+   },
+   {
+    "piece": "legs",
+    "id": 305,
+    "name": "Clerk Shoes α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Glory's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Commission α",
+  "set_id": 104,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 377,
+    "name": "Commission Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 378,
+    "name": "Commission Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 379,
+    "name": "Commission Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 380,
+    "name": "Commission Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 381,
+    "name": "Commission Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Death Stench α",
+  "set_id": 118,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 439,
+    "name": "Death Stench Brain α"
+   },
+   {
+    "piece": "chest",
+    "id": 440,
+    "name": "Death Stench Muscle α"
+   },
+   {
+    "piece": "arms",
+    "id": 441,
+    "name": "Death Stench Grip α"
+   },
+   {
+    "piece": "waist",
+    "id": 442,
+    "name": "Death Stench Bowels α"
+   },
+   {
+    "piece": "legs",
+    "id": 443,
+    "name": "Death Stench Heel α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Doshaguma α",
+  "set_id": 119,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 444,
+    "name": "Doshaguma Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 445,
+    "name": "Doshaguma Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 446,
+    "name": "Doshaguma Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 447,
+    "name": "Doshaguma Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 448,
+    "name": "Doshaguma Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Doshaguma β",
+  "set_id": 97,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 354,
+    "name": "Doshaguma Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 355,
+    "name": "Doshaguma Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 356,
+    "name": "Doshaguma Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 357,
+    "name": "Doshaguma Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 358,
+    "name": "Doshaguma Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might"
+  ],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Doshagumask α",
+  "set_id": 162,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 608,
+    "name": "Doshagumask α"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 1
+ },
+ {
+  "set": "Earrings of Dedication α",
+  "set_id": 68,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 279,
+    "name": "Earrings of Dedication α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Glory's Favor",
+  "piece_count": 1
+ },
+ {
+  "set": "Gajau α",
+  "set_id": 56,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "legs",
+    "id": 236,
+    "name": "Gajau Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Gravios α",
+  "set_id": 54,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 226,
+    "name": "Gravios Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 227,
+    "name": "Gravios Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 228,
+    "name": "Gravios Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 229,
+    "name": "Gravios Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 230,
+    "name": "Gravios Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Gravios's Protection"
+  ],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Gravios β",
+  "set_id": 50,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 214,
+    "name": "Gravios Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 215,
+    "name": "Gravios Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 216,
+    "name": "Gravios Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 217,
+    "name": "Gravios Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 218,
+    "name": "Gravios Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Gravios's Protection"
+  ],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Doshaguma α",
+  "set_id": 109,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 398,
+    "name": "G. Doshaguma Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 399,
+    "name": "G. Doshaguma Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 400,
+    "name": "G. Doshaguma Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 401,
+    "name": "G. Doshaguma Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 402,
+    "name": "G. Doshaguma Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Doshaguma β",
+  "set_id": 95,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 344,
+    "name": "G. Doshaguma Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 345,
+    "name": "G. Doshaguma Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 346,
+    "name": "G. Doshaguma Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 347,
+    "name": "G. Doshaguma Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 348,
+    "name": "G. Doshaguma Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Doshaguma's Might"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Ebony α",
+  "set_id": 134,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 511,
+    "name": "G. Ebony Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 512,
+    "name": "G. Ebony Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 513,
+    "name": "G. Ebony Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 514,
+    "name": "G. Ebony Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 515,
+    "name": "G. Ebony Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Ebony Odogaron's Power"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Ebony β",
+  "set_id": 96,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 349,
+    "name": "G. Ebony Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 350,
+    "name": "G. Ebony Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 351,
+    "name": "G. Ebony Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 352,
+    "name": "G. Ebony Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 353,
+    "name": "G. Ebony Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Ebony Odogaron's Power"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Fulgur α",
+  "set_id": 133,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 506,
+    "name": "G. Fulgur Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 507,
+    "name": "G. Fulgur Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 508,
+    "name": "G. Fulgur Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 509,
+    "name": "G. Fulgur Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 510,
+    "name": "G. Fulgur Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Fulgur Anjanath's Will"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Fulgur β",
+  "set_id": 139,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 532,
+    "name": "G. Fulgur Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 533,
+    "name": "G. Fulgur Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 534,
+    "name": "G. Fulgur Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 535,
+    "name": "G. Fulgur Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 536,
+    "name": "G. Fulgur Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Fulgur Anjanath's Will"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Rathalos α",
+  "set_id": 29,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 129,
+    "name": "G. Rathalos Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 130,
+    "name": "G. Rathalos Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 131,
+    "name": "G. Rathalos Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 132,
+    "name": "G. Rathalos Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 133,
+    "name": "G. Rathalos Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Rathalos's Flare"
+  ],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Rathalos β",
+  "set_id": 14,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 66,
+    "name": "G. Rathalos Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 67,
+    "name": "G. Rathalos Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 68,
+    "name": "G. Rathalos Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 69,
+    "name": "G. Rathalos Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 70,
+    "name": "G. Rathalos Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Rathalos's Flare"
+  ],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 5
+ },
+ {
+  "set": "Guardian Seikret α",
+  "set_id": 100,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "waist",
+    "id": 365,
+    "name": "G. Seikret Coil α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Guardian's Pulse",
+  "piece_count": 1
+ },
+ {
+  "set": "Guardian Seikret β",
+  "set_id": 52,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "waist",
+    "id": 220,
+    "name": "G. Seikret Coil β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Guardian's Protection",
+  "piece_count": 1
+ },
+ {
+  "set": "Half Rim Glasses α",
+  "set_id": 156,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 599,
+    "name": "Half Rim Glasses α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Hawkheart Jacket α",
+  "set_id": 159,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "chest",
+    "id": 605,
+    "name": "Hawkheart Jacket α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "High Metal α",
+  "set_id": 112,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 413,
+    "name": "High Metal Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 414,
+    "name": "High Metal Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 415,
+    "name": "High Metal Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 416,
+    "name": "High Metal Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 417,
+    "name": "High Metal Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Ingot α",
+  "set_id": 37,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 157,
+    "name": "Ingot Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 158,
+    "name": "Ingot Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 159,
+    "name": "Ingot Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 160,
+    "name": "Ingot Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 161,
+    "name": "Ingot Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "King Beetle α",
+  "set_id": 121,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 454,
+    "name": "King Beetle Vertex α"
+   },
+   {
+    "piece": "chest",
+    "id": 455,
+    "name": "King Beetle Thorax α"
+   },
+   {
+    "piece": "arms",
+    "id": 456,
+    "name": "King Beetle Brachia α"
+   },
+   {
+    "piece": "waist",
+    "id": 457,
+    "name": "King Beetle Elytra α"
+   },
+   {
+    "piece": "legs",
+    "id": 458,
+    "name": "King Beetle Crura α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Kunafa α",
+  "set_id": 15,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 71,
+    "name": "Kunafa Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 72,
+    "name": "Kunafa Cloak α"
+   },
+   {
+    "piece": "waist",
+    "id": 73,
+    "name": "Kunafa Sash α"
+   },
+   {
+    "piece": "legs",
+    "id": 74,
+    "name": "Kunafa Chaps α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 4
+ },
+ {
+  "set": "Lovely Shades α",
+  "set_id": 165,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 619,
+    "name": "Lovely Shades α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Melahoa α",
+  "set_id": 41,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 173,
+    "name": "Melahoa Hat α"
+   },
+   {
+    "piece": "chest",
+    "id": 174,
+    "name": "Melahoa Jacket α"
+   },
+   {
+    "piece": "arms",
+    "id": 175,
+    "name": "Melahoa Branch α"
+   },
+   {
+    "piece": "waist",
+    "id": 176,
+    "name": "Melahoa Folia α"
+   },
+   {
+    "piece": "legs",
+    "id": 177,
+    "name": "Melahoa Roots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 5
+ },
+ {
+  "set": "Mizutsune α",
+  "set_id": 88,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 318,
+    "name": "Mizutsune Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 319,
+    "name": "Mizutsune Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 320,
+    "name": "Mizutsune Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 321,
+    "name": "Mizutsune Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 322,
+    "name": "Mizutsune Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Mizutsune's Prowess"
+  ],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Mizutsune β",
+  "set_id": 77,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 289,
+    "name": "Mizutsune Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 290,
+    "name": "Mizutsune Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 291,
+    "name": "Mizutsune Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 292,
+    "name": "Mizutsune Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 293,
+    "name": "Mizutsune Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Mizutsune's Prowess"
+  ],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Rathalos α",
+  "set_id": 141,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 538,
+    "name": "Rathalos Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 539,
+    "name": "Rathalos Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 540,
+    "name": "Rathalos Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 541,
+    "name": "Rathalos Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 542,
+    "name": "Rathalos Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Rathalos's Flare"
+  ],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Rathalos β",
+  "set_id": 9,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 41,
+    "name": "Rathalos Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 42,
+    "name": "Rathalos Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 43,
+    "name": "Rathalos Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 44,
+    "name": "Rathalos Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 45,
+    "name": "Rathalos Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Rathalos's Flare"
+  ],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Sealed Dragon Cloth α",
+  "set_id": 86,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 316,
+    "name": "Sealed Dragon Cloth α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Sild α",
+  "set_id": 20,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 87,
+    "name": "Sild Hood α"
+   },
+   {
+    "piece": "chest",
+    "id": 88,
+    "name": "Sild Coat α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 2
+ },
+ {
+  "set": "Square Glasses α",
+  "set_id": 72,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 286,
+    "name": "Square Glasses α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Strategist Spectacles α",
+  "set_id": 79,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 299,
+    "name": "Strategist Spectacles α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Suja α",
+  "set_id": 44,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "waist",
+    "id": 188,
+    "name": "Suja Sash α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Imparted Wisdom",
+  "piece_count": 1
+ },
+ {
+  "set": "Xu Wu α",
+  "set_id": 43,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 183,
+    "name": "Xu Wu Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 184,
+    "name": "Xu Wu Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 185,
+    "name": "Xu Wu Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 186,
+    "name": "Xu Wu Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 187,
+    "name": "Xu Wu Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Xu Wu's Vigor"
+  ],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Xu Wu β",
+  "set_id": 142,
+  "rarity": 6,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 543,
+    "name": "Xu Wu Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 544,
+    "name": "Xu Wu Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 545,
+    "name": "Xu Wu Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 546,
+    "name": "Xu Wu Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 547,
+    "name": "Xu Wu Greaves β"
+   }
+  ],
+  "set_bonus": [
+   "Xu Wu's Vigor"
+  ],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Afi α",
+  "set_id": 158,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 600,
+    "name": "Afi Crown α"
+   },
+   {
+    "piece": "chest",
+    "id": 601,
+    "name": "Afi Top α"
+   },
+   {
+    "piece": "arms",
+    "id": 602,
+    "name": "Afi Armguards α"
+   },
+   {
+    "piece": "waist",
+    "id": 603,
+    "name": "Afi Wrap α"
+   },
+   {
+    "piece": "legs",
+    "id": 604,
+    "name": "Afi Sandals α"
+   }
+  ],
+  "set_bonus": [
+   "Flamefete Prayer"
+  ],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Alloy α",
+  "set_id": 8,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 36,
+    "name": "Alloy Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 37,
+    "name": "Alloy Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 38,
+    "name": "Alloy Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 39,
+    "name": "Alloy Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 40,
+    "name": "Alloy Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Amstrigian α",
+  "set_id": 80,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 300,
+    "name": "Amstrigian α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Balahara α",
+  "set_id": 39,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 167,
+    "name": "Balahara Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 168,
+    "name": "Balahara Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 169,
+    "name": "Balahara Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 170,
+    "name": "Balahara Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 171,
+    "name": "Balahara Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Balahara β",
+  "set_id": 94,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 339,
+    "name": "Balahara Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 340,
+    "name": "Balahara Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 341,
+    "name": "Balahara Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 342,
+    "name": "Balahara Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 343,
+    "name": "Balahara Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Blossom α",
+  "set_id": 83,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 306,
+    "name": "Blossom Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 307,
+    "name": "Blossom Vest α"
+   },
+   {
+    "piece": "arms",
+    "id": 308,
+    "name": "Blossom Cuffs α"
+   },
+   {
+    "piece": "waist",
+    "id": 309,
+    "name": "Blossom Coat α"
+   },
+   {
+    "piece": "legs",
+    "id": 310,
+    "name": "Blossom Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Bone α",
+  "set_id": 11,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 51,
+    "name": "Bone Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 52,
+    "name": "Bone Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 53,
+    "name": "Bone Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 54,
+    "name": "Bone Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 55,
+    "name": "Bone Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Bulaqchi α",
+  "set_id": 138,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 531,
+    "name": "Bulaqchi Specs α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Alert",
+  "piece_count": 1
+ },
+ {
+  "set": "Bulaqchi β",
+  "set_id": 117,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 438,
+    "name": "Bulaqchi Specs β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Camouflage",
+  "piece_count": 1
+ },
+ {
+  "set": "Ceremonial α",
+  "set_id": 189,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 689,
+    "name": "Ceremonial Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 690,
+    "name": "Ceremonial Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 691,
+    "name": "Ceremonial Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 692,
+    "name": "Ceremonial Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 693,
+    "name": "Ceremonial Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Lumenhymn Prayer"
+  ],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Chainmail α",
+  "set_id": 148,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 571,
+    "name": "Chainmail Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 572,
+    "name": "Chainmail Armor α"
+   },
+   {
+    "piece": "arms",
+    "id": 573,
+    "name": "Chainmail Gloves α"
+   },
+   {
+    "piece": "waist",
+    "id": 574,
+    "name": "Chainmail Belt α"
+   },
+   {
+    "piece": "legs",
+    "id": 575,
+    "name": "Chainmail Pants α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Chatacabra α",
+  "set_id": 10,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 46,
+    "name": "Chatacabra Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 47,
+    "name": "Chatacabra Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 48,
+    "name": "Chatacabra Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 49,
+    "name": "Chatacabra Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 50,
+    "name": "Chatacabra Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Chatacabra β",
+  "set_id": 101,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 366,
+    "name": "Chatacabra Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 367,
+    "name": "Chatacabra Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 368,
+    "name": "Chatacabra Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 369,
+    "name": "Chatacabra Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 370,
+    "name": "Chatacabra Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Comaqchi α",
+  "set_id": 150,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 581,
+    "name": "Comaqchi Accessory α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Alert",
+  "piece_count": 1
+ },
+ {
+  "set": "Comaqchi β",
+  "set_id": 17,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 80,
+    "name": "Comaqchi Accessory β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Camouflage",
+  "piece_count": 1
+ },
+ {
+  "set": "Conga α",
+  "set_id": 1,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 1,
+    "name": "Conga Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 2,
+    "name": "Conga Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 3,
+    "name": "Conga Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 4,
+    "name": "Conga Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 5,
+    "name": "Conga Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Conga β",
+  "set_id": 21,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 89,
+    "name": "Conga Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 90,
+    "name": "Conga Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 91,
+    "name": "Conga Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 92,
+    "name": "Conga Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 93,
+    "name": "Conga Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Alluring Pelt",
+  "piece_count": 5
+ },
+ {
+  "set": "Diver α",
+  "set_id": 167,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 625,
+    "name": "Diver's Mask α"
+   },
+   {
+    "piece": "chest",
+    "id": 626,
+    "name": "Diver's Suit α"
+   },
+   {
+    "piece": "arms",
+    "id": 627,
+    "name": "Diver's Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 628,
+    "name": "Diver's Belt α"
+   },
+   {
+    "piece": "legs",
+    "id": 629,
+    "name": "Diver's Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Dreamwalker α",
+  "set_id": 178,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 659,
+    "name": "Dreamwalker Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 660,
+    "name": "Dreamwalker Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 661,
+    "name": "Dreamwalker Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 662,
+    "name": "Dreamwalker Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 663,
+    "name": "Dreamwalker Greaves α"
+   }
+  ],
+  "set_bonus": [
+   "Dreamspell Prayer"
+  ],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Expedition Headgear α",
+  "set_id": 92,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 333,
+    "name": "Expedition Headgear α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Faux Felyne α",
+  "set_id": 154,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 593,
+    "name": "Faux Felyne α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 1
+ },
+ {
+  "set": "Gourmand's Earring α",
+  "set_id": 76,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 288,
+    "name": "Gourmand's Earring α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Glory's Favor",
+  "piece_count": 1
+ },
+ {
+  "set": "Guild Cross α",
+  "set_id": 70,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 280,
+    "name": "Guild Cross Circlet α"
+   },
+   {
+    "piece": "chest",
+    "id": 281,
+    "name": "Guild Cross Suit α"
+   },
+   {
+    "piece": "arms",
+    "id": 282,
+    "name": "Guild Cross Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 283,
+    "name": "Guild Cross Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 284,
+    "name": "Guild Cross Boots α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Glory's Favor",
+  "piece_count": 5
+ },
+ {
+  "set": "Gypceros α",
+  "set_id": 23,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 99,
+    "name": "Gypceros Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 100,
+    "name": "Gypceros Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 101,
+    "name": "Gypceros Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 102,
+    "name": "Gypceros Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 103,
+    "name": "Gypceros Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Gypceros β",
+  "set_id": 42,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 178,
+    "name": "Gypceros Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 179,
+    "name": "Gypceros Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 180,
+    "name": "Gypceros Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 181,
+    "name": "Gypceros Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 182,
+    "name": "Gypceros Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Harvest α",
+  "set_id": 169,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 635,
+    "name": "Harvest Flor α"
+   },
+   {
+    "piece": "chest",
+    "id": 636,
+    "name": "Harvest Tronco α"
+   },
+   {
+    "piece": "arms",
+    "id": 637,
+    "name": "Harvest Trama α"
+   },
+   {
+    "piece": "waist",
+    "id": 638,
+    "name": "Harvest Hoja α"
+   },
+   {
+    "piece": "legs",
+    "id": 639,
+    "name": "Harvest Raiz α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Hirabami α",
+  "set_id": 35,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 147,
+    "name": "Hirabami Headdress α"
+   },
+   {
+    "piece": "chest",
+    "id": 148,
+    "name": "Hirabami Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 149,
+    "name": "Hirabami Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 150,
+    "name": "Hirabami Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 151,
+    "name": "Hirabami Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Hirabami β",
+  "set_id": 122,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 459,
+    "name": "Hirabami Headdress β"
+   },
+   {
+    "piece": "chest",
+    "id": 460,
+    "name": "Hirabami Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 461,
+    "name": "Hirabami Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 462,
+    "name": "Hirabami Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 463,
+    "name": "Hirabami Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Hope α",
+  "set_id": 113,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 418,
+    "name": "Hope Mask α"
+   },
+   {
+    "piece": "chest",
+    "id": 419,
+    "name": "Hope Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 420,
+    "name": "Hope Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 421,
+    "name": "Hope Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 422,
+    "name": "Hope Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Kranodath α",
+  "set_id": 30,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "chest",
+    "id": 134,
+    "name": "Kranodath Mail α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 1
+ },
+ {
+  "set": "Kranodath β",
+  "set_id": 131,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "chest",
+    "id": 500,
+    "name": "Kranodath Mail β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 1
+ },
+ {
+  "set": "Kut-Ku α",
+  "set_id": 46,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 194,
+    "name": "Kut-Ku Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 195,
+    "name": "Kut-Ku Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 196,
+    "name": "Kut-Ku Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 197,
+    "name": "Kut-Ku Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 198,
+    "name": "Kut-Ku Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Kut-Ku β",
+  "set_id": 108,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 393,
+    "name": "Kut-Ku Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 394,
+    "name": "Kut-Ku Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 395,
+    "name": "Kut-Ku Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 396,
+    "name": "Kut-Ku Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 397,
+    "name": "Kut-Ku Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Lala Barina α",
+  "set_id": 93,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 334,
+    "name": "Barina Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 335,
+    "name": "Barina Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 336,
+    "name": "Barina Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 337,
+    "name": "Barina Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 338,
+    "name": "Barina Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Alert",
+  "piece_count": 5
+ },
+ {
+  "set": "Lala Barina β",
+  "set_id": 47,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 199,
+    "name": "Barina Headgear β"
+   },
+   {
+    "piece": "chest",
+    "id": 200,
+    "name": "Barina Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 201,
+    "name": "Barina Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 202,
+    "name": "Barina Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 203,
+    "name": "Barina Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Camouflage",
+  "piece_count": 5
+ },
+ {
+  "set": "Leather α",
+  "set_id": 143,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 548,
+    "name": "Leather Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 549,
+    "name": "Leather Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 550,
+    "name": "Leather Gloves α"
+   },
+   {
+    "piece": "waist",
+    "id": 551,
+    "name": "Leather Belt α"
+   },
+   {
+    "piece": "legs",
+    "id": 552,
+    "name": "Leather Pants α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": null,
+  "piece_count": 5
+ },
+ {
+  "set": "Mimiphyta α",
+  "set_id": 51,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 219,
+    "name": "Mimiphyta α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Fortifying Pelt",
+  "piece_count": 1
+ },
+ {
+  "set": "Nerscylla α",
+  "set_id": 126,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 479,
+    "name": "Nerscylla Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 480,
+    "name": "Nerscylla Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 481,
+    "name": "Nerscylla Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 482,
+    "name": "Nerscylla Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 483,
+    "name": "Nerscylla Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Alert",
+  "piece_count": 5
+ },
+ {
+  "set": "Nerscylla β",
+  "set_id": 19,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 82,
+    "name": "Nerscylla Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 83,
+    "name": "Nerscylla Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 84,
+    "name": "Nerscylla Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 85,
+    "name": "Nerscylla Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 86,
+    "name": "Nerscylla Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Camouflage",
+  "piece_count": 5
+ },
+ {
+  "set": "Piragill α",
+  "set_id": 102,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "legs",
+    "id": 371,
+    "name": "Piragill Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Piragill β",
+  "set_id": 98,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "legs",
+    "id": 359,
+    "name": "Piragill Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Quematrice α",
+  "set_id": 103,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 372,
+    "name": "Quematrice Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 373,
+    "name": "Quematrice Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 374,
+    "name": "Quematrice Braces α"
+   },
+   {
+    "piece": "waist",
+    "id": 375,
+    "name": "Quematrice Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 376,
+    "name": "Quematrice Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Quematrice β",
+  "set_id": 45,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 189,
+    "name": "Quematrice Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 190,
+    "name": "Quematrice Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 191,
+    "name": "Quematrice Braces β"
+   },
+   {
+    "piece": "waist",
+    "id": 192,
+    "name": "Quematrice Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 193,
+    "name": "Quematrice Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Rathian α",
+  "set_id": 24,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 104,
+    "name": "Rathian Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 105,
+    "name": "Rathian Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 106,
+    "name": "Rathian Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 107,
+    "name": "Rathian Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 108,
+    "name": "Rathian Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scaling Prowess",
+  "piece_count": 5
+ },
+ {
+  "set": "Rathian β",
+  "set_id": 16,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 75,
+    "name": "Rathian Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 76,
+    "name": "Rathian Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 77,
+    "name": "Rathian Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 78,
+    "name": "Rathian Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 79,
+    "name": "Rathian Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Scale Layering",
+  "piece_count": 5
+ },
+ {
+  "set": "Rompopolo α",
+  "set_id": 152,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 583,
+    "name": "Rompopolo Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 584,
+    "name": "Rompopolo Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 585,
+    "name": "Rompopolo Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 586,
+    "name": "Rompopolo Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 587,
+    "name": "Rompopolo Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Rompopolo β",
+  "set_id": 125,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 474,
+    "name": "Rompopolo Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 475,
+    "name": "Rompopolo Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 476,
+    "name": "Rompopolo Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 477,
+    "name": "Rompopolo Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 478,
+    "name": "Rompopolo Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 5
+ },
+ {
+  "set": "Sakuratide α",
+  "set_id": 78,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 294,
+    "name": "Sakuratide Headgear α"
+   },
+   {
+    "piece": "chest",
+    "id": 295,
+    "name": "Sakuratide Robe α"
+   },
+   {
+    "piece": "arms",
+    "id": 296,
+    "name": "Sakuratide Bracers α"
+   },
+   {
+    "piece": "waist",
+    "id": 297,
+    "name": "Sakuratide Obi α"
+   },
+   {
+    "piece": "legs",
+    "id": 298,
+    "name": "Sakuratide Hakama α"
+   }
+  ],
+  "set_bonus": [
+   "Blossomdance Prayer"
+  ],
+  "group_skill": "Festival Spirit",
+  "piece_count": 5
+ },
+ {
+  "set": "Talioth α",
+  "set_id": 34,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "arms",
+    "id": 146,
+    "name": "Talioth Vambraces α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Flexible Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Talioth β",
+  "set_id": 127,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "arms",
+    "id": 484,
+    "name": "Talioth Vambraces β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Buttery Leathercraft",
+  "piece_count": 1
+ },
+ {
+  "set": "Vespoid α",
+  "set_id": 6,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 26,
+    "name": "Vespoid Helm α"
+   },
+   {
+    "piece": "chest",
+    "id": 27,
+    "name": "Vespoid Mail α"
+   },
+   {
+    "piece": "arms",
+    "id": 28,
+    "name": "Vespoid Vambraces α"
+   },
+   {
+    "piece": "waist",
+    "id": 29,
+    "name": "Vespoid Coil α"
+   },
+   {
+    "piece": "legs",
+    "id": 30,
+    "name": "Vespoid Greaves α"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Alert",
+  "piece_count": 5
+ },
+ {
+  "set": "Vespoid β",
+  "set_id": 116,
+  "rarity": 5,
+  "pieces": [
+   {
+    "piece": "head",
+    "id": 433,
+    "name": "Vespoid Helm β"
+   },
+   {
+    "piece": "chest",
+    "id": 434,
+    "name": "Vespoid Mail β"
+   },
+   {
+    "piece": "arms",
+    "id": 435,
+    "name": "Vespoid Vambraces β"
+   },
+   {
+    "piece": "waist",
+    "id": 436,
+    "name": "Vespoid Coil β"
+   },
+   {
+    "piece": "legs",
+    "id": 437,
+    "name": "Vespoid Greaves β"
+   }
+  ],
+  "set_bonus": [],
+  "group_skill": "Neopteron Camouflage",
+  "piece_count": 5
+ }
+]

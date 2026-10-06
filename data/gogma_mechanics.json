@@ -1,0 +1,275 @@
+{
+ "_about": "Hand-transcribed Gogma Artian weapon mechanics (TU4, Dec 2025). Base stat variants per focus live in gogma_weapons_base.json (from wilds.mhdb.io). Sources: monsterhunterwiki.org/wiki/Gogma_Artian_Weapons_(MHWilds), monsterhunterwiki.org/wiki/Artian_Weapons_(MHWilds), game8 archives/571311, fextralife Gogma_Artian_Weapons, nixzxin.com/guides/gogma-weapon-mechanics. All element numbers are DISPLAY values (true element = display / 10).",
+ "how_it_works": {
+  "base": "Upgrade a Rarity-8 Artian weapon (3 Artian parts, R8 base raw 190 true / affinity +5%) at the Smithy with Gogmazios materials (Tarred Devices).",
+  "parts_bonus": "Each of the 3 Artian parts carries an Artian Bonus: either +5 true attack or +5% affinity. So the part bonuses add 0..15 attack and 15..0 affinity in 5-point steps (3 parts total).",
+  "element_from_parts": "Element comes from the parts' element. If all 3 parts share the element you get an Element Infusion (+30 display element for most types, +20 for SnS/DB/SA/IG/Bow). Rarity-8 base element values are in artian_r8_element_display below.",
+  "focus": "On upgrade you pick one permanent Focus: attack / affinity / element. Stat deltas are in focus_delta below and are already baked into the three API variants in gogma_weapons_base.json (raw 200/-10%, 180/+15%, 190/0%).",
+  "set_and_group_skill": "Every Gogma Artian weapon rolls ONE Set Bonus skill and ONE Group skill at random (reroll via 'Reset Skills' with Tarred Devices + zenny). The weapon then COUNTS AS ONE EQUIPPED PIECE for that set bonus and that group skill (e.g. weapon + 1 armor piece = 2-piece tier, weapon + 3 armor = 4-piece; weapon + 2 armor with the same group skill = group skill active). Piece-count behaviour confirmed in game by the user (2026-10-06).",
+  "skill_pool": "CONFIRMED from game data (ArtianSkillGroupData, see gogma_skill_pool.json): 21 set bonuses x 14 group skills = 294 (set, group) pairs, all weight 1 (uniform). Excluded: the four festival Prayers (Blossomdance/Flamefete/Dreamspell/Lumenhymn), Festival Spirit, Glory's Favor, Master of the Fist. P(specific set bonus) = 1/21, P(specific group skill) = 1/14.",
+  "reinforcements": "The weapon keeps the 5 Artian reinforcement bonuses from its base; Gogma Reinforce raises each to II / III / EX (Keep Bonus) or rerolls all 5 (Reset Bonus). Limit: max 2 reinforcements of the exact same type+level (so at most 2x Attack EX). Values in reinforcement_values below.",
+  "slots": "All 14 Gogma Artian weapons have three level-3 weapon decoration slots [3,3,3].",
+  "innate_skills": "None. Weapon skills come only from the 3 weapon decoration slots (plus charm/weapon-kind decorations)."
+ },
+ "focus_delta": {
+  "_columns": "attack (true raw), affinity (%), element (display). '-' in the wiki = no change. Affinity focus also shifts sharpness (API variant shows blue 70 / white 10 instead of blue 30 / white 20).",
+  "attack": {
+   "attack": 10,
+   "affinity": -15,
+   "element_by_type": {
+    "default": 0,
+    "hunting-horn": 30,
+    "gunlance": 40
+   }
+  },
+  "affinity": {
+   "attack": -10,
+   "affinity": 10,
+   "element_by_type": {
+    "great-sword": -10,
+    "hammer": -10,
+    "hunting-horn": 20,
+    "gunlance": 30,
+    "long-sword": -20,
+    "sword-shield": -20,
+    "dual-blades": -20,
+    "lance": -20,
+    "switch-axe": -20,
+    "charge-blade": -20,
+    "insect-glaive": -20,
+    "bow": -20,
+    "light-bowgun": 0,
+    "heavy-bowgun": 0
+   }
+  },
+  "element": {
+   "attack": 0,
+   "affinity": -5,
+   "element_by_type": {
+    "great-sword": 50,
+    "long-sword": 50,
+    "sword-shield": 40,
+    "dual-blades": 30,
+    "hammer": 40,
+    "hunting-horn": 80,
+    "lance": 50,
+    "gunlance": 80,
+    "switch-axe": 40,
+    "charge-blade": 50,
+    "insect-glaive": 40,
+    "bow": 30,
+    "light-bowgun": 0,
+    "heavy-bowgun": 0
+   }
+  }
+ },
+ "focus_mechanic_changes": {
+  "hunting-horn": {
+   "attack": "Echo Bubble: Ailments/Blights Negated",
+   "affinity": "Echo Bubble: Stamina Regen",
+   "element": "Echo Bubble: Defense & Elemental Res Up"
+  },
+  "gunlance": {
+   "attack": "Shelling: Normal",
+   "affinity": "Shelling: Long",
+   "element": "Shelling: Wide"
+  },
+  "switch-axe": {
+   "attack": "Phial: Power",
+   "affinity": "Phial: Element",
+   "element": "Phial: Element"
+  },
+  "charge-blade": {
+   "attack": "Phial: Impact",
+   "affinity": "Phial: Element",
+   "element": "Phial: Element"
+  },
+  "bow": {
+   "attack": "Close-range Coating",
+   "affinity": "Power Coating",
+   "element": "Pierce Coating"
+  },
+  "light-bowgun": "Ammo LV/capacity/rapid-fire changes per focus (see API 'ammo' field per variant)",
+  "heavy-bowgun": "Ammo LV/capacity changes per focus (see API 'ammo' field per variant)"
+ },
+ "artian_r8_element_display": {
+  "_about": "Base element of a Rarity-8 Artian weapon by element group, DISPLAY values (monsterhunterwiki Artian page). Status values are buildup, not element. Infusion bonus applies when all 3 parts share the element.",
+  "great-sword": {
+   "fire/water/thunder/ice/dragon": 450,
+   "poison/blast": 300,
+   "paralysis/sleep": 250,
+   "infusion_bonus": 30
+  },
+  "long-sword": {
+   "fire/water/thunder/ice/dragon": 270,
+   "poison/blast": 120,
+   "paralysis/sleep": 70,
+   "infusion_bonus": 30
+  },
+  "sword-shield": {
+   "fire/water/thunder/ice/dragon": 260,
+   "poison/blast": 110,
+   "paralysis/sleep": 60,
+   "infusion_bonus": 20
+  },
+  "dual-blades": {
+   "fire/water/thunder/ice/dragon": 250,
+   "poison/blast": 100,
+   "paralysis/sleep": 50,
+   "infusion_bonus": 20
+  },
+  "hammer": {
+   "fire/water/thunder/ice/dragon": 320,
+   "poison/blast": 170,
+   "paralysis/sleep": 120,
+   "infusion_bonus": 30
+  },
+  "hunting-horn": {
+   "fire/water/thunder/ice/dragon": 320,
+   "poison/blast": 170,
+   "paralysis/sleep": 120,
+   "infusion_bonus": 30
+  },
+  "lance": {
+   "fire/water/thunder/ice/dragon": 270,
+   "poison/blast": 120,
+   "paralysis/sleep": 70,
+   "infusion_bonus": 30
+  },
+  "gunlance": {
+   "fire/water/thunder/ice/dragon": 320,
+   "poison/blast": 170,
+   "paralysis/sleep": 120,
+   "infusion_bonus": 30
+  },
+  "switch-axe": {
+   "fire/water/thunder/ice/dragon": 260,
+   "poison/blast": 110,
+   "paralysis/sleep": 60,
+   "infusion_bonus": 20
+  },
+  "charge-blade": {
+   "fire/water/thunder/ice/dragon": 270,
+   "poison/blast": 120,
+   "paralysis/sleep": 70,
+   "infusion_bonus": 30
+  },
+  "insect-glaive": {
+   "fire/water/thunder/ice/dragon": 260,
+   "poison/blast": 110,
+   "paralysis/sleep": 60,
+   "infusion_bonus": 20
+  },
+  "bow": {
+   "fire/water/thunder/ice/dragon": 210,
+   "blast": 60,
+   "poison/paralysis/sleep": "coating only",
+   "infusion_bonus": 20
+  },
+  "light-bowgun": "ammo based, no element stat",
+  "heavy-bowgun": "ammo based, no element stat"
+ },
+ "reinforcement_values": {
+  "_about": "5 reinforcement bonuses per weapon. CONFIRMED from game data (ArtianBonusData / ArtianBonusCategoryData in dtlnor/MHWs-in-json). Level I = regular Artian grinding bonus; Gogma Reinforce rolls II / III / EX (EX flagged rare, sub-probability 80 vs 50). Attack is true raw; affinity %; element is DISPLAY (datamine stores true = display/10); sharpness is gauge points; ammo is capacity.",
+  "attack": {
+   "I": 5,
+   "II": 6,
+   "III": 9,
+   "EX": 12
+  },
+  "affinity": {
+   "I": 5,
+   "II": 6,
+   "III": 8,
+   "EX": 10
+  },
+  "sharpness": {
+   "I": "20 or 30 (two sub-tiers in data)",
+   "EX": 50
+  },
+  "ammo": {
+   "I": 1,
+   "EX": 2
+  },
+  "element_by_type": {
+   "_columns": "DISPLAY element. Level I from the datamine (same as regular Artian element bonus); II and EX from the datamine (match the wiki); no Level III exists for element.",
+   "great-sword": {
+    "I": 80,
+    "II": 90,
+    "EX": 110
+   },
+   "long-sword": {
+    "I": 50,
+    "II": 60,
+    "EX": 90
+   },
+   "sword-shield": {
+    "I": 30,
+    "II": 50,
+    "EX": 80
+   },
+   "dual-blades": {
+    "I": 20,
+    "II": 30,
+    "EX": 50
+   },
+   "hammer": {
+    "I": 50,
+    "II": 60,
+    "EX": 90
+   },
+   "hunting-horn": {
+    "I": 50,
+    "II": 60,
+    "EX": 90
+   },
+   "lance": {
+    "I": 50,
+    "II": 60,
+    "EX": 90
+   },
+   "gunlance": {
+    "I": 50,
+    "II": 60,
+    "EX": 90
+   },
+   "switch-axe": {
+    "I": 30,
+    "II": 50,
+    "EX": 80
+   },
+   "charge-blade": {
+    "I": 50,
+    "II": 60,
+    "EX": 80
+   },
+   "insect-glaive": {
+    "I": 30,
+    "II": 50,
+    "EX": 80
+   },
+   "bow": {
+    "I": 30,
+    "II": 40,
+    "EX": 60
+   },
+   "light-bowgun": null,
+   "heavy-bowgun": null
+  },
+  "max_count_per_category_on_gogma": {
+   "attack": 5,
+   "affinity": 5,
+   "element": 5,
+   "sharpness_or_ammo": 2
+  },
+  "stacking_limit": "no more than 2 bonuses of the exact same type AND level (e.g. 2x Attack EX max); 5 EX of mixed types is possible (wiki); datamine caps a category at 5 slots (sharpness/ammo at 2)",
+  "best_case_examples": {
+   "raw": "2x Attack EX (+24) + 2x Affinity EX (+20%) + 1x Attack III (+9) = +33 attack, +20% affinity",
+   "element_gs": "2x Element EX (+220) + 2x Attack EX (+24) + Affinity EX (+10%)"
+  }
+ },
+ "open_questions": [
+  "Sharpness gauge after Attack focus ('Blue reduced' per game8) vs API variant values - API used as truth.",
+  "Whether a Gogma weapon can carry two sharpness/ammo EX bonuses (datamine category max = 2)."
+ ]
+}

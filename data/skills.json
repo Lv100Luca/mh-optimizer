@@ -1,0 +1,4265 @@
+[
+ {
+  "id": 88,
+  "name": "Adaptability",
+  "kind": "armor",
+  "description": "Grants protection against environmental damage, such as from heat or cold.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates the effects of heat and cold."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates environmental damage."
+   }
+  ]
+ },
+ {
+  "id": 120,
+  "name": "Adrenaline Rush",
+  "kind": "armor",
+  "description": "Temporarily increases attack power after executing a perfectly-timed evade just as a monster attacks.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +20 while active."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +25 while active."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +30 while active."
+   }
+  ]
+ },
+ {
+  "id": 144,
+  "name": "Agitator",
+  "kind": "armor",
+  "description": "Increases attack power and affinity when large monsters become enraged.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +4 and affinity +3% while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +8 and affinity +5% while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +12 and affinity +7% while active."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +16 and affinity +10% while active."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +20 and affinity +15% while active."
+   }
+  ]
+ },
+ {
+  "id": 67,
+  "name": "Ambush",
+  "kind": "armor",
+  "description": "Temporarily increases damage to large monsters with a successful Sneak Attack.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5% while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10% while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15% while active."
+   }
+  ]
+ },
+ {
+  "id": 18,
+  "name": "Antivirus",
+  "kind": "armor",
+  "description": "Once infected, makes it easier to overcome the Frenzy and increases affinity if cured.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases recovery rate after contracting the Frenzy. Affinity +3% if cured."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases recovery rate after contracting the Frenzy. Affinity +6% if cured."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases recovery rate after contracting the Frenzy. Affinity +10% if cured."
+   }
+  ]
+ },
+ {
+  "id": 63,
+  "name": "Aquatic/Oilsilt Mobility",
+  "kind": "armor",
+  "description": "Grants resistance against impairments to mobility while in water, oilsilt, or streams.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates the effects of muddy streams, nullifies slowing from water and oilsilt, and reduces slowing from drakesbone oil."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Also negates the effects of waves."
+   }
+  ]
+ },
+ {
+  "id": 147,
+  "name": "Bind Resistance",
+  "kind": "armor",
+  "description": "Grants protection against webbed status and frostblight.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Allows you to quickly recover from webbed status or frostblight."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Allows you to very quickly recover from webbed status or frostblight."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents webbed status and frostblight."
+   }
+  ]
+ },
+ {
+  "id": 110,
+  "name": "Blast Resistance",
+  "kind": "armor",
+  "description": "Grants protection against blastblight.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Delays blastblight and reduces blast damage."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly delays blastblight and greatly reduces blast damage."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents blastblight."
+   }
+  ]
+ },
+ {
+  "id": 146,
+  "name": "Bleeding Resistance",
+  "kind": "armor",
+  "description": "Grants protection against bleeding.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces damage while bleeding."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly reduces damage while bleeding."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents bleeding."
+   }
+  ]
+ },
+ {
+  "id": 49,
+  "name": "Blight Resistance",
+  "kind": "armor",
+  "description": "Grants protection against all elemental blights.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of all elemental blights by 50%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of all elemental blights by 75%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies all elemental blights."
+   }
+  ]
+ },
+ {
+  "id": 61,
+  "name": "Blindsider",
+  "kind": "armor",
+  "description": "Improves the effectiveness of flash attacks and items.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Improves the effectiveness of flash attacks and items."
+   }
+  ]
+ },
+ {
+  "id": 37,
+  "name": "Bombardier",
+  "kind": "armor",
+  "description": "Increases the damage of explosive items.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Explosive power +10%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Explosive power +20%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Explosive power +30%"
+   }
+  ]
+ },
+ {
+  "id": 112,
+  "name": "Botanist",
+  "kind": "armor",
+  "description": "Increases the quantity of herbs and other consumable items you gather.",
+  "max_level": 4,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "One extra consumable herb item per gather."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally adds one extra consumable fruit, nut, or seed item per gather."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally adds one extra consumable insect item per gather."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally adds one extra consumable mushroom item per gather."
+   }
+  ]
+ },
+ {
+  "id": 95,
+  "name": "Burst",
+  "kind": "armor",
+  "description": "Continuously landing hits gradually increases attack and elemental attack. (Amount increased depends on weapon.)",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "On first hit, gain a small temporary attack and element boost, replaced by a larger boost after the fifth hit."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Hit 5 successive times for a moderate stat boost."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Hit 5 successive times for a bigger stat boost."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Hit 5 successive times for an even bigger stat boost."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Hit 5 successive times for a huge stat boost."
+   }
+  ]
+ },
+ {
+  "id": 42,
+  "name": "Cliffhanger",
+  "kind": "armor",
+  "description": "Decreases stamina depletion when climbing on vines.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces stamina depletion while climbing by 50%."
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "name": "Coalescence",
+  "kind": "armor",
+  "description": "Temporarily increases elemental attack power and status effects after recovering from blights or abnormal status.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "When active, grants a slight increase to elemental attack and status buildup."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "When active, grants an increase to elemental attack and status buildup."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "When active, grants a large increase to elemental attack and status buildup."
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "name": "Constitution",
+  "kind": "armor",
+  "description": "Reduces stamina depletion from evading or performing certain other actions.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces fixed stamina depletion by 10%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces fixed stamina depletion by 20%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces fixed stamina depletion by 30%."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces fixed stamina depletion by 40%."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces fixed stamina depletion by 50%."
+   }
+  ]
+ },
+ {
+  "id": 152,
+  "name": "Convert Element",
+  "kind": "armor",
+  "description": "After taking elemental damage, temporarily grants you dragon element effects. (Cooldown after effect ends.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, deals extra dragon damage after dealing enough elemental damage. Slightly increases dragon attack."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases additional dragon damage and increases dragon attack."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Further increases additional dragon damage and greatly increases dragon attack."
+   }
+  ]
+ },
+ {
+  "id": 81,
+  "name": "Counterstrike",
+  "kind": "armor",
+  "description": "Temporarily increases attack power after being knocked back.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15 while active. Moderately extends effect time."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +25 while active. Extends effect time."
+   }
+  ]
+ },
+ {
+  "id": 118,
+  "name": "Defense Boost",
+  "kind": "armor",
+  "description": "Increases defense. Also improves resistances at higher levels.",
+  "max_level": 7,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +5"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +10"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +5% Bonus: +10"
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +5% Bonus: +20 All elemental resistances +3"
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +8% Bonus: +20 All elemental resistances +3"
+   },
+   {
+    "level": 6,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +8% Bonus: +35 All elemental resistances +5"
+   },
+   {
+    "level": 7,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +10% Bonus: +35 All elemental resistances +5"
+   }
+  ]
+ },
+ {
+  "id": 122,
+  "name": "Divine Blessing",
+  "kind": "armor",
+  "description": "Has a predetermined chance of reducing the damage you take.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, reduces damage taken by 15%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, reduces damage taken by 30%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, reduces damage taken by 50%."
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "name": "Dragon Resistance",
+  "kind": "armor",
+  "description": "Increases dragon resistance. Also improves defense at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon resistance +6"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon resistance +12"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon resistance +20 Defense +10"
+   }
+  ]
+ },
+ {
+  "id": 80,
+  "name": "Earplugs",
+  "kind": "armor",
+  "description": "Grants protection from large monsters' roars.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the effects of weak monster roars."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies weak monster roars and reduces the effects of strong monster roars."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies weak and strong monster roars."
+   }
+  ]
+ },
+ {
+  "id": 133,
+  "name": "Elemental Absorption",
+  "kind": "armor",
+  "description": "After taking elemental damage, temporarily grants you element effects. (Cooldown after effect ends)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, slightly increases elemental attack, and resistance to element taken at activation by 4."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, moderately increases elemental attack, and resistance to element taken at activation by 6."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, increases elemental attack, and resistance to element taken at activation by 8."
+   }
+  ]
+ },
+ {
+  "id": 114,
+  "name": "Entomologist",
+  "kind": "armor",
+  "description": "The bodies of small insect monsters won't be destroyed, allowing them to be carved. (Excludes some.)",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 102,
+  "name": "Evade Extender",
+  "kind": "armor",
+  "description": "Increases evade distance.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly extends evasion distance."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends evasion distance."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly extends evasion distance."
+   }
+  ]
+ },
+ {
+  "id": 77,
+  "name": "Evade Window",
+  "kind": "armor",
+  "description": "Extends the invulnerability period when evading.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Very slightly increases invulnerability window."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases invulnerability window."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases invulnerability window."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases invulnerability window."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Massively increases invulnerability window."
+   }
+  ]
+ },
+ {
+  "id": 125,
+  "name": "Fire Resistance",
+  "kind": "armor",
+  "description": "Increases fire resistance. Also improves defense at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire resistance +6"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire resistance +12"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire resistance +20 Defense +10"
+   }
+  ]
+ },
+ {
+  "id": 38,
+  "name": "Flayer",
+  "kind": "armor",
+  "description": "Makes it easier to inflict wounds. Can also deal extra non-elemental damage upon buildup. (Excludes some attacks.)",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Makes it ever so slightly easier to inflict wounds. Also deals additional non-elemental damage."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Makes it moderately easier to inflict wounds. Also deals slightly more additional non-elemental damage."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Makes it easier to inflict wounds. Also deals moderately more additional non-elemental damage."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Makes it much easier to inflict wounds. Also deals more additional non-elemental damage."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Makes it significantly easier to inflict wounds. Also deals much more additional non-elemental damage."
+   }
+  ]
+ },
+ {
+  "id": 108,
+  "name": "Flinch Free",
+  "kind": "armor",
+  "description": "Prevents knockbacks and other reactions to small damage.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents knockbacks."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents knockbacks. Tripping is reduced to a knockback instead."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents knockbacks and tripping."
+   }
+  ]
+ },
+ {
+  "id": 75,
+  "name": "Foray",
+  "kind": "armor",
+  "description": "Increases attack power and affinity against large monsters affected by poison or paralysis.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +6 against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +8 and affinity +5% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10 and affinity +10% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +12 and affinity +15% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15 and affinity +20% against large monsters affected by poison or paralysis."
+   }
+  ]
+ },
+ {
+  "id": 111,
+  "name": "Free Meal",
+  "kind": "armor",
+  "description": "Gives you a predetermined chance of consuming a food or drink item for free.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates 10% of the time."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates 25% of the time."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates 45% of the time."
+   }
+  ]
+ },
+ {
+  "id": 98,
+  "name": "Geologist",
+  "kind": "armor",
+  "description": "Increases the number of items you gain at gathering points.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "One extra item when gathering from bonepiles."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally adds one extra item when gathering special items."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally adds one extra item when gathering from mining outcrops."
+   }
+  ]
+ },
+ {
+  "id": 87,
+  "name": "Heroics",
+  "kind": "armor",
+  "description": "Increases attack power and defense when health drops to 35% or lower.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Defense +50 while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5% and defense +50 while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5% and defense +100 while active."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10% and defense +100 while active."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +30% and defense-increasing effects are negated while active."
+   }
+  ]
+ },
+ {
+  "id": 151,
+  "name": "Hunger Resistance",
+  "kind": "armor",
+  "description": "Reduces maximum stamina depletion over time.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends the time until your stamina cap reduces by 50%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends the time until your stamina cap reduces by 100%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents your stamina cap from decreasing."
+   }
+  ]
+ },
+ {
+  "id": 101,
+  "name": "Ice Resistance",
+  "kind": "armor",
+  "description": "Increases ice resistance. Also improves defense at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice resistance +6"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice resistance +12"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice resistance +20 Defense +10"
+   }
+  ]
+ },
+ {
+  "id": 130,
+  "name": "Intimidator",
+  "kind": "armor",
+  "description": "Reduces the chance small monsters will attack after spotting you. (Has no effect on certain monsters.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Discourages monsters from engaging you even if you've been spotted."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Highly discourages monsters from engaging you even if you've been spotted."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents monsters from engaging you even if you've been spotted."
+   }
+  ]
+ },
+ {
+  "id": 135,
+  "name": "Iron Skin",
+  "kind": "armor",
+  "description": "Grants protection against defense down.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of defense down by 50%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of defense down by 75%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents defense down."
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "name": "Item Prolonger",
+  "kind": "armor",
+  "description": "Extends the duration of some item effects.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Item effect duration +10%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Item effect duration +25%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Item effect duration +50%"
+   }
+  ]
+ },
+ {
+  "id": 76,
+  "name": "Jump Master",
+  "kind": "armor",
+  "description": "Prevents attacks from knocking you back during a jump.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates knockback during jumps."
+   }
+  ]
+ },
+ {
+  "id": 142,
+  "name": "Latent Power",
+  "kind": "armor",
+  "description": "Temporarily increases affinity and reduces stamina depletion when certain conditions are met.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, affinity +10% and reduces stamina depletion by 30%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, affinity +20% and reduces stamina depletion by 30%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, affinity +30% and reduces stamina depletion by 50%."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, affinity +40% and reduces stamina depletion by 50%."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "While active, affinity +50% and reduces stamina depletion by 50%."
+   }
+  ]
+ },
+ {
+  "id": 28,
+  "name": "Leap of Faith",
+  "kind": "armor",
+  "description": "Allows you to do a dive-evade when facing towards large monsters and extends the dive-evade distance.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Enables skill use."
+   }
+  ]
+ },
+ {
+  "id": 43,
+  "name": "Marathon Runner",
+  "kind": "armor",
+  "description": "Slows down stamina depletion for actions that continuously drain stamina (such as dashing).",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces continuous stamina depletion by 15%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces continuous stamina depletion by 30%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces continuous stamina depletion by 50%."
+   }
+  ]
+ },
+ {
+  "id": 99,
+  "name": "Maximum Might",
+  "kind": "armor",
+  "description": "Increases affinity if stamina is kept full for a period of time.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +10% while active"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +20% while active"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +30% while active"
+   }
+  ]
+ },
+ {
+  "id": 52,
+  "name": "Mushroomancer",
+  "kind": "armor",
+  "description": "Lets you digest mushrooms that would otherwise be inedible and gain their advantageous effects.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you digest blue mushrooms and toadstools."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally lets you digest nitroshrooms and parashrooms."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Additionally lets you digest mandragoras, devil's blight, and exciteshrooms."
+   }
+  ]
+ },
+ {
+  "id": 143,
+  "name": "Outdoorsman",
+  "kind": "armor",
+  "description": "Improves fishing, grilling, and transporting abilities.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Improves fishing, grilling, and transporting abilities."
+   }
+  ]
+ },
+ {
+  "id": 145,
+  "name": "Palico Rally",
+  "kind": "armor",
+  "description": "Powers up Palicoes.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases Palico attack power and defense by 5%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases Palico attack power and defense by 10%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases Palico attack power and defense by 15%."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases Palico attack power and defense by 20%."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases Palico attack power and defense by 25%."
+   }
+  ]
+ },
+ {
+  "id": 92,
+  "name": "Paralysis Resistance",
+  "kind": "armor",
+  "description": "Reduces the duration of paralysis.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of paralysis by 30%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of paralysis by 60%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents paralysis."
+   }
+  ]
+ },
+ {
+  "id": 129,
+  "name": "Partbreaker",
+  "kind": "armor",
+  "description": "Makes it easier to break large monster parts, and increases damage dealt when destroying a wound with a Focus Strike.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases part damage and damage dealt when conditions are met by 10%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases part damage and damage dealt when conditions are met by 20%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases part damage and damage dealt when conditions are met by 30%."
+   }
+  ]
+ },
+ {
+  "id": 154,
+  "name": "Peak Performance",
+  "kind": "armor",
+  "description": "Increases attack when your health is full.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +3 while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +6 while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +20 while active."
+   }
+  ]
+ },
+ {
+  "id": 128,
+  "name": "Poison Resistance",
+  "kind": "armor",
+  "description": "Reduces damage while poisoned.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the number of times you take poison damage."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly reduces the number of times you take poison damage."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents poison."
+   }
+  ]
+ },
+ {
+  "id": 32,
+  "name": "Quick Sheathe",
+  "kind": "armor",
+  "description": "Speeds up weapon sheathing.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases sheathing speed."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases sheathing speed."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases sheathing speed."
+   }
+  ]
+ },
+ {
+  "id": 31,
+  "name": "Recovery Speed",
+  "kind": "armor",
+  "description": "Speeds healing of recoverable damage (the red portion of the Health Gauge).",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Doubles the speed at which you heal recoverable damage."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Triples the speed at which you heal recoverable damage."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Quadruples the speed at which you heal recoverable damage."
+   }
+  ]
+ },
+ {
+  "id": 30,
+  "name": "Recovery Up",
+  "kind": "armor",
+  "description": "Increases the amount recovered when restoring health.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases recovery."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases recovery."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases recovery."
+   }
+  ]
+ },
+ {
+  "id": 123,
+  "name": "Resentment",
+  "kind": "armor",
+  "description": "Increases attack when you have recoverable damage (the red portion of your Health Gauge).",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5 while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +20 while active."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +25 while active."
+   }
+  ]
+ },
+ {
+  "id": 158,
+  "name": "Rice Ball",
+  "kind": "armor",
+  "description": "Increases the attack power of Akuma actions and stun damage.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 138,
+  "name": "Self-Improvement",
+  "kind": "armor",
+  "description": "Attack and defense increase as time passes while on a quest. (The maximum is reached after 30 minutes.)",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 45,
+  "name": "Shock Absorber",
+  "kind": "armor",
+  "description": "Disables damage reactions when you hit a friend or when a friend hits you.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 64,
+  "name": "Sleep Resistance",
+  "kind": "armor",
+  "description": "Reduces the duration of sleep.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of sleep by 30%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of sleep by 60%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents sleep."
+   }
+  ]
+ },
+ {
+  "id": 100,
+  "name": "Speed Eating",
+  "kind": "armor",
+  "description": "Increases meat-eating and item-consumption speed.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases eating speed."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases eating speed."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases eating speed."
+   }
+  ]
+ },
+ {
+  "id": 58,
+  "name": "Stamina Surge",
+  "kind": "armor",
+  "description": "Speeds up stamina recovery.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stamina recovery speed +10%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stamina recovery speed +30%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stamina recovery speed +50%"
+   }
+  ]
+ },
+ {
+  "id": 55,
+  "name": "Stench Resistance",
+  "kind": "armor",
+  "description": "Grants protection against stench.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces stench duration by 50%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents stench."
+   }
+  ]
+ },
+ {
+  "id": 105,
+  "name": "Stun Resistance",
+  "kind": "armor",
+  "description": "Reduces the duration of stun.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of stun by 30%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces the duration of stun by 60%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Prevents stun."
+   }
+  ]
+ },
+ {
+  "id": 48,
+  "name": "Survival Expert",
+  "kind": "armor",
+  "description": "Extra health is recovered from environmental interactables.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Restores 50 health."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Restores 80 health."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Restores 100 health."
+   }
+  ]
+ },
+ {
+  "id": 156,
+  "name": "Thunder Resistance",
+  "kind": "armor",
+  "description": "Increases thunder resistance. Also improves defense at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder resistance +6"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder resistance +12"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder resistance +20 Defense +10"
+   }
+  ]
+ },
+ {
+  "id": 90,
+  "name": "Tool Specialist",
+  "kind": "armor",
+  "description": "Reduces the recharge time for specialized tools.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Shortens recharge time by 10%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Shortens recharge time by 20%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Shortens recharge time by 30%."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Shortens recharge time by 40%."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Shortens recharge time by 50%."
+   }
+  ]
+ },
+ {
+  "id": 46,
+  "name": "Tremor Resistance",
+  "kind": "armor",
+  "description": "Grants protection against ground tremors.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies very minor ground tremors and halves effects of minor ground tremors."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies up to minor ground tremors and greatly reduces the effects of major ground tremors."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Nullifies all ground tremors."
+   }
+  ]
+ },
+ {
+  "id": 84,
+  "name": "Water Resistance",
+  "kind": "armor",
+  "description": "Increases water resistance. Also improves defense at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water resistance +6"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water resistance +12"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water resistance +20 Defense +10"
+   }
+  ]
+ },
+ {
+  "id": 57,
+  "name": "Weakness Exploit",
+  "kind": "armor",
+  "description": "Increases the affinity of attacks that exploit a monster's weak  points and wounds.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attacks that hit weak points gain affinity +5%, with an extra 3% on wounds."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attacks that hit weak points gain affinity +10%, with an extra 5% on wounds."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attacks that hit weak points gain affinity +15%, with an extra 10% on wounds."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attacks that hit weak points have 20% increased affinity, with an extra 15% on wounds."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attacks that hit weak points have 30% increased affinity, with an extra 20% on wounds."
+   }
+  ]
+ },
+ {
+  "id": 113,
+  "name": "Wide-Range",
+  "kind": "armor",
+  "description": "Allows the effects of certain items to also affect nearby allies.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Items affect nearby allies with 33% of their efficacy."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Items affect nearby allies in a wider radius with 33% of their efficacy."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Items affect nearby allies in a wider radius with 66% of their efficacy."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Items affect nearby allies in a much wider radius with 66% of their efficacy."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Items affect nearby allies in a much wider radius with full efficacy."
+   }
+  ]
+ },
+ {
+  "id": 35,
+  "name": "Windproof",
+  "kind": "armor",
+  "description": "Grants protection against wind pressure.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates minor wind pressure and halves the effects of major wind pressure."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates minor and major wind pressure and halves the effects of dragon wind pressure."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Negates all kinds of wind pressure."
+   }
+  ]
+ },
+ {
+  "id": 97,
+  "name": "Alluring Pelt",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Diversion",
+    "pieces_required": 3,
+    "description": "Increases the attention drawn to you when attacking a monster."
+   }
+  ]
+ },
+ {
+  "id": 89,
+  "name": "Buttery Leathercraft",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Affinity Sliding",
+    "pieces_required": 3,
+    "description": "Increases your affinity temporarily when sliding on terrain."
+   }
+  ]
+ },
+ {
+  "id": 74,
+  "name": "Festival Spirit",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Carving Master",
+    "pieces_required": 3,
+    "description": "Lets you carve one additional time from carcasses during quests. (No effect when joining mid-quest.)"
+   }
+  ]
+ },
+ {
+  "id": 19,
+  "name": "Flexible Leathercraft",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Hunter Gatherer",
+    "pieces_required": 3,
+    "description": "Increases gathering speed, and prevents knock back when gathering or carving."
+   }
+  ]
+ },
+ {
+  "id": 150,
+  "name": "Fortifying Pelt",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Fortify",
+    "pieces_required": 3,
+    "description": "Increases attack and defense after fainting during a quest. (Can be used twice.)"
+   }
+  ]
+ },
+ {
+  "id": 73,
+  "name": "Glory's Favor",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Luck",
+    "pieces_required": 3,
+    "description": "Increases quest target rewards. (No effect when joining mid-quest.)"
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "name": "Guardian's Protection",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Ward of Wyveria",
+    "pieces_required": 3,
+    "description": "Reduces elemental and unique damage while in the Ruins of Wyveria."
+   }
+  ]
+ },
+ {
+  "id": 27,
+  "name": "Guardian's Pulse",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Wylk Burst",
+    "pieces_required": 3,
+    "description": "Increases recovery speed of stamina and red gauge when near Wylkrystals."
+   }
+  ]
+ },
+ {
+  "id": 20,
+  "name": "Imparted Wisdom",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Forager's Luck",
+    "pieces_required": 3,
+    "description": "Increases the chance of finding rare gathering points."
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "name": "Lord's Favor",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Inspiration",
+    "pieces_required": 3,
+    "description": "Temporarily increases attack power when using effects like Melody Effects that affect companions in range."
+   }
+  ]
+ },
+ {
+  "id": 155,
+  "name": "Lord's Fury",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Resuscitate",
+    "pieces_required": 3,
+    "description": "Increases attack when inflicted with ailments."
+   }
+  ]
+ },
+ {
+  "id": 131,
+  "name": "Lord's Soul",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Guts (Tenacity)",
+    "pieces_required": 3,
+    "description": "Boosts attack and lowers defense but lets you survive one lethal hit. Afterwards, boosts defense and res."
+   }
+  ]
+ },
+ {
+  "id": 157,
+  "name": "Master of the Fist",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Satsui no Hado",
+    "pieces_required": 3,
+    "description": "Increases power of special actions. Drive Impacts can trigger offset attacks. Further increases power of offset attacks."
+   }
+  ]
+ },
+ {
+  "id": 148,
+  "name": "Neopteron Alert",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Honey Hunter",
+    "pieces_required": 3,
+    "description": "Increases the amount of honey you gain from gathering points."
+   }
+  ]
+ },
+ {
+  "id": 139,
+  "name": "Neopteron Camouflage",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Fleetfoot",
+    "pieces_required": 3,
+    "description": "Increases movement speed while crouching, and makes it easier to escape large monsters' detection."
+   }
+  ]
+ },
+ {
+  "id": 17,
+  "name": "Scale Layering",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Adrenaline",
+    "pieces_required": 3,
+    "description": "Temporarily reduces stamina depletion when health is at 40% or lower."
+   }
+  ]
+ },
+ {
+  "id": 132,
+  "name": "Scaling Prowess",
+  "kind": "group",
+  "description": null,
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Master Mounter",
+    "pieces_required": 3,
+    "description": "Makes it easier to mount monsters and to wound them once mounted."
+   }
+  ]
+ },
+ {
+  "id": 33,
+  "name": "Arkveld's Hunger",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Hasten Recovery I",
+    "pieces_required": 2,
+    "description": "Regenerates a small amount of your health as you continually attack a monster. Recovery varies by weapon."
+   },
+   {
+    "level": 2,
+    "name": "Hasten Recovery II",
+    "pieces_required": 4,
+    "description": "Regenerates your health as you continually attack a monster. Recovery varies by weapon."
+   }
+  ]
+ },
+ {
+  "id": 107,
+  "name": "Blangonga's Spirit",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "War Cry I",
+    "pieces_required": 2,
+    "description": "Using the To Victory! gesture moderately  increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+   },
+   {
+    "level": 2,
+    "name": "War Cry II",
+    "pieces_required": 4,
+    "description": "Using the To Victory! gesture increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+   }
+  ]
+ },
+ {
+  "id": 34,
+  "name": "Blossomdance Prayer",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Blossomdance Boon I",
+    "pieces_required": 2,
+    "description": "During Blossomdance, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Blossomdance Boon II",
+    "pieces_required": 4,
+    "description": "During Blossomdance, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ]
+ },
+ {
+  "id": 70,
+  "name": "Doshaguma's Might",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Powerhouse I",
+    "pieces_required": 2,
+    "description": "Temporarily grants attack +10 after a successful Power Clash or Offset attack"
+   },
+   {
+    "level": 2,
+    "name": "Powerhouse II",
+    "pieces_required": 4,
+    "description": "Temporarily grants attack +25 after a successful Power Clash or Offset attack"
+   }
+  ]
+ },
+ {
+  "id": 170,
+  "name": "Dreamspell Prayer",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Dreamspell Boon I",
+    "pieces_required": 2,
+    "description": "During Dreamspell, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Dreamspell Boon II",
+    "pieces_required": 4,
+    "description": "During Dreamspell, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ]
+ },
+ {
+  "id": 115,
+  "name": "Ebony Odogaron's Power",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Burst Boost I",
+    "pieces_required": 2,
+    "description": "Extends the duration of the Burst skill and grants attack +8 while Burst is active."
+   },
+   {
+    "level": 2,
+    "name": "Burst Boost II",
+    "pieces_required": 4,
+    "description": "Further extends the duration of the Burst skill and grants attack +18 while Burst is active."
+   }
+  ]
+ },
+ {
+  "id": 161,
+  "name": "Flamefete Prayer",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Flamefete Boon I",
+    "pieces_required": 2,
+    "description": "During Flamefete, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Flamefete Boon II",
+    "pieces_required": 4,
+    "description": "During Flamefete, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "name": "Fulgur Anjanath's Will",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Second Wind I",
+    "pieces_required": 2,
+    "description": "Grants an additional Stamina Gauge."
+   },
+   {
+    "level": 2,
+    "name": "Second Wind II",
+    "pieces_required": 4,
+    "description": "Grants an additional long Stamina Gauge."
+   }
+  ]
+ },
+ {
+  "id": 178,
+  "name": "Gogmapocalypse",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Mutual Hostility I",
+    "pieces_required": 2,
+    "description": "Increases elemental attack when large monsters become enraged."
+   },
+   {
+    "level": 2,
+    "name": "Mutual Hostility II",
+    "pieces_required": 4,
+    "description": "Level I effect is increased, and you gain a temporary damage barrier. (Barrier reactivates after cooldown.)"
+   }
+  ]
+ },
+ {
+  "id": 106,
+  "name": "Gore Magala's Tyranny",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Black Eclipse I",
+    "pieces_required": 2,
+    "description": "Infects you with Frenzy when against large monsters."
+   },
+   {
+    "level": 2,
+    "name": "Black Eclipse II",
+    "pieces_required": 4,
+    "description": "Infects you with Frenzy and raises attack when against large monsters. Attack power increases upon recovery."
+   }
+  ]
+ },
+ {
+  "id": 54,
+  "name": "Gravios's Protection",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Flawless Armor I",
+    "pieces_required": 2,
+    "description": "Reduces the damage you take by 20% when your health is full."
+   },
+   {
+    "level": 2,
+    "name": "Flawless Armor II",
+    "pieces_required": 4,
+    "description": "Reduces the damage you take by 35% when your health is full."
+   }
+  ]
+ },
+ {
+  "id": 26,
+  "name": "Guardian Arkveld's Vitality",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Decimator I",
+    "pieces_required": 2,
+    "description": "Restores a moderate amount of health when destroying a wound on a large monster."
+   },
+   {
+    "level": 2,
+    "name": "Decimator II",
+    "pieces_required": 4,
+    "description": "Restores health when destroying a wound on a large monster."
+   }
+  ]
+ },
+ {
+  "id": 62,
+  "name": "Jin Dahaad's Revolt",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Binding Counter I",
+    "pieces_required": 2,
+    "description": "Increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+   },
+   {
+    "level": 2,
+    "name": "Binding Counter II",
+    "pieces_required": 4,
+    "description": "Greatly increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+   }
+  ]
+ },
+ {
+  "id": 162,
+  "name": "Leviathan's Fury",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Azure Bolt I",
+    "pieces_required": 2,
+    "description": "Temporarily increases affinity and can deal extra thunder damage upon buildup. (Excludes some attacks.)"
+   },
+   {
+    "level": 2,
+    "name": "Azure Bolt II",
+    "pieces_required": 4,
+    "description": "Further increases additional thunder damage and moderately extends the duration affinity is increased."
+   }
+  ]
+ },
+ {
+  "id": 180,
+  "name": "Lumenhymn Prayer",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Lumenhymn Boon I",
+    "pieces_required": 2,
+    "description": "During Lumenhymn, adds special items to quest rewards. (No effect when joining mid-quest.)"
+   },
+   {
+    "level": 2,
+    "name": "Lumenhymn Boon II",
+    "pieces_required": 4,
+    "description": "During Lumenhymn, adds special items to quest rewards, and greatly boosts attack and defense."
+   }
+  ]
+ },
+ {
+  "id": 56,
+  "name": "Mizutsune's Prowess",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Bubbly Dance I",
+    "pieces_required": 2,
+    "description": "Prevents major bubbleblight and grants you minor bubbleblight after evading several times."
+   },
+   {
+    "level": 2,
+    "name": "Bubbly Dance II",
+    "pieces_required": 4,
+    "description": "In addition to previous effects, also increases evasion while afflicted with bubbleblight."
+   }
+  ]
+ },
+ {
+  "id": 149,
+  "name": "Nu Udra's Mutiny",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Bad Blood I",
+    "pieces_required": 2,
+    "description": "Deals moderate additional damage while the Resentment skill is active."
+   },
+   {
+    "level": 2,
+    "name": "Bad Blood II",
+    "pieces_required": 4,
+    "description": "Deals additional damage while the Resentment skill is active."
+   }
+  ]
+ },
+ {
+  "id": 173,
+  "name": "Omega Resonance",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Resonance I",
+    "pieces_required": 2,
+    "description": "(When quest starts) Local and Remote Resonance alternate, increasing attack or affinity when conditions are met."
+   },
+   {
+    "level": 2,
+    "name": "Resonance II",
+    "pieces_required": 4,
+    "description": "Increases the effect of Resonance I, and the effect of the weapon skill Synthetic Shield or the effect of Synergy."
+   }
+  ]
+ },
+ {
+  "id": 71,
+  "name": "Rathalos's Flare",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Scorcher I",
+    "pieces_required": 2,
+    "description": "Chance to deal additional fire damage after landing an attack."
+   },
+   {
+    "level": 2,
+    "name": "Scorcher II",
+    "pieces_required": 4,
+    "description": "Increases additional fire damage after landing an attack."
+   }
+  ]
+ },
+ {
+  "id": 93,
+  "name": "Rey Dau's Voltage",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Thunderous Roar I",
+    "pieces_required": 2,
+    "description": "Moderately extends the activation time of the Latent Power skill."
+   },
+   {
+    "level": 2,
+    "name": "Thunderous Roar II",
+    "pieces_required": 4,
+    "description": "Extends the activation time of the Latent Power skill."
+   }
+  ]
+ },
+ {
+  "id": 167,
+  "name": "Seregios's Tenacity",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Razor's Edge I",
+    "pieces_required": 2,
+    "description": "Extends the duration of Adrenaline Rush. If triggered again while the skill is active, extends the effect duration once."
+   },
+   {
+    "level": 2,
+    "name": "Razor's Edge II",
+    "pieces_required": 4,
+    "description": "Additionally, if triggered again while the skill is active, further increases attack."
+   }
+  ]
+ },
+ {
+  "id": 172,
+  "name": "Soul of the Dark Knight",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Dark Arts",
+    "pieces_required": 2,
+    "description": "Having recoverable damage increases elemental attack, and some great sword Lvl 3 charged slashes are strengthened."
+   },
+   {
+    "level": 2,
+    "name": "The Blackest Night",
+    "pieces_required": 4,
+    "description": "Allows you to perform the special action: The Blackest Night."
+   }
+  ]
+ },
+ {
+  "id": 153,
+  "name": "Uth Duna's Cover",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Protective Veil I",
+    "pieces_required": 2,
+    "description": "Increases defense temporarily when using a specialized tool."
+   },
+   {
+    "level": 2,
+    "name": "Protective Veil II",
+    "pieces_required": 4,
+    "description": "Greatly increases defense and resistance temporarily when using a specialized tool."
+   }
+  ]
+ },
+ {
+  "id": 25,
+  "name": "Xu Wu's Vigor",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Protein Fiend I",
+    "pieces_required": 2,
+    "description": "Temporarily grants attack +15 after eating items such as well-done steak."
+   },
+   {
+    "level": 2,
+    "name": "Protein Fiend II",
+    "pieces_required": 4,
+    "description": "Temporarily grants attack +30 after eating items such as well-done steak."
+   }
+  ]
+ },
+ {
+  "id": 51,
+  "name": "Zoh Shia's Pulse",
+  "kind": "set",
+  "description": null,
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": "Super Recovery I",
+    "pieces_required": 2,
+    "description": "Allows the Health Gauge to continue to slowly recover up to the max value, even if there is no red portion."
+   },
+   {
+    "level": 2,
+    "name": "Super Recovery II",
+    "pieces_required": 4,
+    "description": "Allows the Health Gauge to continue to recover up to the max value, even if there is no red portion."
+   }
+  ]
+ },
+ {
+  "id": 86,
+  "name": "Airborne",
+  "kind": "weapon",
+  "description": "Increases the damage caused by jumping attacks.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Jumping attack power +10%"
+   }
+  ]
+ },
+ {
+  "id": 47,
+  "name": "Artillery",
+  "kind": "weapon",
+  "description": "Strengthens explosive attacks like shells, Wyvern's Fire, charge blade phial attacks, and Sticky Ammo.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases each attack and Wyvern's Fire firing speed. Shelling fire attack +30."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases each attack and Wyvern's Fire firing speed. Shelling fire attack +60."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases each attack and Wyvern's Fire firing speed. Shelling fire attack +90."
+   }
+  ]
+ },
+ {
+  "id": 72,
+  "name": "Attack Boost",
+  "kind": "weapon",
+  "description": "Increases attack power.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +3"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +7"
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +2% Bonus: +8"
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +4% Bonus: +9"
+   }
+  ]
+ },
+ {
+  "id": 53,
+  "name": "Ballistics",
+  "kind": "weapon",
+  "description": "Extends the range in which ammo and arrows have maximum power. Also boosts power at higher levels.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly extends range."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends range."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly extends critical range, and boosts the power of attacks made within critical range."
+   }
+  ]
+ },
+ {
+  "id": 163,
+  "name": "Bladescale Honing",
+  "kind": "weapon",
+  "description": "Narrowly evading a monster's attack while your weapon is drawn grants special sharpness.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 160,
+  "name": "Bladescale Loading",
+  "kind": "weapon",
+  "description": "Narrowly evading a monster's attack while your weapon is drawn grants special loaded ammo or applied coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 40,
+  "name": "Blast Attack",
+  "kind": "weapon",
+  "description": "Increases the rate of blast buildup. (Blast buildup has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Blast buildup +5% Bonus: +10"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Blast buildup +10% Bonus: +20"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Blast buildup +20% Bonus: +50"
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "name": "Blast Functionality",
+  "kind": "weapon",
+  "description": "Allows you to apply blast coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you use blast coatings."
+   }
+  ]
+ },
+ {
+  "id": 85,
+  "name": "Bludgeoner",
+  "kind": "weapon",
+  "description": "Increases damage dealt when your weapon sharpness is low.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "+5% damage dealt when your sharpness gauge is yellow or lower."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "+10% damage dealt when your sharpness gauge is yellow or lower."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "+10% damage dealt when your sharpness gauge is green or lower."
+   }
+  ]
+ },
+ {
+  "id": 179,
+  "name": "Catburglar",
+  "kind": "weapon",
+  "description": "Grants a small chance of obtaining various items when landing critical hits.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 24,
+  "name": "Charge Master",
+  "kind": "weapon",
+  "description": "Increases element power and status buildup for charged attacks.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases elemental attack and status buildup for charged attacks."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases elemental attack and status buildup for charged attacks."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases elemental attack and status buildup for charged attacks."
+   }
+  ]
+ },
+ {
+  "id": 83,
+  "name": "Charge Up",
+  "kind": "weapon",
+  "description": "Increases the damage and stun power of charged hammer attacks.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 165,
+  "name": "Convert Thunder Resistance",
+  "kind": "weapon",
+  "description": "Increases your weapon's elemental attack proportional to your thunder resistance.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 181,
+  "name": "Convert Water Resistance",
+  "kind": "weapon",
+  "description": "Increases your weapon's elemental attack proportional to your water resistance.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 159,
+  "name": "Crackling Cornpopper",
+  "kind": "weapon",
+  "description": "Increases shelling power and fire attack while the Wyvern's Fire Gauge is blinking red.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 22,
+  "name": "Critical Boost",
+  "kind": "weapon",
+  "description": "Increases the damage of critical hits.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases damage dealt by critical hits to 28%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases damage dealt by critical hits to 31%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases damage dealt by critical hits to 34%."
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases damage dealt by critical hits to 37%."
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases damage dealt by critical hits to 40%."
+   }
+  ]
+ },
+ {
+  "id": 103,
+  "name": "Critical Draw",
+  "kind": "weapon",
+  "description": "Increases affinity when performing draw attacks. (Not effective while riding.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +50%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +75%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +100%"
+   }
+  ]
+ },
+ {
+  "id": 82,
+  "name": "Critical Element",
+  "kind": "weapon",
+  "description": "Increases elemental damage (fire, water, thunder, ice, dragon) when landing critical hits.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases elemental damage while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases elemental damage while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases elemental damage while active."
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "name": "Critical Eye",
+  "kind": "weapon",
+  "description": "Increases affinity.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +4%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +8%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +12%"
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +16%"
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +20%"
+   }
+  ]
+ },
+ {
+  "id": 68,
+  "name": "Critical Status",
+  "kind": "weapon",
+  "description": "Increases abnormal status effects (paralysis, poison, sleep, blast) when landing critical hits.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases abnormal status effects when landing critical hits."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases abnormal status effects when landing critical hits."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases abnormal status effects when landing critical hits."
+   }
+  ]
+ },
+ {
+  "id": 168,
+  "name": "Darkside",
+  "kind": "weapon",
+  "description": "Performing certain Lvl 2 or higher charged slashes deals self-damage. Attack is also temporarily boosted.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect. (Requires activation cooldown, but self-damage still occurs.)"
+   }
+  ]
+ },
+ {
+  "id": 41,
+  "name": "Dragon Attack",
+  "kind": "weapon",
+  "description": "Increases dragon element attack power. (Elemental attack power has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon attack +40"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Dragon attack +20% Bonus: +60"
+   }
+  ]
+ },
+ {
+  "id": 166,
+  "name": "Evading Reload",
+  "kind": "weapon",
+  "description": "Evading loads the currently selected ammo automatically.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 65,
+  "name": "Exhaust Functionality",
+  "kind": "weapon",
+  "description": "Allows you to apply exhaust coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you use exhaust coatings."
+   }
+  ]
+ },
+ {
+  "id": 50,
+  "name": "Fire Attack",
+  "kind": "weapon",
+  "description": "Increases fire element attack power. (Elemental attack power has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire attack +40"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Fire attack +20% Bonus: +60"
+   }
+  ]
+ },
+ {
+  "id": 60,
+  "name": "Focus",
+  "kind": "weapon",
+  "description": "Increases the fill rate for weapons with gauges and the charge rate for weapons with charge attacks.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases gauge fill rate and reduces charge times by 5%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases gauge fill rate and reduces charge times by 10%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases gauge fill rate and reduces charge times by 15%."
+   }
+  ]
+ },
+ {
+  "id": 171,
+  "name": "Grillmaster",
+  "kind": "weapon",
+  "description": "Grill meat to sharpen your weapon and temporarily increase your attack. (Duration and effect vary based on results.)",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 59,
+  "name": "Guard",
+  "kind": "weapon",
+  "description": "Reduces knockbacks and stamina depletion when guarding.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly decreases the impact of attacks and reduces stamina depletion by 15%."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Decreases the impact of attacks and reduces stamina depletion by 30%."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly decreases the impact of attacks and reduces stamina depletion by 50%."
+   }
+  ]
+ },
+ {
+  "id": 16,
+  "name": "Guard Up",
+  "kind": "weapon",
+  "description": "Reduces damage taken when guarding and allows you to guard against ordinarily unblockable attacks.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces damage taken by 10%, plus an additional 20% when conditions are met."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces damage taken by 20%, plus an additional 30% when conditions are met."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Reduces damage taken by 30%, plus an additional 50% when conditions are met."
+   }
+  ]
+ },
+ {
+  "id": 119,
+  "name": "Handicraft",
+  "kind": "weapon",
+  "description": "Extends the weapon sharpness gauge. However, it will not increase the gauge past its maximum.",
+  "max_level": 5,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Weapon sharpness +10"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Weapon sharpness +20"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Weapon sharpness +30"
+   },
+   {
+    "level": 4,
+    "name": null,
+    "pieces_required": null,
+    "description": "Weapon sharpness +40"
+   },
+   {
+    "level": 5,
+    "name": null,
+    "pieces_required": null,
+    "description": "Weapon sharpness +50"
+   }
+  ]
+ },
+ {
+  "id": 29,
+  "name": "Horn Maestro",
+  "kind": "weapon",
+  "description": "Increases the effect duration of hunting horn melodies. (Effect lost when you change weapons.)",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends Melody Effect duration and increases the chance of larger heals from healing melodies."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases the effect duration of hunting horn melodies."
+   }
+  ]
+ },
+ {
+  "id": 121,
+  "name": "Ice Attack",
+  "kind": "weapon",
+  "description": "Increases ice element attack power. (Elemental attack power has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice attack +40"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Ice attack +20% Bonus: +60"
+   }
+  ]
+ },
+ {
+  "id": 109,
+  "name": "Load Shells",
+  "kind": "weapon",
+  "description": "Improves reloading, and increases the gunlance's shell capacity and charge blade's phial capacity.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases shell and phial reloading speed."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases shell/phial reloading speed. Gunlance loading capacity +1. Charge blade charges 5 phials on yellow gauge."
+   }
+  ]
+ },
+ {
+  "id": 124,
+  "name": "Master's Touch",
+  "kind": "weapon",
+  "description": "Prevents your weapon from losing sharpness during critical hits.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants an 80% chance of no sharpness loss while active."
+   }
+  ]
+ },
+ {
+  "id": 136,
+  "name": "Mind's Eye",
+  "kind": "weapon",
+  "description": "Your attacks are deflected less and are more powerful against hard monster parts.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "50% chance of your attacks not being deflected, +10% attack power against hard targets."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "100% chance of your attacks not being deflected, +15% attack power against hard targets."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "100% chance of your attacks not being deflected, +30% attack power against hard targets."
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "name": "Normal Shots",
+  "kind": "weapon",
+  "description": "Increases the attack power of Normal Ammo, normal arrows, and Flying Swallow Shot.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases the power of specified ammo and arrows."
+   }
+  ]
+ },
+ {
+  "id": 66,
+  "name": "Offensive Guard",
+  "kind": "weapon",
+  "description": "Temporarily increases attack power after executing a perfectly-timed guard.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +5% while active."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +10% while active."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Attack +15% while active."
+   }
+  ]
+ },
+ {
+  "id": 140,
+  "name": "Opening Shot",
+  "kind": "weapon",
+  "description": "Increases the bowgun's reload speed and increases the power of bullets when fully loaded.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases bowgun reload speed and attack power of ammo when certain conditions are met."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases bowgun reload speed and attack power of ammo when certain conditions are met."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly increases bowgun reload speed and attack power of ammo when certain conditions are met."
+   }
+  ]
+ },
+ {
+  "id": 44,
+  "name": "Para Functionality",
+  "kind": "weapon",
+  "description": "Allows you to apply paralysis coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you use paralysis coatings."
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "name": "Paralysis Attack",
+  "kind": "weapon",
+  "description": "Increases the rate of paralysis buildup. (Paralysis buildup has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Paralysis buildup +5% Bonus: +10"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Paralysis buildup +10% Bonus: +20"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Paralysis buildup +20% Bonus: +50"
+   }
+  ]
+ },
+ {
+  "id": 94,
+  "name": "Piercing Shots",
+  "kind": "weapon",
+  "description": "Increases the attack of the bowgun's Pierce Ammo, and the bow's Dragon Piercer and Thousand Dragons.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases the power of specified ammo and arrows."
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "name": "Poison Attack",
+  "kind": "weapon",
+  "description": "Increases the rate of poison buildup. (Poison buildup has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Poison buildup +5% Bonus: +10"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Poison buildup +10% Bonus: +20"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Poison buildup +20% Bonus: +50"
+   }
+  ]
+ },
+ {
+  "id": 21,
+  "name": "Poison Duration Up",
+  "kind": "weapon",
+  "description": "Extends the duration of your poison's effect on monsters.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Extends the duration of your poison's effect by 20%."
+   }
+  ]
+ },
+ {
+  "id": 116,
+  "name": "Poison Functionality",
+  "kind": "weapon",
+  "description": "Allows you to apply poison coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you use poison coatings."
+   }
+  ]
+ },
+ {
+  "id": 104,
+  "name": "Power Prolonger",
+  "kind": "weapon",
+  "description": "Allows long swords, dual blades, insect glaives, switch axes, and charge blades to stay powered up longer.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately boosts the duration weapons are powered up."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Boosts the duration weapons are powered up."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Greatly boosts the duration weapons are powered up."
+   }
+  ]
+ },
+ {
+  "id": 164,
+  "name": "Power Stone",
+  "kind": "weapon",
+  "description": "Temporarily increases attack upon mining materials.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Mining particularly rare materials greatly increases attack. (Attack increase has a maximum limit.)"
+   }
+  ]
+ },
+ {
+  "id": 134,
+  "name": "Protective Polish",
+  "kind": "weapon",
+  "description": "Weapon sharpness does not decrease for a set time after sharpening.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants no sharpness loss for 30 seconds after activation."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants no sharpness loss for 60 seconds after activation."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants no sharpness loss for 90 seconds after activation."
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "name": "Punishing Draw",
+  "kind": "weapon",
+  "description": "Adds a stun effect to draw attacks and slightly increases attack power. (Not effective while riding.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Draw attacks deal a small amount of stun damage and gain attack +3."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Draw attacks deal a medium amount of stun damage and gain attack +5."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Draw attacks deal a large amount of stun damage and gain attack +7."
+   }
+  ]
+ },
+ {
+  "id": 23,
+  "name": "Rapid Fire Up",
+  "kind": "weapon",
+  "description": "Improves light bowgun rapid fire.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Rapid fire power +5%"
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "name": "Rapid Morph",
+  "kind": "weapon",
+  "description": "Increases switch speed and power for switch axes and charge blades.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Speed +10%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Speed +20% Morph attack power +10%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Speed +30% Morph attack power +20%"
+   }
+  ]
+ },
+ {
+  "id": 117,
+  "name": "Razor Sharp",
+  "kind": "weapon",
+  "description": "Prevents your weapon from losing sharpness.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants a 10% chance of no sharpness loss."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants a 25% chance of no sharpness loss."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Grants a 50% chance of no sharpness loss."
+   }
+  ]
+ },
+ {
+  "id": 182,
+  "name": "Shattering Reflection",
+  "kind": "weapon",
+  "description": "Level 3 charged slashes deal area-of-effect damage upon hitting the ground.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 78,
+  "name": "Sleep Attack",
+  "kind": "weapon",
+  "description": "Increases the rate of sleep buildup. (Sleep buildup has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Sleep buildup +5% Bonus: +10"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Sleep buildup +10% Bonus: +20"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Sleep buildup +20% Bonus: +50"
+   }
+  ]
+ },
+ {
+  "id": 79,
+  "name": "Sleep Functionality",
+  "kind": "weapon",
+  "description": "Allows you to apply sleep coatings.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Lets you use sleep coatings."
+   }
+  ]
+ },
+ {
+  "id": 39,
+  "name": "Slicked Blade",
+  "kind": "weapon",
+  "description": "Temporarily increases affinity when wet or when inflicted with bubbleblight. (Wet and bubbleblight effects stack.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +3% when wet, and +7% while afflicted with bubbleblight."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +6% when wet, and +14% while afflicted with bubbleblight."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Affinity +9% when wet, and +21% while afflicted with bubbleblight."
+   }
+  ]
+ },
+ {
+  "id": 36,
+  "name": "Slugger",
+  "kind": "weapon",
+  "description": "Makes it easier to stun monsters.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stun power +20%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stun power +30%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Stun power +40%"
+   }
+  ]
+ },
+ {
+  "id": 69,
+  "name": "Special Ammo Boost",
+  "kind": "weapon",
+  "description": "Increases the power of the bowgun's special ammo, and the bow's Dragon Piercer, Thousand Dragons, and Tracer.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases the power of specified ammo and arrows."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases the power of specified ammo and arrows."
+   }
+  ]
+ },
+ {
+  "id": 126,
+  "name": "Speed Sharpening",
+  "kind": "weapon",
+  "description": "Speeds up weapon sharpening when using a whetstone.",
+  "max_level": 2,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Removes one cycle from the sharpening process."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Removes two cycles from the sharpening process."
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "name": "Spread/Power Shots",
+  "kind": "weapon",
+  "description": "Increases the attack of the bowgun's Spread Ammo and the bow's Power Shots and Quick Shots.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases the power of specified ammo and arrows."
+   }
+  ]
+ },
+ {
+  "id": 141,
+  "name": "Stamina Thief",
+  "kind": "weapon",
+  "description": "Increases certain attacks' ability to exhaust monsters.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Exhaust power +20%"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Exhaust power +30%"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Exhaust power +40%"
+   }
+  ]
+ },
+ {
+  "id": 174,
+  "name": "Synergy",
+  "kind": "weapon",
+  "description": "Temporarily increases your affinity and the affinity of those around you after using a Rising Spiral Slash.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 169,
+  "name": "Synthetic Shield",
+  "kind": "weapon",
+  "description": "Temporarily increases your defense and the defense of those around you after a successful Perfect Guard.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect."
+   }
+  ]
+ },
+ {
+  "id": 137,
+  "name": "Tetrad Shot",
+  "kind": "weapon",
+  "description": "Increases affinity of bowgun ammo/ coatings from the fourth shot and attack of the fourth and sixth shots.",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Slightly increases the attack power and affinity of ammo after certain conditions are met."
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Moderately increases attack power and affinity of ammo after certain conditions are met."
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Increases the attack power and affinity of ammo after certain conditions are met."
+   }
+  ]
+ },
+ {
+  "id": 127,
+  "name": "Thunder Attack",
+  "kind": "weapon",
+  "description": "Increases thunder element attack power. (Elemental attack power has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder attack +40"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Thunder attack +20% Bonus: +60"
+   }
+  ]
+ },
+ {
+  "id": 91,
+  "name": "Water Attack",
+  "kind": "weapon",
+  "description": "Increases water element attack power. (Elemental attack power has a maximum limit.)",
+  "max_level": 3,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water attack +40"
+   },
+   {
+    "level": 2,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "name": null,
+    "pieces_required": null,
+    "description": "Water attack +20% Bonus: +60"
+   }
+  ]
+ },
+ {
+  "id": 96,
+  "name": "Whiteflame Torrent",
+  "kind": "weapon",
+  "description": "Chance to deal additional damage after landing an attack.",
+  "max_level": 1,
+  "ranks": [
+   {
+    "level": 1,
+    "name": null,
+    "pieces_required": null,
+    "description": "Activates skill effect. (When used with Scorcher, does not stack but adds extra fire damage.)"
+   }
+  ]
+ }
+]

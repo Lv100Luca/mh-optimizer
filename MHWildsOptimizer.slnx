@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MHWildsOptimizer.Cli/MHWildsOptimizer.Cli.csproj" />
+    <Project Path="src/MHWildsOptimizer.Core/MHWildsOptimizer.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MHWildsOptimizer.Tests/MHWildsOptimizer.Tests.csproj" />
+  </Folder>
+</Solution>

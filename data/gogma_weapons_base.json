@@ -1,0 +1,1383 @@
+{
+ "bow": {
+  "attack": {
+   "api_id": 1139,
+   "name": "Calamitous Angel",
+   "raw": 200,
+   "display_attack": 240,
+   "affinity": -10,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": [
+    "close-range"
+   ],
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1140,
+   "name": "Calamitous Angel",
+   "raw": 180,
+   "display_attack": 216,
+   "affinity": 15,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": [
+    "power"
+   ],
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1141,
+   "name": "Calamitous Angel",
+   "raw": 190,
+   "display_attack": 228,
+   "affinity": 0,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": [
+    "pierce"
+   ],
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "charge-blade": {
+  "attack": {
+   "api_id": 1142,
+   "name": "Promised Abyss",
+   "raw": 200,
+   "display_attack": 720,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": "impact",
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1143,
+   "name": "Promised Abyss",
+   "raw": 180,
+   "display_attack": 648,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": "element",
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1144,
+   "name": "Promised Abyss",
+   "raw": 190,
+   "display_attack": 684,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": "element",
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "dual-blades": {
+  "attack": {
+   "api_id": 1145,
+   "name": "Eternal Cusp",
+   "raw": 200,
+   "display_attack": 280,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1146,
+   "name": "Eternal Cusp",
+   "raw": 180,
+   "display_attack": 252,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1147,
+   "name": "Eternal Cusp",
+   "raw": 190,
+   "display_attack": 266,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "great-sword": {
+  "attack": {
+   "api_id": 1148,
+   "name": "Ostrak Oblivion",
+   "raw": 200,
+   "display_attack": 960,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1149,
+   "name": "Ostrak Oblivion",
+   "raw": 180,
+   "display_attack": 864,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1150,
+   "name": "Ostrak Oblivion",
+   "raw": 190,
+   "display_attack": 912,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "gunlance": {
+  "attack": {
+   "api_id": 1151,
+   "name": "Auguring Omen",
+   "raw": 200,
+   "display_attack": 460,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": "normal",
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1152,
+   "name": "Auguring Omen",
+   "raw": 180,
+   "display_attack": 414,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": "long",
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1153,
+   "name": "Auguring Omen",
+   "raw": 190,
+   "display_attack": 437,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": "wide",
+   "kinsect": null
+  }
+ },
+ "hammer": {
+  "attack": {
+   "api_id": 1154,
+   "name": "Bound Admonition",
+   "raw": 200,
+   "display_attack": 1040,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1155,
+   "name": "Bound Admonition",
+   "raw": 180,
+   "display_attack": 936,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1156,
+   "name": "Bound Admonition",
+   "raw": 190,
+   "display_attack": 988,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "heavy-bowgun": {
+  "attack": {
+   "api_id": 1157,
+   "name": "Trembling Hels",
+   "raw": 200,
+   "display_attack": 300,
+   "affinity": -10,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 3,
+     "id": 538
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 2,
+     "id": 539
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 3,
+     "id": 540
+    },
+    {
+     "kind": "armor",
+     "level": 1,
+     "capacity": 2,
+     "id": 541
+    },
+    {
+     "kind": "recover",
+     "level": 1,
+     "capacity": 2,
+     "id": 542
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 2,
+     "id": 543
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "id": 544
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1158,
+   "name": "Trembling Hels",
+   "raw": 180,
+   "display_attack": 270,
+   "affinity": 15,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 3,
+     "id": 545
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 3,
+     "id": 546
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 2,
+     "id": 547
+    },
+    {
+     "kind": "slicing",
+     "level": 1,
+     "capacity": 2,
+     "id": 548
+    },
+    {
+     "kind": "recover",
+     "level": 1,
+     "capacity": 2,
+     "id": 549
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 2,
+     "id": 550
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "id": 551
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1159,
+   "name": "Trembling Hels",
+   "raw": 190,
+   "display_attack": 285,
+   "affinity": 0,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 2,
+     "id": 552
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 3,
+     "id": 553
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 3,
+     "id": 554
+    },
+    {
+     "kind": "slicing",
+     "level": 1,
+     "capacity": 2,
+     "id": 555
+    },
+    {
+     "kind": "armor",
+     "level": 1,
+     "capacity": 2,
+     "id": 556
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 2,
+     "id": 557
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "id": 558
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "hunting-horn": {
+  "attack": {
+   "api_id": 1160,
+   "name": "Onyx Choros",
+   "raw": 200,
+   "display_attack": 840,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1161,
+   "name": "Onyx Choros",
+   "raw": 180,
+   "display_attack": 756,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1162,
+   "name": "Onyx Choros",
+   "raw": 190,
+   "display_attack": 798,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "insect-glaive": {
+  "attack": {
+   "api_id": 1163,
+   "name": "Limbo Llor",
+   "raw": 200,
+   "display_attack": 620,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1164,
+   "name": "Limbo Llor",
+   "raw": 180,
+   "display_attack": 558,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1165,
+   "name": "Limbo Llor",
+   "raw": 190,
+   "display_attack": 589,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "lance": {
+  "attack": {
+   "api_id": 1166,
+   "name": "Aether Pike",
+   "raw": 200,
+   "display_attack": 460,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1167,
+   "name": "Aether Pike",
+   "raw": 180,
+   "display_attack": 414,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1168,
+   "name": "Aether Pike",
+   "raw": 190,
+   "display_attack": 437,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "light-bowgun": {
+  "attack": {
+   "api_id": 1169,
+   "name": "Bethorned Agony",
+   "raw": 200,
+   "display_attack": 260,
+   "affinity": -10,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 546
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 2,
+     "rapid": false,
+     "id": 547
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 548
+    },
+    {
+     "kind": "recover",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 549
+    },
+    {
+     "kind": "demon",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 550
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 551
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "rapid": false,
+     "id": 552
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1170,
+   "name": "Bethorned Agony",
+   "raw": 180,
+   "display_attack": 234,
+   "affinity": 15,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 553
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 554
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 2,
+     "rapid": false,
+     "id": 555
+    },
+    {
+     "kind": "slicing",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 556
+    },
+    {
+     "kind": "recover",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 557
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 558
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "rapid": false,
+     "id": 559
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1171,
+   "name": "Bethorned Agony",
+   "raw": 190,
+   "display_attack": 247,
+   "affinity": 0,
+   "sharpness": null,
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": [
+    {
+     "kind": "normal",
+     "level": 2,
+     "capacity": 2,
+     "rapid": false,
+     "id": 560
+    },
+    {
+     "kind": "pierce",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 561
+    },
+    {
+     "kind": "spread",
+     "level": 2,
+     "capacity": 2,
+     "rapid": true,
+     "id": 562
+    },
+    {
+     "kind": "slicing",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 563
+    },
+    {
+     "kind": "demon",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 564
+    },
+    {
+     "kind": "exhaust",
+     "level": 1,
+     "capacity": 1,
+     "rapid": false,
+     "id": 565
+    },
+    {
+     "kind": "tranq",
+     "level": 1,
+     "capacity": 4,
+     "rapid": false,
+     "id": 566
+    }
+   ],
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "long-sword": {
+  "attack": {
+   "api_id": 1172,
+   "name": "Headsman's Hamus",
+   "raw": 200,
+   "display_attack": 660,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1173,
+   "name": "Headsman's Hamus",
+   "raw": 180,
+   "display_attack": 594,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1174,
+   "name": "Headsman's Hamus",
+   "raw": 190,
+   "display_attack": 627,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "switch-axe": {
+  "attack": {
+   "api_id": 1175,
+   "name": "Wicked Regnum",
+   "raw": 200,
+   "display_attack": 700,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": {
+    "kind": "power"
+   },
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1176,
+   "name": "Wicked Regnum",
+   "raw": 180,
+   "display_attack": 630,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": {
+    "kind": "element"
+   },
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1177,
+   "name": "Wicked Regnum",
+   "raw": 190,
+   "display_attack": 665,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": {
+    "kind": "element"
+   },
+   "shell": null,
+   "kinsect": null
+  }
+ },
+ "sword-shield": {
+  "attack": {
+   "api_id": 1180,
+   "name": "Kyrie Verd",
+   "raw": 200,
+   "display_attack": 280,
+   "affinity": -10,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "affinity": {
+   "api_id": 1181,
+   "name": "Kyrie Verd",
+   "raw": 180,
+   "display_attack": 252,
+   "affinity": 15,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 50,
+    "blue": 70,
+    "white": 10,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  },
+  "element": {
+   "api_id": 1182,
+   "name": "Kyrie Verd",
+   "raw": 190,
+   "display_attack": 266,
+   "affinity": 0,
+   "sharpness": {
+    "red": 140,
+    "orange": 40,
+    "yellow": 40,
+    "green": 80,
+    "blue": 30,
+    "white": 20,
+    "purple": 0
+   },
+   "slots": [
+    3,
+    3,
+    3
+   ],
+   "ammo": null,
+   "coatings": null,
+   "melodies": null,
+   "phial": null,
+   "shell": null,
+   "kinsect": null
+  }
+ }
+}

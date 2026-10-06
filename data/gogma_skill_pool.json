@@ -1,0 +1,1823 @@
+{
+ "_about": "Gogma Artian weapon skill roll table from the game data (dtlnor/MHWs-in-json, GameDesign/Common/Equip/ArtianSkillGroupData). Each roll picks one (set bonus, group skill) pair; every pair has weight 1, i.e. uniform 1/294. A Gogma weapon counts as one equipped piece for both skills.",
+ "pair_count": 294,
+ "probability_per_pair": 0.0034,
+ "set_bonuses_in_pool": [
+  "Arkveld's Hunger",
+  "Blangonga's Spirit",
+  "Doshaguma's Might",
+  "Ebony Odogaron's Power",
+  "Fulgur Anjanath's Will",
+  "Gogmapocalypse",
+  "Gore Magala's Tyranny",
+  "Gravios's Protection",
+  "Guardian Arkveld's Vitality",
+  "Jin Dahaad's Revolt",
+  "Leviathan's Fury",
+  "Mizutsune's Prowess",
+  "Nu Udra's Mutiny",
+  "Omega Resonance",
+  "Rathalos's Flare",
+  "Rey Dau's Voltage",
+  "Seregios's Tenacity",
+  "Soul of the Dark Knight",
+  "Uth Duna's Cover",
+  "Xu Wu's Vigor",
+  "Zoh Shia's Pulse"
+ ],
+ "set_bonuses_excluded": [
+  "Blossomdance Prayer",
+  "Dreamspell Prayer",
+  "Flamefete Prayer",
+  "Lumenhymn Prayer"
+ ],
+ "group_skills_in_pool": [
+  "Alluring Pelt",
+  "Buttery Leathercraft",
+  "Flexible Leathercraft",
+  "Fortifying Pelt",
+  "Guardian's Protection",
+  "Guardian's Pulse",
+  "Imparted Wisdom",
+  "Lord's Favor",
+  "Lord's Fury",
+  "Lord's Soul",
+  "Neopteron Alert",
+  "Neopteron Camouflage",
+  "Scale Layering",
+  "Scaling Prowess"
+ ],
+ "group_skills_excluded": [
+  "Festival Spirit",
+  "Glory's Favor",
+  "Master of the Fist"
+ ],
+ "p_specific_set": 0.04762,
+ "p_specific_group": 0.07143,
+ "pairs": [
+  {
+   "roll_id": "[1]ASkillType_0000",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[2]ASkillType_0001",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[3]ASkillType_0002",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[4]ASkillType_0003",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[5]ASkillType_0004",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[7]ASkillType_0005",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[8]ASkillType_0006",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[9]ASkillType_0007",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[10]ASkillType_0008",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[11]ASkillType_0009",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[12]ASkillType_0010",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[13]ASkillType_0011",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[14]ASkillType_0012",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[16]ASkillType_0014",
+   "set_bonus": "Doshaguma's Might",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[17]ASkillType_0015",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[18]ASkillType_0016",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[19]ASkillType_0017",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[20]ASkillType_0018",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[21]ASkillType_0019",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[22]ASkillType_0020",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[23]ASkillType_0021",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[24]ASkillType_0022",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[25]ASkillType_0023",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[26]ASkillType_0024",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[27]ASkillType_0025",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[28]ASkillType_0026",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[29]ASkillType_0027",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[31]ASkillType_0029",
+   "set_bonus": "Rathalos's Flare",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[32]ASkillType_0030",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[33]ASkillType_0031",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[34]ASkillType_0032",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[35]ASkillType_0033",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[36]ASkillType_0034",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[37]ASkillType_0035",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[38]ASkillType_0036",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[39]ASkillType_0037",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[40]ASkillType_0038",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[41]ASkillType_0039",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[42]ASkillType_0040",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[43]ASkillType_0041",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[44]ASkillType_0042",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[46]ASkillType_0044",
+   "set_bonus": "Xu Wu's Vigor",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[47]ASkillType_0045",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[48]ASkillType_0046",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[49]ASkillType_0047",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[50]ASkillType_0048",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[51]ASkillType_0049",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[52]ASkillType_0050",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[53]ASkillType_0051",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[54]ASkillType_0052",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[55]ASkillType_0053",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[56]ASkillType_0054",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[57]ASkillType_0055",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[58]ASkillType_0056",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[59]ASkillType_0057",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[61]ASkillType_0059",
+   "set_bonus": "Gravios's Protection",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[62]ASkillType_0060",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[63]ASkillType_0061",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[64]ASkillType_0062",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[65]ASkillType_0063",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[66]ASkillType_0064",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[67]ASkillType_0065",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[68]ASkillType_0066",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[69]ASkillType_0067",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[70]ASkillType_0068",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[71]ASkillType_0069",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[72]ASkillType_0070",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[73]ASkillType_0071",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[74]ASkillType_0072",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[76]ASkillType_0074",
+   "set_bonus": "Blangonga's Spirit",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[77]ASkillType_0075",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[78]ASkillType_0076",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[79]ASkillType_0077",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[80]ASkillType_0078",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[81]ASkillType_0079",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[82]ASkillType_0080",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[83]ASkillType_0081",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[84]ASkillType_0082",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[85]ASkillType_0083",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[86]ASkillType_0084",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[87]ASkillType_0085",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[88]ASkillType_0086",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[89]ASkillType_0087",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[91]ASkillType_0089",
+   "set_bonus": "Ebony Odogaron's Power",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[92]ASkillType_0090",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[93]ASkillType_0091",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[94]ASkillType_0092",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[95]ASkillType_0093",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[96]ASkillType_0094",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[97]ASkillType_0095",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[98]ASkillType_0096",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[99]ASkillType_0097",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[100]ASkillType_0098",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[101]ASkillType_0099",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[102]ASkillType_0100",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[103]ASkillType_0101",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[104]ASkillType_0102",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[106]ASkillType_0104",
+   "set_bonus": "Fulgur Anjanath's Will",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[107]ASkillType_0105",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[108]ASkillType_0106",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[109]ASkillType_0107",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[110]ASkillType_0108",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[111]ASkillType_0109",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[112]ASkillType_0110",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[113]ASkillType_0111",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[114]ASkillType_0112",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[115]ASkillType_0113",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[116]ASkillType_0114",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[117]ASkillType_0115",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[118]ASkillType_0116",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[119]ASkillType_0117",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[121]ASkillType_0119",
+   "set_bonus": "Uth Duna's Cover",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[122]ASkillType_0120",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[123]ASkillType_0121",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[124]ASkillType_0122",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[125]ASkillType_0123",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[126]ASkillType_0124",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[127]ASkillType_0125",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[128]ASkillType_0126",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[129]ASkillType_0127",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[130]ASkillType_0128",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[131]ASkillType_0129",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[132]ASkillType_0130",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[133]ASkillType_0131",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[134]ASkillType_0132",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[136]ASkillType_0134",
+   "set_bonus": "Rey Dau's Voltage",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[137]ASkillType_0135",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[138]ASkillType_0136",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[139]ASkillType_0137",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[140]ASkillType_0138",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[141]ASkillType_0139",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[142]ASkillType_0140",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[143]ASkillType_0141",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[144]ASkillType_0142",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[145]ASkillType_0143",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[146]ASkillType_0144",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[147]ASkillType_0145",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[148]ASkillType_0146",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[149]ASkillType_0147",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[151]ASkillType_0149",
+   "set_bonus": "Nu Udra's Mutiny",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[152]ASkillType_0150",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[153]ASkillType_0151",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[154]ASkillType_0152",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[155]ASkillType_0153",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[156]ASkillType_0154",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[157]ASkillType_0155",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[158]ASkillType_0156",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[159]ASkillType_0157",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[160]ASkillType_0158",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[161]ASkillType_0159",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[162]ASkillType_0160",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[163]ASkillType_0161",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[164]ASkillType_0162",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[166]ASkillType_0164",
+   "set_bonus": "Jin Dahaad's Revolt",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[167]ASkillType_0165",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[168]ASkillType_0166",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[169]ASkillType_0167",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[170]ASkillType_0168",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[171]ASkillType_0169",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[172]ASkillType_0170",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[173]ASkillType_0171",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[174]ASkillType_0172",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[175]ASkillType_0173",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[176]ASkillType_0174",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[177]ASkillType_0175",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[178]ASkillType_0176",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[179]ASkillType_0177",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[181]ASkillType_0179",
+   "set_bonus": "Gore Magala's Tyranny",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[182]ASkillType_0180",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[183]ASkillType_0181",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[184]ASkillType_0182",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[185]ASkillType_0183",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[186]ASkillType_0184",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[187]ASkillType_0185",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[188]ASkillType_0186",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[189]ASkillType_0187",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[190]ASkillType_0188",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[191]ASkillType_0189",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[192]ASkillType_0190",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[193]ASkillType_0191",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[194]ASkillType_0192",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[196]ASkillType_0194",
+   "set_bonus": "Arkveld's Hunger",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[197]ASkillType_0195",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[198]ASkillType_0196",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[199]ASkillType_0197",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[200]ASkillType_0198",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[201]ASkillType_0199",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[202]ASkillType_0200",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[203]ASkillType_0201",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[204]ASkillType_0202",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[205]ASkillType_0203",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[206]ASkillType_0204",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[207]ASkillType_0205",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[208]ASkillType_0206",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[209]ASkillType_0207",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[211]ASkillType_0209",
+   "set_bonus": "Guardian Arkveld's Vitality",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[212]ASkillType_0210",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[213]ASkillType_0211",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[214]ASkillType_0212",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[215]ASkillType_0213",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[216]ASkillType_0214",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[217]ASkillType_0215",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[218]ASkillType_0216",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[219]ASkillType_0217",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[220]ASkillType_0218",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[221]ASkillType_0219",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[222]ASkillType_0220",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[223]ASkillType_0221",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[224]ASkillType_0222",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[226]ASkillType_0224",
+   "set_bonus": "Mizutsune's Prowess",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[227]ASkillType_0225",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[228]ASkillType_0226",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[229]ASkillType_0227",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[230]ASkillType_0228",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[231]ASkillType_0229",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[232]ASkillType_0230",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[233]ASkillType_0231",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[234]ASkillType_0232",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[235]ASkillType_0233",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[236]ASkillType_0234",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[237]ASkillType_0235",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[238]ASkillType_0236",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[239]ASkillType_0237",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[241]ASkillType_0239",
+   "set_bonus": "Zoh Shia's Pulse",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[242]ASkillType_0240",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[243]ASkillType_0241",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[244]ASkillType_0242",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[245]ASkillType_0243",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[246]ASkillType_0244",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[247]ASkillType_0245",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[248]ASkillType_0246",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[249]ASkillType_0247",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[250]ASkillType_0248",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[251]ASkillType_0249",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[252]ASkillType_0250",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[253]ASkillType_0251",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[254]ASkillType_0252",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[256]ASkillType_0254",
+   "set_bonus": "Leviathan's Fury",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[257]ASkillType_0255",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[258]ASkillType_0256",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[259]ASkillType_0257",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[260]ASkillType_0258",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[261]ASkillType_0259",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[262]ASkillType_0260",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[263]ASkillType_0261",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[264]ASkillType_0262",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[265]ASkillType_0263",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[266]ASkillType_0264",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[267]ASkillType_0265",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[268]ASkillType_0266",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[269]ASkillType_0267",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[271]ASkillType_0269",
+   "set_bonus": "Seregios's Tenacity",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[272]ASkillType_0270",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[273]ASkillType_0271",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[274]ASkillType_0272",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[275]ASkillType_0273",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[276]ASkillType_0274",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[277]ASkillType_0275",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[278]ASkillType_0276",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[279]ASkillType_0277",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[280]ASkillType_0278",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[281]ASkillType_0279",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[282]ASkillType_0280",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[283]ASkillType_0281",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[284]ASkillType_0282",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[286]ASkillType_0284",
+   "set_bonus": "Gogmapocalypse",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[287]ASkillType_0285",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[288]ASkillType_0286",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[289]ASkillType_0287",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[290]ASkillType_0288",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[291]ASkillType_0289",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[292]ASkillType_0290",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[293]ASkillType_0291",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[294]ASkillType_0292",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[295]ASkillType_0293",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[296]ASkillType_0294",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[297]ASkillType_0295",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[298]ASkillType_0296",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[299]ASkillType_0297",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[301]ASkillType_0299",
+   "set_bonus": "Soul of the Dark Knight",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  },
+  {
+   "roll_id": "[302]ASkillType_0300",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Neopteron Alert",
+   "weight": 1
+  },
+  {
+   "roll_id": "[303]ASkillType_0301",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Neopteron Camouflage",
+   "weight": 1
+  },
+  {
+   "roll_id": "[304]ASkillType_0302",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Flexible Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[305]ASkillType_0303",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Buttery Leathercraft",
+   "weight": 1
+  },
+  {
+   "roll_id": "[306]ASkillType_0304",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Scaling Prowess",
+   "weight": 1
+  },
+  {
+   "roll_id": "[307]ASkillType_0305",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Scale Layering",
+   "weight": 1
+  },
+  {
+   "roll_id": "[308]ASkillType_0306",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Fortifying Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[309]ASkillType_0307",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Alluring Pelt",
+   "weight": 1
+  },
+  {
+   "roll_id": "[310]ASkillType_0308",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Lord's Favor",
+   "weight": 1
+  },
+  {
+   "roll_id": "[311]ASkillType_0309",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Lord's Fury",
+   "weight": 1
+  },
+  {
+   "roll_id": "[312]ASkillType_0310",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Guardian's Pulse",
+   "weight": 1
+  },
+  {
+   "roll_id": "[313]ASkillType_0311",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Guardian's Protection",
+   "weight": 1
+  },
+  {
+   "roll_id": "[314]ASkillType_0312",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Imparted Wisdom",
+   "weight": 1
+  },
+  {
+   "roll_id": "[316]ASkillType_0314",
+   "set_bonus": "Omega Resonance",
+   "group_skill": "Lord's Soul",
+   "weight": 1
+  }
+ ]
+}
