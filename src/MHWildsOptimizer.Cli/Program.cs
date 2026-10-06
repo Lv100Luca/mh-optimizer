@@ -5,6 +5,7 @@ using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
 
 // Usage: MHWildsOptimizer.Cli [--data <dir>]
+System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 var dataDir = args.Length >= 2 && args[0] == "--data" ? args[1] : GameDataLoader.FindDataDirectory();
 var data = GameDataLoader.Load(dataDir);
 Console.WriteLine($"Loaded {data.Armor.Count} armor pieces, {data.Skills.Count} skills, {data.Decorations.Count} decorations, {data.MaxRankCharms.Count} charms from {dataDir}");
