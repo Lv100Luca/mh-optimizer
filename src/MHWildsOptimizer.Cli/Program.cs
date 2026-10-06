@@ -14,6 +14,7 @@ using Spectre.Console;
 //   MHWildsOptimizer.Cli example                 - evaluate a hard-coded example loadout
 //   (--data <dir> overrides the dataset directory, --inputs <dir> the configuration directory)
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 var argList = args.ToList();
 string? TakeOption(string name)

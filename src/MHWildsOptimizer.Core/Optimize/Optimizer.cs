@@ -284,7 +284,7 @@ public sealed class Optimizer
                 foreach (var s in front) kept[s.Key] = s;
             }
 
-            if (kept.Count > _maxStatesPerDepth && depth < _kinds.Length)
+            if (kept.Count > _maxStatesPerDepth)
             {
                 // beam cut: keep the most promising states (partial score plus a value for free slots)
                 var ranked = kept.Values.Select(s => (State: s, H: Heuristic(s.Key))).OrderByDescending(x => x.H).Take(_maxStatesPerDepth);
@@ -365,29 +365,45 @@ public sealed class Optimizer
             var best = new PriorityQueue<Scored, double>();
             var keep = Math.Max(_topN * 3, _topN + 5);
             var threshold = double.NegativeInfinity;
-            foreach (var state in finals)
+            // most promising first so the threshold rises quickly and the bound check skips the rest
+            var maxFinals = Math.Max(2000, _maxStatesPerDepth / 5);
+            var ordered = finals.OrderByDescending(s => Heuristic(s.Key)).Take(maxFinals).ToList();
+            if (finals.Count > ordered.Count) _progress?.Report($"  scoring the {ordered.Count} most promising of {finals.Count} final states");
+            foreach (var state in ordered)
             {
                 StatesEvaluated++;
                 if ((StatesEvaluated & 255) == 0) _ct.ThrowIfCancellationRequested();
                 var free = SynthesizeSlots(state.Key);
-                var levels = state.Key.AsSpan(0, _n).ToArray();
-                var placed = _filler.CoverTargets(levels, free);
-                if (placed is null) continue;
-                foreach (var d in placed.Values) foreach (var (skill, level) in d.Grants) levels[skill] += level;
+                var baseLevels = state.Key.AsSpan(0, _n).ToArray();
+                var covers = _filler.CoverTargets(baseLevels, free);
+                if (covers.Count == 0) continue;
+                var sets = state.Key; // set/group counts live in the key
 
                 if (best.Count >= keep)
                 {
-                    var optimistic = (int[])levels.Clone();
-                    var freeCount = free.Count - placed.Count;
-                    for (var s = 0; s < _n; s++) optimistic[s] = Math.Min(_rel.MaxLevels[s], optimistic[s] + freeCount);
-                    if (Score(optimistic, state.Key) <= threshold) continue;
+                    // bound with the cheapest cover: base score plus the best single-decoration gains, one per remaining free slot
+                    var cheapest = covers[0];
+                    var covered = (int[])baseLevels.Clone();
+                    foreach (var d in cheapest.Values) foreach (var (skill, level) in d.Grants) covered[skill] += level;
+                    var freeCount = free.Count - cheapest.Count;
+                    var maxSlotLevel = free.Count == 0 ? 0 : free.Max(f => f.Level);
+                    var bound = Score(covered, sets) + _filler.RelaxedGainBound(covered, freeCount, maxSlotLevel, l => Score(l, sets));
+                    if (bound <= threshold) continue;
                 }
 
-                var sets = state.Key; // set/group counts live in the key
-                _filler.FillGreedy(levels, free, placed, l => Score(l, sets));
-                var score = Score(levels, sets);
-                if (best.Count >= keep && score <= threshold) continue;
-                best.Enqueue(new Scored(state, score, levels, placed.Values.ToList()), score);
+                Scored? bestHere = null;
+                foreach (var cover in covers)
+                {
+                    var levels = (int[])baseLevels.Clone();
+                    foreach (var d in cover.Values) foreach (var (skill, level) in d.Grants) levels[skill] += level;
+                    var placed = new Dictionary<FreeSlot, DecoCandidate>(cover);
+                    _filler.FillGreedy(levels, free, placed, l => Score(l, sets));
+                    var score = Score(levels, sets);
+                    if (bestHere is null || score > bestHere.Score)
+                        bestHere = new Scored(state, score, levels, placed.Values.ToList());
+                }
+                if (bestHere is null || (best.Count >= keep && bestHere.Score <= threshold)) continue;
+                best.Enqueue(bestHere, bestHere.Score);
                 if (best.Count > keep) best.Dequeue();
                 if (best.Count >= keep) threshold = best.Peek().Score;
             }

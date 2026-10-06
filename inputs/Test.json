@@ -23,7 +23,9 @@
       3,
       3,
       3
-    ]
+    ],
+    "set_bonus": "Soul of the Dark Knight",
+    "group_skill": "Lord's Favor"
   },
   "skill_pair": {
     "mode": "fixed",
