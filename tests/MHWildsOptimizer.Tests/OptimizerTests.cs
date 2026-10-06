@@ -84,6 +84,26 @@ public class OptimizerTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void SkillLimitsKeepTheSearchFromInvestingInCappedSkills()
+    {
+        var data = TestData.Data;
+        var request = RequestLoader.Load(Path.Combine(RepoRoot, "inputs", "request.example.json"), data);
+        Assert.Equal(1, request.Conditions.SkillLimits["Burst"]); // the example caps Burst at 1 for Great Sword
+        var result = new Optimizer(data, request).Run();
+        var builds = result.PairResults[0].Builds;
+        Assert.NotEmpty(builds);
+        foreach (var b in builds)
+        {
+            var decos = b.Loadout.ArmorPieces.SelectMany(a => a.Decos).Concat(b.Loadout.Weapon.Decos).Concat(b.Loadout.Talisman?.Decos ?? [])
+                .Where(d => d is not null).Select(d => d!.Name).ToList();
+            Assert.DoesNotContain(decos, n => n.StartsWith("Chain Jewel"));
+            var summary = BuildSummary.Create(b.Loadout, data, request.Conditions);
+            var burst = summary.Skills.FirstOrDefault(s => s.Skill == "Burst");
+            if (burst.Skill is not null) Assert.True(burst.Effective <= 1);
+        }
+    }
+
+    [Fact]
     public void ImpossibleTargetsYieldNoBuilds()
     {
         var data = TestData.Data;

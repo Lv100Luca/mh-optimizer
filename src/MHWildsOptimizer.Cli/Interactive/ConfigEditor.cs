@@ -70,7 +70,7 @@ public sealed class ConfigEditor
                 choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                     .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
                     .PageSize(16)
-                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Conditions", "Talismans", "Options",
+                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Skill limits", "Conditions", "Talismans", "Options",
                         "Show resolved request", "Save", "Save as...", "Quit"));
             }
             catch (PromptCancelledException) { choice = "Quit"; }
@@ -84,6 +84,7 @@ public sealed class ConfigEditor
                     case "Rolled pair (set bonus / group skill)": EditRolledPair(); break;
                     case "Skill pair": EditSkillPair(); break;
                     case "Target skills": EditTargets(); break;
+                    case "Skill limits": EditSkillLimits(); break;
                     case "Conditions": EditConditions(); break;
                     case "Talismans": EditTalismans(); break;
                     case "Options": EditOptions(); break;
@@ -185,6 +186,7 @@ public sealed class ConfigEditor
         table.AddRow("Rolled pair", Markup.Escape($"{w.SetBonus ?? None} / {w.GroupSkill ?? None}"));
         table.AddRow("Skill pair", Markup.Escape(r.SkillPair.Mode == SkillPairMode.Fixed ? "fixed (use the rolled pair)" : $"optimize over all 294 pairs, report top {r.SkillPair.TopN}"));
         table.AddRow("Targets", Markup.Escape(r.TargetSkills.Count == 0 ? None : string.Join(", ", r.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}"))));
+        table.AddRow("Skill limits", Markup.Escape(r.Conditions.SkillLimits.Count == 0 ? None : string.Join(", ", r.Conditions.SkillLimits.Select(kv => kv.Value == 0 ? $"{kv.Key} excluded" : $"{kv.Key} <= {kv.Value}"))));
         table.AddRow("Conditions", Markup.Escape(ConditionSummary(r.Conditions)));
         table.AddRow("Talismans", Markup.Escape($"{_talismans.Count} random{(r.Talismans.IncludeCraftable ? " + craftable charms" : "")}"));
         table.AddRow("Options", Markup.Escape($"transcendence {(r.Options.AllowTranscendence ? "on" : "off")}, top {r.Options.TopN}, min rarity {r.Options.MinRarity}, core skills {(r.Options.RequireWeaponCoreSkills ? "on" : "off")}, excluded sets {r.Options.ExcludeSets.Count}"));
@@ -358,7 +360,38 @@ public sealed class ConfigEditor
         foreach (var p in props)
             p.SetValue(conditions, on.Contains(Label(p.Name)));
         typeof(Conditions).GetProperty(nameof(Conditions.Resonance))!.SetValue(conditions, PickEnum("Omega Resonance phase", _request.Conditions.Resonance));
-        _request = _request with { Conditions = conditions };
+        _request = _request with { Conditions = conditions with { SkillLimits = _request.Conditions.SkillLimits } };
+        _dirty = true;
+    }
+
+    private void EditSkillLimits()
+    {
+        var skills = _data.Skills.Where(s => s.Kind is SkillKind.Armor or SkillKind.Weapon).OrderBy(s => s.Kind).ThenBy(s => s.Name).ToList();
+        var labels = skills.ToDictionary(s => $"{s.Name}  ({s.Kind.ToString().ToLowerInvariant()}, max {s.MaxLevel})", s => s);
+        var current = _request.Conditions.SkillLimits;
+        var prompt = new MultiSelectionPrompt<string>()
+            .Title("Skills to limit (space toggles, enter accepts) - a limit of 0 removes the skill from the optimization, n values it only up to level n")
+            .NotRequired()
+            .PageSize(20)
+            .MoreChoicesText("[grey](move up and down to reveal more skills)[/]")
+            .AddChoices(labels.Keys);
+        foreach (var kv in labels.Where(kv => current.ContainsKey(kv.Value.Name)))
+            prompt.Select(kv.Key);
+        var selected = AnsiConsole.Prompt(prompt).Select(l => labels[l]).ToList();
+
+        var limits = new Dictionary<string, int>();
+        foreach (var s in selected)
+        {
+            var def = current.TryGetValue(s.Name, out var lv) ? lv : 1;
+            var targetLevel = _request.TargetSkills.GetValueOrDefault(s.Name);
+            var limit = AnsiConsole.Prompt(new TextPrompt<int>($"{Markup.Escape(s.Name)} limit (0 = exclude, max {s.MaxLevel}{(targetLevel > 0 ? $", target is {targetLevel}" : "")}):")
+                .DefaultValue(def)
+                .Validate(v => v < 0 || v > s.MaxLevel ? ValidationResult.Error($"0..{s.MaxLevel}")
+                    : v < targetLevel ? ValidationResult.Error($"below the target of {targetLevel}; lower the target first")
+                    : ValidationResult.Success()));
+            limits[s.Name] = limit;
+        }
+        _request = _request with { Conditions = _request.Conditions with { SkillLimits = limits } };
         _dirty = true;
     }
 

@@ -117,6 +117,16 @@ public static class RequestLoader
             targets[name] = level;
         }
 
+        // skill limits (0 = exclude, n = value only up to n)
+        foreach (var (name, limit) in request.Conditions.SkillLimits)
+        {
+            if (!data.SkillsByName.TryGetValue(name, out var skill)) { errors.Add($"Skill limit '{name}' is unknown."); continue; }
+            if (skill.Kind is SkillKind.Set or SkillKind.Group) { errors.Add($"Skill limit '{name}' is a {skill.Kind} skill."); continue; }
+            if (limit < 0 || limit > skill.MaxLevel) { errors.Add($"Skill limit '{name}' {limit} is outside 0..{skill.MaxLevel}."); continue; }
+            if (targets.TryGetValue(name, out var target) && target > limit)
+                errors.Add($"Target '{name}' {target} is above its limit {limit}; raise the limit or lower the target.");
+        }
+
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();
         if (request.Options.RequireWeaponCoreSkills && weaponErrors.Count == 0)

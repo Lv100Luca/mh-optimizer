@@ -24,7 +24,7 @@ public sealed record BuildSummary(
     double TotalAllConditions,
     IReadOnlyList<string> ActiveSetBonuses,
     IReadOnlyList<string> ActiveGroupSkills,
-    IReadOnlyList<(string Skill, int Level, SkillKind Kind)> Skills,
+    IReadOnlyList<(string Skill, int Level, int Effective, SkillKind Kind)> Skills,
     IReadOnlyList<string> AffinitySources,
     IReadOnlyList<string> RawSources,
     IReadOnlyList<string> ElementSources,
@@ -44,8 +44,8 @@ public sealed record BuildSummary(
             .ToList();
         var groups = skills.ActiveGroupSkills.Select(g => $"{g}{RankName(data, g, 1)}").ToList();
         var skillList = skills.Levels
-            .Select(kv => (kv.Key, kv.Value, data.SkillsByName.TryGetValue(kv.Key, out var s) ? s.Kind : SkillKind.Armor))
-            .OrderBy(x => x.Item3 == SkillKind.Weapon ? 0 : 1).ThenByDescending(x => x.Value).ThenBy(x => x.Key)
+            .Select(kv => (kv.Key, kv.Value, conditions.Effective(kv.Key, kv.Value), data.SkillsByName.TryGetValue(kv.Key, out var s) ? s.Kind : SkillKind.Armor))
+            .OrderBy(x => x.Item4 == SkillKind.Weapon ? 0 : 1).ThenByDescending(x => x.Item3).ThenBy(x => x.Key)
             .ToList();
 
         // modifier lines look like "Label: affinity +15%", "Label: raw +20", "Label: raw x1.05", "Label: element x1.2"

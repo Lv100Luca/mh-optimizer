@@ -100,7 +100,7 @@ public static class DamageCalculator
         var affinity = weapon.Affinity;
         if (trace) notes.Add(Inv($"Weapon: {weapon.TrueRaw} raw, {weapon.Affinity}% affinity, {weapon.ElementDisplay} {weapon.Element} (display), {weapon.TopSharpness?.ToString() ?? "no"} sharpness"));
 
-        int L(string skill) => skills.Level(skill);
+        int L(string skill) => cond.Effective(skill, skills.Level(skill));
         void Pct(string label, double m) { if (m != 1.0) { rawPct *= m; if (trace) notes.Add(Inv($"{label}: raw x{m:0.###}")); } }
         void Flat(string label, int v) { if (v != 0) { rawFlat += v; if (trace) notes.Add(Inv($"{label}: raw +{v}")); } }
         void Aff(string label, int v) { if (v != 0) { affinity += v; if (trace) notes.Add(Inv($"{label}: affinity {(v >= 0 ? "+" : "")}{v}%")); } }

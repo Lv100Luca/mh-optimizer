@@ -34,7 +34,8 @@ public class RequestTests
 
         Assert.Equal(5, r.TargetSkills["Weakness Exploit"]);
         Assert.Equal(3, r.TargetSkills["Focus"]);            // Great Sword core skill, added by default
-        Assert.Equal(6, r.TargetSkills.Count);
+        Assert.Equal(5, r.TargetSkills.Count);
+        Assert.Equal(1, r.Conditions.SkillLimits["Burst"]);
         Assert.Equal([("Focus", 3)], r.AppliedCoreSkills);
 
         Assert.Equal(2, r.Talismans.Count(t => t.Source == TalismanSource.Random));
@@ -79,7 +80,8 @@ public class RequestTests
         var request = new OptimizationRequest
         {
             Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000, SetBonus = "Lord's Soul" },
-            TargetSkills = new() { ["Nope"] = 1, ["Gogmapocalypse"] = 1, ["Attack Boost"] = 9 },
+            TargetSkills = new() { ["Nope"] = 1, ["Gogmapocalypse"] = 1, ["Attack Boost"] = 9, ["Burst"] = 5 },
+            Conditions = Conditions.Default with { SkillLimits = new() { ["Burst"] = 1, ["Imaginary"] = 1, ["Agitator"] = 9 } },
             Talismans = new TalismanSettings { File = "does-not-exist.json" },
             Options = new OptimizerOptions { TopN = 0, ExcludeSets = ["Imaginary Set"] },
         };
@@ -91,6 +93,9 @@ public class RequestTests
         Assert.Contains(r.Errors, e => e.Contains("Attack Boost"));
         Assert.Contains(r.Errors, e => e.Contains("does-not-exist.json"));
         Assert.Contains(r.Errors, e => e.Contains("top_n"));
+        Assert.Contains(r.Errors, e => e.Contains("'Burst' 5 is above its limit 1"));
+        Assert.Contains(r.Errors, e => e.Contains("'Imaginary' is unknown"));
+        Assert.Contains(r.Errors, e => e.Contains("'Agitator' 9 is outside"));
         Assert.Contains(r.Warnings, w => w.Contains("Imaginary Set"));
     }
 }

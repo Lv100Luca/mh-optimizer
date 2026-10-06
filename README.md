@@ -11,7 +11,7 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 
 * `inputs/` – optimizer inputs: `request.example.json` (weapon as the game shows it, skill-pair mode, target skills, conditions, talisman file, options) and `talismans.example.json` (your random talismans with skills and decoration slots).
 
-Current scope: Great Sword and Long Sword. Hitzone 100, no monster resistances. Conditional skills are user-toggleable and only count when the loadout contains them. The weapon's stats are inputs and never optimized; its rolled set bonus / group skill is either fixed or searched over all 294 rollable pairs. Talismans come from the craftable charm lines (max rank) plus the random talismans you list.
+Current scope: Great Sword and Long Sword. Hitzone 100, no monster resistances. Conditional skills are user-toggleable and only count when the loadout contains them. `conditions.skill_limits` removes skills from the optimization (`0`) or values them only up to a level (e.g. `{ "Burst": 1 }` for Great Sword). The weapon's stats are inputs and never optimized; its rolled set bonus / group skill is either fixed or searched over all 294 rollable pairs. Talismans come from the craftable charm lines (max rank) plus the random talismans you list.
 
 Interactive editor (Spectre.Console): pick an existing configuration under `inputs/` or start a new one, click together weapon, skill pair, targets, conditions, talismans and options, then save it as `inputs/<name>.json` plus `inputs/<name>.talismans.json`.
 

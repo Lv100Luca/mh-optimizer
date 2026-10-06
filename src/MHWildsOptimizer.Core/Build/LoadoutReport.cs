@@ -25,7 +25,7 @@ public static class LoadoutReport
             s.Element == Element.None ? "" : string.Format(inv, "  {0} {1:0} ({2} display)", s.Element, s.ElementTrue, s.ElementDisplay),
             s.Efr, s.Efe, s.Total, s.TotalAllConditions));
         sb.AppendLine($"       Sets: {(s.ActiveSetBonuses.Count == 0 ? "-" : string.Join(", ", s.ActiveSetBonuses))}   Groups: {(s.ActiveGroupSkills.Count == 0 ? "-" : string.Join(", ", s.ActiveGroupSkills))}");
-        sb.AppendLine($"       Skills: {string.Join(", ", s.Skills.Select(x => $"{x.Skill} {x.Level}"))}");
+        sb.AppendLine($"       Skills: {string.Join(", ", s.Skills.Select(x => x.Effective < x.Level ? $"{x.Skill} {x.Level} (valued at {x.Effective})" : $"{x.Skill} {x.Level}"))}");
         sb.AppendLine($"       Why: {s.Description}");
         sb.AppendLine();
 

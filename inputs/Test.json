@@ -25,7 +25,7 @@
       3
     ],
     "set_bonus": "Soul of the Dark Knight",
-    "group_skill": "Lord's Favor"
+    "group_skill": "Lord\u0027s Favor"
   },
   "skill_pair": {
     "mode": "fixed",
@@ -36,8 +36,8 @@
     "monster_enraged": true,
     "hitting_weak_point": true,
     "hitting_wound": false,
-    "full_health": true,
-    "red_health": false,
+    "full_health": false,
+    "red_health": true,
     "low_health": false,
     "stamina_full": true,
     "monster_statused": false,
@@ -46,7 +46,7 @@
     "latent_power_active": false,
     "adrenaline_rush_active": false,
     "adrenaline_rush_retriggered": false,
-    "counterstrike_active": false,
+    "counterstrike_active": true,
     "offensive_guard_active": false,
     "draw_attack": false,
     "charged_attack": false,
@@ -73,6 +73,7 @@
     "top_n": 5,
     "min_rarity": 5,
     "exclude_sets": [],
-    "require_weapon_core_skills": true
+    "require_weapon_core_skills": true,
+    "max_states_per_depth": 100000
   }
 }

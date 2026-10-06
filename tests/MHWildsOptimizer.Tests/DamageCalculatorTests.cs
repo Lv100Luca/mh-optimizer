@@ -109,6 +109,27 @@ public class DamageCalculatorTests
     }
 
     [Fact]
+    public void SkillLimitsCapTheValuedLevel()
+    {
+        var data = TestData.Data;
+        var loadout = new Loadout
+        {
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Attack, Element = Element.Fire }, data),
+            Talisman = data.Charm("Chain Charm III"), // Burst 3
+        };
+        var burstOn = Conditions.AllOff with { BurstActive = true };
+        var full = DamageCalculator.Calculate(loadout, data, burstOn);
+        var capped = DamageCalculator.Calculate(loadout, data, burstOn with { SkillLimits = new() { ["Burst"] = 1 } });
+        var excluded = DamageCalculator.Calculate(loadout, data, burstOn with { SkillLimits = new() { ["Burst"] = 0 } });
+        var off = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
+
+        Assert.Equal(off.TrueRaw + 12, full.TrueRaw, Tol);     // LS Burst 3
+        Assert.Equal(off.TrueRaw + 8, capped.TrueRaw, Tol);    // valued as Burst 1
+        Assert.Equal(off.TrueRaw, excluded.TrueRaw, Tol);
+        Assert.Equal(off.Total, excluded.Total, Tol);
+    }
+
+    [Fact]
     public void BurstTableMatchesDecodedGameData()
     {
         Assert.Equal(new DamageConstants.BurstBoost(18, 20), DamageConstants.Burst(WeaponType.GreatSword, 5));

@@ -74,7 +74,7 @@ public sealed class DecorationFiller
         foreach (var d in _decos)
         {
             if (d.Level > maxSlotLevel) continue;
-            if (!d.Grants.Any(g => levels[g.Skill] < _rel.MaxLevels[g.Skill])) continue;
+            if (!d.Grants.Any(g => levels[g.Skill] < _rel.Caps[g.Skill])) continue;
             Apply(d, levels, +1);
             var gain = score(levels) - baseScore;
             Apply(d, levels, -1);
@@ -153,7 +153,7 @@ public sealed class DecorationFiller
             foreach (var d in _decos)
             {
                 if (d.Kind != slot.Kind || d.Level > slot.Level) continue;
-                if (!d.Grants.Any(g => levels[g.Skill] < _rel.MaxLevels[g.Skill])) continue;
+                if (!d.Grants.Any(g => levels[g.Skill] < _rel.Caps[g.Skill])) continue;
                 Apply(d, levels, +1);
                 var s = score(levels);
                 Apply(d, levels, -1);

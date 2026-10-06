@@ -67,6 +67,15 @@ public sealed record Conditions
     /// <summary>Guts (Lord's Soul) keeps its attack bonus until it saves you once.</summary>
     public bool GutsNotYetTriggered { get; init; } = true;
 
+    /// <summary>
+    /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
+    /// (e.g. { "Burst": 1 } for Great Sword, where the five-hit boost is rarely reached). Levels above the cap are shown but not valued.
+    /// </summary>
+    public Dictionary<string, int> SkillLimits { get; init; } = new();
+
+    /// <summary>The level a skill is valued at under these conditions.</summary>
+    public int Effective(string skill, int level) => SkillLimits.TryGetValue(skill, out var limit) ? Math.Min(level, limit) : level;
+
     public static Conditions Default => new();
 
     /// <summary>Every conditional skill counted as active (a theoretical maximum: full health and red health both "on", Resonance on its Local phase).</summary>

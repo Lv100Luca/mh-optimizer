@@ -26,7 +26,8 @@ public sealed class Relevance
     public IReadOnlyList<string> GroupSkills { get; }
     public IReadOnlyDictionary<string, int> GroupIndex { get; }
 
-    private Relevance(List<string> skills, HashSet<string> offensive, GameData data, IReadOnlyDictionary<string, int> targets, List<string> sets, List<string> groups)
+    private Relevance(List<string> skills, HashSet<string> offensive, GameData data, IReadOnlyDictionary<string, int> targets,
+        IReadOnlyDictionary<string, int> limits, List<string> sets, List<string> groups)
     {
         Skills = skills;
         SkillIndex = skills.Select((s, i) => (s, i)).ToDictionary(x => x.s, x => x.i);
@@ -34,7 +35,12 @@ public sealed class Relevance
         Targets = skills.Select(s => targets.GetValueOrDefault(s)).ToArray();
         IsWeaponSkill = skills.Select(s => data.Skill(s).Kind == SkillKind.Weapon).ToArray();
         IsOffensive = skills.Select(offensive.Contains).ToArray();
-        Caps = skills.Select((s, i) => IsOffensive[i] ? MaxLevels[i] : Targets[i]).ToArray();
+        Caps = skills.Select((s, i) =>
+        {
+            var cap = IsOffensive[i] ? MaxLevels[i] : Targets[i];
+            if (limits.TryGetValue(s, out var limit)) cap = Math.Max(Targets[i], Math.Min(cap, limit));
+            return cap;
+        }).ToArray();
         SetBonuses = sets;
         SetIndex = sets.Select((s, i) => (s, i)).ToDictionary(x => x.s, x => x.i);
         GroupSkills = groups;
@@ -48,6 +54,7 @@ public sealed class Relevance
         void Add(string name, bool when = true)
         {
             if (!when || !data.SkillsByName.ContainsKey(name)) return;
+            if (c.SkillLimits.TryGetValue(name, out var limit) && limit <= 0) return; // excluded from the optimization
             if (!skills.Contains(name)) skills.Add(name);
             offensive.Add(name);
         }
@@ -101,7 +108,7 @@ public sealed class Relevance
         Group(SkillNames.LordsFavor, c.InspirationActive);
         Group(SkillNames.ButteryLeathercraft, c.AffinitySlidingActive);
 
-        return new Relevance(skills, offensive, data, targets, sets, groups);
+        return new Relevance(skills, offensive, data, targets, c.SkillLimits, sets, groups);
     }
 
     public int IndexOf(string skill) => SkillIndex.TryGetValue(skill, out var i) ? i : -1;

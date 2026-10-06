@@ -16,10 +16,10 @@
     "Critical Boost": 5,
     "Weakness Exploit": 5,
     "Agitator": 5,
-    "Maximum Might": 3,
-    "Burst": 5
+    "Maximum Might": 3
   },
   "conditions": {
+    "skill_limits": { "Burst": 1 },
     "monster_enraged": true,
     "hitting_weak_point": true,
     "hitting_wound": false,

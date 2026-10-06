@@ -45,7 +45,7 @@ public static class ResultsRenderer
                 s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness?.ToString() ?? "no",
                 s.Element == Element.None ? "" : string.Format(Inv, "   [blue]{0} {1:0}[/] [grey]({2} display)[/]", s.Element, s.ElementTrue, s.ElementDisplay))),
             new Markup($"[green]Sets:[/] {(s.ActiveSetBonuses.Count == 0 ? "[grey]-[/]" : e(string.Join(", ", s.ActiveSetBonuses)))}   [green]Groups:[/] {(s.ActiveGroupSkills.Count == 0 ? "[grey]-[/]" : e(string.Join(", ", s.ActiveGroupSkills)))}"),
-            new Markup("[cyan]Skills:[/] " + string.Join("  ", s.Skills.Select(x => x.Kind == SkillKind.Weapon ? $"[deepskyblue1]{e(x.Skill)} {x.Level}[/]" : $"[cyan]{e(x.Skill)} {x.Level}[/]"))),
+            new Markup("[cyan]Skills:[/] " + string.Join("  ", s.Skills.Select(x => (x.Kind == SkillKind.Weapon ? $"[deepskyblue1]{e(x.Skill)} {x.Level}[/]" : $"[cyan]{e(x.Skill)} {x.Level}[/]") + (x.Effective < x.Level ? $"[grey](valued at {x.Effective})[/]" : "")))),
             new Markup($"[grey]{e(s.Description)}[/]"),
             new Rule().RuleStyle("grey23"),
             new Text(LoadoutReport.RenderDetails(b.Loadout, data).TrimEnd(), new Style(Color.Grey70)),

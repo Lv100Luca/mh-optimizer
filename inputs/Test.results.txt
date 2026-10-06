@@ -1,6 +1,11 @@
 ##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 614.5   (20000 final states scored; candidates after pruning: Head 18, Waist 18, Chest 20, Legs 20, Arms 23, talismans 7)
 
 === Build 1  -  EFR 492.5 + EFE 122.0 = 614.5 ===
+TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
+       Sets: Gore Magala's Tyranny I (Black Eclipse I), Fulgur Anjanath's Will I (Second Wind I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Weakness Exploit 1
+       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
+
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
@@ -59,6 +64,11 @@ Stats under the requested conditions
   Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
 === Build 2  -  EFR 492.5 + EFE 122.0 = 614.5 ===
+TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
+       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Weakness Exploit 1
+       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
+
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
@@ -117,6 +127,11 @@ Stats under the requested conditions
   Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
 === Build 3  -  EFR 492.5 + EFE 122.0 = 614.5 ===
+TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
+       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Constitution 1, Weakness Exploit 1
+       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
+
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
@@ -176,6 +191,11 @@ Stats under the requested conditions
   Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
 === Build 4  -  EFR 501.5 + EFE 111.4 = 613.0 ===
+TL;DR  Attack 285 (1368 display)  Affinity 98%  Crit x1.34  White sharpness  Dragon 80 (804 display)  ->  EFR 501.5 + EFE 111.4 = 613.0  (all conditions on: 615.9)
+       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Peak Performance 5, Weakness Exploit 4, Antivirus 3, Constitution 3, Maximum Might 3, Burst 2
+       Why: 98% affinity with x1.34 crits from Weakness Exploit (+20%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 285 via Agitator (+20), Peak Performance (+20), Burst 2 (+12); Dragon 48 -> 80 true via Burst 2 (+10), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
+
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
@@ -235,6 +255,11 @@ Stats under the requested conditions
   Modifiers: Weakness Exploit: affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 2: raw +12; Burst 2: element +10 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
 === Build 5  -  EFR 501.5 + EFE 111.4 = 613.0 ===
+TL;DR  Attack 285 (1368 display)  Affinity 98%  Crit x1.34  White sharpness  Dragon 80 (804 display)  ->  EFR 501.5 + EFE 111.4 = 613.0  (all conditions on: 615.9)
+       Sets: Leviathan's Fury I (Azure Bolt I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Peak Performance 5, Weakness Exploit 5, Maximum Might 3, Burst 2, Stamina Surge 2
+       Why: 98% affinity with x1.34 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 285 via Agitator (+20), Peak Performance (+20), Burst 2 (+12); Dragon 48 -> 80 true via Burst 2 (+10), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, Azure Bolt window.
+
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
