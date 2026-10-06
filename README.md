@@ -13,6 +13,14 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 
 Current scope: Great Sword and Long Sword. Hitzone 100, no monster resistances. Conditional skills are user-toggleable and only count when the loadout contains them. The weapon's stats are inputs and never optimized; its rolled set bonus / group skill is either fixed or searched over all 294 rollable pairs. Talismans come from the craftable charm lines (max rank) plus the random talismans you list.
 
+Interactive editor (Spectre.Console): pick an existing configuration under `inputs/` or start a new one, click together weapon, skill pair, targets, conditions, talismans and options, then save it as `inputs/<name>.json` plus `inputs/<name>.talismans.json`.
+
+```bash
+dotnet run --project src/MHWildsOptimizer.Cli -- edit
+```
+
+Validate a saved configuration and show the resolved inputs:
+
 ```bash
 dotnet run --project src/MHWildsOptimizer.Cli -- request inputs/request.example.json
 ```
