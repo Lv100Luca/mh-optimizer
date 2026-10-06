@@ -1,0 +1,304 @@
+##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 613.1   (1981 final states scored; candidates after pruning: Head 19, Waist 19, Chest 21, Legs 21, Arms 23, talismans 8)
+
+=== Build 1  -  EFR 516.9 + EFE 96.1 = 613.1 ===
+TL;DR  Attack 294 (1411 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 84 (836 display)  ->  EFR 516.9 + EFE 96.1 = 613.1  (all conditions on: 639.5)
+       Sets: Ebony Odogaron's Power I (Burst Boost I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Burst 5, Weakness Exploit 5, Peak Performance 4, Maximum Might 3, Constitution 1, Divine Blessing 1
+       Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 294 via Agitator (+20), Peak Performance (+15), Burst 5 (+18), Burst Boost I (+8); Dragon 48 -> 84 true via Burst 5 (+20), Dragon Attack 1 (+4), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Critical Jewel III [3], Critical Jewel III [3], Focus/Dragon Jewel [3]
+  Head      Arkvulcan Helm γ           R8  Weakness Exploit 3
+            slots [a2,a1]  decos: Mighty Jewel [2]  set: Arkveld's Hunger  group: Lord's Soul
+  Chest     Mizutsune Mail β           R6T Constitution 1, Burst 1
+            slots [a3,a3]  decos: Tenderizer Jewel [3], Tenderizer Jewel [3]  set: Mizutsune's Prowess  group: Alluring Pelt
+  Arms      G. Ebony Braces β          R6T Burst 1, Divine Blessing 1
+            slots [a3,a2]  decos: Chain Jewel [3], Flawless Jewel [2]  set: Ebony Odogaron's Power  group: Guardian's Protection
+  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
+            slots [a2,a1,a1]  decos: Mighty Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
+  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
+            slots [a3,a2,a1]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+  Talisman  Challenger Charm III       R8  Agitator 3
+            slots [-]  decos: -
+
+Decorations (11)
+  1x Chain Jewel [3]                Burst 1
+  1x Challenger Jewel [3]           Agitator 1
+  2x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Tenderizer Jewel [3]           Weakness Exploit 1
+  1x Flawless Jewel [2]             Peak Performance 1
+  3x Mighty Jewel [2]               Maximum Might 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Gogmazios Greaves α 1, Challenger Jewel [3] 1, Challenger Charm III 3
+  Burst                    Lv5 (armor ) <- Mizutsune Mail β 1, G. Ebony Braces β 1, Chain Jewel [3] 1, Gogmazios Coil α 2
+  Weakness Exploit         Lv5 (armor ) <- Arkvulcan Helm γ 3, Tenderizer Jewel [3] x2 2
+  Peak Performance         Lv4 (armor ) <- Flawless Jewel [2] 1, Gogmazios Coil α 1, Gogmazios Greaves α 2
+  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Mighty Jewel [2] 1, Mighty Jewel [2] 1
+  Constitution             Lv1 (armor ) <- Mizutsune Mail β 1
+  Divine Blessing          Lv1 (armor ) <- G. Ebony Braces β 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Ebony Odogaron's Power 2pc -> I (Burst Boost I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Arkveld's Hunger 1pc, Mizutsune's Prowess 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 1pc, Alluring Pelt 1pc, Guardian's Protection 1pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 294 true (1411 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 543.3   EFE 96.1   Total 639.5
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +15; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+Stats under the requested conditions
+  Attack     233 -> 294 true (1411 display)
+  Affinity   8% -> 83%   crit x1.40 (factor 1.332)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 516.9   EFE 96.1   Total 613.1
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +15; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+=== Build 2  -  EFR 508.1 + EFE 96.1 = 604.3 ===
+TL;DR  Attack 289 (1387 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 84 (836 display)  ->  EFR 508.1 + EFE 96.1 = 604.3  (all conditions on: 630.2)
+       Sets: Ebony Odogaron's Power I (Burst Boost I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Burst 5, Weakness Exploit 5, Maximum Might 3, Peak Performance 3, Divine Blessing 1
+       Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 289 via Agitator (+20), Peak Performance (+10), Burst 5 (+18), Burst Boost I (+8); Dragon 48 -> 84 true via Burst 5 (+20), Dragon Attack 1 (+4), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Critical Jewel III [3], Critical Jewel III [3], Focus/Dragon Jewel [3]
+  Head      G. Ebony Helm β            R6T Burst 2
+            slots [a3,a1]  decos: Tenderizer Jewel [3]  set: Ebony Odogaron's Power  group: Guardian's Protection
+  Chest     Blango Mail β              R6T Agitator 2
+            slots [a3,a1]  decos: Tenderizer Jewel [3]  set: Blangonga's Spirit  group: Alluring Pelt
+  Arms      G. Ebony Braces β          R6T Burst 1, Divine Blessing 1
+            slots [a3,a2]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Ebony Odogaron's Power  group: Guardian's Protection
+  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
+            slots [a2,a1,a1]  decos: Mighty Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
+  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
+            slots [a3,a2,a1]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+  Talisman  Exploiter Charm III        R8  Weakness Exploit 3
+            slots [-]  decos: -
+
+Decorations (10)
+  2x Challenger Jewel [3]           Agitator 1
+  2x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Tenderizer Jewel [3]           Weakness Exploit 1
+  3x Mighty Jewel [2]               Maximum Might 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Blango Mail β 2, Challenger Jewel [3] 1, Gogmazios Greaves α 1, Challenger Jewel [3] 1
+  Burst                    Lv5 (armor ) <- G. Ebony Helm β 2, G. Ebony Braces β 1, Gogmazios Coil α 2
+  Weakness Exploit         Lv5 (armor ) <- Tenderizer Jewel [3] 1, Tenderizer Jewel [3] 1, Exploiter Charm III 3
+  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Mighty Jewel [2] 1, Mighty Jewel [2] 1
+  Peak Performance         Lv3 (armor ) <- Gogmazios Coil α 1, Gogmazios Greaves α 2
+  Divine Blessing          Lv1 (armor ) <- G. Ebony Braces β 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Ebony Odogaron's Power 3pc -> I (Burst Boost I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Blangonga's Spirit 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Guardian's Protection 2pc, Alluring Pelt 1pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 534.1   EFE 96.1   Total 630.2
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+Stats under the requested conditions
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 83%   crit x1.40 (factor 1.332)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 508.1   EFE 96.1   Total 604.3
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+=== Build 3  -  EFR 508.1 + EFE 96.1 = 604.3 ===
+TL;DR  Attack 289 (1387 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 84 (836 display)  ->  EFR 508.1 + EFE 96.1 = 604.3  (all conditions on: 630.2)
+       Sets: Ebony Odogaron's Power I (Burst Boost I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Burst 5, Weakness Exploit 5, Maximum Might 3, Peak Performance 3, Constitution 1, Divine Blessing 1
+       Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 289 via Agitator (+20), Peak Performance (+10), Burst 5 (+18), Burst Boost I (+8); Dragon 48 -> 84 true via Burst 5 (+20), Dragon Attack 1 (+4), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Critical Jewel III [3], Critical Jewel III [3], Focus/Dragon Jewel [3]
+  Head      Arkvulcan Helm γ           R8  Weakness Exploit 3
+            slots [a2,a1]  decos: Mighty Jewel [2]  set: Arkveld's Hunger  group: Lord's Soul
+  Chest     Mizutsune Mail β           R6T Constitution 1, Burst 1
+            slots [a3,a3]  decos: Tenderizer Jewel [3], Tenderizer Jewel [3]  set: Mizutsune's Prowess  group: Alluring Pelt
+  Arms      G. Ebony Braces α          R6T Burst 2, Divine Blessing 1
+            slots [a1,a1]  decos: -  set: Ebony Odogaron's Power  group: Guardian's Pulse
+  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
+            slots [a2,a1,a1]  decos: Mighty Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
+  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
+            slots [a3,a2,a1]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+  Talisman  Challenger Charm III       R8  Agitator 3
+            slots [-]  decos: -
+
+Decorations (9)
+  1x Challenger Jewel [3]           Agitator 1
+  2x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Tenderizer Jewel [3]           Weakness Exploit 1
+  3x Mighty Jewel [2]               Maximum Might 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Gogmazios Greaves α 1, Challenger Jewel [3] 1, Challenger Charm III 3
+  Burst                    Lv5 (armor ) <- Mizutsune Mail β 1, G. Ebony Braces α 2, Gogmazios Coil α 2
+  Weakness Exploit         Lv5 (armor ) <- Arkvulcan Helm γ 3, Tenderizer Jewel [3] x2 2
+  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Mighty Jewel [2] 1, Mighty Jewel [2] 1
+  Peak Performance         Lv3 (armor ) <- Gogmazios Coil α 1, Gogmazios Greaves α 2
+  Constitution             Lv1 (armor ) <- Mizutsune Mail β 1
+  Divine Blessing          Lv1 (armor ) <- G. Ebony Braces α 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Ebony Odogaron's Power 2pc -> I (Burst Boost I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Arkveld's Hunger 1pc, Mizutsune's Prowess 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 1pc, Alluring Pelt 1pc, Guardian's Pulse 1pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 534.1   EFE 96.1   Total 630.2
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+Stats under the requested conditions
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 83%   crit x1.40 (factor 1.332)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 508.1   EFE 96.1   Total 604.3
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+=== Build 4  -  EFR 508.1 + EFE 96.1 = 604.3 ===
+TL;DR  Attack 289 (1387 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 84 (836 display)  ->  EFR 508.1 + EFE 96.1 = 604.3  (all conditions on: 630.2)
+       Sets: Ebony Odogaron's Power I (Burst Boost I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Burst 5, Weakness Exploit 5, Maximum Might 3, Peak Performance 3, Constitution 1, Divine Blessing 1
+       Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 289 via Agitator (+20), Peak Performance (+10), Burst 5 (+18), Burst Boost I (+8); Dragon 48 -> 84 true via Burst 5 (+20), Dragon Attack 1 (+4), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Critical Jewel III [3], Critical Jewel III [3], Focus/Dragon Jewel [3]
+  Head      G. Ebony Helm β            R6T Burst 2
+            slots [a3,a1]  decos: Tenderizer Jewel [3]  set: Ebony Odogaron's Power  group: Guardian's Protection
+  Chest     Mizutsune Mail β           R6T Constitution 1, Burst 1
+            slots [a3,a3]  decos: Tenderizer Jewel [3], Challenger Jewel [3]  set: Mizutsune's Prowess  group: Alluring Pelt
+  Arms      Omega Vambraces α          R8  Divine Blessing 1, Agitator 1
+            slots [a3,a2]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Omega Resonance
+  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
+            slots [a2,a1,a1]  decos: Mighty Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
+  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
+            slots [a3,a2,a1]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+  Talisman  Exploiter Charm III        R8  Weakness Exploit 3
+            slots [-]  decos: -
+
+Decorations (11)
+  3x Challenger Jewel [3]           Agitator 1
+  2x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Tenderizer Jewel [3]           Weakness Exploit 1
+  3x Mighty Jewel [2]               Maximum Might 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Challenger Jewel [3] 1, Omega Vambraces α 1, Challenger Jewel [3] 1, Gogmazios Greaves α 1, Challenger Jewel [3] 1
+  Burst                    Lv5 (armor ) <- G. Ebony Helm β 2, Mizutsune Mail β 1, Gogmazios Coil α 2
+  Weakness Exploit         Lv5 (armor ) <- Tenderizer Jewel [3] 1, Tenderizer Jewel [3] 1, Exploiter Charm III 3
+  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Mighty Jewel [2] 1, Mighty Jewel [2] 1
+  Peak Performance         Lv3 (armor ) <- Gogmazios Coil α 1, Gogmazios Greaves α 2
+  Constitution             Lv1 (armor ) <- Mizutsune Mail β 1
+  Divine Blessing          Lv1 (armor ) <- Omega Vambraces α 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Ebony Odogaron's Power 2pc -> I (Burst Boost I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Mizutsune's Prowess 1pc, Omega Resonance 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Guardian's Protection 1pc, Alluring Pelt 1pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 534.1   EFE 96.1   Total 630.2
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+Stats under the requested conditions
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 83%   crit x1.40 (factor 1.332)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 508.1   EFE 96.1   Total 604.3
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+=== Build 5  -  EFR 508.1 + EFE 96.1 = 604.3 ===
+TL;DR  Attack 289 (1387 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 84 (836 display)  ->  EFR 508.1 + EFE 96.1 = 604.3  (all conditions on: 630.2)
+       Sets: Ebony Odogaron's Power I (Burst Boost I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Burst 5, Weakness Exploit 5, Maximum Might 3, Peak Performance 3, Constitution 1, Divine Blessing 1
+       Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 289 via Agitator (+20), Peak Performance (+10), Burst 5 (+18), Burst Boost I (+8); Dragon 48 -> 84 true via Burst 5 (+20), Dragon Attack 1 (+4), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Critical Jewel III [3], Critical Jewel III [3], Focus/Dragon Jewel [3]
+  Head      G. Fulgur Helm β           R6T Agitator 2
+            slots [a3,a1]  decos: Tenderizer Jewel [3]  set: Fulgur Anjanath's Will  group: Guardian's Protection
+  Chest     Mizutsune Mail β           R6T Constitution 1, Burst 1
+            slots [a3,a3]  decos: Tenderizer Jewel [3], Challenger Jewel [3]  set: Mizutsune's Prowess  group: Alluring Pelt
+  Arms      G. Ebony Braces β          R6T Burst 1, Divine Blessing 1
+            slots [a3,a2]  decos: Chain Jewel [3], Mighty Jewel [2]  set: Ebony Odogaron's Power  group: Guardian's Protection
+  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
+            slots [a2,a1,a1]  decos: Mighty Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
+  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
+            slots [a3,a2,a1]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+  Talisman  Exploiter Charm III        R8  Weakness Exploit 3
+            slots [-]  decos: -
+
+Decorations (11)
+  1x Chain Jewel [3]                Burst 1
+  2x Challenger Jewel [3]           Agitator 1
+  2x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Tenderizer Jewel [3]           Weakness Exploit 1
+  3x Mighty Jewel [2]               Maximum Might 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- G. Fulgur Helm β 2, Challenger Jewel [3] 1, Gogmazios Greaves α 1, Challenger Jewel [3] 1
+  Burst                    Lv5 (armor ) <- Mizutsune Mail β 1, G. Ebony Braces β 1, Chain Jewel [3] 1, Gogmazios Coil α 2
+  Weakness Exploit         Lv5 (armor ) <- Tenderizer Jewel [3] 1, Tenderizer Jewel [3] 1, Exploiter Charm III 3
+  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Mighty Jewel [2] 1, Mighty Jewel [2] 1
+  Peak Performance         Lv3 (armor ) <- Gogmazios Coil α 1, Gogmazios Greaves α 2
+  Constitution             Lv1 (armor ) <- Mizutsune Mail β 1
+  Divine Blessing          Lv1 (armor ) <- G. Ebony Braces β 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Ebony Odogaron's Power 2pc -> I (Burst Boost I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Fulgur Anjanath's Will 1pc, Mizutsune's Prowess 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Guardian's Protection 2pc, Alluring Pelt 1pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 534.1   EFE 96.1   Total 630.2
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+
+Stats under the requested conditions
+  Attack     233 -> 289 true (1387 display)
+  Affinity   8% -> 83%   crit x1.40 (factor 1.332)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 83.6 true (836 display), cap 110.4, crit element x1.00
+  EFR 508.1   EFE 96.1   Total 604.3
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +10; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Burst Boost I: raw +8; Dragon Attack 1: element +4 (true); Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+

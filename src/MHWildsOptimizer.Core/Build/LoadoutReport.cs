@@ -18,6 +18,36 @@ public static class LoadoutReport
 
         if (title is not null) sb.AppendLine($"=== {title} ===");
 
+        // ---------------- TL;DR ----------------
+        var s = BuildSummary.Create(loadout, data, cond);
+        sb.AppendLine(string.Format(inv, "TL;DR  Attack {0:0} ({1} display)  Affinity {2}%  Crit x{3:0.00}  {4} sharpness{5}  ->  EFR {6:0.0} + EFE {7:0.0} = {8:0.0}  (all conditions on: {9:0.0})",
+            s.Attack, s.DisplayAttack, s.Affinity, s.CritMultiplier, s.Sharpness?.ToString() ?? "no",
+            s.Element == Element.None ? "" : string.Format(inv, "  {0} {1:0} ({2} display)", s.Element, s.ElementTrue, s.ElementDisplay),
+            s.Efr, s.Efe, s.Total, s.TotalAllConditions));
+        sb.AppendLine($"       Sets: {(s.ActiveSetBonuses.Count == 0 ? "-" : string.Join(", ", s.ActiveSetBonuses))}   Groups: {(s.ActiveGroupSkills.Count == 0 ? "-" : string.Join(", ", s.ActiveGroupSkills))}");
+        sb.AppendLine($"       Skills: {string.Join(", ", s.Skills.Select(x => $"{x.Skill} {x.Level}"))}");
+        sb.AppendLine($"       Why: {s.Description}");
+        sb.AppendLine();
+
+        sb.Append(RenderDetails(loadout, data));
+
+        // ---------------- stats ----------------
+        var skills = SkillAggregator.Aggregate(loadout, data);
+        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOn);
+        AppendStats(sb, "Stats with every conditional skill active", w, allOn, inv);
+        var chosen = DamageCalculator.Calculate(w, skills, cond);
+        if (Math.Abs(chosen.Total - allOn.Total) > 0.05 || chosen.Affinity != allOn.Affinity)
+            AppendStats(sb, "Stats under the requested conditions", w, chosen, inv);
+
+        return sb.ToString();
+    }
+
+    /// <summary>Equipment with decorations per piece, the decoration list and the skill list with sources (no stats).</summary>
+    public static string RenderDetails(Loadout loadout, GameData data)
+    {
+        var sb = new StringBuilder();
+        var w = loadout.Weapon.Stats;
+
         // ---------------- equipment ----------------
         sb.AppendLine("Equipment");
         var ele = w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {w.Element}";
@@ -71,14 +101,6 @@ public static class LoadoutReport
         var activeGroups = skills.ActiveGroupSkills.ToList();
         sb.AppendLine("  Set bonuses: " + (skills.SetBonusPieces.Count == 0 ? "-" : string.Join(", ", skills.SetBonusPieces.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}pc{TierText(skills.SetTier(kv.Key), data, kv.Key)}"))));
         sb.AppendLine("  Group skills: " + (skills.GroupSkillPieces.Count == 0 ? "-" : string.Join(", ", skills.GroupSkillPieces.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}pc{(skills.GroupActive(kv.Key) ? " ACTIVE" : "")}"))));
-
-        // ---------------- stats ----------------
-        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOn);
-        AppendStats(sb, "Stats with every conditional skill active", w, allOn, inv);
-        var chosen = DamageCalculator.Calculate(w, skills, cond);
-        if (Math.Abs(chosen.Total - allOn.Total) > 0.05 || chosen.Affinity != allOn.Affinity)
-            AppendStats(sb, "Stats under the requested conditions", w, chosen, inv);
-
         return sb.ToString();
     }
 

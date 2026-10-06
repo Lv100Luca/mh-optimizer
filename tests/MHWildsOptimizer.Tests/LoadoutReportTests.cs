@@ -30,6 +30,19 @@ public class LoadoutReportTests
         var text = LoadoutReport.Render(loadout, data, Conditions.Default, "test build");
 
         Assert.Contains("=== test build ===", text);
+        Assert.Contains("TL;DR  Attack", text);
+        Assert.Contains("Why: ", text);
+
+        var summary = BuildSummary.Create(loadout, data, Conditions.Default);
+        var result = DamageCalculator.Calculate(loadout, data, Conditions.Default);
+        Assert.Equal(result.Affinity, summary.Affinity);
+        Assert.Equal(result.Total, summary.Total, 0.001);
+        Assert.Equal(result.TrueRaw, summary.Attack, 0.001);
+        Assert.Contains(summary.ActiveSetBonuses, x => x.StartsWith("Gore Magala's Tyranny I"));
+        Assert.Contains(summary.Skills, x => x.Skill == "Critical Boost" && x.Level == 5 && x.Kind == SkillKind.Weapon);
+        Assert.Contains("enraged monster", summary.DependsOn);          // Agitator charm
+        Assert.Contains(summary.AffinitySources, x => x.StartsWith("Critical Eye"));
+        Assert.Contains("affinity with", summary.Description);
         Assert.Contains("decos: Critical Jewel III [3], Critical Jewel III [3], Expert Jewel III [3]", text);
         Assert.Contains("decos: Mighty Jewel [2]", text);
         Assert.Contains("2x Critical Jewel III [3]", text);

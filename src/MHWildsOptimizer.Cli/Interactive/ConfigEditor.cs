@@ -131,8 +131,9 @@ public sealed class ConfigEditor
         });
         foreach (var line in log) AnsiConsole.MarkupLine($"[grey]{Markup.Escape(line)}[/]");
 
-        var text = RenderResults(result!, resolved);
-        AnsiConsole.Write(new Panel(new Text(text.TrimEnd())).Header($"Results ({result!.Elapsed.TotalSeconds:0.0} s)").Expand());
+        AnsiConsole.MarkupLine($"[bold]Results[/] [grey]({result!.Elapsed.TotalSeconds:0.0} s)[/]");
+        ResultsRenderer.Write(result, resolved, _data);
+        var text = RenderResults(result, resolved);
 
         if (_path is not null)
         {

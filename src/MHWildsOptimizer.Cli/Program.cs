@@ -67,8 +67,7 @@ int RunRequest(string path)
 
     var result = new MHWildsOptimizer.Core.Optimize.Optimizer(data, r).Run(new ConsoleProgress());
     var text = new ConfigEditor(data).RenderResults(result, r);
-    Console.WriteLine();
-    Console.WriteLine(text);
+    ResultsRenderer.Write(result, r, data);
     var outPath = Path.ChangeExtension(path, null) + ".results.txt";
     File.WriteAllText(outPath, text);
     Console.WriteLine($"Written to {outPath} ({result.Elapsed.TotalSeconds:0.0} s)");
