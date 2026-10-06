@@ -2,8 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/MHWildsOptimizer.Cli/MHWildsOptimizer.Cli.csproj" />
     <Project Path="src/MHWildsOptimizer.Core/MHWildsOptimizer.Core.csproj" />
+    <Project Path="src/MHWildsOptimizer.Web/MHWildsOptimizer.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MHWildsOptimizer.Tests/MHWildsOptimizer.Tests.csproj" />
+    <Project Path="tests/MHWildsOptimizer.Web.Tests/MHWildsOptimizer.Web.Tests.csproj" />
   </Folder>
 </Solution>

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Historical Charm (Offensive Guard 2, Maximum Might 1, Counterstrike 1)",
+    "rarity": 6,
+    "skills": { "Offensive Guard": 2, "Maximum Might": 1, "Counterstrike": 1 },
+    "slots": ["armor2", "armor1"]
+  },
+  {
+    "name": "Historical Charm (Attack Boost 2, Maximum Might 2)",
+    "rarity": 6,
+    "skills": { "Attack Boost": 2, "Maximum Might": 2 },
+    "slots": ["armor1", "armor1"]
+  },
+  {
+    "name": "Golden Age Charm (Attack Boost 3, Iron Skin 3)",
+    "rarity": 8,
+    "skills": { "Attack Boost": 3, "Iron Skin": 3 },
+    "slots": ["weapon1", "armor1"]
+  },
+  {
+    "name": "Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)",
+    "rarity": 8,
+    "skills": { "Focus": 3, "Fire Resistance": 2, "Defense Boost": 2 },
+    "slots": ["weapon1", "armor1", "armor1"]
+  },
+  {
+    "name": "Secret Charm (Attack Boost 3, Stun Resistance 2, Survival Expert 1)",
+    "rarity": 7,
+    "skills": { "Attack Boost": 3, "Stun Resistance": 2, "Survival Expert": 1 },
+    "slots": ["armor1"]
+  },
+  {
+    "name": "Secret Charm (Attack Boost 3, Burst 1)",
+    "rarity": 7,
+    "skills": { "Attack Boost": 3, "Burst": 1 },
+    "slots": ["armor1", "armor1"]
+  },
+  {
+    "name": "Secret Charm (Attack Boost 2, Load Shells 1, Iron Skin 3)",
+    "rarity": 7,
+    "skills": { "Attack Boost": 2, "Load Shells": 1, "Iron Skin": 3 },
+    "slots": ["armor1"]
+  },
+  {
+    "name": "Secret Charm (Offensive Guard 2, Artillery 1, Recovery Speed 3)",
+    "rarity": 7,
+    "skills": { "Offensive Guard": 2, "Artillery": 1, "Recovery Speed": 3 },
+    "slots": ["armor2"]
+  },
+  {
+    "name": "Secret Charm (Focus 3, Stun Resistance 2, Hunger Resistance 1)",
+    "rarity": 7,
+    "skills": { "Focus": 3, "Stun Resistance": 2, "Hunger Resistance": 1 },
+    "slots": ["armor1"]
+  }
+]

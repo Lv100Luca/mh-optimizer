@@ -27,6 +27,7 @@ for s in skills:
     out_skills.append({
         'id': s['id'], 'name': s['name'], 'kind': s['kind'], 'description': s['description'],
         'max_level': max(r['level'] for r in s['ranks']),
+        'icon': (s.get('icon') or {}).get('kind'),
         'ranks': [{'level': r['level'], 'name': r.get('name'), 'pieces_required': r.get('setPiecesRequired'),
                    'description': r['description']} for r in sorted(s['ranks'], key=lambda r: r['level'])],
     })
@@ -101,6 +102,7 @@ dump('set_and_group_bonuses', dict(sorted(bonus_index.items())))
 
 # ---------------------------------------------------------------- decorations
 out_decos = [{'id': d['id'], 'name': d['name'], 'kind': d['kind'], 'slot': d['slot'], 'rarity': d['rarity'],
+              'icon_color': (d.get('icon') or {}).get('color'),
               'skills': [{'skill': x['skill']['name'], 'skill_id': x['skill']['id'], 'level': x['level']} for x in d['skills']]}
              for d in decos]
 dump('decorations', sorted(out_decos, key=lambda d: (d['kind'], d['slot'], d['name'])))

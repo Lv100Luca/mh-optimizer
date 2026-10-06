@@ -31,7 +31,9 @@
     "mode": "fixed",
     "top_n": 3
   },
-  "target_skills": {},
+  "target_skills": {
+    "Stun Resistance": 3
+  },
   "conditions": {
     "monster_enraged": true,
     "hitting_weak_point": true,
@@ -62,7 +64,10 @@
     "resuscitate_active": false,
     "inspiration_active": false,
     "affinity_sliding_active": false,
-    "guts_not_yet_triggered": true
+    "guts_not_yet_triggered": true,
+    "skill_limits": {
+      "Burst": 0
+    }
   },
   "talismans": {
     "file": "Test.talismans.json",

@@ -480,3 +480,11 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Web UI: built client output and npm packages (sources live in src/MHWildsOptimizer.Web/client)
+src/MHWildsOptimizer.Web/wwwroot/
+node_modules/
+
+# optimizer results in machine form (the web UI reloads them; the .results.txt reports stay tracked)
+inputs/*.results.json
+src/MHWildsOptimizer.Web/client/tsconfig.tsbuildinfo

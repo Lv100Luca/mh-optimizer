@@ -1,0 +1,84 @@
+{
+  "weapon": {
+    "spec": {
+      "type": "great-sword",
+      "focus": "attack",
+      "element": "dragon",
+      "infused": true,
+      "attack_parts": 3,
+      "reinforcements": [
+        "sharpness EX",
+        "attack III",
+        "attack III",
+        "affinity III",
+        "affinity EX"
+      ]
+    },
+    "attack_is_display": true,
+    "affinity": 0,
+    "element": "none",
+    "element_display": 0,
+    "sharpness": "white",
+    "slots": [
+      3,
+      3,
+      3
+    ],
+    "set_bonus": "Soul of the Dark Knight",
+    "group_skill": "Lord's Favor"
+  },
+  "skill_pair": {
+    "mode": "fixed",
+    "top_n": 3
+  },
+  "target_skills": {
+    "Stun Resistance": 3
+  },
+  "conditions": {
+    "monster_enraged": true,
+    "hitting_weak_point": true,
+    "hitting_wound": false,
+    "full_health": false,
+    "red_health": true,
+    "low_health": false,
+    "stamina_full": true,
+    "monster_statused": false,
+    "frenzy_overcome": true,
+    "burst_active": true,
+    "latent_power_active": false,
+    "adrenaline_rush_active": false,
+    "adrenaline_rush_retriggered": false,
+    "counterstrike_active": true,
+    "offensive_guard_active": false,
+    "draw_attack": false,
+    "charged_attack": false,
+    "coalescence_active": false,
+    "elemental_absorption_active": false,
+    "azure_bolt_active": true,
+    "resonance": "none",
+    "powerhouse_active": false,
+    "protein_fiend_active": false,
+    "binding_counter_active": false,
+    "war_cry_active": false,
+    "festival_active": false,
+    "resuscitate_active": false,
+    "inspiration_active": false,
+    "affinity_sliding_active": false,
+    "guts_not_yet_triggered": true,
+    "skill_limits": {
+      "Burst": 0
+    }
+  },
+  "talismans": {
+    "file": "Current.talismans.json",
+    "include_craftable": true
+  },
+  "options": {
+    "allow_transcendence": true,
+    "top_n": 5,
+    "min_rarity": 5,
+    "exclude_sets": [],
+    "require_weapon_core_skills": true,
+    "max_states_per_depth": 100000
+  }
+}

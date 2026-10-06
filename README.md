@@ -7,7 +7,8 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 * `tools/` – Python scripts that regenerate `data/*.json` from `data/raw` and scrape the wiki tables.
 * `src/MHWildsOptimizer.Core` – domain model, damage calculator, optimizer (C# / .NET 10).
 * `src/MHWildsOptimizer.Cli` – command-line front end.
-* `tests/MHWildsOptimizer.Tests` – xunit tests.
+* `src/MHWildsOptimizer.Web` – web front end: ASP.NET Core API + React client (`client/`), game icons under `client/public/icons` (fetched by `tools/fetch_icons.py`).
+* `tests/MHWildsOptimizer.Tests` – xunit tests; `tests/MHWildsOptimizer.Web.Tests` – API integration tests.
 
 * `inputs/` – optimizer inputs: `request.example.json` (weapon as the game shows it, skill-pair mode, target skills, conditions, talisman file, options) and `talismans.example.json` (your random talismans with skills and decoration slots).
 
@@ -32,6 +33,20 @@ dotnet run --project src/MHWildsOptimizer.Cli -- request inputs/request.example.
 ```
 
 The search is a dynamic program over skill states (talisman, then one armor slot at a time): partial builds with the same relevant skill levels, slot counts and set/group counts are merged, dominated and target-infeasible states are dropped, and every surviving final state gets its decorations (exact cover of the targets, then greedy damage fill) and an EFR + EFE score. `options.max_states_per_depth` (default 100000) bounds the beam; raise it for a slower, more exhaustive run. In optimize mode the 294 rollable pairs collapse into score-equivalent classes that are searched in parallel.
+
+## Web UI
+
+The web UI covers the same setup as the editor (weapon, rolled pair, skill pair mode, targets, skill limits, conditions, talismans, options) with game icons, live validation and a weapon stat preview, runs the optimizer with live progress and renders the builds (equipment with decorations, skills with sources, stats under the requested and under all conditions). Configurations are the same `inputs/<name>.json` + `inputs/<name>.talismans.json` files the CLI uses; a run also writes `inputs/<name>.results.txt` and `.results.json`.
+
+```bash
+dotnet run --project src/MHWildsOptimizer.Web
+```
+
+then open http://localhost:5214. The first `dotnet build` runs `npm install` + `npm run build` in `src/MHWildsOptimizer.Web/client` (needs node 20+); pass `-p:BuildClient=true` to rebuild the client or `-p:BuildClient=false` to skip it. For client development run `npm run dev` in that folder and open http://localhost:5173 (proxies `/api` to the .NET server). `--data <dir>` / `--inputs <dir>` override the dataset and configuration directories.
+
+API: `GET /api/catalog`, `GET|PUT|DELETE /api/configs/{name}`, `GET /api/configs/{name}/results`, `POST /api/resolve`, `POST /api/optimize` (server-sent events: `validation`, `progress`…, `result`).
+
+Icons come from monsterhunterwiki.org (Capcom's Wilds UI icons; `python tools/fetch_icons.py` refreshes them, see `client/public/icons/manifest.json`). Skill icon categories and decoration colors are the ones wilds.mhdb.io reports (`icon` in `skills.json`, `icon_color` in `decorations.json`).
 
 ```bash
 dotnet build

@@ -1,0 +1,39 @@
+using System.Globalization;
+using System.Text;
+using MHWildsOptimizer.Core.Data;
+using MHWildsOptimizer.Core.Inputs;
+using MHWildsOptimizer.Core.Optimize;
+
+namespace MHWildsOptimizer.Core.Build;
+
+/// <summary>The plain-text results report written next to a request file (inputs/&lt;name&gt;.results.txt).</summary>
+public static class ResultsText
+{
+    public static string Render(OptimizationResult result, ResolvedRequest resolved, GameData data)
+    {
+        var sb = new StringBuilder();
+        var rank = 0;
+        foreach (var pr in result.PairResults)
+        {
+            rank++;
+            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} final states scored; {pr.CandidateSummary})");
+            if (pr.Builds.Count == 0) sb.AppendLine("  no build satisfies the targets");
+            var i = 0;
+            foreach (var b in pr.Builds)
+            {
+                i++;
+                sb.AppendLine();
+                sb.AppendLine(LoadoutReport.Render(b.Loadout, data, resolved.Conditions, BuildTitle(i, b)).TrimEnd());
+            }
+            sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>"Build 1  -  EFR 569.0 + EFE 59.8 + procs 12.3 = 641.1" (the proc term only when there is one).</summary>
+    public static string BuildTitle(int rank, RankedBuild b) =>
+        string.Format(CultureInfo.InvariantCulture, "Build {0}  -  EFR {1:0.0} + EFE {2:0.0}{3} = {4:0.0}",
+            rank, b.Result.EffectiveRaw, b.Result.EffectiveElement,
+            b.Result.ProcDamage > 0 ? string.Format(CultureInfo.InvariantCulture, " + procs {0:0.0}", b.Result.ProcDamage) : "",
+            b.Score);
+}

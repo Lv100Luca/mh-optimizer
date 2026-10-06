@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ClientDir>$(MSBuildProjectDirectory)/client/</ClientDir>
+    <ClientIndex>$(MSBuildProjectDirectory)/wwwroot/index.html</ClientIndex>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MHWildsOptimizer.Core\MHWildsOptimizer.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the Vite client is built by npm, not by MSBuild -->
+    <Compile Remove="client\**" />
+    <Content Remove="client\**" />
+    <None Remove="client\**" />
+  </ItemGroup>
+
+  <!--
+    Builds the Vite client into wwwroot/ when that output is missing (first `dotnet build`), on `dotnet publish`,
+    or when asked with -p:BuildClient=true. Pass -p:BuildClient=false to skip it. Needs node + npm on PATH;
+    without them the build still succeeds and the server shows setup instructions instead of the UI.
+  -->
+  <Target Name="BuildClient" BeforeTargets="Build"
+          Condition="'$(BuildClient)' != 'false' And Exists('$(ClientDir)package.json') And ('$(BuildClient)' == 'true' Or '$(_IsPublishing)' == 'true' Or !Exists('$(ClientIndex)'))">
+    <Exec Command="npm install --no-audit --no-fund" WorkingDirectory="$(ClientDir)" Condition="!Exists('$(ClientDir)node_modules')" ContinueOnError="true" StandardOutputImportance="low" />
+    <Exec Command="npm run build" WorkingDirectory="$(ClientDir)" ContinueOnError="true" StandardOutputImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="ClientBuildExitCode" />
+    </Exec>
+    <Warning Text="The web client could not be built (is node/npm installed?). Run 'npm install &amp;&amp; npm run build' in $(ClientDir) to get the UI." Condition="'$(ClientBuildExitCode)' != '0'" />
+  </Target>
+
+</Project>
