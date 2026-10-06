@@ -78,7 +78,8 @@ public static class RequestLoader
     public static ResolvedRequest Load(string path, GameData data) =>
         Resolve(Read(path), data, Path.GetDirectoryName(Path.GetFullPath(path)) ?? ".");
 
-    public static ResolvedRequest Resolve(OptimizationRequest request, GameData data, string baseDirectory)
+    /// <param name="talismanOverride">Talismans to use instead of reading the request's talisman file (e.g. unsaved edits).</param>
+    public static ResolvedRequest Resolve(OptimizationRequest request, GameData data, string baseDirectory, IReadOnlyList<TalismanInput>? talismanOverride = null)
     {
         var errors = new List<string>();
         var warnings = new List<string>();
@@ -130,7 +131,14 @@ public static class RequestLoader
         var talismans = new List<Talisman>();
         if (request.Talismans.IncludeCraftable)
             talismans.AddRange(data.CraftableTalismans);
-        if (request.Talismans.File is { } file)
+        if (talismanOverride is not null)
+        {
+            var (parsed, tErrors, tWarnings) = TalismanInputLoader.Convert(talismanOverride, data);
+            talismans.AddRange(parsed);
+            errors.AddRange(tErrors);
+            warnings.AddRange(tWarnings);
+        }
+        else if (request.Talismans.File is { } file)
         {
             var path = Path.IsPathRooted(file) ? file : Path.Combine(baseDirectory, file);
             if (!File.Exists(path))

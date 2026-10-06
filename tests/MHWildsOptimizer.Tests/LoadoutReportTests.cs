@@ -21,7 +21,7 @@ public class LoadoutReportTests
         var loadout = new Loadout
         {
             Weapon = new EquippedWeapon(spec, data, [crit, crit, data.Decoration("Expert Jewel III [3]")]),
-            Head = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Head), Decorations: [data.Decoration("Tenderizer Jewel [3]")]),
+            Head = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Head), Decorations: [data.Decoration("Mighty Jewel [2]")]), // helm has one level-2 slot
             Chest = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Chest)),
             Talisman = data.Charm("Challenger Charm III"),
         };
@@ -31,12 +31,12 @@ public class LoadoutReportTests
 
         Assert.Contains("=== test build ===", text);
         Assert.Contains("decos: Critical Jewel III [3], Critical Jewel III [3], Expert Jewel III [3]", text);
-        Assert.Contains("decos: Tenderizer Jewel [3]", text);
+        Assert.Contains("decos: Mighty Jewel [2]", text);
         Assert.Contains("2x Critical Jewel III [3]", text);
         Assert.Contains("Decorations (4)", text);
         Assert.Contains("Lv5 (weapon) <- Critical Jewel III [3] x2 6  (1 wasted)", text);
         Assert.Contains("Lv3 (armor ) <- Challenger Charm III 3", text);
-        Assert.Contains("Weakness Exploit", text);
+        Assert.Contains("Maximum Might", text);
         Assert.Contains("Gore Magala's Tyranny 3pc -> I (Black Eclipse I)", text);
         Assert.Contains("Lord's Soul 1pc", text);
         Assert.Contains("Stats with every conditional skill active", text);

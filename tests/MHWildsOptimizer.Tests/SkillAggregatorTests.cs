@@ -108,4 +108,28 @@ public class SkillAggregatorTests
         Assert.Contains(errors, e => e.Contains("Armor decoration"));
         Assert.Contains(errors, e => e.Contains("is a Chest piece"));
     }
+
+    [Fact]
+    public void LowerLevelDecorationsFitHigherSlotsButNotTheReverse()
+    {
+        var data = TestData.Data;
+        var mail = TestData.PieceOf("Gore α", ArmorPieceKind.Chest); // one level-3 slot
+        Assert.Equal([3], mail.Slots);
+
+        var fits = new Loadout
+        {
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data,
+                [data.Decoration("Expert Jewel [1]"), data.Decoration("Critical Jewel II [2]"), data.Decoration("Critical Jewel III [3]")]),
+            Chest = new EquippedArmor(mail, Decorations: [data.Decoration("Mighty Jewel [2]")]), // level 2 in a level 3 slot
+        };
+        Assert.Empty(fits.Validate(data));
+
+        var helm = TestData.PieceOf("Gore α", ArmorPieceKind.Head); // one level-2 slot
+        var tooBig = new Loadout
+        {
+            Weapon = fits.Weapon,
+            Head = new EquippedArmor(helm, Decorations: [data.Decoration("Tenderizer Jewel [3]")]),
+        };
+        Assert.Contains(tooBig.Validate(data), e => e.Contains("needs a level 3 slot"));
+    }
 }

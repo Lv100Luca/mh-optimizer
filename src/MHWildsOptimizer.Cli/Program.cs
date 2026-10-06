@@ -1,30 +1,42 @@
 using System.Globalization;
+using MHWildsOptimizer.Cli.Interactive;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
 using MHWildsOptimizer.Core.Inputs;
+using Spectre.Console;
 
 // Usage:
-//   MHWildsOptimizer.Cli example                      - evaluate a hard-coded example loadout
-//   MHWildsOptimizer.Cli request <request.json>       - load + validate an optimizer request and show the resolved inputs
-//   (--data <dir> overrides the dataset directory)
+//   MHWildsOptimizer.Cli [edit [request.json]]   - interactive editor for a request (default command)
+//   MHWildsOptimizer.Cli request <request.json>  - load + validate a request and show the resolved inputs
+//   MHWildsOptimizer.Cli example                 - evaluate a hard-coded example loadout
+//   (--data <dir> overrides the dataset directory, --inputs <dir> the configuration directory)
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
 var argList = args.ToList();
-string? dataDir = null;
-var dataIdx = argList.IndexOf("--data");
-if (dataIdx >= 0 && dataIdx + 1 < argList.Count) { dataDir = argList[dataIdx + 1]; argList.RemoveRange(dataIdx, 2); }
-dataDir ??= GameDataLoader.FindDataDirectory();
+string? TakeOption(string name)
+{
+    var i = argList.IndexOf(name);
+    if (i < 0 || i + 1 >= argList.Count) return null;
+    var value = argList[i + 1];
+    argList.RemoveRange(i, 2);
+    return value;
+}
+var dataDir = TakeOption("--data") ?? GameDataLoader.FindDataDirectory();
+var inputsDir = TakeOption("--inputs") ?? Path.Combine(Directory.GetParent(dataDir)!.FullName, "inputs");
 
 var data = GameDataLoader.Load(dataDir);
-Console.WriteLine($"Loaded {data.Armor.Count} armor pieces, {data.Skills.Count} skills, {data.Decorations.Count} decorations, {data.CraftableTalismans.Count} craftable charms, {data.GogmaSkillPairs.Count} Gogma skill pairs from {dataDir}");
-Console.WriteLine();
+AnsiConsole.MarkupLine($"[grey]Loaded {data.Armor.Count} armor pieces, {data.Skills.Count} skills, {data.Decorations.Count} decorations, {data.CraftableTalismans.Count} craftable charms, {data.GogmaSkillPairs.Count} Gogma skill pairs from {Markup.Escape(dataDir)}[/]");
 
-var command = argList.Count > 0 ? argList[0] : "example";
+var command = argList.Count > 0 ? argList[0] : "edit";
 switch (command)
 {
+    case "edit":
+        var editor = ConfigEditor.Open(data, inputsDir, argList.Count > 1 ? argList[1] : null);
+        editor.Run(inputsDir);
+        return 0;
     case "request":
         if (argList.Count < 2) { Console.Error.WriteLine("usage: request <request.json>"); return 2; }
         return ShowRequest(argList[1]);
@@ -55,19 +67,15 @@ int ShowRequest(string path)
     Console.WriteLine($"Conditions: enraged={r.Conditions.MonsterEnraged} weakpoint={r.Conditions.HittingWeakPoint} wound={r.Conditions.HittingWound} fullHP={r.Conditions.FullHealth} redHP={r.Conditions.RedHealth} stamina={r.Conditions.StaminaFull} burst={r.Conditions.BurstActive} frenzy={r.Conditions.FrenzyOvercome} resonance={r.Conditions.Resonance}");
     Console.WriteLine();
 
-    // weapon-only baseline so the numbers are comparable before the optimizer exists
     var bare = new Loadout { Weapon = new EquippedWeapon(s) };
-    var result = DamageCalculator.Calculate(bare, data, r.Conditions);
-    Console.WriteLine("Weapon-only baseline (no armor, no decorations):");
-    foreach (var line in result.Breakdown) Console.WriteLine("  " + line);
-    Console.WriteLine($"  EFR {result.EffectiveRaw:0.0} + EFE {result.EffectiveElement:0.0} = {result.Total:0.0}");
+    Console.WriteLine(LoadoutReport.Render(bare, data, r.Conditions, "weapon-only baseline"));
     return r.IsValid ? 0 : 1;
 }
 
 void RunExample()
 {
     ArmorPiece Piece(string set, ArmorPieceKind kind) => data.Armor.First(a => a.Set == set && a.Piece == kind);
-    Decoration Deco(string name) => data.Decoration(name);
+    MHWildsOptimizer.Core.Data.Decoration Deco(string name) => data.Decoration(name);
 
     // Raw Great Sword that rolled Gore Magala's Tyranny + Lord's Soul, 3 Gore pieces + 2 gamma pieces.
     var weapon = new GogmaWeaponSpec
