@@ -57,30 +57,46 @@ public sealed class ConfigEditor
 
     public void Run(string inputsDirectory)
     {
+        var showSummary = true;
         while (true)
         {
-            AnsiConsole.WriteLine();
-            ShowSummary();
+            if (showSummary)
+            {
+                AnsiConsole.WriteLine();
+                ShowSummary();
+            }
+            showSummary = true;
+
             var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                 .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
                 .PageSize(14)
-                .AddChoices("Weapon", "Skill pair", "Target skills", "Conditions", "Talismans", "Options", "Show resolved request", "Save", "Save as...", "Quit"));
+                .AddChoices("Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Conditions", "Talismans", "Options",
+                    "Show summary", "Show resolved request", "Save", "Save as...", "Quit"));
             switch (choice)
             {
                 case "Weapon": EditWeapon(); break;
+                case "Rolled pair (set bonus / group skill)": EditRolledPair(); break;
                 case "Skill pair": EditSkillPair(); break;
                 case "Target skills": EditTargets(); break;
                 case "Conditions": EditConditions(); break;
                 case "Talismans": EditTalismans(); break;
                 case "Options": EditOptions(); break;
-                case "Show resolved request": ShowResolved(); break;
-                case "Save": Save(inputsDirectory, saveAs: false); break;
-                case "Save as...": Save(inputsDirectory, saveAs: true); break;
+                case "Show summary": break;
+                case "Show resolved request": ShowResolved(); showSummary = false; break;
+                case "Save": Save(inputsDirectory, saveAs: false); showSummary = false; break;
+                case "Save as...": Save(inputsDirectory, saveAs: true); showSummary = false; break;
                 case "Quit":
                     if (!_dirty || AnsiConsole.Confirm("Unsaved changes - quit anyway?", false)) return;
+                    showSummary = false;
                     break;
             }
         }
+    }
+
+    private void EditRolledPair()
+    {
+        _request = _request with { Weapon = _request.Weapon with { SetBonus = PickSetBonus(_request.Weapon.SetBonus), GroupSkill = PickGroupSkill(_request.Weapon.GroupSkill) } };
+        _dirty = true;
     }
 
     // ---------------------------------------------------------------- summary / resolved
@@ -124,7 +140,7 @@ public sealed class ConfigEditor
         AnsiConsole.MarkupLine($"[green]Skill pairs[/] {resolved.SkillPairCandidates.Count} candidate(s)   [green]Talismans[/] {resolved.Talismans.Count}");
 
         var bare = new Loadout { Weapon = new EquippedWeapon(s) };
-        AnsiConsole.Write(new Panel(new Text(LoadoutReport.Render(bare, _data, resolved.Conditions))).Header("Weapon-only baseline").Expand());
+        AnsiConsole.Write(new Panel(new Text(LoadoutReport.Render(bare, _data, resolved.Conditions).TrimEnd())).Header("Weapon-only baseline (the build search is not implemented yet)").Expand());
     }
 
     // ---------------------------------------------------------------- weapon
@@ -138,8 +154,7 @@ public sealed class ConfigEditor
         {
             case "Back": return;
             case "Only change the rolled set bonus / group skill":
-                _request = _request with { Weapon = _request.Weapon with { SetBonus = PickSetBonus(_request.Weapon.SetBonus), GroupSkill = PickGroupSkill(_request.Weapon.GroupSkill) } };
-                _dirty = true;
+                EditRolledPair();
                 return;
         }
 
@@ -204,14 +219,14 @@ public sealed class ConfigEditor
     private string? PickSetBonus(string? current)
     {
         var names = _data.GogmaSkillPairs.Select(p => p.SetBonus).Distinct().OrderBy(n => n).ToList();
-        var pick = Pick("Rolled set bonus", [None, .. names], current ?? None);
+        var pick = Pick("Rolled SET BONUS - the first line under 'Active Skills' on the weapon (e.g. Soul of the Dark Knight)", [None, .. names], current ?? None);
         return pick == None ? null : pick;
     }
 
     private string? PickGroupSkill(string? current)
     {
         var names = _data.GogmaSkillPairs.Select(p => p.GroupSkill).Distinct().OrderBy(n => n).ToList();
-        var pick = Pick("Rolled group skill", [None, .. names], current ?? None);
+        var pick = Pick("Rolled GROUP SKILL - the second line under 'Active Skills' on the weapon (e.g. Lord's Favor)", [None, .. names], current ?? None);
         return pick == None ? null : pick;
     }
 
