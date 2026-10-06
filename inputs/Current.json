@@ -25,7 +25,7 @@
       3
     ],
     "set_bonus": "Soul of the Dark Knight",
-    "group_skill": "Lord\u0027s Favor"
+    "group_skill": "Lord's Favor"
   },
   "skill_pair": {
     "mode": "fixed",
@@ -70,7 +70,7 @@
     }
   },
   "talismans": {
-    "file": "Test.talismans.json",
+    "file": "Current.talismans.json",
     "include_craftable": true
   },
   "options": {

@@ -1,318 +1,318 @@
-##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 614.5   (20000 final states scored; candidates after pruning: Head 18, Waist 18, Chest 20, Legs 20, Arms 23, talismans 7)
+##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 630.8   (20000 final states scored; candidates after pruning: Waist 18, Chest 20, Arms 22, Legs 26, Head 27, talismans 8)
 
-=== Build 1  -  EFR 492.5 + EFE 122.0 = 614.5 ===
-TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
-       Sets: Gore Magala's Tyranny I (Black Eclipse I), Fulgur Anjanath's Will I (Second Wind I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
-       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Weakness Exploit 1
-       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
-
-Equipment
-  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
-            rolled: Soul of the Dark Knight / Lord's Favor
-            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Crit Elem/Dragon Jwl [3]
-  Head      Sororal Earrings α         R8  Burst 1
-            slots [a3,a1,a1]  decos: Chain Jewel [3], Sane Jewel [1], Sane Jewel [1]  set: Gore Magala's Tyranny  group: Glory's Favor
-  Chest     G. Fulgur Mail β           R6T Maximum Might 1
-            slots [a3,a2,a1]  decos: Chain Jewel [3], Flawless Jewel [2], Sane Jewel [1]  set: Fulgur Anjanath's Will  group: Guardian's Protection
-  Arms      Gogmazios Vambraces α      R8  Maximum Might 2, Agitator 1
-            slots [a2,a1]  decos: Flawless Jewel [2]  set: Fulgur Anjanath's Will / Gogmapocalypse
-  Waist     Sororal Coil α             R8  Burst 2, Evade Extender 2
-            slots [-]  decos: -  set: Gore Magala's Tyranny  group: Glory's Favor
-  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
-            slots [a3,a2,a1]  decos: Tenderizer Jewel [3], Flawless Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
-  Talisman  Challenger Charm III       R8  Agitator 3
-            slots [-]  decos: -
-
-Decorations (12)
-  2x Chain Jewel [3]                Burst 1
-  1x Crit Elem/Dragon Jwl [3]       Dragon Attack 1, Critical Element 3
-  1x Critical Jewel III [3]         Critical Boost 3
-  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
-  1x Tenderizer Jewel [3]           Weakness Exploit 1
-  3x Flawless Jewel [2]             Peak Performance 1
-  3x Sane Jewel [1]                 Antivirus 1
-
-Skills (all decorations in effect)
-  Agitator                 Lv5 (armor ) <- Gogmazios Vambraces α 1, Gogmazios Greaves α 1, Challenger Charm III 3
-  Burst                    Lv5 (armor ) <- Sororal Earrings α 1, Chain Jewel [3] 1, Chain Jewel [3] 1, Sororal Coil α 2
-  Peak Performance         Lv5 (armor ) <- Flawless Jewel [2] 1, Flawless Jewel [2] 1, Gogmazios Greaves α 2, Flawless Jewel [2] 1
-  Antivirus                Lv3 (armor ) <- Sane Jewel [1] x2 2, Sane Jewel [1] 1
-  Maximum Might            Lv3 (armor ) <- G. Fulgur Mail β 1, Gogmazios Vambraces α 2
-  Evade Extender           Lv2 (armor ) <- Sororal Coil α 2
-  Weakness Exploit         Lv1 (armor ) <- Tenderizer Jewel [3] 1
-  Critical Boost           Lv3 (weapon) <- Critical Jewel III [3] 3
-  Critical Element         Lv3 (weapon) <- Crit Elem/Dragon Jwl [3] 3
-  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
-  Dragon Attack            Lv2 (weapon) <- Focus/Dragon Jewel [3] 1, Crit Elem/Dragon Jwl [3] 1
-  Set bonuses: Gore Magala's Tyranny 2pc -> I (Black Eclipse I), Fulgur Anjanath's Will 2pc -> I (Second Wind I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
-  Group skills: Glory's Favor 2pc, Guardian's Protection 1pc, Lord's Favor 1pc
-
-Stats with every conditional skill active
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 86%   crit x1.34 (factor 1.292)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 496.4   EFE 122.7   Total 619.1
-  Modifiers: Weakness Exploit: affinity +5%; Weakness Exploit (wound): affinity +3%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-Stats under the requested conditions
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 83%   crit x1.34 (factor 1.282)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 492.5   EFE 122.0   Total 614.5
-  Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-=== Build 2  -  EFR 492.5 + EFE 122.0 = 614.5 ===
-TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
-       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
-       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Weakness Exploit 1
-       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
+=== Build 1  -  EFR 533.2 + EFE 97.6 = 630.8 ===
+TL;DR  Attack 303 (1454 display)  Affinity 98%  Crit x1.34  White sharpness  Dragon 70 (704 display)  ->  EFR 533.2 + EFE 97.6 = 630.8  (all conditions on: 644.5)
+       Sets: Leviathan's Fury I (Azure Bolt I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
+       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Resentment 5, Weakness Exploit 5, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Peak Performance 2, Stamina Surge 1
+       Why: 98% affinity with x1.34 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 303 via Agitator (+20), Counterstrike (+25), Resentment (+25); Dragon 48 -> 70 true via Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Azure Bolt window.
 
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
             slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Crit Elem/Dragon Jwl [3]
-  Head      Sororal Earrings α         R8  Burst 1
-            slots [a3,a1,a1]  decos: Chain Jewel [3], Sane Jewel [1], Sane Jewel [1]  set: Gore Magala's Tyranny  group: Glory's Favor
-  Chest     Arkvulcan Mail β           R8  Weakness Exploit 1
-            slots [a3,a2]  decos: Chain Jewel [3], Mighty Jewel [2]  set: Arkveld's Hunger  group: Alluring Pelt
+  Head      Arkvulcan Helm γ           R8  Weakness Exploit 3
+            slots [a2,a1]  decos: Furor Jewel [2]  set: Arkveld's Hunger  group: Lord's Soul
+  Chest     Lagiacrus Mail β           R7  Weakness Exploit 1, Stamina Surge 1
+            slots [a2,a2,a1]  decos: Counter Jewel [2], Furor Jewel [2], Steadfast Jewel [1]  set: Leviathan's Fury  group: Buttery Leathercraft
   Arms      Gogmazios Vambraces α      R8  Maximum Might 2, Agitator 1
-            slots [a2,a1]  decos: Flawless Jewel [2]  set: Fulgur Anjanath's Will / Gogmapocalypse
-  Waist     Sororal Coil α             R8  Burst 2, Evade Extender 2
-            slots [-]  decos: -  set: Gore Magala's Tyranny  group: Glory's Favor
+            slots [a2,a1]  decos: Furor Jewel [2], Steadfast Jewel [1]  set: Fulgur Anjanath's Will / Gogmapocalypse
+  Waist     Lagiacrus Coil β           R7  Weakness Exploit 1, Maximum Might 1
+            slots [a2,a2,a1]  decos: Counter Jewel [2], Counter Jewel [2], Steadfast Jewel [1]  set: Leviathan's Fury  group: Buttery Leathercraft
   Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
-            slots [a3,a2,a1]  decos: Flawless Jewel [2], Flawless Jewel [2], Sane Jewel [1]  set: Doshaguma's Might / Gogmapocalypse
+            slots [a3,a2,a1]  decos: Furor Jewel [2], Furor Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
   Talisman  Challenger Charm III       R8  Agitator 3
-            slots [-]  decos: -
-
-Decorations (12)
-  2x Chain Jewel [3]                Burst 1
-  1x Crit Elem/Dragon Jwl [3]       Dragon Attack 1, Critical Element 3
-  1x Critical Jewel III [3]         Critical Boost 3
-  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
-  3x Flawless Jewel [2]             Peak Performance 1
-  1x Mighty Jewel [2]               Maximum Might 1
-  3x Sane Jewel [1]                 Antivirus 1
-
-Skills (all decorations in effect)
-  Agitator                 Lv5 (armor ) <- Gogmazios Vambraces α 1, Gogmazios Greaves α 1, Challenger Charm III 3
-  Burst                    Lv5 (armor ) <- Sororal Earrings α 1, Chain Jewel [3] 1, Chain Jewel [3] 1, Sororal Coil α 2
-  Peak Performance         Lv5 (armor ) <- Flawless Jewel [2] 1, Gogmazios Greaves α 2, Flawless Jewel [2] x2 2
-  Antivirus                Lv3 (armor ) <- Sane Jewel [1] x2 2, Sane Jewel [1] 1
-  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Gogmazios Vambraces α 2
-  Evade Extender           Lv2 (armor ) <- Sororal Coil α 2
-  Weakness Exploit         Lv1 (armor ) <- Arkvulcan Mail β 1
-  Critical Boost           Lv3 (weapon) <- Critical Jewel III [3] 3
-  Critical Element         Lv3 (weapon) <- Crit Elem/Dragon Jwl [3] 3
-  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
-  Dragon Attack            Lv2 (weapon) <- Focus/Dragon Jewel [3] 1, Crit Elem/Dragon Jwl [3] 1
-  Set bonuses: Gore Magala's Tyranny 2pc -> I (Black Eclipse I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Arkveld's Hunger 1pc, Fulgur Anjanath's Will 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
-  Group skills: Glory's Favor 2pc, Alluring Pelt 1pc, Lord's Favor 1pc
-
-Stats with every conditional skill active
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 86%   crit x1.34 (factor 1.292)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 496.4   EFE 122.7   Total 619.1
-  Modifiers: Weakness Exploit: affinity +5%; Weakness Exploit (wound): affinity +3%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-Stats under the requested conditions
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 83%   crit x1.34 (factor 1.282)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 492.5   EFE 122.0   Total 614.5
-  Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-=== Build 3  -  EFR 492.5 + EFE 122.0 = 614.5 ===
-TL;DR  Attack 291 (1397 display)  Affinity 83%  Crit x1.34  White sharpness  Dragon 90 (904 display)  ->  EFR 492.5 + EFE 122.0 = 614.5  (all conditions on: 619.1)
-       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
-       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Burst 5, Peak Performance 5, Antivirus 3, Maximum Might 3, Evade Extender 2, Constitution 1, Weakness Exploit 1
-       Why: 83% affinity with x1.34 crits from Weakness Exploit (+5%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 291 via Agitator (+20), Peak Performance (+20), Burst 5 (+18); Dragon 48 -> 90 true via Burst 5 (+20), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
-
-Equipment
-  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
-            rolled: Soul of the Dark Knight / Lord's Favor
-            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Crit Elem/Dragon Jwl [3], Critical Jewel III [3]
-  Head      Sororal Earrings α         R8  Burst 1
-            slots [a3,a1,a1]  decos: Tenderizer Jewel [3], Sane Jewel [1], Sane Jewel [1]  set: Gore Magala's Tyranny  group: Glory's Favor
-  Chest     Mizutsune Mail α           R6T Constitution 1, Burst 2
-            slots [a2,a1]  decos: Mighty Jewel [2], Sane Jewel [1]  set: Mizutsune's Prowess  group: Fortifying Pelt
-  Arms      Gogmazios Vambraces α      R8  Maximum Might 2, Agitator 1
-            slots [a2,a1]  decos: Flawless Jewel [2]  set: Fulgur Anjanath's Will / Gogmapocalypse
-  Waist     Sororal Coil α             R8  Burst 2, Evade Extender 2
-            slots [-]  decos: -  set: Gore Magala's Tyranny  group: Glory's Favor
-  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
-            slots [a3,a2,a1]  decos: Flawless Jewel [2], Flawless Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
-  Talisman  Challenger Charm III       R8  Agitator 3
-            slots [-]  decos: -
-
-Decorations (11)
-  1x Crit Elem/Dragon Jwl [3]       Dragon Attack 1, Critical Element 3
-  1x Critical Jewel III [3]         Critical Boost 3
-  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
-  1x Tenderizer Jewel [3]           Weakness Exploit 1
-  3x Flawless Jewel [2]             Peak Performance 1
-  1x Mighty Jewel [2]               Maximum Might 1
-  3x Sane Jewel [1]                 Antivirus 1
-
-Skills (all decorations in effect)
-  Agitator                 Lv5 (armor ) <- Gogmazios Vambraces α 1, Gogmazios Greaves α 1, Challenger Charm III 3
-  Burst                    Lv5 (armor ) <- Sororal Earrings α 1, Mizutsune Mail α 2, Sororal Coil α 2
-  Peak Performance         Lv5 (armor ) <- Flawless Jewel [2] 1, Gogmazios Greaves α 2, Flawless Jewel [2] x2 2
-  Antivirus                Lv3 (armor ) <- Sane Jewel [1] x2 2, Sane Jewel [1] 1
-  Maximum Might            Lv3 (armor ) <- Mighty Jewel [2] 1, Gogmazios Vambraces α 2
-  Evade Extender           Lv2 (armor ) <- Sororal Coil α 2
-  Constitution             Lv1 (armor ) <- Mizutsune Mail α 1
-  Weakness Exploit         Lv1 (armor ) <- Tenderizer Jewel [3] 1
-  Critical Boost           Lv3 (weapon) <- Critical Jewel III [3] 3
-  Critical Element         Lv3 (weapon) <- Crit Elem/Dragon Jwl [3] 3
-  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
-  Dragon Attack            Lv2 (weapon) <- Focus/Dragon Jewel [3] 1, Crit Elem/Dragon Jwl [3] 1
-  Set bonuses: Gore Magala's Tyranny 2pc -> I (Black Eclipse I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Mizutsune's Prowess 1pc, Fulgur Anjanath's Will 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
-  Group skills: Glory's Favor 2pc, Fortifying Pelt 1pc, Lord's Favor 1pc
-
-Stats with every conditional skill active
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 86%   crit x1.34 (factor 1.292)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 496.4   EFE 122.7   Total 619.1
-  Modifiers: Weakness Exploit: affinity +5%; Weakness Exploit (wound): affinity +3%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-Stats under the requested conditions
-  Attack     233 -> 291 true (1397 display)
-  Affinity   8% -> 83%   crit x1.34 (factor 1.282)
-  Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 90.4 true (904 display), cap 110.4, crit element x1.21
-  EFR 492.5   EFE 122.0   Total 614.5
-  Modifiers: Weakness Exploit: affinity +5%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 5: raw +18; Burst 5: element +20 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
-
-=== Build 4  -  EFR 501.5 + EFE 111.4 = 613.0 ===
-TL;DR  Attack 285 (1368 display)  Affinity 98%  Crit x1.34  White sharpness  Dragon 80 (804 display)  ->  EFR 501.5 + EFE 111.4 = 613.0  (all conditions on: 615.9)
-       Sets: Gore Magala's Tyranny I (Black Eclipse I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
-       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Peak Performance 5, Weakness Exploit 4, Antivirus 3, Constitution 3, Maximum Might 3, Burst 2
-       Why: 98% affinity with x1.34 crits from Weakness Exploit (+20%), Agitator (+15%), Maximum Might (+30%), Frenzy overcome (Black Eclipse) (+15%), Antivirus (+10%); raw 233 -> 285 via Agitator (+20), Peak Performance (+20), Burst 2 (+12); Dragon 48 -> 80 true via Burst 2 (+10), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, overcoming Frenzy.
-
-Equipment
-  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
-            rolled: Soul of the Dark Knight / Lord's Favor
-            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Crit Elem/Dragon Jwl [3], Critical Jewel III [3]
-  Head      Sororal Earrings α         R8  Burst 1
-            slots [a3,a1,a1]  decos: Challenger Jewel [3], Sane Jewel [1], Sane Jewel [1]  set: Gore Magala's Tyranny  group: Glory's Favor
-  Chest     Mizutsune Mail β           R6T Constitution 1, Burst 1
-            slots [a3,a3]  decos: Challenger Jewel [3], Tenderizer Jewel [3]  set: Mizutsune's Prowess  group: Alluring Pelt
-  Arms      Gogmazios Vambraces α      R8  Maximum Might 2, Agitator 1
-            slots [a2,a1]  decos: Flawless Jewel [2]  set: Fulgur Anjanath's Will / Gogmapocalypse
-  Waist     Gore Coil β                R7  Constitution 2
-            slots [a3,a2]  decos: Challenger Jewel [3], Mighty Jewel [2]  set: Gore Magala's Tyranny  group: Scale Layering
-  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
-            slots [a3,a2,a1]  decos: Flawless Jewel [2], Flawless Jewel [2], Sane Jewel [1]  set: Doshaguma's Might / Gogmapocalypse
-  Talisman  Exploiter Charm III        R8  Weakness Exploit 3
             slots [-]  decos: -
 
 Decorations (14)
-  3x Challenger Jewel [3]           Agitator 1
   1x Crit Elem/Dragon Jwl [3]       Dragon Attack 1, Critical Element 3
   1x Critical Jewel III [3]         Critical Boost 3
   1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
-  1x Tenderizer Jewel [3]           Weakness Exploit 1
-  3x Flawless Jewel [2]             Peak Performance 1
-  1x Mighty Jewel [2]               Maximum Might 1
-  3x Sane Jewel [1]                 Antivirus 1
+  3x Counter Jewel [2]              Counterstrike 1
+  5x Furor Jewel [2]                Resentment 1
+  3x Steadfast Jewel [1]            Stun Resistance 1
 
 Skills (all decorations in effect)
-  Agitator                 Lv5 (armor ) <- Challenger Jewel [3] 1, Challenger Jewel [3] 1, Gogmazios Vambraces α 1, Challenger Jewel [3] 1, Gogmazios Greaves α 1
-  Peak Performance         Lv5 (armor ) <- Flawless Jewel [2] 1, Gogmazios Greaves α 2, Flawless Jewel [2] x2 2
-  Weakness Exploit         Lv4 (armor ) <- Tenderizer Jewel [3] 1, Exploiter Charm III 3
-  Antivirus                Lv3 (armor ) <- Sane Jewel [1] x2 2, Sane Jewel [1] 1
-  Constitution             Lv3 (armor ) <- Mizutsune Mail β 1, Gore Coil β 2
-  Maximum Might            Lv3 (armor ) <- Gogmazios Vambraces α 2, Mighty Jewel [2] 1
-  Burst                    Lv2 (armor ) <- Sororal Earrings α 1, Mizutsune Mail β 1
+  Agitator                 Lv5 (armor ) <- Gogmazios Vambraces α 1, Gogmazios Greaves α 1, Challenger Charm III 3
+  Resentment               Lv5 (armor ) <- Furor Jewel [2] 1, Furor Jewel [2] 1, Furor Jewel [2] 1, Furor Jewel [2] x2 2
+  Weakness Exploit         Lv5 (armor ) <- Arkvulcan Helm γ 3, Lagiacrus Mail β 1, Lagiacrus Coil β 1
+  Counterstrike            Lv3 (armor ) <- Counter Jewel [2] 1, Counter Jewel [2] x2 2
+  Maximum Might            Lv3 (armor ) <- Gogmazios Vambraces α 2, Lagiacrus Coil β 1
+  Stun Resistance          Lv3 (armor ) <- Steadfast Jewel [1] 1, Steadfast Jewel [1] 1, Steadfast Jewel [1] 1
+  Peak Performance         Lv2 (armor ) <- Gogmazios Greaves α 2
+  Stamina Surge            Lv1 (armor ) <- Lagiacrus Mail β 1
   Critical Boost           Lv3 (weapon) <- Critical Jewel III [3] 3
   Critical Element         Lv3 (weapon) <- Crit Elem/Dragon Jwl [3] 3
   Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
   Dragon Attack            Lv2 (weapon) <- Focus/Dragon Jewel [3] 1, Crit Elem/Dragon Jwl [3] 1
-  Set bonuses: Gore Magala's Tyranny 2pc -> I (Black Eclipse I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Mizutsune's Prowess 1pc, Fulgur Anjanath's Will 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
-  Group skills: Glory's Favor 1pc, Alluring Pelt 1pc, Scale Layering 1pc, Lord's Favor 1pc
+  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Arkveld's Hunger 1pc, Fulgur Anjanath's Will 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
+  Group skills: Buttery Leathercraft 2pc, Lord's Soul 1pc, Lord's Favor 1pc
 
 Stats with every conditional skill active
-  Attack     233 -> 285 true (1368 display)
+  Attack     233 -> 309 true (1483 display)
   Affinity   8% -> 100%   crit x1.34 (factor 1.34)
   Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 80.4 true (804 display), cap 110.4, crit element x1.21
-  EFR 504.1   EFE 111.8   Total 615.9
-  Modifiers: Weakness Exploit: affinity +20%; Weakness Exploit (wound): affinity +15%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 2: raw +12; Burst 2: element +10 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+  Element    Dragon 48 -> 70.4 true (704 display), cap 110.4, crit element x1.21
+  EFR 546.6   EFE 97.9   Total 644.5
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +6; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Azure Bolt: affinity +15%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
 Stats under the requested conditions
-  Attack     233 -> 285 true (1368 display)
+  Attack     233 -> 303 true (1454 display)
   Affinity   8% -> 98%   crit x1.34 (factor 1.333)
   Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 80.4 true (804 display), cap 110.4, crit element x1.21
-  EFR 501.5   EFE 111.4   Total 613.0
-  Modifiers: Weakness Exploit: affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 2: raw +12; Burst 2: element +10 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Frenzy overcome (Black Eclipse): affinity +15%; Antivirus: affinity +10%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+  Element    Dragon 48 -> 70.4 true (704 display), cap 110.4, crit element x1.21
+  EFR 533.2   EFE 97.6   Total 630.8
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Azure Bolt: affinity +15%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
 
-=== Build 5  -  EFR 501.5 + EFE 111.4 = 613.0 ===
-TL;DR  Attack 285 (1368 display)  Affinity 98%  Crit x1.34  White sharpness  Dragon 80 (804 display)  ->  EFR 501.5 + EFE 111.4 = 613.0  (all conditions on: 615.9)
-       Sets: Leviathan's Fury I (Azure Bolt I), Gogmapocalypse I (Mutual Hostility I)   Groups: -
-       Skills: Critical Boost 3, Critical Element 3, Focus 3, Dragon Attack 2, Agitator 5, Peak Performance 5, Weakness Exploit 5, Maximum Might 3, Burst 2, Stamina Surge 2
-       Why: 98% affinity with x1.34 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 285 via Agitator (+20), Peak Performance (+20), Burst 2 (+12); Dragon 48 -> 80 true via Burst 2 (+10), Dragon Attack 2 (x1.1), Dragon Attack 2 (+5), Mutual Hostility (x1.2), Mutual Hostility (+2). Depends on: weak-point hits, enraged monster, full health, full stamina, 5 consecutive hits, Azure Bolt window.
+=== Build 2  -  EFR 569.0 + EFE 59.8 = 628.8 ===
+TL;DR  Attack 310 (1486 display)  Affinity 98%  Crit x1.40  White sharpness  Dragon 52 (520 display)  ->  EFR 569.0 + EFE 59.8 = 628.8  (all conditions on: 632.0)
+       Sets: Leviathan's Fury I (Azure Bolt I)   Groups: Lord's Soul (Guts (Tenacity))
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Weakness Exploit 5, Resentment 4, Counterstrike 3, Maximum Might 3, Speed Eating 3, Stun Resistance 3, Stamina Surge 2
+       Why: 98% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 310 via Agitator (+20), Counterstrike (+25), Resentment (+20), Guts (Lord's Soul) (x1.05); Dragon 48 -> 52 true via Dragon Attack 1 (+4). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Azure Bolt window, Guts not yet triggered.
 
 Equipment
   Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
             rolled: Soul of the Dark Knight / Lord's Favor
-            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Crit Elem/Dragon Jwl [3]
-  Head      Lagiacrus Helm β           R7  Maximum Might 2
-            slots [a3,a2,a1]  decos: Tenderizer Jewel [3], Mighty Jewel [2]  set: Leviathan's Fury  group: Buttery Leathercraft
-  Chest     Blango Mail β              R6T Agitator 2
-            slots [a3,a1]  decos: Challenger Jewel [3]  set: Blangonga's Spirit  group: Alluring Pelt
+            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Critical Jewel II [2]
+  Head      Arkvulcan Helm γ           R8  Weakness Exploit 3
+            slots [a2,a1]  decos: Furor Jewel [2], Steadfast Jewel [1]  set: Arkveld's Hunger  group: Lord's Soul
+  Chest     Dahaad Shardmail γ         R8  Agitator 2
+            slots [a2,a2]  decos: Counter Jewel [2], Counter Jewel [2]  set: Jin Dahaad's Revolt  group: Lord's Soul
   Arms      Lagiacrus Braces β         R7  Weakness Exploit 1, Stamina Surge 2
-            slots [a3]  decos: -  set: Leviathan's Fury  group: Buttery Leathercraft
-  Waist     Gogmazios Coil α           R8  Burst 2, Peak Performance 1
-            slots [a2,a1,a1]  decos: Flawless Jewel [2]  set: Ebony Odogaron's Power / Gogmapocalypse
-  Legs      Gogmazios Greaves α        R8  Agitator 1, Peak Performance 2
-            slots [a3,a2,a1]  decos: Challenger Jewel [3], Flawless Jewel [2]  set: Doshaguma's Might / Gogmapocalypse
+            slots [a3]  decos: Steadfast Jewel [1]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Waist     Lagiacrus Coil β           R7  Weakness Exploit 1, Maximum Might 1
+            slots [a2,a2,a1]  decos: Mighty Jewel [2], Mighty Jewel [2], Steadfast Jewel [1]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Legs      Udra Miregreaves γ         R8  Counterstrike 1, Speed Eating 3, Resentment 2
+            slots [a2]  decos: Furor Jewel [2]  set: Nu Udra's Mutiny  group: Lord's Soul
+  Talisman  Challenger Charm III       R8  Agitator 3
+            slots [-]  decos: -
+
+Decorations (12)
+  1x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  2x Counter Jewel [2]              Counterstrike 1
+  1x Critical Jewel II [2]          Critical Boost 2
+  2x Furor Jewel [2]                Resentment 1
+  2x Mighty Jewel [2]               Maximum Might 1
+  3x Steadfast Jewel [1]            Stun Resistance 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Dahaad Shardmail γ 2, Challenger Charm III 3
+  Weakness Exploit         Lv5 (armor ) <- Arkvulcan Helm γ 3, Lagiacrus Braces β 1, Lagiacrus Coil β 1
+  Resentment               Lv4 (armor ) <- Furor Jewel [2] 1, Udra Miregreaves γ 2, Furor Jewel [2] 1
+  Counterstrike            Lv3 (armor ) <- Counter Jewel [2] x2 2, Udra Miregreaves γ 1
+  Maximum Might            Lv3 (armor ) <- Lagiacrus Coil β 1, Mighty Jewel [2] x2 2
+  Speed Eating             Lv3 (armor ) <- Udra Miregreaves γ 3
+  Stun Resistance          Lv3 (armor ) <- Steadfast Jewel [1] 1, Steadfast Jewel [1] 1, Steadfast Jewel [1] 1
+  Stamina Surge            Lv2 (armor ) <- Lagiacrus Braces β 2
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] 3, Critical Jewel II [2] 2
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Arkveld's Hunger 1pc, Jin Dahaad's Revolt 1pc, Nu Udra's Mutiny 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 3pc ACTIVE, Buttery Leathercraft 2pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 572.2   EFE 59.8   Total 632.0
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
+
+Stats under the requested conditions
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 98%   crit x1.40 (factor 1.392)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 569.0   EFE 59.8   Total 628.8
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
+
+=== Build 3  -  EFR 569.0 + EFE 59.8 = 628.8 ===
+TL;DR  Attack 310 (1486 display)  Affinity 98%  Crit x1.40  White sharpness  Dragon 52 (520 display)  ->  EFR 569.0 + EFE 59.8 = 628.8  (all conditions on: 643.1)
+       Sets: Leviathan's Fury I (Azure Bolt I)   Groups: Lord's Soul (Guts (Tenacity))
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Weakness Exploit 5, Resentment 4, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Flayer 2, Foray 1
+       Why: 98% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 310 via Agitator (+20), Counterstrike (+25), Resentment (+20), Guts (Lord's Soul) (x1.05); Dragon 48 -> 52 true via Dragon Attack 1 (+4). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Azure Bolt window, Guts not yet triggered.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Critical Jewel II [2]
+  Head      Lagiacrus Helm β           R7  Maximum Might 2
+            slots [a3,a2,a1]  decos: Furor Jewel [2], Furor Jewel [2]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Chest     Udra Miremail γ            R8  Counterstrike 2
+            slots [a3,a3]  decos: Challenger Jewel [3], Challenger Jewel [3]  set: Nu Udra's Mutiny  group: Lord's Soul
+  Arms      Arkvulcan Vambraces γ      R8  Flayer 2, Weakness Exploit 2
+            slots [a1,a1]  decos: Steadfast Jewel [1], Steadfast Jewel [1]  set: Arkveld's Hunger  group: Lord's Soul
+  Waist     Lagiacrus Coil β           R7  Weakness Exploit 1, Maximum Might 1
+            slots [a2,a2,a1]  decos: Counter Jewel [2], Furor Jewel [2], Steadfast Jewel [1]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Legs      Dahaad Shardgreaves γ      R8  Weakness Exploit 2, Foray 1
+            slots [a2]  decos: Furor Jewel [2]  set: Jin Dahaad's Revolt  group: Lord's Soul
+  Talisman  Challenger Charm III       R8  Agitator 3
+            slots [-]  decos: -
+
+Decorations (13)
+  2x Challenger Jewel [3]           Agitator 1
+  1x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  1x Counter Jewel [2]              Counterstrike 1
+  1x Critical Jewel II [2]          Critical Boost 2
+  4x Furor Jewel [2]                Resentment 1
+  3x Steadfast Jewel [1]            Stun Resistance 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Challenger Jewel [3] x2 2, Challenger Charm III 3
+  Weakness Exploit         Lv5 (armor ) <- Arkvulcan Vambraces γ 2, Lagiacrus Coil β 1, Dahaad Shardgreaves γ 2
+  Resentment               Lv4 (armor ) <- Furor Jewel [2] x2 2, Furor Jewel [2] 1, Furor Jewel [2] 1
+  Counterstrike            Lv3 (armor ) <- Udra Miremail γ 2, Counter Jewel [2] 1
+  Maximum Might            Lv3 (armor ) <- Lagiacrus Helm β 2, Lagiacrus Coil β 1
+  Stun Resistance          Lv3 (armor ) <- Steadfast Jewel [1] x2 2, Steadfast Jewel [1] 1
+  Flayer                   Lv2 (armor ) <- Arkvulcan Vambraces γ 2
+  Foray                    Lv1 (armor ) <- Dahaad Shardgreaves γ 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] 3, Critical Jewel II [2] 2
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Nu Udra's Mutiny 1pc, Arkveld's Hunger 1pc, Jin Dahaad's Revolt 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 3pc ACTIVE, Buttery Leathercraft 2pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 315.7 true (1515 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 583.3   EFE 59.8   Total 643.1
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Foray: raw +6; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
+
+Stats under the requested conditions
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 98%   crit x1.40 (factor 1.392)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 569.0   EFE 59.8   Total 628.8
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
+
+=== Build 4  -  EFR 569.0 + EFE 59.8 = 628.8 ===
+TL;DR  Attack 310 (1486 display)  Affinity 98%  Crit x1.40  White sharpness  Dragon 52 (520 display)  ->  EFR 569.0 + EFE 59.8 = 628.8  (all conditions on: 632.0)
+       Sets: Leviathan's Fury I (Azure Bolt I), Nu Udra's Mutiny I (Bad Blood I)   Groups: Lord's Soul (Guts (Tenacity))
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Weakness Exploit 5, Resentment 4, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Bind Resistance 2, Latent Power 1
+       Why: 98% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 310 via Agitator (+20), Counterstrike (+25), Resentment (+20), Guts (Lord's Soul) (x1.05); Dragon 48 -> 52 true via Dragon Attack 1 (+4). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Azure Bolt window, Guts not yet triggered.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Critical Jewel II [2]
+  Head      Lagiacrus Helm β           R7  Maximum Might 2
+            slots [a3,a2,a1]  decos: Furor Jewel [2], Counter Jewel [2]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Chest     Udra Miremail γ            R8  Counterstrike 2
+            slots [a3,a3]  decos: Challenger Jewel [3], Challenger Jewel [3]  set: Nu Udra's Mutiny  group: Lord's Soul
+  Arms      Udra Mirebraces γ          R8  Resentment 3
+            slots [a3,a1,a1]  decos: Mighty Jewel [2], Steadfast Jewel [1], Steadfast Jewel [1]  set: Nu Udra's Mutiny  group: Lord's Soul
+  Waist     Dahaad Shardcoil γ         R8  Agitator 3, Bind Resistance 2
+            slots [a1]  decos: Steadfast Jewel [1]  set: Jin Dahaad's Revolt  group: Lord's Soul
+  Legs      Lagiacrus Greaves β        R7  Weakness Exploit 2, Latent Power 1
+            slots [a1]  decos: -  set: Leviathan's Fury  group: Buttery Leathercraft
   Talisman  Exploiter Charm III        R8  Weakness Exploit 3
             slots [-]  decos: -
 
-Decorations (9)
+Decorations (11)
   2x Challenger Jewel [3]           Agitator 1
-  1x Crit Elem/Dragon Jwl [3]       Dragon Attack 1, Critical Element 3
   1x Critical Jewel III [3]         Critical Boost 3
   1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
-  1x Tenderizer Jewel [3]           Weakness Exploit 1
-  2x Flawless Jewel [2]             Peak Performance 1
+  1x Counter Jewel [2]              Counterstrike 1
+  1x Critical Jewel II [2]          Critical Boost 2
+  1x Furor Jewel [2]                Resentment 1
   1x Mighty Jewel [2]               Maximum Might 1
+  3x Steadfast Jewel [1]            Stun Resistance 1
 
 Skills (all decorations in effect)
-  Agitator                 Lv5 (armor ) <- Blango Mail β 2, Challenger Jewel [3] 1, Gogmazios Greaves α 1, Challenger Jewel [3] 1
-  Peak Performance         Lv5 (armor ) <- Gogmazios Coil α 1, Flawless Jewel [2] 1, Gogmazios Greaves α 2, Flawless Jewel [2] 1
-  Weakness Exploit         Lv5 (armor ) <- Tenderizer Jewel [3] 1, Lagiacrus Braces β 1, Exploiter Charm III 3
+  Agitator                 Lv5 (armor ) <- Challenger Jewel [3] x2 2, Dahaad Shardcoil γ 3
+  Weakness Exploit         Lv5 (armor ) <- Lagiacrus Greaves β 2, Exploiter Charm III 3
+  Resentment               Lv4 (armor ) <- Furor Jewel [2] 1, Udra Mirebraces γ 3
+  Counterstrike            Lv3 (armor ) <- Counter Jewel [2] 1, Udra Miremail γ 2
   Maximum Might            Lv3 (armor ) <- Lagiacrus Helm β 2, Mighty Jewel [2] 1
-  Burst                    Lv2 (armor ) <- Gogmazios Coil α 2
-  Stamina Surge            Lv2 (armor ) <- Lagiacrus Braces β 2
-  Critical Boost           Lv3 (weapon) <- Critical Jewel III [3] 3
-  Critical Element         Lv3 (weapon) <- Crit Elem/Dragon Jwl [3] 3
+  Stun Resistance          Lv3 (armor ) <- Steadfast Jewel [1] x2 2, Steadfast Jewel [1] 1
+  Bind Resistance          Lv2 (armor ) <- Dahaad Shardcoil γ 2
+  Latent Power             Lv1 (armor ) <- Lagiacrus Greaves β 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] 3, Critical Jewel II [2] 2
   Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
-  Dragon Attack            Lv2 (weapon) <- Focus/Dragon Jewel [3] 1, Crit Elem/Dragon Jwl [3] 1
-  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Gogmapocalypse 2pc -> I (Mutual Hostility I), Blangonga's Spirit 1pc, Ebony Odogaron's Power 1pc, Doshaguma's Might 1pc, Soul of the Dark Knight 1pc
-  Group skills: Buttery Leathercraft 2pc, Alluring Pelt 1pc, Lord's Favor 1pc
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Nu Udra's Mutiny 2pc -> I (Bad Blood I), Jin Dahaad's Revolt 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 3pc ACTIVE, Buttery Leathercraft 2pc, Lord's Favor 1pc
 
 Stats with every conditional skill active
-  Attack     233 -> 285 true (1368 display)
-  Affinity   8% -> 100%   crit x1.34 (factor 1.34)
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
   Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 80.4 true (804 display), cap 110.4, crit element x1.21
-  EFR 504.1   EFE 111.8   Total 615.9
-  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 2: raw +12; Burst 2: element +10 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Azure Bolt: affinity +15%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 572.2   EFE 59.8   Total 632.0
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Latent Power: affinity +10%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
 
 Stats under the requested conditions
-  Attack     233 -> 285 true (1368 display)
-  Affinity   8% -> 98%   crit x1.34 (factor 1.333)
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 98%   crit x1.40 (factor 1.392)
   Sharpness  White (raw x1.32, element x1.15)
-  Element    Dragon 48 -> 80.4 true (804 display), cap 110.4, crit element x1.21
-  EFR 501.5   EFE 111.4   Total 613.0
-  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Peak Performance: raw +20; Maximum Might: affinity +30%; Burst 2: raw +12; Burst 2: element +10 (true); Dragon Attack 2: element x1.1; Dragon Attack 2: element +5 (true); Azure Bolt: affinity +15%; Mutual Hostility: element x1.2; Mutual Hostility: element +2 (true)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 569.0   EFE 59.8   Total 628.8
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
+
+=== Build 5  -  EFR 569.0 + EFE 59.8 = 628.8 ===
+TL;DR  Attack 310 (1486 display)  Affinity 98%  Crit x1.40  White sharpness  Dragon 52 (520 display)  ->  EFR 569.0 + EFE 59.8 = 628.8  (all conditions on: 678.2)
+       Sets: Leviathan's Fury I (Azure Bolt I), Jin Dahaad's Revolt I (Binding Counter I)   Groups: Lord's Soul (Guts (Tenacity))
+       Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Weakness Exploit 5, Resentment 4, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Bind Resistance 2, Latent Power 1
+       Why: 98% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%), Azure Bolt (+15%); raw 233 -> 310 via Agitator (+20), Counterstrike (+25), Resentment (+20), Guts (Lord's Soul) (x1.05); Dragon 48 -> 52 true via Dragon Attack 1 (+4). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Azure Bolt window, Guts not yet triggered.
+
+Equipment
+  Weapon    GreatSword                 233 raw (1118 display), 8% affinity, 480 Dragon, White sharpness
+            rolled: Soul of the Dark Knight / Lord's Favor
+            slots [w3,w3,w3]  decos: Focus/Dragon Jewel [3], Critical Jewel III [3], Critical Jewel II [2]
+  Head      Lagiacrus Helm β           R7  Maximum Might 2
+            slots [a3,a2,a1]  decos: Furor Jewel [2], Counter Jewel [2]  set: Leviathan's Fury  group: Buttery Leathercraft
+  Chest     Dahaad Shardmail γ         R8  Agitator 2
+            slots [a2,a2]  decos: Counter Jewel [2], Mighty Jewel [2]  set: Jin Dahaad's Revolt  group: Lord's Soul
+  Arms      Udra Mirebraces γ          R8  Resentment 3
+            slots [a3,a1,a1]  decos: Counter Jewel [2], Steadfast Jewel [1], Steadfast Jewel [1]  set: Nu Udra's Mutiny  group: Lord's Soul
+  Waist     Dahaad Shardcoil γ         R8  Agitator 3, Bind Resistance 2
+            slots [a1]  decos: Steadfast Jewel [1]  set: Jin Dahaad's Revolt  group: Lord's Soul
+  Legs      Lagiacrus Greaves β        R7  Weakness Exploit 2, Latent Power 1
+            slots [a1]  decos: -  set: Leviathan's Fury  group: Buttery Leathercraft
+  Talisman  Exploiter Charm III        R8  Weakness Exploit 3
+            slots [-]  decos: -
+
+Decorations (11)
+  1x Critical Jewel III [3]         Critical Boost 3
+  1x Focus/Dragon Jewel [3]         Dragon Attack 1, Focus 3
+  3x Counter Jewel [2]              Counterstrike 1
+  1x Critical Jewel II [2]          Critical Boost 2
+  1x Furor Jewel [2]                Resentment 1
+  1x Mighty Jewel [2]               Maximum Might 1
+  3x Steadfast Jewel [1]            Stun Resistance 1
+
+Skills (all decorations in effect)
+  Agitator                 Lv5 (armor ) <- Dahaad Shardmail γ 2, Dahaad Shardcoil γ 3
+  Weakness Exploit         Lv5 (armor ) <- Lagiacrus Greaves β 2, Exploiter Charm III 3
+  Resentment               Lv4 (armor ) <- Furor Jewel [2] 1, Udra Mirebraces γ 3
+  Counterstrike            Lv3 (armor ) <- Counter Jewel [2] 1, Counter Jewel [2] 1, Counter Jewel [2] 1
+  Maximum Might            Lv3 (armor ) <- Lagiacrus Helm β 2, Mighty Jewel [2] 1
+  Stun Resistance          Lv3 (armor ) <- Steadfast Jewel [1] x2 2, Steadfast Jewel [1] 1
+  Bind Resistance          Lv2 (armor ) <- Dahaad Shardcoil γ 2
+  Latent Power             Lv1 (armor ) <- Lagiacrus Greaves β 1
+  Critical Boost           Lv5 (weapon) <- Critical Jewel III [3] 3, Critical Jewel II [2] 2
+  Focus                    Lv3 (weapon) <- Focus/Dragon Jewel [3] 3
+  Dragon Attack            Lv1 (weapon) <- Focus/Dragon Jewel [3] 1
+  Set bonuses: Leviathan's Fury 2pc -> I (Azure Bolt I), Jin Dahaad's Revolt 2pc -> I (Binding Counter I), Nu Udra's Mutiny 1pc, Soul of the Dark Knight 1pc
+  Group skills: Lord's Soul 3pc ACTIVE, Buttery Leathercraft 2pc, Lord's Favor 1pc
+
+Stats with every conditional skill active
+  Attack     233 -> 334.7 true (1606 display)
+  Affinity   8% -> 100%   crit x1.40 (factor 1.4)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 618.4   EFE 59.8   Total 678.2
+  Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Latent Power: affinity +10%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Binding Counter: raw +25; Guts (Lord's Soul): raw x1.05
+
+Stats under the requested conditions
+  Attack     233 -> 309.7 true (1486 display)
+  Affinity   8% -> 98%   crit x1.40 (factor 1.392)
+  Sharpness  White (raw x1.32, element x1.15)
+  Element    Dragon 48 -> 52 true (520 display), cap 110.4, crit element x1.00
+  EFR 569.0   EFE 59.8   Total 628.8
+  Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +20; Dragon Attack 1: element +4 (true); Azure Bolt: affinity +15%; Guts (Lord's Soul): raw x1.05
 
