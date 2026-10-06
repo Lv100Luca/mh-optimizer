@@ -44,7 +44,7 @@ public static class Endpoints
             : Results.NotFound());
 
         api.MapPost("/resolve", (ConfigPayload payload, GameData data, ConfigStore store) =>
-            Resolving.Describe(Resolving.Resolve(payload, data, store.Directory), data));
+            Resolving.Describe(Resolving.Resolve(payload, data, store.Directory), payload.Request.TargetSkills, data));
 
         // Server-sent events: "validation" {errors, warnings}, then "progress" {message}..., then "result" ResultDto or "error" {message}.
         api.MapPost("/optimize", (ConfigPayload payload, string? save, GameData data, ConfigStore store, HttpContext http) =>

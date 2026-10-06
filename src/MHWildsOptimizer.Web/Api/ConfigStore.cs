@@ -27,6 +27,7 @@ public sealed partial class ConfigStore(AppPaths paths)
         foreach (var file in RequestFiles.ListRequests(Directory))
         {
             var name = Path.GetFileNameWithoutExtension(file);
+            if (IsJsonArray(file)) continue; // a talisman list under another name (e.g. talismans.example.json), not a request
             string? summary = null;
             try
             {
@@ -96,6 +97,19 @@ public sealed partial class ConfigStore(AppPaths paths)
     {
         var path = ResultsTextPath(name);
         return File.Exists(path) ? File.ReadAllText(path) : null;
+    }
+
+    private static bool IsJsonArray(string path)
+    {
+        try
+        {
+            using var reader = new StreamReader(path);
+            int ch;
+            while ((ch = reader.Read()) >= 0)
+                if (!char.IsWhiteSpace((char)ch)) return ch == '[';
+            return false;
+        }
+        catch (IOException) { return false; }
     }
 
     private string RequestPath(string name) => Path.Combine(Directory, name + ".json");

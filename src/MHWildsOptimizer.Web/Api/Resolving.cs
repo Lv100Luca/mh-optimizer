@@ -52,12 +52,13 @@ public static class Resolving
     public static ResolvedRequest Resolve(ConfigPayload payload, GameData data, string baseDirectory) =>
         RequestLoader.Resolve(payload.Request, data, baseDirectory, payload.Talismans ?? []);
 
-    public static ResolveDto Describe(ResolvedRequest r, GameData data)
+    /// <param name="requested">The user's own target skills, to tell them apart from the weapon core skills the options add.</param>
+    public static ResolveDto Describe(ResolvedRequest r, IReadOnlyDictionary<string, int> requested, GameData data)
     {
         var weapon = r.IsValid ? Weapon(r.Weapon) : null;
-        var core = r.AppliedCoreSkills.ToDictionary(c => c.Skill, c => c.Level);
+        var core = r.AppliedCoreSkills.Select(c => c.Skill).ToHashSet();
         var targets = r.TargetSkills
-            .Select(kv => new TargetDto(kv.Key, kv.Value, core.TryGetValue(kv.Key, out var lv) && lv >= kv.Value && !r.TargetSkills.Any(t => t.Key == kv.Key && t.Value > lv)))
+            .Select(kv => new TargetDto(kv.Key, kv.Value, core.Contains(kv.Key) && !requested.ContainsKey(kv.Key)))
             .OrderBy(t => t.FromCore).ThenBy(t => t.Skill)
             .ToList();
 
