@@ -20,10 +20,10 @@ public static class LoadoutReport
 
         // ---------------- TL;DR ----------------
         var s = BuildSummary.Create(loadout, data, cond);
-        sb.AppendLine(string.Format(inv, "TL;DR  Attack {0:0} ({1} display)  Affinity {2}%  Crit x{3:0.00}  {4} sharpness{5}  ->  EFR {6:0.0} + EFE {7:0.0} = {8:0.0}  (all conditions on: {9:0.0})",
+        sb.AppendLine(string.Format(inv, "TL;DR  Attack {0:0} ({1} display)  Affinity {2}%  Crit x{3:0.00}  {4} sharpness{5}  ->  {6} = {7:0.0}  (all conditions on: {8:0.0})",
             s.Attack, s.DisplayAttack, s.Affinity, s.CritMultiplier, s.Sharpness?.ToString() ?? "no",
             s.Element == Element.None ? "" : string.Format(inv, "  {0} {1:0} ({2} display)", s.Element, s.ElementTrue, s.ElementDisplay),
-            s.Efr, s.Efe, s.Total, s.TotalAllConditions));
+            s.ScoreTerms(), s.Total, s.TotalAllConditions));
         sb.AppendLine($"       Sets: {(s.ActiveSetBonuses.Count == 0 ? "-" : string.Join(", ", s.ActiveSetBonuses))}   Groups: {(s.ActiveGroupSkills.Count == 0 ? "-" : string.Join(", ", s.ActiveGroupSkills))}");
         sb.AppendLine($"       Skills: {string.Join(", ", s.Skills.Select(x => x.Effective < x.Level ? $"{x.Skill} {x.Level} (valued at {x.Effective})" : $"{x.Skill} {x.Level}"))}");
         sb.AppendLine($"       Why: {s.Description}");
@@ -113,7 +113,8 @@ public static class LoadoutReport
         sb.AppendLine(string.Format(inv, "  Sharpness  {0} (raw x{1:0.###}, element x{2:0.####})", r.Sharpness?.ToString() ?? "-", r.SharpnessRawModifier, r.SharpnessElementModifier));
         if (w.Element != Element.None)
             sb.AppendLine(string.Format(inv, "  Element    {0} {1:0.#} -> {2:0.#} true ({3:0} display), cap {4:0.#}, crit element x{5:0.00}", w.Element, r.BaseElementTrue, r.ElementTrue, r.ElementTrue * 10, r.ElementCap, r.CriticalElementMultiplier));
-        sb.AppendLine(string.Format(inv, "  EFR {0:0.0}   EFE {1:0.0}   Total {2:0.0}", r.EffectiveRaw, r.EffectiveElement, r.Total));
+        sb.AppendLine(string.Format(inv, "  EFR {0:0.0}   EFE {1:0.0}{2}   Total {3:0.0}", r.EffectiveRaw, r.EffectiveElement,
+            r.ProcDamage > 0 ? string.Format(inv, "   procs {0:0.0}", r.ProcDamage) : "", r.Total));
         var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ")).ToList();
         if (mods.Count > 0) sb.AppendLine("  Modifiers: " + string.Join("; ", mods));
     }

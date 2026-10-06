@@ -67,6 +67,11 @@ public sealed record Conditions
     /// <summary>Guts (Lord's Soul) keeps its attack bonus until it saves you once.</summary>
     public bool GutsNotYetTriggered { get; init; } = true;
 
+    // ----- proc damage -----
+    /// <summary>Count extra damage instances (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher), converted to per 100 MV with <see cref="AttackProfile"/>.</summary>
+    public bool ProcDamage { get; init; } = true;
+    public AttackProfile AttackProfile { get; init; } = new();
+
     /// <summary>
     /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
     /// (e.g. { "Burst": 1 } for Great Sword, where the five-hit boost is rarely reached). Levels above the cap are shown but not valued.
@@ -111,6 +116,7 @@ public sealed record Conditions
         InspirationActive = true,
         AffinitySlidingActive = true,
         GutsNotYetTriggered = true,
+        ProcDamage = true,
     };
 
     /// <summary>Everything off: unconditional skills only.</summary>
@@ -146,5 +152,6 @@ public sealed record Conditions
         InspirationActive = false,
         AffinitySlidingActive = false,
         GutsNotYetTriggered = false,
+        ProcDamage = false,
     };
 }

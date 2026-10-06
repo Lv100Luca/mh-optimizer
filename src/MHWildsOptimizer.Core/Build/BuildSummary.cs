@@ -20,6 +20,7 @@ public sealed record BuildSummary(
     int ElementDisplay,
     double Efr,
     double Efe,
+    double Procs,
     double Total,
     double TotalAllConditions,
     IReadOnlyList<string> ActiveSetBonuses,
@@ -28,9 +29,15 @@ public sealed record BuildSummary(
     IReadOnlyList<string> AffinitySources,
     IReadOnlyList<string> RawSources,
     IReadOnlyList<string> ElementSources,
+    IReadOnlyList<string> ProcSources,
     IReadOnlyList<string> DependsOn,
     string Description)
 {
+    /// <summary>"EFR a + EFE b", plus the proc term when there is one.</summary>
+    public string ScoreTerms(string format = "0.0") =>
+        $"EFR {Efr.ToString(format, CultureInfo.InvariantCulture)} + EFE {Efe.ToString(format, CultureInfo.InvariantCulture)}"
+        + (Procs > 0 ? $" + procs {Procs.ToString(format, CultureInfo.InvariantCulture)}" : "");
+
     public static BuildSummary Create(Loadout loadout, GameData data, Conditions conditions)
     {
         var inv = CultureInfo.InvariantCulture;
@@ -48,18 +55,22 @@ public sealed record BuildSummary(
             .OrderBy(x => x.Item4 == SkillKind.Weapon ? 0 : 1).ThenByDescending(x => x.Item3).ThenBy(x => x.Key)
             .ToList();
 
-        // modifier lines look like "Label: affinity +15%", "Label: raw +20", "Label: raw x1.05", "Label: element x1.2"
+        // modifier lines look like "Label: affinity +15%", "Label: raw +20", "Label: raw x1.05", "Label: element x1.2", "Label: proc +12.3 per 100 MV (...)"
         var mods = r.Breakdown.Skip(1).Where(l => l.Contains(": ") && !l.StartsWith("Raw ") && !l.StartsWith("Element ")).ToList();
         var aff = Sources(mods, "affinity");
         var raw = Sources(mods, "raw");
         var ele = Sources(mods, "element");
-        var depends = mods.Select(m => ConditionFor(m[..m.IndexOf(':')])).Where(d => d is not null).Distinct().ToList()!;
+        var procs = Sources(mods, "proc");
+        var depends = mods.Where(m => !m.Contains(": proc ")).Select(m => ConditionFor(m[..m.IndexOf(':')])).Where(d => d is not null).Distinct().ToList()!;
+        if (procs.Count > 0) depends.Add("attack profile");
 
         var parts = new List<string>();
         parts.Add(string.Format(inv, "{0}% affinity with x{1:0.00} crits", r.Affinity, r.CriticalMultiplier) + (aff.Count > 0 ? $" from {Join(aff)}" : ""));
         parts.Add(string.Format(inv, "raw {0} -> {1:0}", w.TrueRaw, r.TrueRaw) + (raw.Count > 0 ? $" via {Join(raw)}" : " (no raw skills)"));
         if (w.ElementTrue > 0)
             parts.Add(string.Format(inv, "{0} {1:0} -> {2:0} true", w.Element, w.ElementTrue, r.ElementTrue) + (ele.Count > 0 ? $" via {Join(ele)}" : ""));
+        if (procs.Count > 0)
+            parts.Add(string.Format(inv, "procs +{0:0.0} per 100 MV from {1}", r.ProcDamage, Join(procs)));
         var description = string.Join("; ", parts) + "."
                           + (depends.Count > 0 ? $" Depends on: {string.Join(", ", depends)}." : " Nothing conditional.");
 
@@ -67,8 +78,8 @@ public sealed record BuildSummary(
             w.TrueRaw, r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()),
             w.Affinity, r.Affinity, r.CriticalMultiplier, r.EffectiveRaw / (r.TrueRaw * r.SharpnessRawModifier),
             r.Sharpness, w.Element, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10),
-            r.EffectiveRaw, r.EffectiveElement, r.Total, allOn.Total,
-            sets, groups, skillList, aff, raw, ele, depends!, description);
+            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, allOn.Total,
+            sets, groups, skillList, aff, raw, ele, procs, depends!, description);
     }
 
     private static string RankName(GameData data, string skill, int level)
@@ -87,6 +98,7 @@ public sealed record BuildSummary(
             var effect = m[(colon + 2)..];
             if (!effect.StartsWith(stat + " ")) continue;
             var value = effect[(stat.Length + 1)..].Replace(" (true)", "");
+            if (stat == "proc") value = value[..value.IndexOf(' ')]; // "+12.3 per 100 MV (...)" -> "+12.3"
             if (label.StartsWith("Weakness Exploit (wound)")) label = "wound hits";
             result.Add($"{label} ({value})");
         }

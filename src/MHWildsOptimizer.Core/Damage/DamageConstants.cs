@@ -102,6 +102,40 @@ public static class DamageConstants
     public static double DarkArts(WeaponType type) =>
         type is WeaponType.GreatSword or WeaponType.Hammer or WeaponType.HeavyBowgun or WeaponType.LightBowgun ? 1.20 : 1.14;
 
+    /// <summary>Element attack skill (Fire/Water/Thunder/Ice/Dragon Attack): element x percent + flat true element.</summary>
+    public static (double Percent, int Flat) ElementAttack(int level) => level switch
+    {
+        <= 0 => (1.0, 0),
+        1 => (1.0, 4),
+        2 => (1.10, 5),
+        _ => (1.20, 6),
+    };
+
+    // ---------------- proc damage (extra damage instances), see notes/skill_values_set_group.md ----------------
+
+    /// <summary>
+    /// Azure Bolt (Leviathan's Fury) burst: fixed damage plus a thunder part that scales with the Thunder Attack skill and the
+    /// thunder hitzone. Dummy-verified: 30 + 70 x 0.30 = 51, with Thunder Attack 3 30 + (70 x 1.2 + 6) x 0.30 = 57.
+    /// </summary>
+    public static (double Fixed, double Thunder) AzureBolt(SetBonusTier tier) => tier == SetBonusTier.II ? (60, 200) : (30, 70);
+    /// <summary>Internal cooldown between Azure Bolt bursts (medium confidence); build-up is assumed to fill within it.</summary>
+    public const double AzureBoltCooldownSeconds = 30;
+
+    /// <summary>Dark Arts (Soul of the Dark Knight I), Great Sword: extra shockwave on Lv3 charged slashes, 30 MV raw (crits, uses sharpness). VERIFY: single source.</summary>
+    public const double DarkArtsShockwaveMv = 30;
+    /// <summary>Dark Arts shockwave dragon element, read as 60 display = 6 true. VERIFY: single source, unit unclear.</summary>
+    public const double DarkArtsShockwaveElement = 6;
+
+    /// <summary>Bad Blood (Nu Udra's Mutiny, needs Resentment active): extra hit of 45 / 85 x raw hitzone %. Dummy-verified.</summary>
+    public static double BadBlood(SetBonusTier tier) => tier == SetBonusTier.II ? 85 : 45;
+    public const double BadBloodCooldownSeconds = 2;
+
+    /// <summary>Scorcher (Rathalos's Flare): fixed plus fire x fire hitzone % (TU4 values). Whether Fire Attack scales it is unknown, so it does not.</summary>
+    public static (double Fixed, double Fire) Scorcher(SetBonusTier tier) => tier == SetBonusTier.II ? (40, 120) : (20, 60);
+    public const double ScorcherChance = 0.33;
+    /// <summary>Scorcher rolls at most once per check interval (medium confidence).</summary>
+    public const double ScorcherIntervalSeconds = 2.4;
+
     public readonly record struct BurstBoost(int Attack, int Element);
 
     // PlayerSkillParam _ContinuousAttackWp??Data in Wp index order.

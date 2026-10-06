@@ -80,8 +80,8 @@ public class RequestTests
         var request = new OptimizationRequest
         {
             Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000, SetBonus = "Lord's Soul" },
-            TargetSkills = new() { ["Nope"] = 1, ["Gogmapocalypse"] = 1, ["Attack Boost"] = 9, ["Burst"] = 5 },
-            Conditions = Conditions.Default with { SkillLimits = new() { ["Burst"] = 1, ["Imaginary"] = 1, ["Agitator"] = 9 } },
+            TargetSkills = new() { ["Nope"] = 1, ["Gogmapocalypse"] = 3, ["Attack Boost"] = 9, ["Burst"] = 5 },
+            Conditions = Conditions.Default with { SkillLimits = new() { ["Burst"] = 1, ["Imaginary"] = 1, ["Agitator"] = 9 }, AttackProfile = new AttackProfile { HitsPerMinute = 0, ChargedLv3Share = 1.5 } },
             Talismans = new TalismanSettings { File = "does-not-exist.json" },
             Options = new OptimizerOptions { TopN = 0, ExcludeSets = ["Imaginary Set"] },
         };
@@ -89,13 +89,53 @@ public class RequestTests
         Assert.False(r.IsValid);
         Assert.Contains(r.Errors, e => e.Contains("not a set-bonus skill"));
         Assert.Contains(r.Errors, e => e.Contains("'Nope'"));
-        Assert.Contains(r.Errors, e => e.Contains("Gogmapocalypse"));
+        Assert.Contains(r.Errors, e => e.Contains("'Gogmapocalypse' level 3 is outside 1..2"));
         Assert.Contains(r.Errors, e => e.Contains("Attack Boost"));
         Assert.Contains(r.Errors, e => e.Contains("does-not-exist.json"));
         Assert.Contains(r.Errors, e => e.Contains("top_n"));
         Assert.Contains(r.Errors, e => e.Contains("'Burst' 5 is above its limit 1"));
         Assert.Contains(r.Errors, e => e.Contains("'Imaginary' is unknown"));
         Assert.Contains(r.Errors, e => e.Contains("'Agitator' 9 is outside"));
+        Assert.Contains(r.Errors, e => e.Contains("hits_per_minute"));
+        Assert.Contains(r.Errors, e => e.Contains("charged_lv3_share"));
+        Assert.DoesNotContain(r.Errors, e => e.Contains("average_mv"));
         Assert.Contains(r.Warnings, w => w.Contains("Imaginary Set"));
+    }
+
+    [Fact]
+    public void SetBonusesAndGroupSkillsAreRequiredByTier()
+    {
+        var request = new OptimizationRequest
+        {
+            Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000, SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" },
+            TargetSkills = new() { ["Gore Magala's Tyranny"] = 2, ["Lord's Soul"] = 1, ["Weakness Exploit"] = 3 },
+            Talismans = new TalismanSettings { IncludeCraftable = false },
+        };
+        var r = RequestLoader.Resolve(request, TestData.Data, RepoRoot);
+        Assert.Empty(r.Errors);
+        Assert.Equal(4, r.TargetSetBonuses["Gore Magala's Tyranny"]);   // tier II = 4 pieces
+        Assert.Equal(3, r.TargetGroupSkills["Lord's Soul"]);            // 3 pieces
+        Assert.Equal(3, r.TargetSkills["Weakness Exploit"]);
+        Assert.False(r.TargetSkills.ContainsKey("Gore Magala's Tyranny"));
+        Assert.False(r.TargetSkills.ContainsKey("Lord's Soul"));
+        Assert.Contains("Gore Magala's Tyranny II (4 pieces)", r.TargetLabels);
+        Assert.Contains("Lord's Soul (3 pieces)", r.TargetLabels);
+
+        // Blangonga's Spirit sits on arms only at rarity 7+, so two pieces need the weapon to have rolled it
+        var minRarity7 = new OptimizerOptions { MinRarity = 7 };
+        var unreachable = RequestLoader.Resolve(request with { TargetSkills = new() { ["Blangonga's Spirit"] = 1 }, Options = minRarity7 }, TestData.Data, RepoRoot);
+        Assert.Contains(unreachable.Errors, e => e.Contains("'Blangonga's Spirit' needs 2 pieces but only 1 can carry it"));
+
+        var viaWeapon = request with { Weapon = request.Weapon with { SetBonus = "Blangonga's Spirit" }, TargetSkills = new() { ["Blangonga's Spirit"] = 1 }, Options = minRarity7 };
+        Assert.Empty(RequestLoader.Resolve(viaWeapon, TestData.Data, RepoRoot).Errors);
+
+        // in optimize mode any rollable pair may supply the piece
+        var optimize = viaWeapon with { Weapon = request.Weapon, SkillPair = new SkillPairSettings { Mode = SkillPairMode.Optimize } };
+        Assert.Empty(RequestLoader.Resolve(optimize, TestData.Data, RepoRoot).Errors);
+
+        // at rarity 5+ the Blango sets carry it on every piece; excluding them leaves only the Gogmazios arms again
+        var excluded = viaWeapon with { Weapon = request.Weapon, Options = new OptimizerOptions { ExcludeSets = ["Blango α", "Blango β"] } };
+        Assert.Contains(RequestLoader.Resolve(excluded, TestData.Data, RepoRoot).Errors, e => e.Contains("'Blangonga's Spirit' needs 2 pieces but only 1 can carry it"));
+        Assert.Empty(RequestLoader.Resolve(excluded with { Options = new OptimizerOptions() }, TestData.Data, RepoRoot).Errors);
     }
 }

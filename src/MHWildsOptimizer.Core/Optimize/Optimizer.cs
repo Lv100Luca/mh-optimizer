@@ -57,7 +57,7 @@ public sealed class Optimizer
         }
         else
         {
-            var baseRel = Relevance.Build(_request.Weapon, _request.TargetSkills, _request.Conditions, _data);
+            var baseRel = Relevance.Build(_request.Weapon, _request, _data);
             var classes = _request.SkillPairCandidates.Where(p => p is not null).Select(p => p!)
                 .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
                                Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
@@ -88,7 +88,7 @@ public sealed class Optimizer
 
     private SkillPairResult Search(GogmaWeaponStats weapon, GogmaSkillPair? pair, string label, int topN, IProgress<string>? progress, CancellationToken ct)
     {
-        var rel = Relevance.Build(weapon, _request.TargetSkills, _request.Conditions, _data);
+        var rel = Relevance.Build(weapon, _request, _data);
         var armor = Candidates.Armor(_data, rel, _request.Options);
         var talismans = Candidates.Talismans(_request.Talismans, rel);
         var filler = new DecorationFiller(_data, rel);
@@ -326,9 +326,17 @@ public sealed class Optimizer
             return a3 >= b3 && a2 >= b2 && a1 >= b1;
         }
 
-        /// <summary>Targets must still be reachable: remaining pieces at their best plus decorations in the slots that could exist.</summary>
+        /// <summary>
+        /// Targets must still be reachable: required set bonuses / group skills through the kinds that can still add a piece,
+        /// skill levels through the remaining pieces at their best plus decorations in the slots that could exist.
+        /// </summary>
         private bool Feasible(int[] key, int depth)
         {
+            for (var si = 0; si < _rel.SetBonuses.Count; si++)
+                if (_rel.SetTargets[si] > 0 && key[_offSets + si] + _setRemain[depth][si] < _rel.SetTargets[si]) return false;
+            for (var gi = 0; gi < _rel.GroupSkills.Count; gi++)
+                if (_rel.GroupTargets[gi] > 0 && key[_offGroups + gi] + _groupRemain[depth][gi] < _rel.GroupTargets[gi]) return false;
+
             // cumulative armor slots available in the best case: [>=3, >=2, >=1]
             var arm3 = key[_offArmorSlots + 2];
             var arm2 = arm3 + key[_offArmorSlots + 1];

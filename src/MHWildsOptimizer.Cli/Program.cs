@@ -85,7 +85,7 @@ int ShowRequest(string path)
     Console.WriteLine($"Weapon: {s.Type}{(s.Focus is { } f ? $" / {f} focus" : "")} -> {s.TrueRaw} true raw ({s.DisplayAttack} display), {s.Affinity}% affinity, {s.ElementDisplay} {s.Element} (display), {s.TopSharpness} sharpness, slots [{string.Join(",", s.Slots)}]");
     Console.WriteLine($"Skill pair: {r.SkillPair.Mode} -> {r.SkillPairCandidates.Count} candidate(s)" +
                       (r.SkillPair.Mode == SkillPairMode.Fixed ? $": {s.SetBonus ?? "-"} + {s.GroupSkill ?? "-"}" : $", report top {r.SkillPair.TopN}"));
-    Console.WriteLine("Targets: " + string.Join(", ", r.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}")) +
+    Console.WriteLine("Targets: " + string.Join(", ", r.TargetLabels) +
                       (r.AppliedCoreSkills.Count > 0 ? $"  (weapon core skills added: {string.Join(", ", r.AppliedCoreSkills.Select(c => $"{c.Skill} {c.Level}"))})" : ""));
     Console.WriteLine($"Talismans: {r.Talismans.Count} ({r.Talismans.Count(t => t.Source == TalismanSource.Random)} random, {r.Talismans.Count(t => t.Source == TalismanSource.Crafted)} craftable)");
     foreach (var t in r.Talismans.Where(t => t.Source == TalismanSource.Random)) Console.WriteLine("  " + t);

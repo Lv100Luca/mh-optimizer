@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
@@ -70,7 +71,7 @@ public sealed class ConfigEditor
                 choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                     .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
                     .PageSize(16)
-                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Skill limits", "Conditions", "Talismans", "Options",
+                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Skill limits", "Conditions", "Attack profile", "Talismans", "Options",
                         "Show resolved request", "Save", "Save as...", "Quit"));
             }
             catch (PromptCancelledException) { choice = "Quit"; }
@@ -86,6 +87,7 @@ public sealed class ConfigEditor
                     case "Target skills": EditTargets(); break;
                     case "Skill limits": EditSkillLimits(); break;
                     case "Conditions": EditConditions(); break;
+                    case "Attack profile": EditAttackProfile(); break;
                     case "Talismans": EditTalismans(); break;
                     case "Options": EditOptions(); break;
                     case "Show resolved request": AnsiConsole.Clear(); ShowResolved(); Pause(); break;
@@ -159,7 +161,7 @@ public sealed class ConfigEditor
             {
                 i++;
                 sb.AppendLine();
-                sb.AppendLine(LoadoutReport.Render(b.Loadout, _data, resolved.Conditions, $"Build {i}  -  EFR {b.Result.EffectiveRaw:0.0} + EFE {b.Result.EffectiveElement:0.0} = {b.Score:0.0}").TrimEnd());
+                sb.AppendLine(LoadoutReport.Render(b.Loadout, _data, resolved.Conditions, $"Build {i}  -  EFR {b.Result.EffectiveRaw:0.0} + EFE {b.Result.EffectiveElement:0.0}{(b.Result.ProcDamage > 0 ? $" + procs {b.Result.ProcDamage:0.0}" : "")} = {b.Score:0.0}").TrimEnd());
             }
             sb.AppendLine();
         }
@@ -185,7 +187,7 @@ public sealed class ConfigEditor
         table.AddRow("Weapon", Markup.Escape(weaponText));
         table.AddRow("Rolled pair", Markup.Escape($"{w.SetBonus ?? None} / {w.GroupSkill ?? None}"));
         table.AddRow("Skill pair", Markup.Escape(r.SkillPair.Mode == SkillPairMode.Fixed ? "fixed (use the rolled pair)" : $"optimize over all 294 pairs, report top {r.SkillPair.TopN}"));
-        table.AddRow("Targets", Markup.Escape(r.TargetSkills.Count == 0 ? None : string.Join(", ", r.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}"))));
+        table.AddRow("Targets", Markup.Escape(r.TargetSkills.Count == 0 ? None : string.Join(", ", r.TargetSkills.Select(kv => TargetLabel(kv.Key, kv.Value)))));
         table.AddRow("Skill limits", Markup.Escape(r.Conditions.SkillLimits.Count == 0 ? None : string.Join(", ", r.Conditions.SkillLimits.Select(kv => kv.Value == 0 ? $"{kv.Key} excluded" : $"{kv.Key} <= {kv.Value}"))));
         table.AddRow("Conditions", Markup.Escape(ConditionSummary(r.Conditions)));
         table.AddRow("Talismans", Markup.Escape($"{_talismans.Count} random{(r.Talismans.IncludeCraftable ? " + craftable charms" : "")}"));
@@ -209,7 +211,7 @@ public sealed class ConfigEditor
 
         var s = resolved.Weapon;
         AnsiConsole.MarkupLine($"[green]Weapon[/] {s.Type}: {s.TrueRaw} true raw ({s.DisplayAttack} display), {s.Affinity}% affinity, {s.ElementDisplay} {s.Element}, {s.TopSharpness} sharpness, {s.SetBonus ?? None} / {s.GroupSkill ?? None}");
-        AnsiConsole.MarkupLine($"[green]Targets[/] {Markup.Escape(string.Join(", ", resolved.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}")))}" +
+        AnsiConsole.MarkupLine($"[green]Targets[/] {Markup.Escape(string.Join(", ", resolved.TargetLabels))}" +
                                (resolved.AppliedCoreSkills.Count > 0 ? $"  [grey](core: {Markup.Escape(string.Join(", ", resolved.AppliedCoreSkills.Select(c => $"{c.Skill} {c.Level}")))})[/]" : ""));
         AnsiConsole.MarkupLine($"[green]Skill pairs[/] {resolved.SkillPairCandidates.Count} candidate(s)   [green]Talismans[/] {resolved.Talismans.Count}");
 
@@ -318,10 +320,10 @@ public sealed class ConfigEditor
 
     private void EditTargets()
     {
-        var skills = _data.Skills.Where(s => s.Kind is SkillKind.Armor or SkillKind.Weapon).OrderBy(s => s.Kind).ThenBy(s => s.Name).ToList();
-        var labels = skills.ToDictionary(s => $"{s.Name}  ({s.Kind.ToString().ToLowerInvariant()}, max {s.MaxLevel})", s => s);
+        var skills = _data.Skills.OrderBy(s => s.Kind).ThenBy(s => s.Name).ToList();
+        var labels = skills.ToDictionary(s => $"{s.Name}  ({TargetKindLabel(s)})", s => s);
         var prompt = new MultiSelectionPrompt<string>()
-            .Title("Target skills (space toggles, enter accepts)")
+            .Title("Target skills, set bonuses and group skills (space toggles, enter accepts)")
             .NotRequired()
             .PageSize(20)
             .MoreChoicesText("[grey](move up and down to reveal more skills)[/]")
@@ -333,8 +335,12 @@ public sealed class ConfigEditor
         var targets = new Dictionary<string, int>();
         foreach (var s in selected)
         {
+            if (s.MaxLevel == 1) { targets[s.Name] = 1; continue; }
             var def = _request.TargetSkills.TryGetValue(s.Name, out var lv) ? lv : s.MaxLevel;
-            var level = AnsiConsole.Prompt(new TextPrompt<int>($"{Markup.Escape(s.Name)} minimum level (1-{s.MaxLevel}):")
+            var question = s.Kind == SkillKind.Set
+                ? $"{Markup.Escape(s.Name)} tier ({string.Join(", ", s.Ranks.Select(r => $"{r.Level} = {RequestLoader.PiecesRequired(s, r.Level)} pieces"))}):"
+                : $"{Markup.Escape(s.Name)} minimum level (1-{s.MaxLevel}):";
+            var level = AnsiConsole.Prompt(new TextPrompt<int>(question)
                 .DefaultValue(def)
                 .Validate(v => v >= 1 && v <= s.MaxLevel ? ValidationResult.Success() : ValidationResult.Error($"1..{s.MaxLevel}")));
             targets[s.Name] = level;
@@ -342,6 +348,19 @@ public sealed class ConfigEditor
         _request = _request with { TargetSkills = targets };
         _dirty = true;
     }
+
+    private static string TargetKindLabel(Skill s) => s.Kind switch
+    {
+        SkillKind.Set => "set bonus, " + string.Join(" / ", s.Ranks.Select(r => $"tier {r.Level} = {RequestLoader.PiecesRequired(s, r.Level)} pieces")),
+        SkillKind.Group => $"group skill, {RequestLoader.PiecesRequired(s, 1)} pieces",
+        _ => $"{s.Kind.ToString().ToLowerInvariant()}, max {s.MaxLevel}",
+    };
+
+    /// <summary>A target as the request stores it, with set bonuses / group skills shown by the pieces their tier needs.</summary>
+    private string TargetLabel(string name, int level) =>
+        _data.SkillsByName.TryGetValue(name, out var s) && s.Kind is SkillKind.Set or SkillKind.Group
+            ? $"{name} ({RequestLoader.PiecesRequired(s, level)} pieces)"
+            : $"{name} {level}";
 
     private void EditConditions()
     {
@@ -356,11 +375,38 @@ public sealed class ConfigEditor
             prompt.Select(Label(p.Name));
         var on = AnsiConsole.Prompt(prompt).ToHashSet();
 
-        var conditions = new Conditions();
+        var conditions = _request.Conditions with { }; // keeps skill limits and the attack profile
         foreach (var p in props)
             p.SetValue(conditions, on.Contains(Label(p.Name)));
         typeof(Conditions).GetProperty(nameof(Conditions.Resonance))!.SetValue(conditions, PickEnum("Omega Resonance phase", _request.Conditions.Resonance));
-        _request = _request with { Conditions = conditions with { SkillLimits = _request.Conditions.SkillLimits } };
+        _request = _request with { Conditions = conditions };
+        _dirty = true;
+    }
+
+    private void EditAttackProfile()
+    {
+        var current = _request.Conditions.AttackProfile;
+        var preset = AttackProfile.Preset(_request.Weapon.Validate(_data).Count == 0 ? _request.Weapon.ToStats(_data).Type : WeaponType.GreatSword);
+        AnsiConsole.MarkupLine("[grey]Turns proc damage (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher) into the per-100-MV score. Leave a value empty to use the weapon preset.[/]");
+        double? Ask(string label, double? value, double fallback, double min, double max, bool exclusiveMin)
+        {
+            var text = AnsiConsole.Prompt(new TextPrompt<string>($"{label} [grey](preset {fallback.ToString(CultureInfo.InvariantCulture)})[/]:")
+                .AllowEmpty()
+                .DefaultValue(value?.ToString(CultureInfo.InvariantCulture) ?? "")
+                .ShowDefaultValue(value is not null)
+                .Validate(t => t.Length == 0
+                               || double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) && (exclusiveMin ? v > min : v >= min) && v <= max
+                    ? ValidationResult.Success()
+                    : ValidationResult.Error($"a number in {(exclusiveMin ? "(" : "[")}{min}..{max}], or empty for the preset")));
+            return text.Length == 0 ? null : double.Parse(text, CultureInfo.InvariantCulture);
+        }
+        var profile = new AttackProfile
+        {
+            HitsPerMinute = Ask("Landed hits per minute", current.HitsPerMinute, preset.HitsPerMinute, 0, 600, exclusiveMin: true),
+            AverageMv = Ask("Average motion value per hit", current.AverageMv, preset.AverageMv, 0, 1000, exclusiveMin: true),
+            ChargedLv3Share = Ask("Share of hits that are Lv3 charged slashes (Great Sword)", current.ChargedLv3Share, preset.ChargedLv3Share, 0, 1, exclusiveMin: false),
+        };
+        _request = _request with { Conditions = _request.Conditions with { AttackProfile = profile } };
         _dirty = true;
     }
 

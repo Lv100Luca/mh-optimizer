@@ -48,11 +48,15 @@ public static class SkillNames
     public const string LordsFavor = "Lord's Favor";
     public const string ButteryLeathercraft = "Buttery Leathercraft";
 
+    public const string NuUdrasMutiny = "Nu Udra's Mutiny";
+    public const string RathalossFlare = "Rathalos's Flare";
+    public const string ThunderAttack = "Thunder Attack";
+
     public static string? ElementAttackSkill(Element element) => element switch
     {
         Element.Fire => "Fire Attack",
         Element.Water => "Water Attack",
-        Element.Thunder => "Thunder Attack",
+        Element.Thunder => ThunderAttack,
         Element.Ice => "Ice Attack",
         Element.Dragon => "Dragon Attack",
         _ => null,
@@ -73,15 +77,17 @@ public sealed record DamageResult(
     double CriticalElementMultiplier,
     double SharpnessElementModifier,
     double EffectiveElement,
+    double ProcDamage,
     IReadOnlyList<string> Breakdown)
 {
-    /// <summary>The optimizer's ranking metric: EFR + EFE per 100 motion value at hitzone 100.</summary>
-    public double Total => EffectiveRaw + EffectiveElement;
+    /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value at hitzone 100.</summary>
+    public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
 }
 
 /// <summary>
 /// Effective Raw / Effective Element calculator for a Gogma weapon loadout.
 /// raw = (baseRaw * prod(percent) + sum(flat)) * sharpness * critFactor ; element = min(ele, cap) * sharpness * critElementFactor.
+/// Proc damage (extra damage instances) is converted to per 100 MV with the attack profile of the conditions.
 /// Hitzone is fixed at 100 and monster resistances are ignored (project assumption).
 /// </summary>
 public static class DamageCalculator
@@ -178,12 +184,10 @@ public static class DamageCalculator
         // ---------------- element ----------------
         if (weapon.Element != Element.None && SkillNames.ElementAttackSkill(weapon.Element) is { } eleSkill && L(eleSkill) > 0)
         {
-            switch (L(eleSkill))
-            {
-                case 1: EleFlat(eleSkill + " 1", 4); break;
-                case 2: ElePct(eleSkill + " 2", 1.10); EleFlat(eleSkill + " 2", 5); break;
-                default: ElePct(eleSkill + " 3", 1.20); EleFlat(eleSkill + " 3", 6); break;
-            }
+            var lv = Math.Min(L(eleSkill), 3);
+            var (pct, flat) = DamageConstants.ElementAttack(lv);
+            ElePct($"{eleSkill} {lv}", pct);
+            EleFlat($"{eleSkill} {lv}", flat);
         }
         if (cond.CoalescenceActive && L(SkillNames.Coalescence) > 0)
             ElePct("Coalescence", DamageConstants.Coalescence(type, L(SkillNames.Coalescence)));
@@ -269,13 +273,52 @@ public static class DamageCalculator
         }
         var efe = ele * sharpEle * critEleFactor;
 
+        // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
+        double procs = 0;
+        if (cond.ProcDamage)
+        {
+            var profile = cond.AttackProfile.Resolve(type);
+            var mvScale = profile.AverageMv / 100.0;
+            void Proc(string label, double damage, double perHit, string how)
+            {
+                if (damage <= 0 || perHit <= 0) return;
+                var v = damage * perHit / mvScale;
+                procs += v;
+                if (trace) notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
+            }
+
+            var bolt = skills.SetTier(SkillNames.LeviathansFury);
+            if (bolt != SetBonusTier.None)
+            {
+                var (fixedPart, thunder) = DamageConstants.AzureBolt(bolt);
+                var (pct, flat) = DamageConstants.ElementAttack(L(SkillNames.ThunderAttack));
+                Proc($"Azure Bolt {bolt} burst", fixedPart + thunder * pct + flat,
+                    profile.ProcsPerHit(DamageConstants.AzureBoltCooldownSeconds), Inv($"every {DamageConstants.AzureBoltCooldownSeconds:0} s"));
+            }
+            if (type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
+                Proc("Dark Arts shockwave", efr * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle,
+                    profile.ChargedLv3Share, Inv($"on {profile.ChargedLv3Share:0%} of hits"));
+            var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
+            if (badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
+                Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
+                    profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds), Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
+            var scorcher = skills.SetTier(SkillNames.RathalossFlare);
+            if (scorcher != SetBonusTier.None)
+            {
+                var (fixedPart, fire) = DamageConstants.Scorcher(scorcher);
+                Proc($"Scorcher {scorcher}", fixedPart + fire,
+                    profile.ProcsPerHit(DamageConstants.ScorcherIntervalSeconds, DamageConstants.ScorcherChance),
+                    Inv($"at {DamageConstants.ScorcherChance:0%} per {DamageConstants.ScorcherIntervalSeconds:0.#} s check"));
+            }
+        }
+
         if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}; EFR {efr:0.#}"));
         if (trace && baseEle > 0)
             notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; sharpness x{sharpEle:0.###}; EFE {efe:0.#}"));
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
-            baseEle, ele, cap, critEleMult, sharpEle, efe, notes);
+            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, notes);
     }
 
     private static string Inv(FormattableString s) => FormattableString.Invariant(s);

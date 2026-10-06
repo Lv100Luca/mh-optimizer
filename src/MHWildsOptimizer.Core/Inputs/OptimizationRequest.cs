@@ -1,3 +1,4 @@
+using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
@@ -49,7 +50,11 @@ public sealed record OptimizationRequest
 {
     public required WeaponStatsInput Weapon { get; init; }
     public SkillPairSettings SkillPair { get; init; } = new();
-    /// <summary>Required skills with minimum levels, e.g. { "Weakness Exploit": 5, "Agitator": 5 }.</summary>
+    /// <summary>
+    /// Required skills with minimum levels, e.g. { "Weakness Exploit": 5, "Agitator": 5 }. Set bonuses and group skills are
+    /// required the same way, the level being the tier the game shows: a set bonus at 1 needs 2 pieces, at 2 needs 4 pieces;
+    /// a group skill at 1 needs 3 pieces. The Gogma weapon counts as a piece when it rolled that set bonus / group skill.
+    /// </summary>
     public Dictionary<string, int> TargetSkills { get; init; } = new();
     public Conditions Conditions { get; init; } = Conditions.Default;
     public TalismanSettings Talismans { get; init; } = new();
@@ -57,11 +62,16 @@ public sealed record OptimizationRequest
 }
 
 /// <summary>A request after validation, with everything resolved against the dataset.</summary>
+/// <param name="TargetSkills">Required armor / weapon skill levels (set bonuses and group skills are split out).</param>
+/// <param name="TargetSetBonuses">Required set bonuses with the number of pieces their tier needs.</param>
+/// <param name="TargetGroupSkills">Required group skills with the number of pieces they need.</param>
 public sealed record ResolvedRequest(
     GogmaWeaponStats Weapon,
     IReadOnlyList<GogmaSkillPair?> SkillPairCandidates,
     SkillPairSettings SkillPair,
     IReadOnlyDictionary<string, int> TargetSkills,
+    IReadOnlyDictionary<string, int> TargetSetBonuses,
+    IReadOnlyDictionary<string, int> TargetGroupSkills,
     Conditions Conditions,
     IReadOnlyList<Talisman> Talismans,
     OptimizerOptions Options,
@@ -70,6 +80,12 @@ public sealed record ResolvedRequest(
     IReadOnlyList<string> Warnings)
 {
     public bool IsValid => Errors.Count == 0;
+
+    /// <summary>Every requirement for display: "Weakness Exploit 5", "Gore Magala's Tyranny II (4 pieces)", "Lord's Soul (3 pieces)".</summary>
+    public IEnumerable<string> TargetLabels =>
+        TargetSkills.Select(kv => $"{kv.Key} {kv.Value}")
+            .Concat(TargetSetBonuses.Select(kv => $"{kv.Key} {(kv.Value >= SkillAggregator.SetTierTwoPieces ? "II" : "I")} ({kv.Value} pieces)"))
+            .Concat(TargetGroupSkills.Select(kv => $"{kv.Key} ({kv.Value} pieces)"));
 }
 
 public static class RequestLoader
@@ -107,14 +123,20 @@ public static class RequestLoader
             if (request.SkillPair.TopN < 1) errors.Add("skill_pair.top_n must be at least 1.");
         }
 
-        // target skills
+        // target skills; set bonuses and group skills are required by tier, converted to the pieces that tier needs
         var targets = new Dictionary<string, int>();
+        var setTargets = new Dictionary<string, int>();
+        var groupTargets = new Dictionary<string, int>();
         foreach (var (name, level) in request.TargetSkills)
         {
             if (!data.SkillsByName.TryGetValue(name, out var skill)) { errors.Add($"Target skill '{name}' is unknown."); continue; }
-            if (skill.Kind is SkillKind.Set or SkillKind.Group) { errors.Add($"Target '{name}' is a {skill.Kind} skill; request set bonuses through the weapon or armor, not as a skill level."); continue; }
             if (level < 1 || level > skill.MaxLevel) { errors.Add($"Target '{name}' level {level} is outside 1..{skill.MaxLevel}."); continue; }
-            targets[name] = level;
+            switch (skill.Kind)
+            {
+                case SkillKind.Set: setTargets[name] = PiecesRequired(skill, level); break;
+                case SkillKind.Group: groupTargets[name] = PiecesRequired(skill, level); break;
+                default: targets[name] = level; break;
+            }
         }
 
         // skill limits (0 = exclude, n = value only up to n)
@@ -126,6 +148,12 @@ public static class RequestLoader
             if (targets.TryGetValue(name, out var target) && target > limit)
                 errors.Add($"Target '{name}' {target} is above its limit {limit}; raise the limit or lower the target.");
         }
+
+        // attack profile (proc damage)
+        var profile = request.Conditions.AttackProfile;
+        if (profile.HitsPerMinute is <= 0) errors.Add("conditions.attack_profile.hits_per_minute must be above 0.");
+        if (profile.AverageMv is <= 0) errors.Add("conditions.attack_profile.average_mv must be above 0.");
+        if (profile.ChargedLv3Share is < 0 or > 1) errors.Add("conditions.attack_profile.charged_lv3_share must be between 0 and 1.");
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();
@@ -171,9 +199,33 @@ public static class RequestLoader
         foreach (var set in request.Options.ExcludeSets)
             if (!data.Armor.Any(a => a.Set == set)) warnings.Add($"options.exclude_sets: no armor set named '{set}'.");
 
+        // required set bonuses / group skills must be reachable with the armor the options allow, plus the weapon's roll
+        var excluded = request.Options.ExcludeSets.ToHashSet();
+        var allowedArmor = data.Armor.Where(a => a.Rarity >= request.Options.MinRarity && (a.Set is null || !excluded.Contains(a.Set))).ToList();
+        bool WeaponCanRoll(Func<GogmaSkillPair, string> part, string? rolled, string name) =>
+            request.SkillPair.Mode == SkillPairMode.Fixed ? rolled == name : candidates.Any(p => p is not null && part(p) == name);
+        foreach (var (name, pieces) in setTargets)
+            CheckReachable(name, pieces, allowedArmor.Where(a => a.SetBonus.Contains(name)), WeaponCanRoll(p => p.SetBonus, weapon.SetBonus, name));
+        foreach (var (name, pieces) in groupTargets)
+            CheckReachable(name, pieces, allowedArmor.Where(a => a.GroupSkill == name), WeaponCanRoll(p => p.GroupSkill, weapon.GroupSkill, name));
+        void CheckReachable(string name, int pieces, IEnumerable<ArmorPiece> carriers, bool weaponPiece)
+        {
+            var kinds = carriers.Select(a => a.Piece).Distinct().Count();
+            var available = kinds + (weaponPiece ? 1 : 0);
+            if (available < pieces)
+                errors.Add($"Target '{name}' needs {pieces} pieces but only {available} can carry it " +
+                           $"({kinds} armor kinds at rarity {request.Options.MinRarity}+ outside the excluded sets{(weaponPiece ? ", plus the weapon" : "")}).");
+        }
+
         return new ResolvedRequest(
-            weapon, candidates, request.SkillPair, targets, request.Conditions, talismans, request.Options, applied, errors, warnings);
+            weapon, candidates, request.SkillPair, targets, setTargets, groupTargets, request.Conditions, talismans, request.Options, applied, errors, warnings);
     }
+
+    /// <summary>Pieces (armor, or the Gogma weapon) a set bonus / group skill needs at a level, from the skill's ranks.</summary>
+    public static int PiecesRequired(Skill skill, int level) =>
+        skill.Ranks.FirstOrDefault(r => r.Level == level)?.PiecesRequired
+        ?? (skill.Kind == SkillKind.Group ? SkillAggregator.GroupSkillPieces
+            : level >= 2 ? SkillAggregator.SetTierTwoPieces : SkillAggregator.SetTierOnePieces);
 
     private static GogmaWeaponStats PlaceholderWeapon() =>
         new(WeaponType.GreatSword, null, 0, 0, Element.None, 0, SharpnessColor.White, null, 0, [3, 3, 3], null, null);

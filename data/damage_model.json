@@ -9,7 +9,8 @@
   "critEle": "1 + max(aff,0)/100 * (critEleMult - 1) only with Critical Element equipped, else 1",
   "efr_efe": "Effective Raw = trueRawFinal * sharpRaw * critRaw ; Effective Element = min(trueEleFinal,cap) * sharpEle * critEle. Weapon-combo independent, so the optimizer can rank builds on EFR + EFE per 100 MV. Motion values exist in the dump (Wp??_Attack.rcol '_Attack' field) for a later combo-DPS mode.",
   "stacking_note": "Community consensus (wiggler.pet): ((Base * Raw%) + Flat) * Post. Which percent sources multiply vs add to each other is NOT verified for Wilds - treat as multiplicative and flag.",
-  "ranking_metric": "Decided 2026-10-06: rank builds on EFR + EFE (both, summed per 100 MV)."
+  "ranking_metric": "Decided 2026-10-06: rank builds on EFR + EFE (both, summed per 100 MV). Since 2026-10-07 plus proc damage per 100 MV.",
+  "proc_damage": "Extra damage instances, converted to damage per 100 MV of landed attacks with the attack profile (hits_per_minute, average_mv, charged_lv3_share; weapon presets GS 24/120/0.3, LS 50/35/0): procDamage = damage * procsPerHit / (average_mv/100), procsPerHit = chance * min(1, secondsPerHit / cooldown). Azure Bolt: fixed + thunder x Thunder Attack (x1.0 +4 / x1.1 +5 / x1.2 +6), 30 s cooldown. Dark Arts shockwave (GS, VERIFY): on charged_lv3_share of hits, EFR x 0.30 + 6 true dragon x sharpEle, counted without red health. Bad Blood: 45 / 85 with Resentment + red health, 2 s cooldown. Scorcher: 20+60 / 40+120, 33 % per 2.4 s check, not scaled by Fire Attack. Hitzone 100 like the rest of the model."
  },
  "constants_from_game_data": {
   "critical_multiplier": 1.25,

@@ -68,9 +68,21 @@ element = min(TrueEle, Cap) * SharpEle * CritEle
 * Element attack skills: ×1.00 +4, ×1.10 +5, ×1.20 +6 true. Coalescence ×1.10/1.20/1.30, Charge Master ×1.15/1.20/1.25 (charged attacks), Gogmapocalypse ×1.2 +2 / ×1.3 +4 when enraged.
 * Burst is per weapon type: GS Lv1..5 = +10/+12/+14/+16/+18 attack and +80/+100/+120/+160/+200 display element (5 s window), LS = +8/+10/+12/+15/+18 and +60/+80/+100/+120/+140 (5 s); first hit +5/+50 (GS) or +4/+50 (LS).
 
-Recommended optimizer metric: **Effective Raw + Effective Element per 100 MV**, independent of the attack combo. Motion values are available in the game data (`Wp??_Attack.rcol` `_Attack` field, 126 entries for Great Sword) for a later combo-DPS mode; the attack-name mapping still has to be built.
+Recommended optimizer metric: **Effective Raw + Effective Element per 100 MV**, independent of the attack combo, **plus proc damage per 100 MV** (below). Motion values are available in the game data (`Wp??_Attack.rcol` `_Attack` field, 126 entries for Great Sword) for a later combo-DPS mode; the attack-name mapping still has to be built.
 
 Conditional skills (Agitator, Peak Performance, Maximum Might, Weakness Exploit, Burst, Adrenaline Rush, Latent Power, most set bonuses) need an *uptime* weight; the dataset keeps the condition text so the optimizer can expose sliders.
+
+**Proc damage** (extra damage instances that do not scale the hit) is converted to damage per 100 MV of landed attacks with an attack profile (`conditions.attack_profile`: hits per minute, average MV per hit, share of Lv3 charged slashes; presets GS 24 / 120 / 0.3, LS 50 / 35 / 0, rough starting points):
+
+```
+proc per 100 MV = damage * procsPerHit / (averageMv / 100)      procsPerHit = chance * min(1, secondsPerHit / cooldown)
+```
+
+* Azure Bolt (Leviathan's Fury): 30 + 70 / 60 + 200 thunder, the thunder part scaled by Thunder Attack on any weapon; 30 s cooldown.
+* Dark Arts shockwave (Soul of the Dark Knight, Great Sword only): on each Lv3 charged slash 30 MV raw (crits, sharpness) + 6 true dragon. Counted without red health (game8: "applies to all Great Swords"). VERIFY: MV, element value and red-health condition come from single sources.
+* Bad Blood (Nu Udra's Mutiny): 45 / 85 per hit, 2 s cooldown, needs Resentment and red health.
+* Scorcher (Rathalos's Flare): 20 + 60 / 40 + 120 fire, 33 % per 2.4 s check; Fire Attack is not applied (unknown).
+* `conditions.proc_damage: false` turns all of it off. Flayer and its interaction with Scorcher are not modeled.
 
 ## 5. Decisions and open questions
 
@@ -87,14 +99,18 @@ Still open:
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
 4. Combo-DPS mode with motion values is a later option (needs the attack-name mapping for the rcol data).
 
+Backlog:
+* Hitzone knobs (`raw_hitzone`, `element_hitzone`). Everything is computed at hitzone 100 for raw and element. Real weak points are about 60-70 raw and 20-30 element, so element and the mostly elemental procs (Azure Bolt, Scorcher) are overvalued against raw by roughly 3-4x. Adding the knobs changes the score scale and the rankings.
+
 ## 6. Optimizer inputs (implemented in `src/MHWildsOptimizer.Core/Inputs`)
 
 A request file (`inputs/request.example.json`, snake_case) carries everything:
 
 * `weapon`: the Gogma weapon as the game shows it, either as a `spec` (type, focus, element, infusion, number of attack parts, the five reinforcement lines such as `"attack III"`) or as direct stats (`type`, `attack` display, `affinity`, `element`, `element_display`, `sharpness`). Plus the currently rolled `set_bonus` / `group_skill`. Weapon stats are never optimized.
 * `skill_pair`: `"fixed"` (use the rolled pair) or `"optimize"` (search all 294 rollable pairs and report the best `top_n`).
-* `target_skills`: required minimum levels. The weapon's core skills are merged in by default (`options.require_weapon_core_skills`): Great Sword Focus 3, Long Sword Quick Sheathe 3.
+* `target_skills`: required minimum levels. The weapon's core skills are merged in by default (`options.require_weapon_core_skills`): Great Sword Focus 3, Long Sword Quick Sheathe 3. Set bonuses and group skills go in the same map, with the tier the game shows as the level: `"Gore Magala's Tyranny": 2` requires four pieces (`1` = two pieces), `"Lord's Soul": 1` requires three pieces. The Gogma weapon counts as a piece when it rolled that bonus. A requirement that the allowed armor (rarity, excluded sets) plus the weapon cannot reach is rejected.
 * `conditions`: the toggles of `Damage/Conditions.cs` (enraged, weak point, wound, full/red/low health, stamina, Burst, Frenzy, Resonance mode, …). A toggle only acts when the loadout carries the skill.
+* `conditions.proc_damage` / `conditions.attack_profile`: count proc damage (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher) and how to convert it to per 100 MV (`hits_per_minute`, `average_mv`, `charged_lv3_share`; unset values use the weapon preset). See section 4.
 * `conditions.skill_limits`: per-skill caps for the score. `0` removes the skill from the optimization, `n` values it only up to level n (e.g. `{ "Burst": 1 }` on Great Sword, which rarely lands five consecutive hits). Levels above the cap are still shown, marked "valued at n". A target above its limit is rejected.
 * `talismans`: a file with the random talismans you own (`inputs/talismans.example.json`: name, rarity, skills with levels, decoration slots as `armor1` / `weapon1`) and whether the craftable charm lines (max rank) are also considered. Entries are validated against the random-talisman pool from the game data (`data/random_talisman_pool.json`): skill slot 1 is a weapon-kind skill worth 1-4 points (Attack Boost max 3, Critical Eye 3, Critical Boost 1, element attack 3), skill slots 2-3 are armor-kind skills worth 5-10 points (Weakness Exploit / Agitator / Burst / Latent Power / Adrenaline Rush max 1, Maximum Might / Peak Performance 2); decoration slots are up to three armor slots or, on rarity 7, one weapon Lv1 slot plus armor slots.
 * `options`: transcendence on/off, number of results, minimum rarity, excluded sets.
@@ -103,10 +119,10 @@ Decoration slots on armor (base or transcended), on the weapon and on talismans 
 
 ## 7. Optimizer (implemented in `src/MHWildsOptimizer.Core/Optimize`)
 
-* `Relevance`: the skills, set bonuses and group skills that can change the score under the requested conditions (plus the targets). Everything else is ignored. Target-only skills (e.g. Focus) are capped at the target level.
+* `Relevance`: the skills, set bonuses and group skills that can change the score under the requested conditions (plus the targets, including required set bonuses / group skills that do nothing for the score). Everything else is ignored. Target-only skills (e.g. Focus) are capped at the target level.
 * `Candidates`: armor per slot kind and talismans projected onto those features; a piece is dropped when another piece of the same kind is at least as good in every feature (skills, cumulative slot counts, set bonuses, group skill). Rarity 5/6 pieces use their transcended slots when allowed.
 * `DecorationFiller`: exact search over the few decorations per target skill to cover the deficits with the fewest slots (packing biggest jewels into the smallest fitting slot of the right kind), then a greedy fill of the remaining slots by score gain. Decorations are unlimited.
-* `Optimizer`: dynamic programming over skill-state signatures (talisman first, then armor kinds ordered by candidate count). States with identical signature merge (keeping a few predecessors so several concrete builds can be reconstructed); set/group counts that can no longer reach their threshold are zeroed; states that cannot reach the targets even with the best remaining pieces and all possible slots are dropped; a bounded Pareto check removes dominated states; a beam (`options.max_states_per_depth`) caps the rest by partial score + slot value. Final states are decorated and scored once, the best are reconstructed into loadouts and re-scored with the full calculator.
+* `Optimizer`: dynamic programming over skill-state signatures (talisman first, then armor kinds ordered by candidate count). States with identical signature merge (keeping a few predecessors so several concrete builds can be reconstructed); set/group counts that can no longer reach their threshold are zeroed; states that cannot reach the targets (skill levels, required set/group piece counts) even with the best remaining pieces and all possible slots are dropped; a bounded Pareto check removes dominated states; a beam (`options.max_states_per_depth`) caps the rest by partial score + slot value. Final states are decorated and scored once, the best are reconstructed into loadouts and re-scored with the full calculator.
 * Optimize mode: the 294 rollable (set bonus, group skill) pairs are grouped into classes with identical score behaviour (irrelevant sets/groups collapse into "(any other)"), one search per class in parallel, ranked by best build.
 * Measured on the example request (GS, six targets, 62 talismans): 10 s, identical best build to the exhaustive run (214 s).
 

@@ -38,8 +38,8 @@ public static class ResultsRenderer
         var lines = new List<IRenderable>
         {
             new Markup(string.Format(Inv,
-                "[bold white on grey23] EFR {0:0.0} + EFE {1:0.0} = [/][bold black on green] {2:0.0} [/]   [grey]every condition on: {3:0.0}[/]",
-                s.Efr, s.Efe, s.Total, s.TotalAllConditions)),
+                "[bold white on grey23] {0} = [/][bold black on green] {1:0.0} [/]   [grey]every condition on: {2:0.0}[/]",
+                s.ScoreTerms(), s.Total, s.TotalAllConditions)),
             new Markup(string.Format(Inv,
                 "[red]ATK {0:0}[/] [grey]({1} display, base {2})[/]   [yellow]AFF {3}%[/] [grey](base {4}%)[/]   [orange1]CRIT x{5:0.00}[/]   [white]{6} sharpness[/]{7}",
                 s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness?.ToString() ?? "no",

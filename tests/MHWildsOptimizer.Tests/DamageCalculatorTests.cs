@@ -1,5 +1,6 @@
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
+using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
 
@@ -127,6 +128,65 @@ public class DamageCalculatorTests
         Assert.Equal(off.TrueRaw + 8, capped.TrueRaw, Tol);    // valued as Burst 1
         Assert.Equal(off.TrueRaw, excluded.TrueRaw, Tol);
         Assert.Equal(off.Total, excluded.Total, Tol);
+    }
+
+    private static readonly Conditions ProcsOnly = Conditions.AllOff with
+    {
+        ProcDamage = true,
+        AttackProfile = new AttackProfile { HitsPerMinute = 20, AverageMv = 100, ChargedLv3Share = 0.5 }, // 3 s per hit
+    };
+
+    [Fact]
+    public void AzureBoltBurstIsSpreadOverItsCooldown()
+    {
+        var data = TestData.Data;
+        var spec = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = "Leviathan's Fury" };
+        Loadout Build(params Decoration?[] decos) => new()
+        {
+            Weapon = new EquippedWeapon(spec, data, decos),
+            Head = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Head)),
+            Chest = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Chest)),
+            Arms = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Arms)),
+        };
+        var off = DamageCalculator.Calculate(Build(), data, Conditions.AllOff);
+        var on = DamageCalculator.Calculate(Build(), data, ProcsOnly);
+        // tier II burst 60 + 200 thunder, one per 30 s; at 3 s per hit that is 0.1 bursts per 100-MV hit
+        Assert.Equal(0, off.ProcDamage);
+        Assert.Equal(26, on.ProcDamage, Tol);
+        Assert.Equal(off.Total + 26, on.Total, Tol);
+
+        // Thunder Attack 3 scales the thunder part on a non-thunder weapon: 60 + 200 * 1.2 + 6 = 306
+        var bolt = DamageCalculator.Calculate(Build(data.Decoration("Bolt Jewel III [3]")), data, ProcsOnly);
+        Assert.Equal(30.6, bolt.ProcDamage, Tol);
+    }
+
+    [Fact]
+    public void DarkArtsShockwaveRidesOnGreatSwordChargedSlashes()
+    {
+        var data = TestData.Data;
+        Loadout Build(WeaponType type) => new()
+        {
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = type, Focus = GogmaFocus.Attack, SetBonus = "Soul of the Dark Knight" }, data),
+            Head = new EquippedArmor(TestData.PieceOf("Bale Armor α", ArmorPieceKind.Head)),
+        };
+        var gs = DamageCalculator.Calculate(Build(WeaponType.GreatSword), data, ProcsOnly);
+        // half the hits add a 30 MV raw shockwave plus 6 true dragon (white sharpness x1.15), no red health needed
+        Assert.Equal(0.5 * (gs.EffectiveRaw * 0.30 + 6 * 1.15), gs.ProcDamage, Tol);
+
+        var ls = DamageCalculator.Calculate(Build(WeaponType.LongSword), data, ProcsOnly);
+        Assert.Equal(0, ls.ProcDamage);
+    }
+
+    [Fact]
+    public void ProcsPerHitRespectChanceAndCooldown()
+    {
+        var gs = new ResolvedAttackProfile(20, 100, 0); // 3 s per hit
+        Assert.Equal(0.1, gs.ProcsPerHit(30), Tol);
+        Assert.Equal(1.0, gs.ProcsPerHit(2), Tol);       // Bad Blood is ready on every hit
+        Assert.Equal(0.33, gs.ProcsPerHit(2.4, 0.33), Tol);
+        var ls = new ResolvedAttackProfile(50, 35, 0);   // 1.2 s per hit: Scorcher rolls every other hit
+        Assert.Equal(0.33 * 0.5, ls.ProcsPerHit(2.4, 0.33), Tol);
+        Assert.Equal(new ResolvedAttackProfile(30, 120, 0.3), new AttackProfile { HitsPerMinute = 30 }.Resolve(WeaponType.GreatSword));
     }
 
     [Fact]
