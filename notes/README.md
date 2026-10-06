@@ -63,10 +63,10 @@ element = min(TrueEle, Cap) * SharpEle * CritEle
 
 * TrueRaw = display / bloat (GS 4.8, LS 3.3, SnS/DB 1.4, Hammer 5.2, HH 4.2, Lance/GL 2.3, SA 3.5, CB 3.6, IG 3.1, LBG 1.3, HBG 1.5, Bow 1.2); the API already gives true raw. True element = display / 10.
 * Game-data constants: crit multiplier 1.25, negative crit 0.75, Critical Boost 1.28/1.31/1.34/1.37/1.40, element cap = max(base × 2.3, base + 40 true), Frenzy overcome +15% affinity for 60 s, weak-point threshold hitzone 45.
-* Critical Element: 1.05/1.10/1.15 (a second triple 1.07/1.14/1.21 exists in the data; which weapon classes use it is open).
+* Critical Element: 1.05/1.10/1.15 for fast weapons (LS, SnS, DB, Lance, IG, LBG, Bow), 1.07/1.14/1.21 for GS, Hammer, HH.
 * Sharpness (community table): raw green 1.05, blue 1.20, white 1.32, purple 1.39; element green 1.00, blue 1.0625, white 1.15, purple 1.25.
 * Element attack skills: ×1.00 +4, ×1.10 +5, ×1.20 +6 true. Coalescence ×1.10/1.20/1.30, Charge Master ×1.15/1.20/1.25 (charged attacks), Gogmapocalypse ×1.2 +2 / ×1.3 +4 when enraged.
-* Burst values are per weapon type (see `damage_model.json`); the reading of the 13-value arrays is still to be confirmed.
+* Burst is per weapon type: GS Lv1..5 = +10/+12/+14/+16/+18 attack and +80/+100/+120/+160/+200 display element (5 s window), LS = +8/+10/+12/+15/+18 and +60/+80/+100/+120/+140 (5 s); first hit +5/+50 (GS) or +4/+50 (LS).
 
 Recommended optimizer metric: **Effective Raw + Effective Element per 100 MV**, independent of the attack combo. Motion values are available in the game data (`Wp??_Attack.rcol` `_Attack` field, 126 entries for Great Sword) for a later combo-DPS mode; the attack-name mapping still has to be built.
 
@@ -79,12 +79,13 @@ Decided (2026-10-06):
 * Scope for now: Great Sword and Long Sword only.
 * Conditional skills (Weakness Exploit, Agitator, Maximum Might, Peak Performance, Burst, set bonuses, ...) are user-toggleable in the optimizer; a toggle can only take effect when the evaluated loadout actually contains the skill.
 * Stack: C# / .NET 10 (solution `MHWildsOptimizer.sln`: Core library, CLI, xunit tests).
+* Ranking metric: EFR + EFE combined (effective raw plus effective element per 100 MV).
 
 Still open:
 1. Transcendence slot rule for rarity-5 pieces with fewer than 3 slots (assumed: new level-1 slots appear).
-2. Burst array reading, Critical Element second triple, Elemental Absorption / Convert Element / Flayer units (see VERIFY flags in `data/damage_model.json`).
+2. Resolved: Burst arrays decoded (GS Lv5 = +18 attack / +200 display element, LS Lv5 = +18 / +140), Critical Element GS 1.07/1.14/1.21 vs LS 1.05/1.10/1.15, Coalescence GS x1.10-1.30 vs LS x1.05-1.15. Still fuzzy: Elemental Absorption flat values, Flayer burst size, Charge Master grouping.
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
-4. EFR/EFE ranking only, or a combo-DPS mode with motion values (needs the attack-name mapping for the rcol data).
+4. Combo-DPS mode with motion values is a later option (needs the attack-name mapping for the rcol data).
 
 ## Sources
 

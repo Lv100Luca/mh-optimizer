@@ -1,6 +1,5 @@
 {
  "_about": "Damage-model constants for a Monster Hunter Wilds build optimizer (game Ver 1.041). User assumptions: hitzone = 100 for raw and element, no monster resistance, every hit lands. Primary source is the game data dump dtlnor/MHWs-in-json (PlayerStatusParam, PlayerSkillParam, SkillData); community sources are only used where the dump is not yet decoded. 'true' units everywhere unless a key says display (display attack = true x bloat, display element = true x 10). Keys marked VERIFY are interpretations of raw parameter arrays that still need an in-game check.",
-
  "formula": {
   "raw_per_hit": "trueRawFinal * MV/100 * sharpRaw * critRaw * hitzoneRaw/100 * postMultipliers",
   "element_per_hit": "min(trueEleFinal, eleCap) * sharpEle * critEle * hitzoneEle/100",
@@ -9,9 +8,9 @@
   "critRaw": "1 + aff/100 * (critMult - 1) for aff in [0,100]; 1 + |aff|/100 * (0.75 - 1) for aff < 0",
   "critEle": "1 + max(aff,0)/100 * (critEleMult - 1) only with Critical Element equipped, else 1",
   "efr_efe": "Effective Raw = trueRawFinal * sharpRaw * critRaw ; Effective Element = min(trueEleFinal,cap) * sharpEle * critEle. Weapon-combo independent, so the optimizer can rank builds on EFR + EFE per 100 MV. Motion values exist in the dump (Wp??_Attack.rcol '_Attack' field) for a later combo-DPS mode.",
-  "stacking_note": "Community consensus (wiggler.pet): ((Base * Raw%) + Flat) * Post. Which percent sources multiply vs add to each other is NOT verified for Wilds - treat as multiplicative and flag."
+  "stacking_note": "Community consensus (wiggler.pet): ((Base * Raw%) + Flat) * Post. Which percent sources multiply vs add to each other is NOT verified for Wilds - treat as multiplicative and flag.",
+  "ranking_metric": "Decided 2026-10-06: rank builds on EFR + EFE (both, summed per 100 MV)."
  },
-
  "constants_from_game_data": {
   "critical_multiplier": 1.25,
   "negative_critical_multiplier": 0.75,
@@ -20,123 +19,1703 @@
   "element_cap_display": "max(baseDisplay * 2.3, baseDisplay + 400)",
   "raw_cap_true": "max(base * 4.0, base + 400) per source class; all sources max(base * 5.0, base + 600) - never reached in practice",
   "status_cap": "base * 1.6",
-  "frenzy_overcome": {"affinity": 15, "duration_s": 60, "note": "base Frenzy mechanic; this is what Black Eclipse I gives you (plus the Frenzy outbreak risk)"},
+  "frenzy_overcome": {
+   "affinity": 15,
+   "duration_s": 60,
+   "note": "base Frenzy mechanic; this is what Black Eclipse I gives you (plus the Frenzy outbreak risk)"
+  },
   "gunner_defense_rate": 0.7
  },
-
  "bloat_divider": {
   "_about": "display attack / bloat = true raw; derived from the API (raw vs display) on every weapon",
-  "great-sword": 4.8, "long-sword": 3.3, "sword-shield": 1.4, "dual-blades": 1.4, "hammer": 5.2, "hunting-horn": 4.2,
-  "lance": 2.3, "gunlance": 2.3, "switch-axe": 3.5, "charge-blade": 3.6, "insect-glaive": 3.1,
-  "light-bowgun": 1.3, "heavy-bowgun": 1.5, "bow": 1.2,
+  "great-sword": 4.8,
+  "long-sword": 3.3,
+  "sword-shield": 1.4,
+  "dual-blades": 1.4,
+  "hammer": 5.2,
+  "hunting-horn": 4.2,
+  "lance": 2.3,
+  "gunlance": 2.3,
+  "switch-axe": 3.5,
+  "charge-blade": 3.6,
+  "insect-glaive": 3.1,
+  "light-bowgun": 1.3,
+  "heavy-bowgun": 1.5,
+  "bow": 1.2,
   "element_display_divider": 10
  },
-
  "sharpness": {
-  "_about": "Community values (wiggler.pet; same table as World/Rise). Not yet located in the data dump. Element blue 1.0625 vs 1.05 and purple 1.25 vs 1.27 differ between sources - VERIFY.",
-  "red":    {"raw": 0.50, "element": 0.25},
-  "orange": {"raw": 0.75, "element": 0.50},
-  "yellow": {"raw": 1.00, "element": 0.75},
-  "green":  {"raw": 1.05, "element": 1.00},
-  "blue":   {"raw": 1.20, "element": 1.0625},
-  "white":  {"raw": 1.32, "element": 1.15},
-  "purple": {"raw": 1.39, "element": 1.25}
- },
-
- "weapon_index": {"_about": "Wp index used by the game data arrays", "0": "great-sword", "1": "sword-shield", "2": "dual-blades", "3": "long-sword", "4": "hammer", "5": "hunting-horn", "6": "lance", "7": "gunlance", "8": "switch-axe", "9": "charge-blade", "10": "insect-glaive", "11": "bow", "12": "heavy-bowgun", "13": "light-bowgun"},
-
- "skill_values": {
-  "_about": "Per level. attack = flat true raw, attack_pct = multiplier in %, aff = affinity %, ele = flat true element, ele_pct = element multiplier in %. 'uptime' is the knob the optimizer exposes for conditional skills.",
-  "Attack Boost":      {"kind": "weapon", "levels": {"1": {"attack": 3}, "2": {"attack": 5}, "3": {"attack": 7}, "4": {"attack_pct": 102, "attack": 8}, "5": {"attack_pct": 104, "attack": 9}}},
-  "Critical Eye":      {"kind": "weapon", "levels": {"1": {"aff": 4}, "2": {"aff": 8}, "3": {"aff": 12}, "4": {"aff": 16}, "5": {"aff": 20}}},
-  "Critical Boost":    {"kind": "weapon", "levels": {"1": {"crit_mult": 1.28}, "2": {"crit_mult": 1.31}, "3": {"crit_mult": 1.34}, "4": {"crit_mult": 1.37}, "5": {"crit_mult": 1.40}}},
-  "Critical Element":  {"kind": "weapon", "source": "PlayerSkillParam _AttrPowerRateData [1.05,1.10,1.15, 1.07,1.14,1.21]", "levels": {"1": {"crit_ele_mult": 1.05, "alt": 1.07}, "2": {"crit_ele_mult": 1.10, "alt": 1.14}, "3": {"crit_ele_mult": 1.15, "alt": 1.21}}, "note": "VERIFY which weapon classes use the second (higher) triple"},
-  "Weakness Exploit":  {"kind": "armor", "condition": "weak point hitzone >= 45 (_WeakAttackMeatThreshold); extra on wounds", "levels": {"1": {"aff": 5, "aff_wound": 3}, "2": {"aff": 10, "aff_wound": 5}, "3": {"aff": 15, "aff_wound": 10}, "4": {"aff": 20, "aff_wound": 15}, "5": {"aff": 30, "aff_wound": 20}}},
-  "Agitator":          {"kind": "armor", "condition": "monster enraged (3 s lag)", "levels": {"1": {"attack": 4, "aff": 3}, "2": {"attack": 8, "aff": 5}, "3": {"attack": 12, "aff": 7}, "4": {"attack": 16, "aff": 10}, "5": {"attack": 20, "aff": 15}}},
-  "Peak Performance":  {"kind": "armor", "condition": "full health", "levels": {"1": {"attack": 3}, "2": {"attack": 6}, "3": {"attack": 10}, "4": {"attack": 15}, "5": {"attack": 20}}},
-  "Maximum Might":     {"kind": "armor", "condition": "stamina full for 3 s; drops 2 s after stamina use", "levels": {"1": {"aff": 10}, "2": {"aff": 20}, "3": {"aff": 30}}},
-  "Latent Power":      {"kind": "armor", "condition": "after damage taken / time; limited duration (Rey Dau's Voltage +30/+90 s)", "levels": {"1": {"aff": 10, "stamina_pct": 70}, "2": {"aff": 20, "stamina_pct": 70}, "3": {"aff": 30, "stamina_pct": 50}, "4": {"aff": 40, "stamina_pct": 50}, "5": {"aff": 50, "stamina_pct": 50}}},
-  "Adrenaline Rush":   {"kind": "armor", "condition": "after a perfect dodge, 30 s (Seregios's Tenacity +15 s)", "levels": {"1": {"attack": 10}, "2": {"attack": 15}, "3": {"attack": 20}, "4": {"attack": 25}, "5": {"attack": 30}}},
-  "Counterstrike":     {"kind": "armor", "condition": "after knockback; 30/35/45 s", "levels": {"1": {"attack": 10}, "2": {"attack": 15}, "3": {"attack": 25}}},
-  "Resentment":        {"kind": "armor", "condition": "while red (recoverable) health exists", "levels": {"1": {"attack": 5}, "2": {"attack": 10}, "3": {"attack": 15}, "4": {"attack": 20}, "5": {"attack": 25}}},
-  "Heroics":           {"kind": "armor", "condition": "health <= 35%", "levels": {"1": {"attack_pct": 100, "defense": 50}, "2": {"attack_pct": 105, "defense": 50}, "3": {"attack_pct": 105, "defense": 100}, "4": {"attack_pct": 110, "defense": 100}, "5": {"attack_pct": 130}}},
-  "Foray":             {"kind": "armor", "condition": "monster poisoned or paralyzed", "levels": {"1": {"attack": 6}, "2": {"attack": 8, "aff": 5}, "3": {"attack": 10, "aff": 10}, "4": {"attack": 12, "aff": 15}, "5": {"attack": 15, "aff": 20}}},
-  "Offensive Guard":   {"kind": "weapon", "condition": "after perfect guard, limited duration", "levels": {"1": {"attack_pct": 105}, "2": {"attack_pct": 110}, "3": {"attack_pct": 115}}},
-  "Punishing Draw":    {"kind": "weapon", "condition": "draw attacks only", "levels": {"1": {"attack": 3}, "2": {"attack": 5}, "3": {"attack": 7}}},
-  "Mind's Eye":        {"kind": "weapon", "condition": "hard targets only (hitzone below _Shingan_MeatThreshold) - irrelevant at hitzone 100", "levels": {"1": {"no_bounce_pct": 50, "attack_pct_hard": 110}, "2": {"no_bounce_pct": 100, "attack_pct_hard": 115}, "3": {"no_bounce_pct": 100, "attack_pct_hard": 130}}},
-  "Bludgeoner":        {"kind": "weapon", "condition": "sharpness yellow or lower (Lv3 green or lower)", "levels": {"1": {"damage_pct": 105}, "2": {"damage_pct": 110}, "3": {"damage_pct": 110}}},
-  "Partbreaker":       {"kind": "armor", "condition": "part damage / conditional", "levels": {"1": {"part_dmg_pct": 110, "damage_pct_cond": 110}, "2": {"part_dmg_pct": 120, "damage_pct_cond": 120}, "3": {"part_dmg_pct": 130, "damage_pct_cond": 130}}},
-  "Antivirus":         {"kind": "armor", "condition": "after overcoming Frenzy (stacks with the base +15% overcome bonus)", "levels": {"1": {"aff": 3, "recovery_pct": 10}, "2": {"aff": 6, "recovery_pct": 20}, "3": {"aff": 10, "recovery_pct": 30}}},
-  "Fire Attack":       {"kind": "weapon", "levels": {"1": {"ele_pct": 100, "ele": 4}, "2": {"ele_pct": 110, "ele": 5}, "3": {"ele_pct": 120, "ele": 6}}, "_same_for": ["Water Attack", "Thunder Attack", "Ice Attack", "Dragon Attack"], "note": "flat 4/5/6 true = +40/+50/+60 display"},
-  "Coalescence":       {"kind": "armor", "condition": "after recovering from a blight/ailment, limited duration", "levels": {"1": {"ele_pct": 110, "status_pct": 105}, "2": {"ele_pct": 120, "status_pct": 110}, "3": {"ele_pct": 130, "status_pct": 115}}},
-  "Charge Master":     {"kind": "weapon", "condition": "charged attacks only", "levels": {"1": {"ele_pct": 115, "status_pct": 105}, "2": {"ele_pct": 120, "status_pct": 110}, "3": {"ele_pct": 125, "status_pct": 115}}},
-  "Elemental Absorption": {"kind": "armor", "condition": "after taking elemental damage, limited duration", "raw_params": {"1": [5, 5], "2": [10, 8], "3": [15, 12]}, "interpretation": "VERIFY - likely ele_pct +5/+10/+15 and a second value (flat element 5/8/12 true, or resistance)"},
-  "Convert Element":   {"kind": "armor", "raw_params": {"1": [8, 110, 150, 60], "2": [12, 115, 200, 80], "3": [18, 120, 280, 100]}, "interpretation": "VERIFY - likely dragon +8/12/18 true flat, dragon x1.10/1.15/1.20, extra dragon damage 150/200/280, element-dealt threshold 60/80/100"},
-  "Flayer":            {"kind": "armor", "raw_params": {"1": [105, 100], "2": [110, 120], "3": [115, 160], "4": [120, 200], "5": [130, 250]}, "interpretation": "wound buildup x1.05..1.30 and bonus non-elemental damage 100..250 (per proc, after enough buildup) - VERIFY units"},
-  "Critical Status":   {"kind": "weapon", "levels": {"1": {"status_crit_pct": 110, "second": 105}, "2": {"status_crit_pct": 120, "second": 110}, "3": {"status_crit_pct": 140, "second": 120}}, "note": "second value meaning VERIFY"},
-  "Handicraft":        {"kind": "weapon", "levels": {"1": {"sharpness": 10}, "2": {"sharpness": 20}, "3": {"sharpness": 30}, "4": {"sharpness": 40}, "5": {"sharpness": 50}}},
-  "Opening Shot":      {"kind": "weapon", "levels": {"1": {"attack_pct_cond": 110, "raw": [5, 5, 110, 110]}, "2": {"attack_pct_cond": 115, "raw": [10, 10, 110, 110]}, "3": {"attack_pct_cond": 130, "raw": [15, 15, 110, 110]}}, "note": "_FirstShot [1.1,1.15,1.3]"},
-  "Artillery":         {"kind": "weapon", "levels": {"1": {"shell_fire_flat": 30, "raw": [5, 120, 3, 110]}, "2": {"shell_fire_flat": 60, "raw": [10, 150, 6, 120]}, "3": {"shell_fire_flat": 90, "raw": [15, 200, 9, 130]}}},
-  "Burst": {
-   "kind": "armor",
-   "source": "PlayerSkillParam _ContinuousAttackWp??Data (13 values for melee/bow, 7 for bowguns)",
-   "interpretation": "VERIFY - reading as [firstHit_attack, firstHit_element, L1_attack, L1_element, L2_attack, L2_element, L3_attack, L3_element, L4_attack, L4_element, L5_attack, L5_element, extra]; bowguns: [firstHit_attack, L1..L5 attack, extra]. 'extra' (GS 20, LS 14, DB 12, bow 12, bowguns 10) is probably the buff duration in seconds.",
-   "raw_arrays": {
-    "great-sword":   [5, 5, 5, 10, 8, 12, 10, 14, 12, 16, 16, 18, 20],
-    "sword-shield":  [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "dual-blades":   [3, 5, 3, 8, 4, 10, 6, 12, 8, 15, 10, 18, 12],
-    "long-sword":    [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "hammer":        [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "hunting-horn":  [5, 5, 5, 10, 8, 12, 10, 14, 12, 16, 16, 18, 20],
-    "lance":         [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "gunlance":      [5, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "switch-axe":    [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "charge-blade":  [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "insect-glaive": [4, 5, 5, 8, 6, 10, 8, 12, 10, 15, 12, 18, 14],
-    "bow":           [3, 5, 3, 6, 4, 7, 6, 8, 8, 9, 10, 10, 12],
-    "heavy-bowgun":  [3, 5, 6, 7, 8, 9, 10],
-    "light-bowgun":  [3, 5, 6, 7, 8, 9, 10]
-   },
-   "lv5_example_under_interpretation": {"great-sword": {"attack": 16, "ele": 18}, "long-sword": {"attack": 12, "ele": 18}, "dual-blades": {"attack": 10, "ele": 18}, "bow": {"attack": 10, "ele": 10}, "bowguns": {"attack": 9}}
+  "_about": "Community values confirmed by two independent sources (wiggler.pet, agent cross-check): element blue 1.0625, white 1.15; purple 1.25 (1.27 in one source).",
+  "red": {
+   "raw": 0.5,
+   "element": 0.25
+  },
+  "orange": {
+   "raw": 0.75,
+   "element": 0.5
+  },
+  "yellow": {
+   "raw": 1.0,
+   "element": 0.75
+  },
+  "green": {
+   "raw": 1.05,
+   "element": 1.0
+  },
+  "blue": {
+   "raw": 1.2,
+   "element": 1.0625
+  },
+  "white": {
+   "raw": 1.32,
+   "element": 1.15
+  },
+  "purple": {
+   "raw": 1.39,
+   "element": 1.25
   }
  },
-
+ "weapon_index": {
+  "_about": "Wp index used by the game data arrays",
+  "0": "great-sword",
+  "1": "sword-shield",
+  "2": "dual-blades",
+  "3": "long-sword",
+  "4": "hammer",
+  "5": "hunting-horn",
+  "6": "lance",
+  "7": "gunlance",
+  "8": "switch-axe",
+  "9": "charge-blade",
+  "10": "insect-glaive",
+  "11": "bow",
+  "12": "heavy-bowgun",
+  "13": "light-bowgun"
+ },
+ "skill_values": {
+  "_about": "Per level. attack = flat true raw, attack_pct = multiplier in %, aff = affinity %, ele = flat true element, ele_pct = element multiplier in %. 'uptime' is the knob the optimizer exposes for conditional skills.",
+  "Attack Boost": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "attack": 3
+    },
+    "2": {
+     "attack": 5
+    },
+    "3": {
+     "attack": 7
+    },
+    "4": {
+     "attack_pct": 102,
+     "attack": 8
+    },
+    "5": {
+     "attack_pct": 104,
+     "attack": 9
+    }
+   }
+  },
+  "Critical Eye": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "aff": 4
+    },
+    "2": {
+     "aff": 8
+    },
+    "3": {
+     "aff": 12
+    },
+    "4": {
+     "aff": 16
+    },
+    "5": {
+     "aff": 20
+    }
+   }
+  },
+  "Critical Boost": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "crit_mult": 1.28
+    },
+    "2": {
+     "crit_mult": 1.31
+    },
+    "3": {
+     "crit_mult": 1.34
+    },
+    "4": {
+     "crit_mult": 1.37
+    },
+    "5": {
+     "crit_mult": 1.4
+    }
+   }
+  },
+  "Critical Element": {
+   "kind": "weapon",
+   "source": "PlayerSkillParam _AttrPowerRateData [1.05,1.10,1.15 | 1.07,1.14,1.21]",
+   "groups": {
+    "fast": {
+     "weapons": [
+      "long-sword",
+      "sword-shield",
+      "dual-blades",
+      "lance",
+      "insect-glaive",
+      "light-bowgun",
+      "bow"
+     ],
+     "levels": {
+      "1": 1.05,
+      "2": 1.1,
+      "3": 1.15
+     }
+    },
+    "heavy": {
+     "weapons": [
+      "great-sword",
+      "hammer",
+      "hunting-horn"
+     ],
+     "levels": {
+      "1": 1.07,
+      "2": 1.14,
+      "3": 1.21
+     }
+    }
+   },
+   "unassigned": "gunlance, switch-axe, charge-blade, heavy-bowgun: sources disagree on the group (game8 vs gamewith.jp)",
+   "note": "community measured the heavy group as ~1.067/1.133/1.20; the game data says 1.07/1.14/1.21"
+  },
+  "Weakness Exploit": {
+   "kind": "armor",
+   "condition": "weak point hitzone >= 45 (_WeakAttackMeatThreshold); extra on wounds",
+   "levels": {
+    "1": {
+     "aff": 5,
+     "aff_wound": 3
+    },
+    "2": {
+     "aff": 10,
+     "aff_wound": 5
+    },
+    "3": {
+     "aff": 15,
+     "aff_wound": 10
+    },
+    "4": {
+     "aff": 20,
+     "aff_wound": 15
+    },
+    "5": {
+     "aff": 30,
+     "aff_wound": 20
+    }
+   }
+  },
+  "Agitator": {
+   "kind": "armor",
+   "condition": "monster enraged (3 s lag)",
+   "levels": {
+    "1": {
+     "attack": 4,
+     "aff": 3
+    },
+    "2": {
+     "attack": 8,
+     "aff": 5
+    },
+    "3": {
+     "attack": 12,
+     "aff": 7
+    },
+    "4": {
+     "attack": 16,
+     "aff": 10
+    },
+    "5": {
+     "attack": 20,
+     "aff": 15
+    }
+   }
+  },
+  "Peak Performance": {
+   "kind": "armor",
+   "condition": "full health",
+   "levels": {
+    "1": {
+     "attack": 3
+    },
+    "2": {
+     "attack": 6
+    },
+    "3": {
+     "attack": 10
+    },
+    "4": {
+     "attack": 15
+    },
+    "5": {
+     "attack": 20
+    }
+   }
+  },
+  "Maximum Might": {
+   "kind": "armor",
+   "condition": "stamina full for 3 s; drops 2 s after stamina use",
+   "levels": {
+    "1": {
+     "aff": 10
+    },
+    "2": {
+     "aff": 20
+    },
+    "3": {
+     "aff": 30
+    }
+   }
+  },
+  "Latent Power": {
+   "kind": "armor",
+   "condition": "after damage taken / time; limited duration (Rey Dau's Voltage +30/+90 s)",
+   "levels": {
+    "1": {
+     "aff": 10,
+     "stamina_pct": 70
+    },
+    "2": {
+     "aff": 20,
+     "stamina_pct": 70
+    },
+    "3": {
+     "aff": 30,
+     "stamina_pct": 50
+    },
+    "4": {
+     "aff": 40,
+     "stamina_pct": 50
+    },
+    "5": {
+     "aff": 50,
+     "stamina_pct": 50
+    }
+   }
+  },
+  "Adrenaline Rush": {
+   "kind": "armor",
+   "condition": "after a perfect dodge, 30 s (Seregios's Tenacity +15 s)",
+   "levels": {
+    "1": {
+     "attack": 10
+    },
+    "2": {
+     "attack": 15
+    },
+    "3": {
+     "attack": 20
+    },
+    "4": {
+     "attack": 25
+    },
+    "5": {
+     "attack": 30
+    }
+   }
+  },
+  "Counterstrike": {
+   "kind": "armor",
+   "condition": "after knockback; 30/35/45 s",
+   "levels": {
+    "1": {
+     "attack": 10
+    },
+    "2": {
+     "attack": 15
+    },
+    "3": {
+     "attack": 25
+    }
+   }
+  },
+  "Resentment": {
+   "kind": "armor",
+   "condition": "while red (recoverable) health exists",
+   "levels": {
+    "1": {
+     "attack": 5
+    },
+    "2": {
+     "attack": 10
+    },
+    "3": {
+     "attack": 15
+    },
+    "4": {
+     "attack": 20
+    },
+    "5": {
+     "attack": 25
+    }
+   }
+  },
+  "Heroics": {
+   "kind": "armor",
+   "condition": "health <= 35%",
+   "levels": {
+    "1": {
+     "attack_pct": 100,
+     "defense": 50
+    },
+    "2": {
+     "attack_pct": 105,
+     "defense": 50
+    },
+    "3": {
+     "attack_pct": 105,
+     "defense": 100
+    },
+    "4": {
+     "attack_pct": 110,
+     "defense": 100
+    },
+    "5": {
+     "attack_pct": 130
+    }
+   }
+  },
+  "Foray": {
+   "kind": "armor",
+   "condition": "monster poisoned or paralyzed",
+   "levels": {
+    "1": {
+     "attack": 6
+    },
+    "2": {
+     "attack": 8,
+     "aff": 5
+    },
+    "3": {
+     "attack": 10,
+     "aff": 10
+    },
+    "4": {
+     "attack": 12,
+     "aff": 15
+    },
+    "5": {
+     "attack": 15,
+     "aff": 20
+    }
+   }
+  },
+  "Offensive Guard": {
+   "kind": "weapon",
+   "condition": "after perfect guard, limited duration",
+   "levels": {
+    "1": {
+     "attack_pct": 105
+    },
+    "2": {
+     "attack_pct": 110
+    },
+    "3": {
+     "attack_pct": 115
+    }
+   }
+  },
+  "Punishing Draw": {
+   "kind": "weapon",
+   "condition": "draw attacks only",
+   "levels": {
+    "1": {
+     "attack": 3
+    },
+    "2": {
+     "attack": 5
+    },
+    "3": {
+     "attack": 7
+    }
+   }
+  },
+  "Mind's Eye": {
+   "kind": "weapon",
+   "condition": "parts whose BASE hitzone <= 44 - irrelevant at hitzone 100",
+   "levels": {
+    "1": {
+     "no_bounce_pct": 50,
+     "attack_pct_hard": 110
+    },
+    "2": {
+     "no_bounce_pct": 100,
+     "attack_pct_hard": 115
+    },
+    "3": {
+     "no_bounce_pct": 100,
+     "attack_pct_hard": 130
+    }
+   }
+  },
+  "Bludgeoner": {
+   "kind": "weapon",
+   "condition": "sharpness yellow or lower (Lv3 green or lower)",
+   "levels": {
+    "1": {
+     "damage_pct": 105
+    },
+    "2": {
+     "damage_pct": 110
+    },
+    "3": {
+     "damage_pct": 110
+    }
+   }
+  },
+  "Partbreaker": {
+   "kind": "armor",
+   "condition": "part damage / conditional",
+   "levels": {
+    "1": {
+     "part_dmg_pct": 110,
+     "damage_pct_cond": 110
+    },
+    "2": {
+     "part_dmg_pct": 120,
+     "damage_pct_cond": 120
+    },
+    "3": {
+     "part_dmg_pct": 130,
+     "damage_pct_cond": 130
+    }
+   }
+  },
+  "Antivirus": {
+   "kind": "armor",
+   "condition": "after overcoming Frenzy (stacks with the base +15% overcome bonus)",
+   "levels": {
+    "1": {
+     "aff": 3,
+     "recovery_pct": 10
+    },
+    "2": {
+     "aff": 6,
+     "recovery_pct": 20
+    },
+    "3": {
+     "aff": 10,
+     "recovery_pct": 30
+    }
+   }
+  },
+  "Fire Attack": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "ele_pct": 100,
+     "ele": 4
+    },
+    "2": {
+     "ele_pct": 110,
+     "ele": 5
+    },
+    "3": {
+     "ele_pct": 120,
+     "ele": 6
+    }
+   },
+   "_same_for": [
+    "Water Attack",
+    "Thunder Attack",
+    "Ice Attack",
+    "Dragon Attack"
+   ],
+   "note": "flat 4/5/6 true = +40/+50/+60 display"
+  },
+  "Coalescence": {
+   "kind": "armor",
+   "condition": "after recovering from a blight/ailment, 30 s",
+   "groups": {
+    "heavy": {
+     "weapons": [
+      "great-sword",
+      "hammer",
+      "hunting-horn",
+      "gunlance",
+      "switch-axe",
+      "charge-blade"
+     ],
+     "ele_pct": {
+      "1": 110,
+      "2": 120,
+      "3": 130
+     }
+    },
+    "light": {
+     "weapons": [
+      "long-sword",
+      "sword-shield",
+      "dual-blades",
+      "lance",
+      "insect-glaive",
+      "bow",
+      "light-bowgun",
+      "heavy-bowgun"
+     ],
+     "ele_pct": {
+      "1": 105,
+      "2": 110,
+      "3": 115
+     }
+    }
+   },
+   "status_pct": {
+    "1": 105,
+    "2": 110,
+    "3": 115
+   },
+   "source": "SkillData [110,105,105]/[120,110,110]/[130,115,115] + game8 weapon grouping"
+  },
+  "Charge Master": {
+   "kind": "weapon",
+   "condition": "charged attacks only",
+   "raw": {
+    "1": [
+     115,
+     105,
+     105,
+     105
+    ],
+    "2": [
+     120,
+     110,
+     110,
+     110
+    ],
+    "3": [
+     125,
+     115,
+     115,
+     115
+    ]
+   },
+   "interpretation": "first value = element multiplier on charged attacks for the main group (x1.15/1.20/1.25), second = other group / status (x1.05/1.10/1.15) - grouping VERIFY"
+  },
+  "Elemental Absorption": {
+   "kind": "armor",
+   "condition": "after taking elemental damage; 120 s, 60 s cooldown",
+   "levels": {
+    "1": {
+     "ele_pct": 105,
+     "ele_flat_true_by_group": {
+      "great-sword/hunting-horn": 5,
+      "medium": 4,
+      "dual-blades/bow": 3
+     },
+     "resistance": 4
+    },
+    "2": {
+     "ele_pct": 110,
+     "ele_flat_true_by_group": {
+      "great-sword/hunting-horn": 8,
+      "medium": 5,
+      "dual-blades/bow": 4
+     },
+     "resistance": 6
+    },
+    "3": {
+     "ele_pct": 115,
+     "ele_flat_true_by_group": {
+      "great-sword/hunting-horn": 10,
+      "medium": 6,
+      "dual-blades/bow": 5
+     },
+     "resistance": 8
+    }
+   },
+   "source": "SkillData [5,5]/[10,8]/[15,12] + game8 flat values (+50/80/100 GS, +40/50/60 medium, +30/40/50 DB/Bow display); confidence medium"
+  },
+  "Convert Element": {
+   "kind": "armor",
+   "condition": "elemental weapon required; extra dragon burst after enough element dealt; 120 s, 90 s cooldown",
+   "levels": {
+    "1": {
+     "dragon_flat_true": 8,
+     "dragon_pct": 110,
+     "burst_base": 150
+    },
+    "2": {
+     "dragon_flat_true": 12,
+     "dragon_pct": 115,
+     "burst_base": 200
+    },
+    "3": {
+     "dragon_flat_true": 18,
+     "dragon_pct": 120,
+     "burst_base": 280
+    }
+   },
+   "source": "SkillData [8,110,150,60]...; game8 measured bursts 168/224/310; threshold 60/80/100 rises per proc"
+  },
+  "Flayer": {
+   "kind": "armor",
+   "levels": {
+    "1": {
+     "wound_pct": 105,
+     "burst": 100
+    },
+    "2": {
+     "wound_pct": 110,
+     "burst": 120
+    },
+    "3": {
+     "wound_pct": 115,
+     "burst": 160
+    },
+    "4": {
+     "wound_pct": 120,
+     "burst": 200
+    },
+    "5": {
+     "wound_pct": 130,
+     "burst": 250
+    }
+   },
+   "note": "game8 quotes bursts 140/160/220/300/400 vs game data 100..250 - unresolved; ~50% proc chance"
+  },
+  "Critical Status": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "status_crit_pct": 110,
+     "second": 105
+    },
+    "2": {
+     "status_crit_pct": 120,
+     "second": 110
+    },
+    "3": {
+     "status_crit_pct": 140,
+     "second": 120
+    }
+   },
+   "note": "second value meaning VERIFY"
+  },
+  "Handicraft": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "sharpness": 10
+    },
+    "2": {
+     "sharpness": 20
+    },
+    "3": {
+     "sharpness": 30
+    },
+    "4": {
+     "sharpness": 40
+    },
+    "5": {
+     "sharpness": 50
+    }
+   }
+  },
+  "Opening Shot": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "attack_pct_cond": 110,
+     "raw": [
+      5,
+      5,
+      110,
+      110
+     ]
+    },
+    "2": {
+     "attack_pct_cond": 115,
+     "raw": [
+      10,
+      10,
+      110,
+      110
+     ]
+    },
+    "3": {
+     "attack_pct_cond": 130,
+     "raw": [
+      15,
+      15,
+      110,
+      110
+     ]
+    }
+   },
+   "note": "_FirstShot [1.1,1.15,1.3]"
+  },
+  "Artillery": {
+   "kind": "weapon",
+   "levels": {
+    "1": {
+     "shell_fire_flat": 30,
+     "raw": [
+      5,
+      120,
+      3,
+      110
+     ]
+    },
+    "2": {
+     "shell_fire_flat": 60,
+     "raw": [
+      10,
+      150,
+      6,
+      120
+     ]
+    },
+    "3": {
+     "shell_fire_flat": 90,
+     "raw": [
+      15,
+      200,
+      9,
+      130
+     ]
+    }
+   }
+  },
+  "Burst": {
+   "kind": "armor",
+   "condition": "5 hits inside the window activate the full boost; the first hit gives the small boost; the buff lasts duration_s after the last hit",
+   "source": "PlayerSkillParam _ContinuousAttackWp??Data decoded as [first_attack, first_ele, duration_s, (attack, ele) x Lv1..5] (bowguns: [first_attack, duration_s, attack x Lv1..5]); matches game8/kiranico values exactly",
+   "units": "attack = true raw, ele = true element (x10 for display)",
+   "per_weapon": {
+    "great-sword": {
+     "first_hit": {
+      "attack": 5,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 10,
+       "ele": 8
+      },
+      "2": {
+       "attack": 12,
+       "ele": 10
+      },
+      "3": {
+       "attack": 14,
+       "ele": 12
+      },
+      "4": {
+       "attack": 16,
+       "ele": 16
+      },
+      "5": {
+       "attack": 18,
+       "ele": 20
+      }
+     }
+    },
+    "sword-shield": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "dual-blades": {
+     "first_hit": {
+      "attack": 3,
+      "ele": 5
+     },
+     "duration_s": 3,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 4
+      },
+      "2": {
+       "attack": 10,
+       "ele": 6
+      },
+      "3": {
+       "attack": 12,
+       "ele": 8
+      },
+      "4": {
+       "attack": 15,
+       "ele": 10
+      },
+      "5": {
+       "attack": 18,
+       "ele": 12
+      }
+     }
+    },
+    "long-sword": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "hammer": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "hunting-horn": {
+     "first_hit": {
+      "attack": 5,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 10,
+       "ele": 8
+      },
+      "2": {
+       "attack": 12,
+       "ele": 10
+      },
+      "3": {
+       "attack": 14,
+       "ele": 12
+      },
+      "4": {
+       "attack": 16,
+       "ele": 16
+      },
+      "5": {
+       "attack": 18,
+       "ele": 20
+      }
+     }
+    },
+    "lance": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "gunlance": {
+     "first_hit": {
+      "attack": 5,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "switch-axe": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "charge-blade": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "insect-glaive": {
+     "first_hit": {
+      "attack": 4,
+      "ele": 5
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 8,
+       "ele": 6
+      },
+      "2": {
+       "attack": 10,
+       "ele": 8
+      },
+      "3": {
+       "attack": 12,
+       "ele": 10
+      },
+      "4": {
+       "attack": 15,
+       "ele": 12
+      },
+      "5": {
+       "attack": 18,
+       "ele": 14
+      }
+     }
+    },
+    "bow": {
+     "first_hit": {
+      "attack": 3,
+      "ele": 5
+     },
+     "duration_s": 3,
+     "levels": {
+      "1": {
+       "attack": 6,
+       "ele": 4
+      },
+      "2": {
+       "attack": 7,
+       "ele": 6
+      },
+      "3": {
+       "attack": 8,
+       "ele": 8
+      },
+      "4": {
+       "attack": 9,
+       "ele": 10
+      },
+      "5": {
+       "attack": 10,
+       "ele": 12
+      }
+     }
+    },
+    "heavy-bowgun": {
+     "first_hit": {
+      "attack": 3
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 6
+      },
+      "2": {
+       "attack": 7
+      },
+      "3": {
+       "attack": 8
+      },
+      "4": {
+       "attack": 9
+      },
+      "5": {
+       "attack": 10
+      }
+     }
+    },
+    "light-bowgun": {
+     "first_hit": {
+      "attack": 3
+     },
+     "duration_s": 5,
+     "levels": {
+      "1": {
+       "attack": 6
+      },
+      "2": {
+       "attack": 7
+      },
+      "3": {
+       "attack": 8
+      },
+      "4": {
+       "attack": 9
+      },
+      "5": {
+       "attack": 10
+      }
+     }
+    }
+   },
+   "raw_arrays": {
+    "great-sword": [
+     5,
+     5,
+     5,
+     10,
+     8,
+     12,
+     10,
+     14,
+     12,
+     16,
+     16,
+     18,
+     20
+    ],
+    "sword-shield": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "dual-blades": [
+     3,
+     5,
+     3,
+     8,
+     4,
+     10,
+     6,
+     12,
+     8,
+     15,
+     10,
+     18,
+     12
+    ],
+    "long-sword": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "hammer": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "hunting-horn": [
+     5,
+     5,
+     5,
+     10,
+     8,
+     12,
+     10,
+     14,
+     12,
+     16,
+     16,
+     18,
+     20
+    ],
+    "lance": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "gunlance": [
+     5,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "switch-axe": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "charge-blade": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "insect-glaive": [
+     4,
+     5,
+     5,
+     8,
+     6,
+     10,
+     8,
+     12,
+     10,
+     15,
+     12,
+     18,
+     14
+    ],
+    "bow": [
+     3,
+     5,
+     3,
+     6,
+     4,
+     7,
+     6,
+     8,
+     8,
+     9,
+     10,
+     10,
+     12
+    ],
+    "heavy-bowgun": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ],
+    "light-bowgun": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ]
+   },
+   "burst_boost": "Ebony Odogaron's Power: +8 / +18 attack while active and +1 / +2 s duration"
+  }
+ },
  "set_group_values": {
   "_about": "From SkillData._value (per tier) plus PlayerSkillParam. attack = true raw. Interpretations marked VERIFY.",
-  "Gore Magala's Tyranny":   {"2": {"effect": "Frenzy infection; on overcoming: +15% affinity for 60 s (base Frenzy mechanic; +18/21/25% with Antivirus 1/2/3)"}, "4": {"attack_infected": 10, "attack_after_overcome": 15, "duration_s": 60, "note": "datamine [10,15]; community agrees"}},
-  "Leviathan's Fury":        {"2": {"aff": 15, "duration_s": 20, "thunder_proc": "30 fixed + 70 thunder, ~30 s cooldown, not scaled by weapon attack"}, "4": {"aff": 15, "duration_s": 30, "thunder_proc": "60 fixed + 200 thunder"}, "raw": {"2": [60, 15, 20], "4": [60, 15, 30]}},
-  "Seregios's Tenacity":     {"2": {"adrenaline_rush_duration_s": 45, "retrigger_add_s": 15}, "4": {"adrenaline_rush_duration_s": 45, "retrigger_add_s": 15, "attack_pct_on_retrigger": 105}},
-  "Omega Resonance":         {"2": {"local_aff": 20, "remote_attack": 10, "cycle_s": 90}, "4": {"local_aff": 40, "remote_attack": 20, "cycle_s": 90, "synergy": "+25% aff 60 s", "synthetic_shield": "+45 def 45 s"}, "note": "Local and Remote alternate every 90 s; only one is active at a time -> average uptime 50% each"},
-  "Gogmapocalypse":          {"2": {"ele_pct": 120, "ele": 2, "condition": "monster enraged"}, "4": {"ele_pct": 130, "ele": 4, "condition": "monster enraged", "barrier": {"hp": 80, "life_s": 140, "cooldown_s": 30}}, "note": "true element: x1.2 +2 (= +20 display) / x1.3 +4 (= +40 display); game8 agrees on the multipliers"},
-  "Soul of the Dark Knight": {"2": {"ele_pct_slow": 120, "ele_pct_other": 114, "slow_weapons": ["great-sword", "hammer", "heavy-bowgun", "light-bowgun"], "condition": "red (recoverable) health exists", "gs_extra": "Lv3 charged slash shockwave 30 MV + 60 dragon (single source)"}, "4": {"effect": "The Blackest Night special action (shield ~8 s); datamine [8,6,10]", "param": {"_DarkBladeData": [1.1, 30, 45, 20], "_KnightData": [21, 12, 12]}}},
-  "Nu Udra's Mutiny":        {"2": {"bad_blood_hit": 45, "cooldown_s": 2, "condition": "Resentment active", "scales_with": "hitzone only (raw scaling unverified)"}, "4": {"bad_blood_hit": 85, "cooldown_s": 2}, "note": "_ViolentData [2,45,85] (post-TU4 buff); SkillData still shows the old 23/50"},
-  "Ebony Odogaron's Power":  {"2": {"attack": 8, "condition": "while Burst active", "burst_duration_tier": 1}, "4": {"attack": 18, "condition": "while Burst active", "burst_duration_tier": 2}},
-  "Doshaguma's Might":       {"2": {"attack": 10, "duration_s": 180, "condition": "after Power Clash / Offset"}, "4": {"attack": 25, "duration_s": 180}},
-  "Xu Wu's Vigor":           {"2": {"attack": 15, "duration_s": 180, "condition": "after eating a steak"}, "4": {"attack": 30, "duration_s": 180}},
-  "Jin Dahaad's Revolt":     {"2": {"attack": 25, "duration_s": 90, "condition": "after recovering from webbed/frostblight/pin/Power Clash"}, "4": {"attack": 50, "duration_s": 90}},
-  "Rathalos's Flare":        {"2": {"proc_pct": 33, "check_interval_s": 2.4, "fire_hit": "20 fixed + 60 fire (hitzone-scaled)"}, "4": {"proc_pct": 33, "check_interval_s": 2.4, "fire_hit": "40 fixed + 120 fire"}, "note": "SkillData [33,24]/[33,60]; _ScorchingHeatData holds the TU4-buffed values"},
-  "Rey Dau's Voltage":       {"2": {"latent_power_duration_add_s": 30}, "4": {"latent_power_duration_add_s": 90}},
-  "Blangonga's Spirit":      {"2": {"attack": 10, "duration_s": 90, "condition": "To Victory! gesture"}, "4": {"attack": 20, "duration_s": 90}},
-  "Fulgur Anjanath's Will":  {"2": {"effect": "extra stamina gauge"}, "4": {"effect": "extra long stamina gauge"}},
-  "Guardian Arkveld's Vitality": {"effect": "heal on wound destroy"},
-  "Arkveld's Hunger":        {"effect": "heal while attacking"},
-  "Zoh Shia's Pulse":        {"effect": "passive regen"},
-  "Gravios's Protection":    {"2": {"damage_taken_pct": -20, "condition": "full health"}, "4": {"damage_taken_pct": -35}},
-  "Mizutsune's Prowess":     {"effect": "bubbleblight evasion"},
-  "Uth Duna's Cover":        {"effect": "defense when using a tool"},
-  "Blossomdance Prayer":     {"4": {"attack_pct": 109, "defense": 50, "condition": "festival active only"}},
-  "Flamefete Prayer":        {"4": {"attack_pct": 109, "defense": 50, "condition": "festival active only"}},
-  "Dreamspell Prayer":       {"4": {"attack_pct": 109, "defense": 50, "condition": "festival active only"}},
-  "Lumenhymn Prayer":        {"4": {"attack_pct": 109, "defense": 50, "condition": "festival active only"}},
-  "Lord's Soul":             {"3": {"attack_pct": 105, "defense_pct": 95, "after_guts": {"defense_pct": 105, "resistance": 3}, "guts_hp_threshold": 64, "condition": "always on until Guts triggers"}},
-  "Lord's Fury":             {"3": {"attack": 10, "condition": "while afflicted with an ailment"}},
-  "Lord's Favor":            {"3": {"attack": 10, "duration_s": 20, "condition": "after using a companion-affecting effect (melodies etc.)"}},
-  "Fortifying Pelt":         {"3": {"attack_pct_after_faint": [110, 115], "defense_pct_after_faint": [120, 130], "condition": "only after fainting - uptime 0 for an optimizer"}},
-  "Buttery Leathercraft":    {"3": {"aff": 30, "duration_s": 60, "condition": "after sliding >= 1 s"}},
-  "Guardian's Pulse":        {"effect": "stamina/red gauge regen near Wylkrystals"},
-  "Guardian's Protection":   {"effect": "elemental damage reduction in Ruins of Wyveria"},
-  "Scale Layering":          {"3": {"effect": "stamina depletion reduced at <= 40% HP"}},
-  "Master of the Fist":      {"3": {"effect": "Akuma special actions / offset power up (not in Gogma pool)"}},
-  "others":                  "Flexible Leathercraft, Imparted Wisdom, Glory's Favor, Festival Spirit, Alluring Pelt, Scaling Prowess, Neopteron Camouflage/Alert: utility only"
+  "Gore Magala's Tyranny": {
+   "2": {
+    "effect": "Frenzy infection; on overcoming: +15% affinity for 60 s (base Frenzy mechanic; +18/21/25% with Antivirus 1/2/3)"
+   },
+   "4": {
+    "attack_infected": 10,
+    "attack_after_overcome": 15,
+    "duration_s": 60,
+    "note": "datamine [10,15]; community agrees"
+   }
+  },
+  "Leviathan's Fury": {
+   "2": {
+    "aff": 15,
+    "duration_s": 20,
+    "thunder_proc": "30 fixed + 70 thunder, ~30 s cooldown, not scaled by weapon attack"
+   },
+   "4": {
+    "aff": 15,
+    "duration_s": 30,
+    "thunder_proc": "60 fixed + 200 thunder"
+   },
+   "raw": {
+    "2": [
+     60,
+     15,
+     20
+    ],
+    "4": [
+     60,
+     15,
+     30
+    ]
+   }
+  },
+  "Seregios's Tenacity": {
+   "2": {
+    "adrenaline_rush_duration_s": 45,
+    "retrigger_add_s": 15
+   },
+   "4": {
+    "adrenaline_rush_duration_s": 45,
+    "retrigger_add_s": 15,
+    "attack_pct_on_retrigger": 105
+   }
+  },
+  "Omega Resonance": {
+   "2": {
+    "local_aff": 20,
+    "remote_attack": 10,
+    "cycle_s": 90
+   },
+   "4": {
+    "local_aff": 40,
+    "remote_attack": 20,
+    "cycle_s": 90,
+    "synergy": "+25% aff 60 s",
+    "synthetic_shield": "+45 def 45 s"
+   },
+   "note": "Local and Remote alternate every 90 s; only one is active at a time -> average uptime 50% each"
+  },
+  "Gogmapocalypse": {
+   "2": {
+    "ele_pct": 120,
+    "ele": 2,
+    "condition": "monster enraged"
+   },
+   "4": {
+    "ele_pct": 130,
+    "ele": 4,
+    "condition": "monster enraged",
+    "barrier": {
+     "hp": 80,
+     "life_s": 140,
+     "cooldown_s": 30
+    }
+   },
+   "note": "true element: x1.2 +2 (= +20 display) / x1.3 +4 (= +40 display); game8 agrees on the multipliers"
+  },
+  "Soul of the Dark Knight": {
+   "2": {
+    "ele_pct_slow": 120,
+    "ele_pct_other": 114,
+    "slow_weapons": [
+     "great-sword",
+     "hammer",
+     "heavy-bowgun",
+     "light-bowgun"
+    ],
+    "condition": "red (recoverable) health exists",
+    "gs_extra": "Lv3 charged slash shockwave 30 MV + 60 dragon (single source)"
+   },
+   "4": {
+    "effect": "The Blackest Night special action (shield ~8 s); datamine [8,6,10]",
+    "param": {
+     "_DarkBladeData": [
+      1.1,
+      30,
+      45,
+      20
+     ],
+     "_KnightData": [
+      21,
+      12,
+      12
+     ]
+    }
+   }
+  },
+  "Nu Udra's Mutiny": {
+   "2": {
+    "bad_blood_hit": 45,
+    "cooldown_s": 2,
+    "condition": "Resentment active",
+    "scales_with": "hitzone only (raw scaling unverified)"
+   },
+   "4": {
+    "bad_blood_hit": 85,
+    "cooldown_s": 2
+   },
+   "note": "_ViolentData [2,45,85] (post-TU4 buff); SkillData still shows the old 23/50"
+  },
+  "Ebony Odogaron's Power": {
+   "2": {
+    "attack": 8,
+    "condition": "while Burst active",
+    "burst_duration_tier": 1
+   },
+   "4": {
+    "attack": 18,
+    "condition": "while Burst active",
+    "burst_duration_tier": 2
+   }
+  },
+  "Doshaguma's Might": {
+   "2": {
+    "attack": 10,
+    "duration_s": 180,
+    "condition": "after Power Clash / Offset"
+   },
+   "4": {
+    "attack": 25,
+    "duration_s": 180
+   }
+  },
+  "Xu Wu's Vigor": {
+   "2": {
+    "attack": 15,
+    "duration_s": 180,
+    "condition": "after eating a steak"
+   },
+   "4": {
+    "attack": 30,
+    "duration_s": 180
+   }
+  },
+  "Jin Dahaad's Revolt": {
+   "2": {
+    "attack": 25,
+    "duration_s": 90,
+    "condition": "after recovering from webbed/frostblight/pin/Power Clash"
+   },
+   "4": {
+    "attack": 50,
+    "duration_s": 90
+   }
+  },
+  "Rathalos's Flare": {
+   "2": {
+    "proc_pct": 33,
+    "check_interval_s": 2.4,
+    "fire_hit": "20 fixed + 60 fire (hitzone-scaled)"
+   },
+   "4": {
+    "proc_pct": 33,
+    "check_interval_s": 2.4,
+    "fire_hit": "40 fixed + 120 fire"
+   },
+   "note": "SkillData [33,24]/[33,60]; _ScorchingHeatData holds the TU4-buffed values"
+  },
+  "Rey Dau's Voltage": {
+   "2": {
+    "latent_power_duration_add_s": 30
+   },
+   "4": {
+    "latent_power_duration_add_s": 90
+   }
+  },
+  "Blangonga's Spirit": {
+   "2": {
+    "attack": 10,
+    "duration_s": 90,
+    "condition": "To Victory! gesture"
+   },
+   "4": {
+    "attack": 20,
+    "duration_s": 90
+   }
+  },
+  "Fulgur Anjanath's Will": {
+   "2": {
+    "effect": "extra stamina gauge"
+   },
+   "4": {
+    "effect": "extra long stamina gauge"
+   }
+  },
+  "Guardian Arkveld's Vitality": {
+   "effect": "heal on wound destroy"
+  },
+  "Arkveld's Hunger": {
+   "effect": "heal while attacking"
+  },
+  "Zoh Shia's Pulse": {
+   "effect": "passive regen"
+  },
+  "Gravios's Protection": {
+   "2": {
+    "damage_taken_pct": -20,
+    "condition": "full health"
+   },
+   "4": {
+    "damage_taken_pct": -35
+   }
+  },
+  "Mizutsune's Prowess": {
+   "effect": "bubbleblight evasion"
+  },
+  "Uth Duna's Cover": {
+   "effect": "defense when using a tool"
+  },
+  "Blossomdance Prayer": {
+   "4": {
+    "attack_pct": 109,
+    "defense": 50,
+    "condition": "festival active only"
+   }
+  },
+  "Flamefete Prayer": {
+   "4": {
+    "attack_pct": 109,
+    "defense": 50,
+    "condition": "festival active only"
+   }
+  },
+  "Dreamspell Prayer": {
+   "4": {
+    "attack_pct": 109,
+    "defense": 50,
+    "condition": "festival active only"
+   }
+  },
+  "Lumenhymn Prayer": {
+   "4": {
+    "attack_pct": 109,
+    "defense": 50,
+    "condition": "festival active only"
+   }
+  },
+  "Lord's Soul": {
+   "3": {
+    "attack_pct": 105,
+    "defense_pct": 95,
+    "after_guts": {
+     "defense_pct": 105,
+     "resistance": 3
+    },
+    "guts_hp_threshold": 64,
+    "condition": "always on until Guts triggers"
+   }
+  },
+  "Lord's Fury": {
+   "3": {
+    "attack": 10,
+    "condition": "while afflicted with an ailment"
+   }
+  },
+  "Lord's Favor": {
+   "3": {
+    "attack": 10,
+    "duration_s": 20,
+    "condition": "after using a companion-affecting effect (melodies etc.)"
+   }
+  },
+  "Fortifying Pelt": {
+   "3": {
+    "attack_pct_after_faint": [
+     110,
+     115
+    ],
+    "defense_pct_after_faint": [
+     120,
+     130
+    ],
+    "condition": "only after fainting - uptime 0 for an optimizer"
+   }
+  },
+  "Buttery Leathercraft": {
+   "3": {
+    "aff": 30,
+    "duration_s": 60,
+    "condition": "after sliding >= 1 s"
+   }
+  },
+  "Guardian's Pulse": {
+   "effect": "stamina/red gauge regen near Wylkrystals"
+  },
+  "Guardian's Protection": {
+   "effect": "elemental damage reduction in Ruins of Wyveria"
+  },
+  "Scale Layering": {
+   "3": {
+    "effect": "stamina depletion reduced at <= 40% HP"
+   }
+  },
+  "Master of the Fist": {
+   "3": {
+    "effect": "Akuma special actions / offset power up (not in Gogma pool)"
+   }
+  },
+  "others": "Flexible Leathercraft, Imparted Wisdom, Glory's Favor, Festival Spirit, Alluring Pelt, Scaling Prowess, Neopteron Camouflage/Alert: utility only"
  }
 }
