@@ -34,18 +34,44 @@ var command = argList.Count > 0 ? argList[0] : "edit";
 switch (command)
 {
     case "edit":
-        var editor = ConfigEditor.Open(data, inputsDir, argList.Count > 1 ? argList[1] : null);
-        editor.Run(inputsDir);
+        AnsiConsole.Console = new EscapeCancellingConsole(AnsiConsole.Console);
+        try
+        {
+            var editor = ConfigEditor.Open(data, inputsDir, argList.Count > 1 ? argList[1] : null);
+            editor.Run(inputsDir);
+        }
+        catch (PromptCancelledException) { }
+        AnsiConsole.Cursor.Show();
         return 0;
     case "request":
         if (argList.Count < 2) { Console.Error.WriteLine("usage: request <request.json>"); return 2; }
         return ShowRequest(argList[1]);
+    case "run":
+        if (argList.Count < 2) { Console.Error.WriteLine("usage: run <request.json>"); return 2; }
+        return RunRequest(argList[1]);
     case "example":
         RunExample();
         return 0;
     default:
         Console.Error.WriteLine($"unknown command '{command}'");
         return 2;
+}
+
+int RunRequest(string path)
+{
+    var r = RequestLoader.Load(path, data);
+    foreach (var e in r.Errors) Console.WriteLine("ERROR   " + e);
+    foreach (var w in r.Warnings) Console.WriteLine("warning " + w);
+    if (!r.IsValid) return 1;
+
+    var result = new MHWildsOptimizer.Core.Optimize.Optimizer(data, r).Run(new ConsoleProgress());
+    var text = new ConfigEditor(data).RenderResults(result, r);
+    Console.WriteLine();
+    Console.WriteLine(text);
+    var outPath = Path.ChangeExtension(path, null) + ".results.txt";
+    File.WriteAllText(outPath, text);
+    Console.WriteLine($"Written to {outPath} ({result.Elapsed.TotalSeconds:0.0} s)");
+    return 0;
 }
 
 int ShowRequest(string path)
@@ -113,4 +139,9 @@ void RunExample()
     }
 
     Console.WriteLine(LoadoutReport.Render(loadout, data, Conditions.Default, "example build"));
+}
+
+sealed class ConsoleProgress : IProgress<string>
+{
+    public void Report(string value) => Console.WriteLine(value);
 }

@@ -55,42 +55,113 @@ public sealed class ConfigEditor
         return new ConfigEditor(data, request, talismans, path);
     }
 
+    /// <summary>Main loop: the screen is redrawn on every return to the menu; Esc inside any prompt returns to the menu.</summary>
     public void Run(string inputsDirectory)
     {
-        var showSummary = true;
         while (true)
         {
-            if (showSummary)
-            {
-                AnsiConsole.WriteLine();
-                ShowSummary();
-            }
-            showSummary = true;
+            AnsiConsole.Clear();
+            ShowSummary();
+            AnsiConsole.MarkupLine("[grey]Esc goes back from any prompt.[/]");
 
-            var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
-                .PageSize(14)
-                .AddChoices("Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Conditions", "Talismans", "Options",
-                    "Show summary", "Show resolved request", "Save", "Save as...", "Quit"));
-            switch (choice)
+            string choice;
+            try
             {
-                case "Weapon": EditWeapon(); break;
-                case "Rolled pair (set bonus / group skill)": EditRolledPair(); break;
-                case "Skill pair": EditSkillPair(); break;
-                case "Target skills": EditTargets(); break;
-                case "Conditions": EditConditions(); break;
-                case "Talismans": EditTalismans(); break;
-                case "Options": EditOptions(); break;
-                case "Show summary": break;
-                case "Show resolved request": ShowResolved(); showSummary = false; break;
-                case "Save": Save(inputsDirectory, saveAs: false); showSummary = false; break;
-                case "Save as...": Save(inputsDirectory, saveAs: true); showSummary = false; break;
-                case "Quit":
-                    if (!_dirty || AnsiConsole.Confirm("Unsaved changes - quit anyway?", false)) return;
-                    showSummary = false;
-                    break;
+                choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                    .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
+                    .PageSize(16)
+                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Conditions", "Talismans", "Options",
+                        "Show resolved request", "Save", "Save as...", "Quit"));
+            }
+            catch (PromptCancelledException) { choice = "Quit"; }
+
+            try
+            {
+                switch (choice)
+                {
+                    case "Run optimizer": RunOptimizer(); break;
+                    case "Weapon": EditWeapon(); break;
+                    case "Rolled pair (set bonus / group skill)": EditRolledPair(); break;
+                    case "Skill pair": EditSkillPair(); break;
+                    case "Target skills": EditTargets(); break;
+                    case "Conditions": EditConditions(); break;
+                    case "Talismans": EditTalismans(); break;
+                    case "Options": EditOptions(); break;
+                    case "Show resolved request": AnsiConsole.Clear(); ShowResolved(); Pause(); break;
+                    case "Save": Save(inputsDirectory, saveAs: false); Pause(); break;
+                    case "Save as...": Save(inputsDirectory, saveAs: true); Pause(); break;
+                    case "Quit":
+                        if (!_dirty || AnsiConsole.Confirm("Unsaved changes - quit anyway?", false)) return;
+                        break;
+                }
+            }
+            catch (PromptCancelledException)
+            {
+                AnsiConsole.Cursor.Show(); // a cancelled prompt may leave the cursor hidden
             }
         }
+    }
+
+    private static void Pause()
+    {
+        AnsiConsole.MarkupLine("[grey]Press any key to return to the menu.[/]");
+        AnsiConsole.Console.Input.ReadKey(true);
+    }
+
+    private sealed class SyncProgress(Action<string> report) : IProgress<string>
+    {
+        public void Report(string value) => report(value);
+    }
+
+    private void RunOptimizer()
+    {
+        AnsiConsole.Clear();
+        var baseDir = _path is null ? Directory.GetCurrentDirectory() : Path.GetDirectoryName(Path.GetFullPath(_path))!;
+        var resolved = RequestLoader.Resolve(_request, _data, baseDir, _talismans);
+        foreach (var e in resolved.Errors) AnsiConsole.MarkupLine($"[red]error[/]   {Markup.Escape(e)}");
+        foreach (var w in resolved.Warnings) AnsiConsole.MarkupLine($"[yellow]warning[/] {Markup.Escape(w)}");
+        if (!resolved.IsValid) { Pause(); return; }
+
+        var log = new List<string>();
+        Core.Optimize.OptimizationResult? result = null;
+        AnsiConsole.Status().Spinner(Spinner.Known.Dots).Start("Searching builds...", ctx =>
+        {
+            var progress = new SyncProgress(m => { log.Add(m); ctx.Status(Markup.Escape(m)); });
+            result = new Core.Optimize.Optimizer(_data, resolved).Run(progress);
+        });
+        foreach (var line in log) AnsiConsole.MarkupLine($"[grey]{Markup.Escape(line)}[/]");
+
+        var text = RenderResults(result!, resolved);
+        AnsiConsole.Write(new Panel(new Text(text.TrimEnd())).Header($"Results ({result!.Elapsed.TotalSeconds:0.0} s)").Expand());
+
+        if (_path is not null)
+        {
+            var outPath = Path.ChangeExtension(_path, null) + ".results.txt";
+            File.WriteAllText(outPath, text);
+            AnsiConsole.MarkupLine($"Written to [green]{Markup.Escape(outPath)}[/].");
+        }
+        Pause();
+    }
+
+    public string RenderResults(Core.Optimize.OptimizationResult result, ResolvedRequest resolved)
+    {
+        var sb = new System.Text.StringBuilder();
+        var rank = 0;
+        foreach (var pr in result.PairResults)
+        {
+            rank++;
+            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} final states scored; {pr.CandidateSummary})");
+            if (pr.Builds.Count == 0) sb.AppendLine("  no build satisfies the targets");
+            var i = 0;
+            foreach (var b in pr.Builds)
+            {
+                i++;
+                sb.AppendLine();
+                sb.AppendLine(LoadoutReport.Render(b.Loadout, _data, resolved.Conditions, $"Build {i}  -  EFR {b.Result.EffectiveRaw:0.0} + EFE {b.Result.EffectiveElement:0.0} = {b.Score:0.0}").TrimEnd());
+            }
+            sb.AppendLine();
+        }
+        return sb.ToString();
     }
 
     private void EditRolledPair()
