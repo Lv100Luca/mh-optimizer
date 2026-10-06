@@ -145,26 +145,8 @@ public sealed class ConfigEditor
         Pause();
     }
 
-    public string RenderResults(Core.Optimize.OptimizationResult result, ResolvedRequest resolved)
-    {
-        var sb = new System.Text.StringBuilder();
-        var rank = 0;
-        foreach (var pr in result.PairResults)
-        {
-            rank++;
-            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} final states scored; {pr.CandidateSummary})");
-            if (pr.Builds.Count == 0) sb.AppendLine("  no build satisfies the targets");
-            var i = 0;
-            foreach (var b in pr.Builds)
-            {
-                i++;
-                sb.AppendLine();
-                sb.AppendLine(LoadoutReport.Render(b.Loadout, _data, resolved.Conditions, $"Build {i}  -  EFR {b.Result.EffectiveRaw:0.0} + EFE {b.Result.EffectiveElement:0.0} = {b.Score:0.0}").TrimEnd());
-            }
-            sb.AppendLine();
-        }
-        return sb.ToString();
-    }
+    public string RenderResults(Core.Optimize.OptimizationResult result, ResolvedRequest resolved) =>
+        ResultsText.Render(result, resolved, _data);
 
     private void EditRolledPair()
     {

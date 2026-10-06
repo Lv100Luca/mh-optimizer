@@ -5,6 +5,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Adaptability",
@@ -19,6 +20,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Blast Resistance",
@@ -33,6 +35,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Resistance",
@@ -47,6 +50,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Paralysis Resistance",
@@ -61,6 +65,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Bombardier",
@@ -75,6 +80,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sage-green",
   "skills": [
    {
     "skill": "Botanist",
@@ -89,6 +95,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Flinch Free",
@@ -103,6 +110,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Cliffhanger",
@@ -117,6 +125,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Iron Skin",
@@ -131,6 +140,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Defense Boost",
@@ -145,6 +155,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Leap of Faith",
@@ -159,6 +170,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Resistance",
@@ -173,6 +185,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Item Prolonger",
@@ -187,6 +200,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Bind Resistance",
@@ -201,6 +215,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Resistance",
@@ -215,6 +230,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Blindsider",
@@ -229,6 +245,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Tremor Resistance",
@@ -243,6 +260,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Wide-Range",
@@ -257,6 +275,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Geologist",
@@ -271,6 +290,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Speed Eating",
@@ -285,6 +305,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Self-Improvement",
@@ -299,6 +320,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Hunger Resistance",
@@ -313,6 +335,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Resistance",
@@ -327,6 +350,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Intimidator",
@@ -341,6 +365,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Jump Master",
@@ -355,6 +380,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "green",
   "skills": [
    {
     "skill": "Recovery Up",
@@ -369,6 +395,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Aquatic/Oilsilt Mobility",
@@ -383,6 +410,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Sleep Resistance",
@@ -397,6 +425,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Stench Resistance",
@@ -411,6 +440,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Constitution",
@@ -425,6 +455,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Divine Blessing",
@@ -439,6 +470,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Outdoorsman",
@@ -453,6 +485,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "green",
   "skills": [
    {
     "skill": "Recovery Speed",
@@ -467,6 +500,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Antivirus",
@@ -481,6 +515,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Free Meal",
@@ -495,6 +530,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Quick Sheathe",
@@ -509,6 +545,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Shock Absorber",
@@ -523,6 +560,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "moss-green",
   "skills": [
    {
     "skill": "Entomologist",
@@ -537,6 +575,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Marathon Runner",
@@ -551,6 +590,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Stun Resistance",
@@ -565,6 +605,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Survival Expert",
@@ -579,6 +620,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Bleeding Resistance",
@@ -593,6 +635,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Resistance",
@@ -607,6 +650,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Resistance",
@@ -621,6 +665,7 @@
   "kind": "armor",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Windproof",
@@ -635,6 +680,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Ambush",
@@ -649,6 +695,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Counterstrike",
@@ -663,6 +710,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Partbreaker",
@@ -677,6 +725,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Earplugs",
@@ -691,6 +740,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Evade Window",
@@ -705,6 +755,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Peak Performance",
@@ -719,6 +770,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Mushroomancer",
@@ -733,6 +785,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Resentment",
@@ -747,6 +800,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Evade Extender",
@@ -761,6 +815,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Tool Specialist",
@@ -775,6 +830,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Maximum Might",
@@ -789,6 +845,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 7,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Coalescence",
@@ -803,6 +860,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Heroics",
@@ -817,6 +875,7 @@
   "kind": "armor",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Stamina Surge",
@@ -831,6 +890,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Burst",
@@ -845,6 +905,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Agitator",
@@ -859,6 +920,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Adrenaline Rush",
@@ -873,6 +935,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Flayer",
@@ -887,6 +950,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Foray",
@@ -901,6 +965,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "dark-purple",
   "skills": [
    {
     "skill": "Weakness Exploit",
@@ -915,6 +980,7 @@
   "kind": "armor",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Latent Power",
@@ -929,6 +995,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Artillery",
@@ -943,6 +1010,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -957,6 +1025,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Tetrad Shot",
@@ -971,6 +1040,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Blast Attack",
@@ -985,6 +1055,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -999,6 +1070,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Bludgeoner",
@@ -1013,6 +1085,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -1027,6 +1100,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Charge Master",
@@ -1041,6 +1115,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -1055,6 +1130,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Critical Status",
@@ -1069,6 +1145,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Boost",
@@ -1083,6 +1160,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -1097,6 +1175,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Stamina Thief",
@@ -1111,6 +1190,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Draw",
@@ -1125,6 +1205,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -1139,6 +1220,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -1153,6 +1235,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -1167,6 +1250,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -1181,6 +1265,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -1195,6 +1280,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Speed Sharpening",
@@ -1209,6 +1295,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -1223,6 +1310,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Handicraft",
@@ -1237,6 +1325,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Guard",
@@ -1251,6 +1340,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -1265,6 +1355,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Load Shells",
@@ -1279,6 +1370,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Mind's Eye",
@@ -1293,6 +1385,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Opening Shot",
@@ -1307,6 +1400,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Paralysis Attack",
@@ -1321,6 +1415,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Ballistics",
@@ -1335,6 +1430,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -1349,6 +1445,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -1363,6 +1460,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Protective Polish",
@@ -1377,6 +1475,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -1391,6 +1490,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Sleep Attack",
@@ -1405,6 +1505,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -1419,6 +1520,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Special Ammo Boost",
@@ -1433,6 +1535,7 @@
   "kind": "weapon",
   "slot": 1,
   "rarity": 3,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Attack",
@@ -1447,6 +1550,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Artillery",
@@ -1461,6 +1565,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -1475,6 +1580,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Tetrad Shot",
@@ -1489,6 +1595,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Blast Attack",
@@ -1503,6 +1610,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Blast Functionality",
@@ -1517,6 +1625,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -1531,6 +1640,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Bludgeoner",
@@ -1545,6 +1655,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -1559,6 +1670,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Charge Master",
@@ -1573,6 +1685,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Charge Up",
@@ -1587,6 +1700,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -1601,6 +1715,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Critical Status",
@@ -1615,6 +1730,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Boost",
@@ -1629,6 +1745,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -1643,6 +1760,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Stamina Thief",
@@ -1657,6 +1775,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "ivory",
   "skills": [
    {
     "skill": "Exhaust Functionality",
@@ -1671,6 +1790,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Draw",
@@ -1685,6 +1805,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -1699,6 +1820,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -1713,6 +1835,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Airborne",
@@ -1727,6 +1850,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -1741,6 +1865,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -1755,6 +1880,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -1769,6 +1895,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Speed Sharpening",
@@ -1783,6 +1910,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -1797,6 +1925,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Handicraft",
@@ -1811,6 +1940,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Guard",
@@ -1825,6 +1955,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -1839,6 +1970,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Load Shells",
@@ -1853,6 +1985,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Mind's Eye",
@@ -1867,6 +2000,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Opening Shot",
@@ -1881,6 +2015,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Paralysis Attack",
@@ -1895,6 +2030,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -1909,6 +2045,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Functionality",
@@ -1923,6 +2060,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Ballistics",
@@ -1937,6 +2075,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -1951,6 +2090,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -1965,6 +2105,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Protective Polish",
@@ -1979,6 +2120,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -1993,6 +2135,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Sleep Attack",
@@ -2007,6 +2150,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Horn Maestro",
@@ -2021,6 +2165,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -2035,6 +2180,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Special Ammo Boost",
@@ -2049,6 +2195,7 @@
   "kind": "weapon",
   "slot": 2,
   "rarity": 4,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Attack",
@@ -2063,6 +2210,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Artillery",
@@ -2077,6 +2225,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -2091,6 +2240,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Tetrad Shot",
@@ -2105,6 +2255,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2124,6 +2275,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -2143,6 +2295,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -2162,6 +2315,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -2181,6 +2335,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Guard",
@@ -2200,6 +2355,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Ballistics",
@@ -2219,6 +2375,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -2238,6 +2395,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "vermilion",
   "skills": [
    {
     "skill": "Blast Attack",
@@ -2252,6 +2410,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2266,6 +2425,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2285,6 +2445,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2304,6 +2465,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2323,6 +2485,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2342,6 +2505,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2361,6 +2525,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2380,6 +2545,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2399,6 +2565,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Slugger",
@@ -2418,6 +2585,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2437,6 +2605,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2456,6 +2625,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -2475,6 +2645,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2494,6 +2665,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "red",
   "skills": [
    {
     "skill": "Guard Up",
@@ -2513,6 +2685,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Bludgeoner",
@@ -2527,6 +2700,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -2541,6 +2715,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -2560,6 +2735,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Critical Element",
@@ -2579,6 +2755,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -2598,6 +2775,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Focus",
@@ -2617,6 +2795,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -2636,6 +2815,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Handicraft",
@@ -2655,6 +2835,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Guard",
@@ -2674,6 +2855,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -2693,6 +2875,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -2712,6 +2895,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Ballistics",
@@ -2731,6 +2915,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -2750,6 +2935,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -2769,6 +2955,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Guard Up",
@@ -2788,6 +2975,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Charge Master",
@@ -2802,6 +2990,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -2821,6 +3010,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Charge Up",
@@ -2840,6 +3030,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -2859,6 +3050,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Charge Up",
@@ -2878,6 +3070,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -2897,6 +3090,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Charge Master",
@@ -2916,6 +3110,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Charge Master",
@@ -2935,6 +3130,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -2949,6 +3145,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -2968,6 +3165,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -2987,6 +3185,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3006,6 +3205,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -3025,6 +3225,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -3044,6 +3245,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Guard",
@@ -3063,6 +3265,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Slugger",
@@ -3082,6 +3285,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Critical Element",
@@ -3101,6 +3305,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "ultramarine",
   "skills": [
    {
     "skill": "Ballistics",
@@ -3120,6 +3325,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Critical Status",
@@ -3134,6 +3340,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Critical Status",
@@ -3153,6 +3360,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Guard",
@@ -3172,6 +3380,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Ballistics",
@@ -3191,6 +3400,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Slugger",
@@ -3210,6 +3420,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Boost",
@@ -3224,6 +3435,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3238,6 +3450,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3257,6 +3470,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3276,6 +3490,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3295,6 +3510,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3314,6 +3530,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3333,6 +3550,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3352,6 +3570,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3371,6 +3590,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Slugger",
@@ -3390,6 +3610,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3409,6 +3630,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3428,6 +3650,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -3447,6 +3670,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3466,6 +3690,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Guard Up",
@@ -3485,6 +3710,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Stamina Thief",
@@ -3499,6 +3725,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Draw",
@@ -3513,6 +3740,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -3527,6 +3755,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -3546,6 +3775,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -3565,6 +3795,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3584,6 +3815,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -3603,6 +3835,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -3622,6 +3855,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "lemon",
   "skills": [
    {
     "skill": "Water Attack",
@@ -3641,6 +3875,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -3655,6 +3890,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -3674,6 +3910,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Airborne",
@@ -3693,6 +3930,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -3712,6 +3950,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Airborne",
@@ -3731,6 +3970,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -3745,6 +3985,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -3764,6 +4005,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -3783,6 +4025,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -3802,6 +4045,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -3821,6 +4065,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -3840,6 +4085,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Slugger",
@@ -3859,6 +4105,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Ballistics",
@@ -3878,6 +4125,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "brown",
   "skills": [
    {
     "skill": "Focus",
@@ -3897,6 +4145,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Normal Shots",
@@ -3911,6 +4160,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -3925,6 +4175,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -3944,6 +4195,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Critical Element",
@@ -3963,6 +4215,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Power Prolonger",
@@ -3982,6 +4235,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Focus",
@@ -4001,6 +4255,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4020,6 +4275,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Handicraft",
@@ -4039,6 +4295,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Guard",
@@ -4058,6 +4315,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Slugger",
@@ -4077,6 +4335,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -4096,6 +4355,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ballistics",
@@ -4115,6 +4375,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -4134,6 +4395,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -4153,6 +4415,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Guard Up",
@@ -4172,6 +4435,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -4186,6 +4450,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -4205,6 +4470,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -4224,6 +4490,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Punishing Draw",
@@ -4243,6 +4510,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -4262,6 +4530,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Critical Draw",
@@ -4281,6 +4550,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -4300,6 +4570,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Handicraft",
@@ -4319,6 +4590,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Guard",
@@ -4338,6 +4610,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -4357,6 +4630,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4371,6 +4645,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -4390,6 +4665,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4409,6 +4685,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -4428,6 +4705,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4447,6 +4725,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4466,6 +4745,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Guard",
@@ -4485,6 +4765,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -4504,6 +4785,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Handicraft",
@@ -4518,6 +4800,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Guard",
@@ -4532,6 +4815,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Slugger",
@@ -4546,6 +4830,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Attack Boost",
@@ -4565,6 +4850,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Critical Draw",
@@ -4584,6 +4870,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -4603,6 +4890,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Load Shells",
@@ -4622,6 +4910,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "gray",
   "skills": [
    {
     "skill": "Guard",
@@ -4641,6 +4930,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Master's Touch",
@@ -4655,6 +4945,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Mind's Eye",
@@ -4669,6 +4960,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Opening Shot",
@@ -4683,6 +4975,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -4702,6 +4995,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Thunder Attack",
@@ -4721,6 +5015,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -4740,6 +5035,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ice Attack",
@@ -4759,6 +5055,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Guard",
@@ -4778,6 +5075,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Ballistics",
@@ -4797,6 +5095,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Water Attack",
@@ -4816,6 +5115,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Para Functionality",
@@ -4830,6 +5130,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "yellow",
   "skills": [
    {
     "skill": "Paralysis Attack",
@@ -4844,6 +5145,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Piercing Shots",
@@ -4858,6 +5160,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4877,6 +5180,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4896,6 +5200,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -4915,6 +5220,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4934,6 +5240,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4953,6 +5260,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4972,6 +5280,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Duration Up",
@@ -4991,6 +5300,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "pink",
   "skills": [
    {
     "skill": "Ballistics",
@@ -5005,6 +5315,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5019,6 +5330,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5038,6 +5350,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5057,6 +5370,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5076,6 +5390,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5095,6 +5410,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5114,6 +5430,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5133,6 +5450,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5152,6 +5470,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5171,6 +5490,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Slugger",
@@ -5190,6 +5510,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -5204,6 +5525,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Fire Attack",
@@ -5223,6 +5545,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -5242,6 +5565,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Dragon Attack",
@@ -5261,6 +5585,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -5280,6 +5605,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Razor Sharp",
@@ -5299,6 +5625,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Guard",
@@ -5318,6 +5645,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 7,
+  "icon_color": "emerald",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5337,6 +5665,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Rapid Fire Up",
@@ -5351,6 +5680,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "rose",
   "skills": [
    {
     "skill": "Protective Polish",
@@ -5365,6 +5695,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5379,6 +5710,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5398,6 +5730,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5417,6 +5750,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5436,6 +5770,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5455,6 +5790,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5474,6 +5810,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5493,6 +5830,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5512,6 +5850,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Sleep Attack",
@@ -5526,6 +5865,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "sky",
   "skills": [
    {
     "skill": "Sleep Functionality",
@@ -5540,6 +5880,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Horn Maestro",
@@ -5559,6 +5900,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Horn Maestro",
@@ -5578,6 +5920,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Critical Eye",
@@ -5597,6 +5940,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Horn Maestro",
@@ -5616,6 +5960,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "white",
   "skills": [
    {
     "skill": "Horn Maestro",
@@ -5635,6 +5980,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "moss-green",
   "skills": [
    {
     "skill": "Spread/Power Shots",
@@ -5649,6 +5995,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5663,6 +6010,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5682,6 +6030,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Critical Element",
@@ -5701,6 +6050,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5720,6 +6070,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Focus",
@@ -5739,6 +6090,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Offensive Guard",
@@ -5758,6 +6110,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5777,6 +6130,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Guard",
@@ -5796,6 +6150,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Slugger",
@@ -5815,6 +6170,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5834,6 +6190,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Ballistics",
@@ -5853,6 +6210,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Rapid Morph",
@@ -5872,6 +6230,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Water Attack",
@@ -5891,6 +6250,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 6,
+  "icon_color": "blue",
   "skills": [
    {
     "skill": "Guard Up",
@@ -5910,6 +6270,7 @@
   "kind": "weapon",
   "slot": 3,
   "rarity": 5,
+  "icon_color": "purple",
   "skills": [
    {
     "skill": "Poison Attack",

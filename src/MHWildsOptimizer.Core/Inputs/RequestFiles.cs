@@ -14,6 +14,7 @@ public static class RequestFiles
     };
 
     public const string TalismanFileSuffix = ".talismans.json";
+    public const string ResultsFileSuffix = ".results.json";
 
     public static void SaveRequest(OptimizationRequest request, string path)
     {
@@ -44,9 +45,11 @@ public static class RequestFiles
     public static string DefaultTalismanFileName(string requestPath) =>
         Path.GetFileNameWithoutExtension(requestPath) + TalismanFileSuffix;
 
-    /// <summary>Request files in a directory (talisman files excluded).</summary>
+    /// <summary>Request files in a directory (talisman and saved-results files excluded).</summary>
     public static IReadOnlyList<string> ListRequests(string directory) =>
         Directory.Exists(directory)
-            ? Directory.GetFiles(directory, "*.json").Where(f => !f.EndsWith(TalismanFileSuffix, StringComparison.OrdinalIgnoreCase)).OrderBy(f => f).ToList()
+            ? Directory.GetFiles(directory, "*.json")
+                .Where(f => !f.EndsWith(TalismanFileSuffix, StringComparison.OrdinalIgnoreCase) && !f.EndsWith(ResultsFileSuffix, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(f => f).ToList()
             : [];
 }

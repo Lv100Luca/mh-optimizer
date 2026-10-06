@@ -6,7 +6,8 @@ namespace MHWildsOptimizer.Core.Data;
 
 public sealed record SkillRank(int Level, string? Name, int? PiecesRequired, string? Description);
 
-public sealed record Skill(int Id, string Name, SkillKind Kind, string? Description, int MaxLevel, IReadOnlyList<SkillRank> Ranks);
+/// <param name="Icon">Game icon category (attack, affinity, element, handicraft, ranged, defense, health, stamina, offense, utility, item, gathering, set, group).</param>
+public sealed record Skill(int Id, string Name, SkillKind Kind, string? Description, int MaxLevel, IReadOnlyList<SkillRank> Ranks, string? Icon = null);
 
 /// <summary>A skill at a level, as granted by an armor piece, decoration or charm.</summary>
 public sealed record SkillGrant(string Skill, int SkillId, int Level);
@@ -32,7 +33,8 @@ public sealed record ArmorPiece(
     public override string ToString() => Name;
 }
 
-public sealed record Decoration(int Id, string Name, SkillKind Kind, int Slot, int Rarity, IReadOnlyList<SkillGrant> Skills)
+/// <param name="IconColor">Jewel icon color as named by wilds.mhdb.io (purple, white, emerald, sky, ...).</param>
+public sealed record Decoration(int Id, string Name, SkillKind Kind, int Slot, int Rarity, IReadOnlyList<SkillGrant> Skills, string? IconColor = null)
 {
     public override string ToString() => Name;
 }
