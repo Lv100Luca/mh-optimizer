@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Historical Charm",
+    "rarity": 6,
+    "skills": { "Attack Boost": 2, "Maximum Might": 2 },
+    "slots": ["armor1", "armor1"]
+  },
+  {
+    "name": "Secret Charm",
+    "rarity": 7,
+    "skills": { "Attack Boost": 3, "Stun Resistance": 2, "Survival Expert": 1 },
+    "slots": ["weapon1"]
+  }
+]

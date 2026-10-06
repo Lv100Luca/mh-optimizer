@@ -1,0 +1,37 @@
+{
+  "weapon": {
+    "spec": {
+      "type": "great-sword",
+      "focus": "attack",
+      "element": "dragon",
+      "infused": true,
+      "attack_parts": 3,
+      "reinforcements": ["sharpness EX", "affinity III", "attack III", "attack III", "affinity EX"]
+    },
+    "set_bonus": "Soul of the Dark Knight",
+    "group_skill": "Lord's Favor"
+  },
+  "skill_pair": { "mode": "fixed", "top_n": 3 },
+  "target_skills": {
+    "Critical Boost": 5,
+    "Weakness Exploit": 5,
+    "Agitator": 5,
+    "Maximum Might": 3,
+    "Burst": 5
+  },
+  "conditions": {
+    "monster_enraged": true,
+    "hitting_weak_point": true,
+    "hitting_wound": false,
+    "full_health": true,
+    "red_health": false,
+    "stamina_full": true,
+    "burst_active": true,
+    "frenzy_overcome": true,
+    "azure_bolt_active": true,
+    "resonance": "local",
+    "guts_not_yet_triggered": true
+  },
+  "talismans": { "file": "talismans.example.json", "include_craftable": true },
+  "options": { "allow_transcendence": true, "top_n": 5, "min_rarity": 5, "exclude_sets": [], "require_weapon_core_skills": true }
+}

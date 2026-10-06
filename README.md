@@ -9,7 +9,13 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 * `src/MHWildsOptimizer.Cli` – command-line front end.
 * `tests/MHWildsOptimizer.Tests` – xunit tests.
 
-Current scope: Great Sword and Long Sword. Hitzone 100, no monster resistances. Conditional skills are user-toggleable and only count when the loadout contains them.
+* `inputs/` – optimizer inputs: `request.example.json` (weapon as the game shows it, skill-pair mode, target skills, conditions, talisman file, options) and `talismans.example.json` (your random talismans with skills and decoration slots).
+
+Current scope: Great Sword and Long Sword. Hitzone 100, no monster resistances. Conditional skills are user-toggleable and only count when the loadout contains them. The weapon's stats are inputs and never optimized; its rolled set bonus / group skill is either fixed or searched over all 294 rollable pairs. Talismans come from the craftable charm lines (max rank) plus the random talismans you list.
+
+```bash
+dotnet run --project src/MHWildsOptimizer.Cli -- request inputs/request.example.json
+```
 
 ```bash
 dotnet build

@@ -13,7 +13,7 @@ public class DamageCalculatorTests
     public void BareGreatSwordAttackFocus()
     {
         // raw 200 + 15 (parts) = 215, affinity -10%, white sharpness: 215 * 1.32 * (1 - 0.10 * 0.25)
-        var loadout = new Loadout { Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }) };
+        var loadout = new Loadout { Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data) };
         var r = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.AllOff);
         Assert.Equal(215, r.BaseTrueRaw);
         Assert.Equal(-10, r.Affinity);
@@ -30,8 +30,7 @@ public class DamageCalculatorTests
         var crit = data.Decoration("Critical Jewel III [3]");
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(
-                new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity, AttackParts = 0 },
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity, AttackParts = 0 }, TestData.Data,
                 [crit, crit, data.Decoration("Expert Jewel III [3]")]),
         };
         // raw 180, affinity 15 + 15 (parts) + 12 (Critical Eye 3) = 42, Critical Boost capped at 5 -> 1.40
@@ -45,7 +44,7 @@ public class DamageCalculatorTests
     [Fact]
     public void TogglesOnlyMatterWhenTheLoadoutHasTheSkill()
     {
-        var loadout = new Loadout { Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }) };
+        var loadout = new Loadout { Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data) };
         var off = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.AllOff);
         var on = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.Default);
         Assert.Equal(off.Total, on.Total, Tol);
@@ -57,8 +56,8 @@ public class DamageCalculatorTests
         var data = TestData.Data;
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }),
-            Charm = data.Charm("Challenger Charm III"), // Agitator 3: +12 attack, +7% affinity
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data),
+            Talisman = data.Charm("Challenger Charm III"), // Agitator 3: +12 attack, +7% affinity
         };
         var calm = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
         var enraged = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { MonsterEnraged = true });
@@ -80,7 +79,7 @@ public class DamageCalculatorTests
         };
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(spec),
+            Weapon = new EquippedWeapon(spec, TestData.Data),
             Head = new EquippedArmor(TestData.PieceOf("Gogmazios α", ArmorPieceKind.Head)),
         };
         // base element 450 + 30 + 50 = 530 display = 53 true; white sharpness element x1.15
@@ -100,8 +99,8 @@ public class DamageCalculatorTests
         var data = TestData.Data;
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Attack, Element = Element.Fire }),
-            Charm = data.Charm("Chain Charm III"), // Burst 3
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Attack, Element = Element.Fire }, TestData.Data),
+            Talisman = data.Charm("Chain Charm III"), // Burst 3
         };
         var off = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
         var on = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { BurstActive = true });
@@ -128,7 +127,7 @@ public class DamageCalculatorTests
         var data = TestData.Data;
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = "Gore Magala's Tyranny" }),
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = "Gore Magala's Tyranny" }, TestData.Data),
             Head = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Head)),
             Chest = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Chest)),
             Arms = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Arms)),

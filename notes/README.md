@@ -87,6 +87,19 @@ Still open:
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
 4. Combo-DPS mode with motion values is a later option (needs the attack-name mapping for the rcol data).
 
+## 6. Optimizer inputs (implemented in `src/MHWildsOptimizer.Core/Inputs`)
+
+A request file (`inputs/request.example.json`, snake_case) carries everything:
+
+* `weapon`: the Gogma weapon as the game shows it, either as a `spec` (type, focus, element, infusion, number of attack parts, the five reinforcement lines such as `"attack III"`) or as direct stats (`type`, `attack` display, `affinity`, `element`, `element_display`, `sharpness`). Plus the currently rolled `set_bonus` / `group_skill`. Weapon stats are never optimized.
+* `skill_pair`: `"fixed"` (use the rolled pair) or `"optimize"` (search all 294 rollable pairs and report the best `top_n`).
+* `target_skills`: required minimum levels. The weapon's core skills are merged in by default (`options.require_weapon_core_skills`): Great Sword Focus 3, Long Sword Quick Sheathe 3.
+* `conditions`: the toggles of `Damage/Conditions.cs` (enraged, weak point, wound, full/red/low health, stamina, Burst, Frenzy, Resonance mode, …). A toggle only acts when the loadout carries the skill.
+* `talismans`: a file with the random talismans you own (`inputs/talismans.example.json`: name, rarity, skills with levels, decoration slots as `armor1` / `weapon1`) and whether the craftable charm lines (max rank) are also considered. Entries are validated against the random-talisman pool from the game data (`data/random_talisman_pool.json`): skill slot 1 is a weapon-kind skill worth 1-4 points (Attack Boost max 3, Critical Eye 3, Critical Boost 1, element attack 3), skill slots 2-3 are armor-kind skills worth 5-10 points (Weakness Exploit / Agitator / Burst / Latent Power / Adrenaline Rush max 1, Maximum Might / Peak Performance 2); decoration slots are up to three armor slots or, on rarity 7, one weapon Lv1 slot plus armor slots.
+* `options`: transcendence on/off, number of results, minimum rarity, excluded sets.
+
+Decoration slots on armor (base or transcended), on the weapon and on talismans are all part of the loadout model; the optimizer fills them. Decorations are assumed to be available in unlimited quantity.
+
 ## Sources
 
 * API: https://wilds.mhdb.io (docs https://docs.wilds.mhdb.io)

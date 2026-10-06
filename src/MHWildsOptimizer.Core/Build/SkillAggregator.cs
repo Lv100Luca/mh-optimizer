@@ -61,27 +61,34 @@ public static class SkillAggregator
         foreach (var equipped in loadout.ArmorPieces)
         {
             AddGrants(raw, equipped.Piece.Skills);
-            foreach (var deco in equipped.Decos)
-                if (deco is not null) AddGrants(raw, deco.Skills);
+            AddDecorations(raw, equipped.Decos);
             foreach (var setBonus in equipped.Piece.SetBonus)
                 Bump(sets, setBonus);
             if (equipped.Piece.GroupSkill is { } g)
                 Bump(groups, g);
         }
 
-        foreach (var deco in loadout.Weapon.Decos)
-            if (deco is not null) AddGrants(raw, deco.Skills);
-        if (loadout.Weapon.Spec.SetBonus is { } ws) Bump(sets, ws);
-        if (loadout.Weapon.Spec.GroupSkill is { } wg) Bump(groups, wg);
+        AddDecorations(raw, loadout.Weapon.Decos);
+        if (loadout.Weapon.Stats.SetBonus is { } ws) Bump(sets, ws);
+        if (loadout.Weapon.Stats.GroupSkill is { } wg) Bump(groups, wg);
 
-        if (loadout.Charm is not null)
-            AddGrants(raw, loadout.Charm.Skills);
+        if (loadout.Talisman is { } t)
+        {
+            AddGrants(raw, t.Talisman.Skills);
+            AddDecorations(raw, t.Decos);
+        }
 
         var capped = raw.ToDictionary(
             kv => kv.Key,
             kv => data.SkillsByName.TryGetValue(kv.Key, out var s) ? Math.Min(kv.Value, s.MaxLevel) : kv.Value);
 
         return new ActiveSkills(capped, raw, sets, groups);
+    }
+
+    private static void AddDecorations(Dictionary<string, int> levels, IEnumerable<Decoration?> decos)
+    {
+        foreach (var deco in decos)
+            if (deco is not null) AddGrants(levels, deco.Skills);
     }
 
     private static void AddGrants(Dictionary<string, int> levels, IEnumerable<SkillGrant> grants)

@@ -105,9 +105,10 @@ public sealed record GogmaWeaponSpec
     }
 }
 
+/// <summary>Final weapon stats before skills. Focus is null when the stats were entered directly instead of resolved from a spec.</summary>
 public sealed record GogmaWeaponStats(
     WeaponType Type,
-    GogmaFocus Focus,
+    GogmaFocus? Focus,
     int TrueRaw,
     int Affinity,
     Element Element,

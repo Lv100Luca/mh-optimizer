@@ -89,8 +89,7 @@ public static class DamageCalculator
     public static DamageResult Calculate(Loadout loadout, GameData data, Conditions? conditions = null)
     {
         var skills = SkillAggregator.Aggregate(loadout, data);
-        var weapon = loadout.Weapon.Spec.Resolve(data);
-        return Calculate(weapon, skills, conditions ?? Conditions.Default);
+        return Calculate(loadout.Weapon.Stats, skills, conditions ?? Conditions.Default);
     }
 
     public static DamageResult Calculate(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond)

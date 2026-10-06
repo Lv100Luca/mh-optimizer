@@ -7,7 +7,7 @@ namespace MHWildsOptimizer.Tests;
 public class SkillAggregatorTests
 {
     private static EquippedWeapon Weapon(string? setBonus = null, string? groupSkill = null) =>
-        new(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = setBonus, GroupSkill = groupSkill });
+        new(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = setBonus, GroupSkill = groupSkill }, TestData.Data);
 
     [Fact]
     public void WeaponCountsAsOnePieceForItsSetBonus()
@@ -82,10 +82,9 @@ public class SkillAggregatorTests
         var critJewel = data.Decoration("Critical Jewel III [3]");
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(
-                new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity },
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity }, TestData.Data,
                 [critJewel, critJewel, data.Decoration("Expert Jewel III [3]")]),
-            Charm = data.Charm("Challenger Charm III"),
+            Talisman = data.Charm("Challenger Charm III"),
         };
         var skills = SkillAggregator.Aggregate(loadout, data);
         Assert.Equal(6, skills.RawLevels["Critical Boost"]);
@@ -101,8 +100,7 @@ public class SkillAggregatorTests
         var data = TestData.Data;
         var loadout = new Loadout
         {
-            Weapon = new EquippedWeapon(
-                new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack },
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data,
                 [data.Decoration("Tenderizer Jewel [3]")]), // armor deco in a weapon slot
             Head = new EquippedArmor(TestData.PieceOf("Gore α", ArmorPieceKind.Chest)), // chest piece on the head
         };

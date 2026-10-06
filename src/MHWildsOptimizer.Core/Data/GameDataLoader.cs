@@ -30,7 +30,14 @@ public static class GameDataLoader
                 f => Enum.Parse<GogmaFocus>(f.Key, ignoreCase: true),
                 f => f.Value));
 
-        return new GameData(skills, armor, decorations, charms, gogma);
+        var pairs = TryReadFile<SkillPoolFile>(dataDirectory, "gogma_skill_pool.json")?.Pairs
+                        .Select(p => new GogmaSkillPair(p.SetBonus, p.GroupSkill)).ToList();
+
+        var pool = TryReadFile<TalismanPoolFile>(dataDirectory, "random_talisman_pool.json") is { } tp
+            ? new RandomTalismanPool { Skills = tp.Skills, SlotPatterns = tp.SlotPatterns, RarityByType = tp.RarityByType }
+            : null;
+
+        return new GameData(skills, armor, decorations, charms, gogma, pairs, pool);
     }
 
     /// <summary>Walks up from <paramref name="start"/> (default: the executable's directory) until a <c>data/armor_hr.json</c> is found.</summary>
@@ -48,11 +55,26 @@ public static class GameDataLoader
         throw new DirectoryNotFoundException($"No 'data' directory with armor_hr.json found above '{origin}'.");
     }
 
-    private static T ReadFile<T>(string directory, string fileName)
+    public static T ReadJson<T>(string path)
     {
-        var path = Path.Combine(directory, fileName);
         using var stream = File.OpenRead(path);
         return JsonSerializer.Deserialize<T>(stream, JsonOptions)
                ?? throw new InvalidDataException($"'{path}' deserialized to null.");
     }
+
+    private static T ReadFile<T>(string directory, string fileName) => ReadJson<T>(Path.Combine(directory, fileName));
+
+    private static T? TryReadFile<T>(string directory, string fileName) where T : class
+    {
+        var path = Path.Combine(directory, fileName);
+        return File.Exists(path) ? ReadJson<T>(path) : null;
+    }
+
+    private sealed record SkillPoolFile(List<SkillPoolPair> Pairs);
+    private sealed record SkillPoolPair(string SetBonus, string GroupSkill);
+
+    private sealed record TalismanPoolFile(
+        Dictionary<string, RandomTalismanPool.PoolSkill> Skills,
+        List<RandomTalismanPool.SlotPattern> SlotPatterns,
+        Dictionary<string, int> RarityByType);
 }

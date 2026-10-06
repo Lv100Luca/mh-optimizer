@@ -2,6 +2,9 @@ using MHWildsOptimizer.Core.Domain;
 
 namespace MHWildsOptimizer.Core.Data;
 
+/// <summary>One rollable (set bonus, group skill) pair of a Gogma Artian weapon.</summary>
+public sealed record GogmaSkillPair(string SetBonus, string GroupSkill);
+
 /// <summary>In-memory dataset with lookup indexes. Build it with <see cref="GameDataLoader"/>.</summary>
 public sealed class GameData
 {
@@ -10,6 +13,10 @@ public sealed class GameData
     public IReadOnlyList<Decoration> Decorations { get; }
     public IReadOnlyList<Charm> Charms { get; }
     public IReadOnlyDictionary<WeaponType, IReadOnlyDictionary<GogmaFocus, GogmaWeaponVariant>> GogmaWeapons { get; }
+    /// <summary>All 294 rollable (set bonus, group skill) pairs, uniform probability.</summary>
+    public IReadOnlyList<GogmaSkillPair> GogmaSkillPairs { get; }
+    /// <summary>What random talismans can roll; null when data/random_talisman_pool.json is absent.</summary>
+    public RandomTalismanPool? TalismanPool { get; }
 
     public IReadOnlyDictionary<string, Skill> SkillsByName { get; }
     public IReadOnlyDictionary<int, Skill> SkillsById { get; }
@@ -19,19 +26,25 @@ public sealed class GameData
     /// <summary>One entry per charm line, at its highest rank. The optimizer should only consider these.</summary>
     public IReadOnlyList<Charm> MaxRankCharms { get; }
     public IReadOnlyDictionary<string, Charm> CharmsByName { get; }
+    /// <summary>The craftable baseline talismans (max-rank charms) in talisman form.</summary>
+    public IReadOnlyList<Talisman> CraftableTalismans { get; }
 
     public GameData(
         IReadOnlyList<Skill> skills,
         IReadOnlyList<ArmorPiece> armor,
         IReadOnlyList<Decoration> decorations,
         IReadOnlyList<Charm> charms,
-        IReadOnlyDictionary<WeaponType, IReadOnlyDictionary<GogmaFocus, GogmaWeaponVariant>> gogmaWeapons)
+        IReadOnlyDictionary<WeaponType, IReadOnlyDictionary<GogmaFocus, GogmaWeaponVariant>> gogmaWeapons,
+        IReadOnlyList<GogmaSkillPair>? gogmaSkillPairs = null,
+        RandomTalismanPool? talismanPool = null)
     {
         Skills = skills;
         Armor = armor;
         Decorations = decorations;
         Charms = charms;
         GogmaWeapons = gogmaWeapons;
+        GogmaSkillPairs = gogmaSkillPairs ?? [];
+        TalismanPool = talismanPool;
 
         SkillsByName = FirstByKey(skills, s => s.Name);
         SkillsById = FirstByKey(skills, s => s.Id);
@@ -40,6 +53,7 @@ public sealed class GameData
         DecorationsByName = FirstByKey(decorations, d => d.Name);
         MaxRankCharms = charms.Where(c => c.IsMaxRank).ToList();
         CharmsByName = FirstByKey(charms, c => c.Name);
+        CraftableTalismans = MaxRankCharms.Select(Talisman.FromCharm).ToList();
     }
 
     public Skill Skill(string name) =>
