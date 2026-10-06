@@ -84,8 +84,17 @@ public sealed record ResolvedRequest(
     /// <summary>Every requirement for display: "Weakness Exploit 5", "Gore Magala's Tyranny II (4 pieces)", "Lord's Soul (3 pieces)".</summary>
     public IEnumerable<string> TargetLabels =>
         TargetSkills.Select(kv => $"{kv.Key} {kv.Value}")
-            .Concat(TargetSetBonuses.Select(kv => $"{kv.Key} {(kv.Value >= SkillAggregator.SetTierTwoPieces ? "II" : "I")} ({kv.Value} pieces)"))
-            .Concat(TargetGroupSkills.Select(kv => $"{kv.Key} ({kv.Value} pieces)"));
+            .Concat(TargetSetBonuses.Select(kv => SetBonusLabel(kv.Key, kv.Value)))
+            .Concat(TargetGroupSkills.Select(kv => GroupSkillLabel(kv.Key, kv.Value)));
+
+    /// <summary>The tier a required piece count stands for: 1 below <see cref="SkillAggregator.SetTierTwoPieces"/>, else 2.</summary>
+    public static int SetTierOf(int pieces) => pieces >= SkillAggregator.SetTierTwoPieces ? 2 : 1;
+
+    /// <summary>"Gore Magala's Tyranny II (4 pieces)"</summary>
+    public static string SetBonusLabel(string name, int pieces) => $"{name} {(SetTierOf(pieces) == 2 ? "II" : "I")} ({pieces} pieces)";
+
+    /// <summary>"Lord's Soul (3 pieces)"</summary>
+    public static string GroupSkillLabel(string name, int pieces) => $"{name} ({pieces} pieces)";
 }
 
 public static class RequestLoader

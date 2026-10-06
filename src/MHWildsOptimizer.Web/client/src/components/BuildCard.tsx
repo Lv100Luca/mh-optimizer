@@ -18,6 +18,12 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
           <span className="efr">EFR {fmt(b.efr)}</span>
           <span className="plus">+</span>
           <span className="efe">EFE {fmt(b.efe)}</span>
+          {b.procs > 0 && (
+            <>
+              <span className="plus">+</span>
+              <span className="procs" title={s.proc_sources.join(', ')}>procs {fmt(b.procs)}</span>
+            </>
+          )}
           <span className="eq">=</span>
           <span className="total">{fmt(b.score)}</span>
           <span className="muted small">every condition on: {fmt(s.total_all_conditions)}</span>
@@ -175,7 +181,7 @@ function StatsBlock({ title, stats: r }: { title: string; stats: Stats }) {
         <dt>Affinity</dt><dd>{r.affinity}% <span className="muted">crit x{fmt(r.crit_multiplier, 2)}, factor {fmt(r.crit_factor, 3)}</span></dd>
         <dt>Sharpness</dt><dd>{r.sharpness ? titleCase(r.sharpness) : '-'} <span className="muted">raw x{fmt(r.sharpness_raw, 3)}, element x{fmt(r.sharpness_element, 4)}</span></dd>
         {r.element_true > 0 && <><dt>Element</dt><dd>{fmt(r.element_true, 1)} true <span className="muted">({r.element_display} display, cap {fmt(r.element_cap, 1)}, crit element x{fmt(r.crit_element, 2)})</span></dd></>}
-        <dt>Score</dt><dd><b>EFR {fmt(r.efr)}</b> + <b>EFE {fmt(r.efe)}</b> = <b className="total">{fmt(r.total)}</b></dd>
+        <dt>Score</dt><dd><b>EFR {fmt(r.efr)}</b> + <b>EFE {fmt(r.efe)}</b>{r.procs > 0 && <> + <b>procs {fmt(r.procs)}</b></>} = <b className="total">{fmt(r.total)}</b></dd>
       </dl>
       {r.modifiers.length > 0 && <ul className="mods">{r.modifiers.map((m) => <li key={m}>{m}</li>)}</ul>}
     </div>

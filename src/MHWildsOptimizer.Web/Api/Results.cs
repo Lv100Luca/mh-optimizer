@@ -30,16 +30,18 @@ public sealed record GroupSkillStateDto(string Name, int Pieces, string? RankNam
 
 public sealed record StatsDto(
     double TrueRaw, int DisplayAttack, int Affinity, double CritMultiplier, double CritFactor, SharpnessColor? Sharpness, double SharpnessRaw, double SharpnessElement,
-    double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Total, IReadOnlyList<string> Modifiers);
+    double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers);
 
+/// <param name="Procs">Proc damage per 100 MV (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher); 0 when off or absent.</param>
 public sealed record BuildSummaryDto(
     double Attack, int DisplayAttack, int BaseAttack, int Affinity, int BaseAffinity, double CritMultiplier, SharpnessColor? Sharpness,
-    Element Element, double ElementTrue, int ElementDisplay, double Efr, double Efe, double Total, double TotalAllConditions,
+    Element Element, double ElementTrue, int ElementDisplay, double Efr, double Efe, double Procs, double Total, double TotalAllConditions,
     IReadOnlyList<string> ActiveSetBonuses, IReadOnlyList<string> ActiveGroupSkills,
-    IReadOnlyList<string> AffinitySources, IReadOnlyList<string> RawSources, IReadOnlyList<string> ElementSources, IReadOnlyList<string> DependsOn, string Description);
+    IReadOnlyList<string> AffinitySources, IReadOnlyList<string> RawSources, IReadOnlyList<string> ElementSources, IReadOnlyList<string> ProcSources,
+    IReadOnlyList<string> DependsOn, string Description);
 
 public sealed record BuildDto(
-    int Rank, double Score, double Efr, double Efe, BuildSummaryDto Summary, BuildWeaponDto Weapon, IReadOnlyList<BuildArmorDto> Armor, BuildTalismanDto? Talisman,
+    int Rank, double Score, double Efr, double Efe, double Procs, BuildSummaryDto Summary, BuildWeaponDto Weapon, IReadOnlyList<BuildArmorDto> Armor, BuildTalismanDto? Talisman,
     IReadOnlyList<DecoCountDto> Decorations, IReadOnlyList<BuildSkillDto> Skills, IReadOnlyList<SetBonusStateDto> SetBonuses, IReadOnlyList<GroupSkillStateDto> GroupSkills,
     StatsDto StatsRequested, StatsDto StatsAllOn, string Text);
 
@@ -111,11 +113,12 @@ public static class ResultMapper
         var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOn));
 
         var summary = new BuildSummaryDto(s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness, s.Element, s.ElementTrue, s.ElementDisplay,
-            s.Efr, s.Efe, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.DependsOn, s.Description);
+            s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
+            s.DependsOn, s.Description);
 
-        var text = LoadoutReport.Render(loadout, data, cond, $"Build {rank}  -  EFR {b.Result.EffectiveRaw:0.0} + EFE {b.Result.EffectiveElement:0.0} = {b.Score:0.0}").TrimEnd();
+        var text = LoadoutReport.Render(loadout, data, cond, ResultsText.BuildTitle(rank, b)).TrimEnd();
 
-        return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text);
+        return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, b.Result.ProcDamage, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text);
     }
 
     private static DecoDto? Deco(Decoration? d) => d is null ? null : new DecoDto(d.Name, d.Slot, d.Kind, d.IconColor, d.Skills);
@@ -127,7 +130,7 @@ public static class ResultMapper
         return new StatsDto(
             r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()), r.Affinity, r.CriticalMultiplier, denominator > 0 ? r.EffectiveRaw / denominator : 1,
             r.Sharpness, r.SharpnessRawModifier, r.SharpnessElementModifier, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10), r.ElementCap, r.CriticalElementMultiplier,
-            r.EffectiveRaw, r.EffectiveElement, r.Total, mods);
+            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods);
     }
 
     private static string? RankName(GameData data, string skill, int level) =>

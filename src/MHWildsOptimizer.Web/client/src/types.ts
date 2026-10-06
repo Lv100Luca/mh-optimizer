@@ -26,10 +26,17 @@ export interface SharpnessBar { red: number; orange: number; yellow: number; gre
 
 export interface GogmaVariant { name: string; raw: number; display_attack: number; affinity: number; sharpness: SharpnessBar | null; slots: number[] }
 
+/** The weapon type's attack profile preset; an unset request value falls back to it. */
+export interface AttackProfilePreset { hits_per_minute: number; average_mv: number; charged_lv3_share: number }
+
+/** conditions.attack_profile: how the hunter attacks, used only to turn proc damage into damage per 100 MV. null = weapon preset. */
+export interface AttackProfile { hits_per_minute: number | null; average_mv: number | null; charged_lv3_share: number | null }
+
 export interface WeaponType {
   kind: string; label: string; gunner: boolean; supported: boolean; bloat: number;
   core_skills: { skill: string; level: number }[];
   element_base_display: number; infusion_bonus_display: number;
+  attack_profile: AttackProfilePreset;
   variants: Record<string, GogmaVariant>;
 }
 
@@ -86,14 +93,18 @@ export interface WeaponInput {
 }
 
 export interface Conditions {
-  [key: string]: boolean | ResonanceMode | Record<string, number> | undefined;
+  [key: string]: boolean | ResonanceMode | Record<string, number> | AttackProfile | undefined;
   resonance: ResonanceMode;
   skill_limits: Record<string, number>;
+  /** count proc damage (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher) in the score */
+  proc_damage: boolean;
+  attack_profile: AttackProfile;
 }
 
 export interface OptimizationRequest {
   weapon: WeaponInput;
   skill_pair: { mode: SkillPairMode; top_n: number };
+  /** required minimum levels; set bonuses and group skills go here too with the tier as the level (set I = 2 pieces, II = 4, group = 3) */
   target_skills: Record<string, number>;
   conditions: Conditions;
   talismans: { file: string | null; include_craftable: boolean };
@@ -119,16 +130,19 @@ export interface WeaponStats {
   slots: number[]; set_bonus: string | null; group_skill: string | null;
 }
 
+/** A requirement as the optimizer sees it: skills by level; set bonuses by tier (level 1 or 2) and pieces; group skills by pieces. */
+export interface ResolvedTarget { skill: string; level: number; kind: SkillKind; pieces: number | null; label: string; from_core: boolean }
+
 export interface Resolved {
   is_valid: boolean;
   errors: string[];
   warnings: string[];
   weapon: WeaponStats | null;
-  targets: { skill: string; level: number; from_core: boolean }[];
+  targets: ResolvedTarget[];
   skill_pair_mode: SkillPairMode;
   skill_pair_candidates: number;
   talismans: { total: number; random: number; craftable: number };
-  baseline: { attack: number; affinity: number; crit_multiplier: number; efr: number; efe: number; total: number; total_all_on: number } | null;
+  baseline: { attack: number; affinity: number; crit_multiplier: number; efr: number; efe: number; procs: number; total: number; total_all_on: number } | null;
   relevance: { skills: string[]; set_bonuses: string[]; group_skills: string[] } | null;
 }
 
@@ -159,18 +173,18 @@ export interface GroupSkillState { name: string; pieces: number; rank_name: stri
 export interface Stats {
   true_raw: number; display_attack: number; affinity: number; crit_multiplier: number; crit_factor: number; sharpness: SharpnessColor | null;
   sharpness_raw: number; sharpness_element: number; element_true: number; element_display: number; element_cap: number; crit_element: number;
-  efr: number; efe: number; total: number; modifiers: string[];
+  efr: number; efe: number; procs: number; total: number; modifiers: string[];
 }
 
 export interface BuildSummary {
   attack: number; display_attack: number; base_attack: number; affinity: number; base_affinity: number; crit_multiplier: number;
-  sharpness: SharpnessColor | null; element: Element; element_true: number; element_display: number; efr: number; efe: number; total: number;
+  sharpness: SharpnessColor | null; element: Element; element_true: number; element_display: number; efr: number; efe: number; procs: number; total: number;
   total_all_conditions: number; active_set_bonuses: string[]; active_group_skills: string[];
-  affinity_sources: string[]; raw_sources: string[]; element_sources: string[]; depends_on: string[]; description: string;
+  affinity_sources: string[]; raw_sources: string[]; element_sources: string[]; proc_sources: string[]; depends_on: string[]; description: string;
 }
 
 export interface Build {
-  rank: number; score: number; efr: number; efe: number; summary: BuildSummary; weapon: BuildWeapon; armor: BuildArmor[]; talisman: BuildTalisman | null;
+  rank: number; score: number; efr: number; efe: number; procs: number; summary: BuildSummary; weapon: BuildWeapon; armor: BuildArmor[]; talisman: BuildTalisman | null;
   decorations: DecoCount[]; skills: BuildSkill[]; set_bonuses: SetBonusState[]; group_skills: GroupSkillState[];
   stats_requested: Stats; stats_all_on: Stats; text: string;
 }

@@ -25,11 +25,15 @@ public sealed record WeaponStatsDto(
     string? SetBonus,
     string? GroupSkill);
 
-public sealed record TargetDto(string Skill, int Level, bool FromCore);
+/// <summary>
+/// One requirement. Armor / weapon skills carry a minimum level; set bonuses carry the tier (1 or 2) as the level and the
+/// pieces that tier needs; group skills carry level 1 and their pieces. <paramref name="Label"/> is the text the CLI prints.
+/// </summary>
+public sealed record TargetDto(string Skill, int Level, SkillKind Kind, int? Pieces, string Label, bool FromCore);
 
 public sealed record TalismanCountsDto(int Total, int Random, int Craftable);
 
-public sealed record BaselineDto(double Attack, int Affinity, double CritMultiplier, double Efr, double Efe, double Total, double TotalAllOn);
+public sealed record BaselineDto(double Attack, int Affinity, double CritMultiplier, double Efr, double Efe, double Procs, double Total, double TotalAllOn);
 
 /// <summary>The skills, set bonuses and group skills the optimizer will value under the request's conditions.</summary>
 public sealed record RelevanceDto(IReadOnlyList<string> Skills, IReadOnlyList<string> SetBonuses, IReadOnlyList<string> GroupSkills);
@@ -58,8 +62,11 @@ public static class Resolving
         var weapon = r.IsValid ? Weapon(r.Weapon) : null;
         var core = r.AppliedCoreSkills.Select(c => c.Skill).ToHashSet();
         var targets = r.TargetSkills
-            .Select(kv => new TargetDto(kv.Key, kv.Value, core.Contains(kv.Key) && !requested.ContainsKey(kv.Key)))
-            .OrderBy(t => t.FromCore).ThenBy(t => t.Skill)
+            .Select(kv => new TargetDto(kv.Key, kv.Value, data.SkillsByName.TryGetValue(kv.Key, out var s) ? s.Kind : SkillKind.Armor, null,
+                $"{kv.Key} {kv.Value}", core.Contains(kv.Key) && !requested.ContainsKey(kv.Key)))
+            .Concat(r.TargetSetBonuses.Select(kv => new TargetDto(kv.Key, ResolvedRequest.SetTierOf(kv.Value), SkillKind.Set, kv.Value, ResolvedRequest.SetBonusLabel(kv.Key, kv.Value), false)))
+            .Concat(r.TargetGroupSkills.Select(kv => new TargetDto(kv.Key, 1, SkillKind.Group, kv.Value, ResolvedRequest.GroupSkillLabel(kv.Key, kv.Value), false)))
+            .OrderBy(t => t.FromCore).ThenBy(t => t.Kind is SkillKind.Set or SkillKind.Group ? 1 : 0).ThenBy(t => t.Skill)
             .ToList();
 
         BaselineDto? baseline = null;
@@ -69,9 +76,9 @@ public static class Resolving
             var bare = new Loadout { Weapon = new EquippedWeapon(r.Weapon) };
             var res = DamageCalculator.Calculate(bare, data, r.Conditions);
             var allOn = DamageCalculator.Calculate(bare, data, Conditions.AllOn);
-            baseline = new BaselineDto(res.TrueRaw, res.Affinity, res.CriticalMultiplier, res.EffectiveRaw, res.EffectiveElement, res.Total, allOn.Total);
+            baseline = new BaselineDto(res.TrueRaw, res.Affinity, res.CriticalMultiplier, res.EffectiveRaw, res.EffectiveElement, res.ProcDamage, res.Total, allOn.Total);
 
-            var rel = Core.Optimize.Relevance.Build(r.Weapon, r.TargetSkills, r.Conditions, data);
+            var rel = Core.Optimize.Relevance.Build(r.Weapon, r, data);
             relevance = new RelevanceDto(rel.Skills, rel.SetBonuses, rel.GroupSkills);
         }
 

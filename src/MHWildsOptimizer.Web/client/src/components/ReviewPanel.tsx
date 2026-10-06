@@ -1,16 +1,23 @@
 import { icons, elementCss } from '../icons';
 import { useApp, useCatalog } from '../state';
+import type { ResolvedTarget } from '../types';
 import { Alert, Button, Section, SkillChip, SkillIcon, Slots, fmt, titleCase } from './common';
+import { PROC_GROUP, attackProfileText } from './ConditionsPanel';
+import { roman } from './SkillPicker';
 import { SharpnessBar } from './SharpnessBar';
 
 export function ReviewPanel() {
   const { request, talismans, resolved, resolving, runOptimizer, run, setTab, name, dirty } = useApp();
-  const { catalog } = useCatalog();
+  const { catalog, skillsByName, weaponTypes } = useCatalog();
   if (!request || !catalog) return null;
   const r = resolved;
   const w = r?.weapon;
-  const conditionsOn = catalog.conditions.filter((c) => request.conditions[c.key] === true);
+  const conditionsOn = catalog.conditions.filter((c) => c.group !== PROC_GROUP && request.conditions[c.key] === true);
   const limits = Object.entries(request.conditions.skill_limits ?? {});
+  // before the first validation answer, show the request's own targets
+  const targets: ResolvedTarget[] = r?.targets ?? Object.entries(request.target_skills).map(([skill, level]) => ({
+    skill, level, kind: skillsByName.get(skill)?.kind ?? 'armor', pieces: null, label: `${skill} ${level}`, from_core: false,
+  }));
 
   return (
     <div className="panel">
@@ -56,12 +63,19 @@ export function ReviewPanel() {
           <div className="kv">
             <h4><button className="linklike" onClick={() => setTab('targets')}>Targets</button></h4>
             <div className="chip-row">
-              {(r?.targets ?? Object.entries(request.target_skills).map(([skill, level]) => ({ skill, level, from_core: false }))).map((t) => (
+              {targets.map((t) => t.kind === 'set' || t.kind === 'group' ? (
+                <span key={t.skill} className={`chip skill ${t.kind}`} title={t.label}>
+                  <SkillIcon name={t.skill} kind={t.kind} size={18} />
+                  <span>{t.skill}</span>
+                  {t.kind === 'set' && <b>{roman(t.level)}</b>}
+                  {t.pieces !== null && <span className="muted small">{t.pieces} pieces</span>}
+                </span>
+              ) : (
                 <SkillChip key={t.skill} name={t.skill} level={t.level} muted={t.from_core} />
               ))}
-              {r?.targets.length === 0 && <span className="muted">none: pure damage optimization</span>}
+              {targets.length === 0 && <span className="muted">none: pure damage optimization</span>}
             </div>
-            {r?.targets.some((t) => t.from_core) && <div className="muted small">greyed = weapon core skill added by the options</div>}
+            {targets.some((t) => t.from_core) && <div className="muted small">greyed = weapon core skill added by the options</div>}
           </div>
 
           <div className="kv">
@@ -75,6 +89,7 @@ export function ReviewPanel() {
           <div className="kv">
             <h4><button className="linklike" onClick={() => setTab('conditions')}>Conditions</button></h4>
             <div className="small">{conditionsOn.map((c) => c.label).join(', ') || 'nothing conditional'}; Resonance {request.conditions.resonance}</div>
+            <div className="small muted">proc damage {request.conditions.proc_damage ? `on · ${attackProfileText(request, weaponTypes)}` : 'off'}</div>
           </div>
 
           <div className="kv">
@@ -94,7 +109,7 @@ export function ReviewPanel() {
           {r?.baseline && (
             <div className="kv">
               <h4>Weapon-only baseline</h4>
-              <div><b>EFR {fmt(r.baseline.efr)}</b> + <b>EFE {fmt(r.baseline.efe)}</b> = <b className="total">{fmt(r.baseline.total)}</b> <span className="muted small">(every condition on: {fmt(r.baseline.total_all_on)})</span></div>
+              <div><b>EFR {fmt(r.baseline.efr)}</b> + <b>EFE {fmt(r.baseline.efe)}</b>{r.baseline.procs > 0 && <> + <b>procs {fmt(r.baseline.procs)}</b></>} = <b className="total">{fmt(r.baseline.total)}</b> <span className="muted small">(every condition on: {fmt(r.baseline.total_all_on)})</span></div>
               <div className="muted small">{fmt(r.baseline.attack, 0)} attack, {r.baseline.affinity}% affinity, crit x{fmt(r.baseline.crit_multiplier, 2)}</div>
             </div>
           )}

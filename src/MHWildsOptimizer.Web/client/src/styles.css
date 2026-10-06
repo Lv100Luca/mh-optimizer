@@ -183,6 +183,8 @@ button.chip:hover { border-color: var(--accent); }
 .kindtag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 5px; border-radius: 4px; background: var(--border); color: var(--muted); }
 .kindtag.weapon { color: var(--weapon); }
 .kindtag.armor { color: var(--armor); }
+.kindtag.set { color: var(--set); }
+.kindtag.group { color: var(--group); }
 .rarity { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--border); }
 .rarity.r5 { color: #5fbf7a; }
 .rarity.r6 { color: #4fa3e6; }
@@ -232,6 +234,8 @@ dl.stats dd { margin: 0; }
 .skillrow { display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); border-left-width: 3px; }
 .skillrow.weapon { border-left-color: var(--weapon); }
 .skillrow.armor { border-left-color: var(--armor); }
+.skillrow.set { border-left-color: var(--set); }
+.skillrow.group { border-left-color: var(--group); }
 .skillrow-main { flex: 1; min-width: 0; }
 .skillrow-title { display: flex; align-items: center; gap: 8px; }
 .skillrow-actions { display: flex; align-items: center; gap: 8px; }
@@ -294,6 +298,10 @@ dl.stats dd { margin: 0; }
 .score .efr, .score .efe { font-weight: 600; }
 .score .total { font-size: 22px; font-weight: 800; color: var(--ok); }
 .score .plus, .score .eq { color: var(--muted); }
+.score .procs { font-weight: 600; color: var(--accent); }
+.optnum { display: inline-flex; align-items: center; gap: 6px; }
+.form-grid.profile { margin-top: 12px; }
+.form-grid.profile.off { opacity: 0.55; }
 .statchips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
 .statchip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 6px; background: var(--bg-2); border: 1px solid var(--border); font-size: 12.5px; }
 .statchip img { width: 16px; height: 16px; }

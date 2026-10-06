@@ -63,6 +63,40 @@ export function NumberInput({ value, onChange, min, max, step, width }: { value:
   );
 }
 
+const optionalText = (v: number | null) => (v === null ? '' : String(v));
+
+/** A number that may be left empty to fall back to a preset (shown as the placeholder). Not clamped: the server reports out-of-range values. */
+export function OptionalNumberInput({ value, preset, onChange, min, max, step, width }: {
+  value: number | null; preset: number; onChange: (v: number | null) => void; min?: number; max?: number; step?: number; width?: number;
+}) {
+  const [text, setText] = useState(optionalText(value));
+  useEffect(() => setText(optionalText(value)), [value]);
+  return (
+    <span className="optnum">
+      <input
+        className="number"
+        style={width ? { width } : undefined}
+        type="number"
+        value={text}
+        placeholder={String(preset)}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (e.target.value === '') { onChange(null); return; }
+          const n = Number(e.target.value);
+          if (Number.isFinite(n)) onChange(n);
+        }}
+        onBlur={() => setText(optionalText(value))}
+      />
+      {value === null
+        ? <span className="muted small">preset</span>
+        : <button type="button" className="iconbtn" title="back to the preset" onClick={() => onChange(null)}>×</button>}
+    </span>
+  );
+}
+
 function clamp(n: number, min?: number, max?: number) {
   if (min !== undefined && n < min) return min;
   if (max !== undefined && n > max) return max;

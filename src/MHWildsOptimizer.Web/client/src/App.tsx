@@ -5,7 +5,7 @@ import { WeaponPanel } from './components/WeaponPanel';
 import { SkillPairPanel } from './components/SkillPairPanel';
 import { TargetsPanel } from './components/TargetsPanel';
 import { LimitsPanel } from './components/LimitsPanel';
-import { ConditionsPanel } from './components/ConditionsPanel';
+import { ConditionsPanel, PROC_GROUP } from './components/ConditionsPanel';
 import { TalismansPanel } from './components/TalismansPanel';
 import { OptionsPanel } from './components/OptionsPanel';
 import { ReviewPanel } from './components/ReviewPanel';
@@ -28,7 +28,7 @@ export function App() {
   }
   if (!catalog || !request) return <div className="boot">Loading game data…</div>;
 
-  const conditionsOn = catalog.conditions.filter((c) => request.conditions[c.key] === true).length;
+  const conditionsOn = catalog.conditions.filter((c) => c.group !== PROC_GROUP && request.conditions[c.key] === true).length;
   const limits = Object.keys(request.conditions.skill_limits ?? {}).length;
   const errors = resolved?.errors.length ?? 0;
   const warnings = resolved?.warnings.length ?? 0;

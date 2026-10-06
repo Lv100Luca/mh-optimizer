@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
+using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Inputs;
 using MHWildsOptimizer.Web.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -86,6 +88,76 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.Equal(2, dto.Talismans.Random);
         Assert.NotNull(dto.Baseline);
         Assert.True(dto.Baseline.Total > 0);
+    }
+
+    [Fact]
+    public async Task Catalog_carries_attack_profile_presets_and_the_proc_damage_toggle()
+    {
+        var catalog = await _fixture.Client.GetFromJsonAsync<JsonElement>("/api/catalog", _json);
+        var gs = catalog.GetProperty("weapon_types").EnumerateArray().Single(t => t.GetProperty("kind").GetString() == "great-sword");
+        var preset = gs.GetProperty("attack_profile");
+        Assert.Equal(AttackProfile.Preset(WeaponType.GreatSword).HitsPerMinute, preset.GetProperty("hits_per_minute").GetDouble());
+        Assert.Equal(AttackProfile.Preset(WeaponType.GreatSword).ChargedLv3Share, preset.GetProperty("charged_lv3_share").GetDouble());
+
+        var proc = Assert.Single(catalog.GetProperty("conditions").EnumerateArray(), c => c.GetProperty("key").GetString() == "proc_damage");
+        Assert.Equal(ConditionCatalog.GroupProcs, proc.GetProperty("group").GetString());
+        var conditions = catalog.GetProperty("default_request").GetProperty("conditions");
+        Assert.True(conditions.GetProperty("proc_damage").GetBoolean());
+        Assert.Equal(JsonValueKind.Null, conditions.GetProperty("attack_profile").GetProperty("hits_per_minute").ValueKind);
+    }
+
+    [Fact]
+    public async Task Resolve_accepts_set_bonus_and_group_skill_targets()
+    {
+        var payload = ExamplePayload();
+        payload = payload with
+        {
+            Request = payload.Request with
+            {
+                TargetSkills = new Dictionary<string, int> { ["Weakness Exploit"] = 3, ["Gore Magala's Tyranny"] = 2, ["Lord's Soul"] = 1 },
+            },
+        };
+        var dto = await (await _fixture.Client.PostAsJsonAsync("/api/resolve", payload, _json)).Content.ReadFromJsonAsync<ResolveDto>(_json);
+        Assert.NotNull(dto);
+        Assert.True(dto.IsValid, string.Join("; ", dto.Errors));
+
+        var set = Assert.Single(dto.Targets, t => t.Skill == "Gore Magala's Tyranny");
+        Assert.Equal(SkillKind.Set, set.Kind);
+        Assert.Equal(2, set.Level);
+        Assert.Equal(4, set.Pieces);
+        Assert.Equal("Gore Magala's Tyranny II (4 pieces)", set.Label);
+
+        var group = Assert.Single(dto.Targets, t => t.Skill == "Lord's Soul");
+        Assert.Equal(SkillKind.Group, group.Kind);
+        Assert.Equal(3, group.Pieces);
+        Assert.Equal("Lord's Soul (3 pieces)", group.Label);
+
+        var skill = Assert.Single(dto.Targets, t => t.Skill == "Weakness Exploit");
+        Assert.Equal(SkillKind.Armor, skill.Kind);
+        Assert.Null(skill.Pieces);
+
+        // required bonuses are tracked by the search even when they add nothing to the score
+        Assert.NotNull(dto.Relevance);
+        Assert.Contains("Gore Magala's Tyranny", dto.Relevance.SetBonuses);
+        Assert.Contains("Lord's Soul", dto.Relevance.GroupSkills);
+    }
+
+    [Fact]
+    public async Task Resolve_rejects_an_invalid_attack_profile()
+    {
+        var payload = ExamplePayload();
+        payload = payload with
+        {
+            Request = payload.Request with
+            {
+                Conditions = payload.Request.Conditions with { AttackProfile = new AttackProfile { HitsPerMinute = 0, ChargedLv3Share = 1.5 } },
+            },
+        };
+        var dto = await (await _fixture.Client.PostAsJsonAsync("/api/resolve", payload, _json)).Content.ReadFromJsonAsync<ResolveDto>(_json);
+        Assert.NotNull(dto);
+        Assert.False(dto.IsValid);
+        Assert.Contains(dto.Errors, e => e.Contains("hits_per_minute"));
+        Assert.Contains(dto.Errors, e => e.Contains("charged_lv3_share"));
     }
 
     [Fact]

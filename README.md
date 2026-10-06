@@ -36,7 +36,7 @@ The search is a dynamic program over skill states (talisman, then one armor slot
 
 ## Web UI
 
-The web UI covers the same setup as the editor (weapon, rolled pair, skill pair mode, targets, skill limits, conditions, talismans, options) with game icons, live validation and a weapon stat preview, runs the optimizer with live progress and renders the builds (equipment with decorations, skills with sources, stats under the requested and under all conditions). Configurations are the same `inputs/<name>.json` + `inputs/<name>.talismans.json` files the CLI uses; a run also writes `inputs/<name>.results.txt` and `.results.json`.
+The web UI covers the same setup as the editor (weapon, rolled pair, skill pair mode, targets including set bonuses and group skills by tier, skill limits, conditions with the proc damage toggle and attack profile, talismans, options) with game icons, live validation and a weapon stat preview, runs the optimizer with live progress and renders the builds (equipment with decorations, skills with sources, stats under the requested and under all conditions). Configurations are the same `inputs/<name>.json` + `inputs/<name>.talismans.json` files the CLI uses; a run also writes `inputs/<name>.results.txt` and `.results.json`.
 
 ```bash
 dotnet run --project src/MHWildsOptimizer.Web

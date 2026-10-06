@@ -14,6 +14,8 @@ public static class ConditionCatalog
     public const string GroupHunter = "Hunter";
     public const string GroupSkills = "Skill triggers";
     public const string GroupBonuses = "Set bonus and group skill triggers";
+    /// <summary>Not a hunt condition: whether proc damage is added to the score (the client renders it with the attack profile).</summary>
+    public const string GroupProcs = "Proc damage";
 
     private sealed record Meta(string Label, string Group, string Description, string[] Skills);
 
@@ -51,6 +53,10 @@ public static class ConditionCatalog
         [nameof(Conditions.InspirationActive)] = new("Inspiration active", GroupBonuses, "Lord's Favor: companion effects are up.", ["Lord's Favor (Inspiration)"]),
         [nameof(Conditions.AffinitySlidingActive)] = new("Affinity Sliding active", GroupBonuses, "Buttery Leathercraft: you slid recently.", ["Buttery Leathercraft (Affinity Sliding)"]),
         [nameof(Conditions.GutsNotYetTriggered)] = new("Guts not yet used", GroupBonuses, "Lord's Soul: Guts keeps its attack bonus until it saves you once.", ["Lord's Soul (Guts)"]),
+
+        [nameof(Conditions.ProcDamage)] = new("Count proc damage", GroupProcs,
+            "Extra damage instances that do not scale the hit: Azure Bolt, the Dark Arts shockwave (Great Sword), Bad Blood (needs Resentment and red health) and Scorcher. The attack profile converts them to damage per 100 MV and adds them to the score.",
+            ["Leviathan's Fury (Azure Bolt)", "Soul of the Dark Knight (Dark Arts)", "Nu Udra's Mutiny (Bad Blood)", "Rathalos's Flare (Scorcher)", "Thunder Attack"]),
     };
 
     public static IReadOnlyList<PropertyInfo> BoolProperties() =>
@@ -61,7 +67,7 @@ public static class ConditionCatalog
     public static IReadOnlyList<ConditionDto> Build()
     {
         var defaults = Conditions.Default;
-        var order = new[] { GroupMonster, GroupHunter, GroupSkills, GroupBonuses };
+        var order = new[] { GroupMonster, GroupHunter, GroupSkills, GroupBonuses, GroupProcs };
         return BoolProperties()
             .Select(p =>
             {

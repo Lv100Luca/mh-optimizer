@@ -18,6 +18,9 @@ public sealed record SharpnessBarDto(int Red, int Orange, int Yellow, int Green,
 
 public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, int Affinity, SharpnessBarDto? Sharpness, IReadOnlyList<int> Slots);
 
+/// <summary>The attack profile preset of a weapon type (what an unset <c>conditions.attack_profile</c> value falls back to).</summary>
+public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share);
+
 public sealed record WeaponTypeDto(
     string Kind,
     string Label,
@@ -27,6 +30,7 @@ public sealed record WeaponTypeDto(
     IReadOnlyList<SkillGrantDto> CoreSkills,
     int ElementBaseDisplay,
     int InfusionBonusDisplay,
+    AttackProfileDto AttackProfile,
     IReadOnlyDictionary<string, GogmaVariantDto> Variants);
 
 public sealed record SkillGrantDto(string Skill, int Level);
@@ -92,6 +96,7 @@ public sealed record Catalog(
                 WeaponCoreSkills.For(t).Select(c => new SkillGrantDto(c.Skill, c.Level)).ToList(),
                 GogmaConstants.ElementBaseDisplay(t),
                 GogmaConstants.InfusionBonusDisplay(t),
+                Profile(AttackProfile.Preset(t)),
                 data.GogmaWeapons.TryGetValue(t, out var byFocus)
                     ? byFocus.ToDictionary(
                         kv => kv.Key.ToString().ToLowerInvariant(),
@@ -152,6 +157,8 @@ public sealed record Catalog(
         },
         Talismans = new TalismanSettings { IncludeCraftable = true },
     };
+
+    private static AttackProfileDto Profile(ResolvedAttackProfile p) => new(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share);
 
     public static string WeaponLabel(WeaponType type) => type switch
     {
