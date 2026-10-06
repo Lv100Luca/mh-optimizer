@@ -62,22 +62,25 @@ public sealed class Optimizer
                 .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
                                Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
                 .ToList();
-            var i = 0;
-            foreach (var cls in classes)
+            progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel");
+            var done = 0;
+            var bag = new System.Collections.Concurrent.ConcurrentBag<SkillPairResult>();
+            Parallel.ForEach(classes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = ct }, cls =>
             {
-                ct.ThrowIfCancellationRequested();
                 var representative = cls.First();
                 var label = $"{cls.Key.Set} + {cls.Key.Group}";
-                progress?.Report($"[{++i}/{classes.Count}] {label} ({cls.Count()} rollable pairs)");
                 var weapon = _request.Weapon with
                 {
                     SetBonus = cls.Key.Set == OtherLabel ? null : representative.SetBonus,
                     GroupSkill = cls.Key.Group == OtherLabel ? null : representative.GroupSkill,
                 };
                 var pair = cls.Key.Set == OtherLabel && cls.Key.Group == OtherLabel ? null : representative;
-                results.Add(Search(weapon, pair, label, _request.Options.TopN, progress, ct));
-            }
-            results = results.OrderByDescending(r => r.BestScore).Take(_request.SkillPair.TopN).ToList();
+                var r = Search(weapon, pair, label, _request.Options.TopN, null, ct);
+                bag.Add(r);
+                var n = Interlocked.Increment(ref done);
+                progress?.Report($"[{n}/{classes.Count}] {label}: best {r.BestScore:0.0} ({cls.Count()} rollable pairs)");
+            });
+            results = bag.OrderByDescending(r => r.BestScore).Take(_request.SkillPair.TopN).ToList();
         }
 
         return new OptimizationResult(results, DateTime.UtcNow - started);
@@ -93,7 +96,7 @@ public sealed class Optimizer
         var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}";
         progress?.Report("  " + summary);
 
-        var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, progress, ct);
+        var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, progress, ct);
         var builds = search.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
         progress?.Report($"  {search.StatesEvaluated} final states scored, {builds.Count} builds kept");
         return new SkillPairResult(label, pair, builds, search.StatesEvaluated, summary);
@@ -122,6 +125,9 @@ public sealed class Optimizer
     {
         private const int MaxPredsPerState = 6;
         private const int SetCap = 4, GroupCap = 3;
+        /// <summary>Dominance is only checked against this many of the strongest states per bucket; unchecked states are kept (never wrongly dropped).</summary>
+        private const int MaxFrontChecks = 400;
+        private readonly int _maxStatesPerDepth;
 
         private readonly GameData _data;
         private readonly Relevance _rel;
@@ -138,17 +144,21 @@ public sealed class Optimizer
         private readonly int _n, _offArmorSlots, _offWeaponSlots, _offSets, _offGroups, _keyLength;
         private readonly int[][] _maxPerKind;
         private readonly int[][] _maxSlotsPerKind; // cumulative: [>=3, >=2, >=1]
+        private readonly int[][] _setRemain;       // [depth][set] kinds from depth on that can still add this set bonus
+        private readonly int[][] _groupRemain;     // [depth][group]
         private readonly (int MinLevel, int MaxGrant, bool Weapon)[] _targetDecoInfo;
+        private readonly int _weaponSlots3, _weaponSlots2, _weaponSlots1;
 
         public long StatesEvaluated { get; private set; }
 
         public StateSearch(GameData data, Relevance rel, GogmaWeaponStats weapon, Conditions cond, DecorationFiller filler,
             Dictionary<ArmorPieceKind, List<ArmorCandidate>> armor, ArmorPieceKind[] kinds, List<TalismanCandidate> talismans,
-            int topN, IProgress<string>? progress, CancellationToken ct)
+            int topN, int maxStatesPerDepth, IProgress<string>? progress, CancellationToken ct)
         {
             _data = data; _rel = rel; _weapon = weapon; _cond = cond; _filler = filler; _armor = armor; _kinds = kinds;
-            _talismans = talismans; _topN = topN; _progress = progress; _ct = ct;
+            _talismans = talismans; _topN = topN; _maxStatesPerDepth = Math.Max(1000, maxStatesPerDepth); _progress = progress; _ct = ct;
             _n = rel.Skills.Count;
+            _weaponSlots3 = weapon.Slots.Count(l => l >= 3); _weaponSlots2 = weapon.Slots.Count(l => l == 2); _weaponSlots1 = weapon.Slots.Count(l => l == 1);
             _offArmorSlots = _n; _offWeaponSlots = _n + 3; _offSets = _n + 6; _offGroups = _offSets + rel.SetBonuses.Count;
             _keyLength = _offGroups + rel.GroupSkills.Count;
             _maxPerKind = kinds.Select(k => Enumerable.Range(0, _n).Select(s => armor[k].Count == 0 ? 0 : armor[k].Max(c => c.Skills[s])).ToArray()).ToArray();
@@ -164,6 +174,31 @@ public sealed class Optimizer
                 var decos = filler.All.Where(d => d.Grants.Any(g => g.Skill == s)).ToList();
                 return decos.Count == 0 ? (99, 0, rel.IsWeaponSkill[s]) : (decos.Min(d => d.Level), decos.Max(d => d.Grants.First(g => g.Skill == s).Level), rel.IsWeaponSkill[s]);
             }).ToArray();
+
+            // how many of the remaining kinds could still contribute each set bonus / group skill
+            _setRemain = new int[kinds.Length + 1][];
+            _groupRemain = new int[kinds.Length + 1][];
+            for (var depth = 0; depth <= kinds.Length; depth++)
+            {
+                _setRemain[depth] = new int[rel.SetBonuses.Count];
+                _groupRemain[depth] = new int[rel.GroupSkills.Count];
+                for (var d = depth; d < kinds.Length; d++)
+                {
+                    for (var si = 0; si < rel.SetBonuses.Count; si++)
+                        if (armor[kinds[d]].Any(c => c.SetIds.Contains(si))) _setRemain[depth][si]++;
+                    for (var gi = 0; gi < rel.GroupSkills.Count; gi++)
+                        if (armor[kinds[d]].Any(c => c.GroupId == gi)) _groupRemain[depth][gi]++;
+                }
+            }
+        }
+
+        /// <summary>Set/group counts that can no longer reach their activation threshold are zeroed so equivalent states merge.</summary>
+        private void Normalize(int[] key, int depth)
+        {
+            for (var si = 0; si < _rel.SetBonuses.Count; si++)
+                if (key[_offSets + si] > 0 && key[_offSets + si] + _setRemain[depth][si] < SkillAggregator.SetTierOnePieces) key[_offSets + si] = 0;
+            for (var gi = 0; gi < _rel.GroupSkills.Count; gi++)
+                if (key[_offGroups + gi] > 0 && key[_offGroups + gi] + _groupRemain[depth][gi] < SkillAggregator.GroupSkillPieces) key[_offGroups + gi] = 0;
         }
 
         public IReadOnlyList<RankedBuild> Run()
@@ -177,10 +212,12 @@ public sealed class Optimizer
                 for (var i = 0; i < 3; i++) { key[_offArmorSlots + i] = t.ArmorSlots[i]; key[_offWeaponSlots + i] = t.WeaponSlots[i]; }
                 if (_weapon.SetBonus is { } ws && _rel.SetIndex.TryGetValue(ws, out var si)) key[_offSets + si] = 1;
                 if (_weapon.GroupSkill is { } wg && _rel.GroupIndex.TryGetValue(wg, out var gi)) key[_offGroups + gi] = 1;
+                Normalize(key, 0);
                 Merge(states, key, null, t);
             }
             states = Prune(states, 0);
 
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             for (var depth = 0; depth < _kinds.Length; depth++)
             {
                 _ct.ThrowIfCancellationRequested();
@@ -196,15 +233,21 @@ public sealed class Optimizer
                         for (var i = 0; i < 3; i++) key[_offArmorSlots + i] += c.ArmorSlots[i];
                         foreach (var si in c.SetIds) key[_offSets + si] = Math.Min(SetCap, key[_offSets + si] + 1);
                         if (c.GroupId >= 0) key[_offGroups + c.GroupId] = Math.Min(GroupCap, key[_offGroups + c.GroupId] + 1);
+                        Normalize(key, depth + 1);
                         Merge(next, key, state, c);
                     }
                 }
                 var before = next.Count;
+                var expandMs = sw.ElapsedMilliseconds; sw.Restart();
                 states = Prune(next, depth + 1);
-                _progress?.Report($"  {_kinds[depth]}: {before} states, {states.Count} after pruning");
+                _progress?.Report($"  {_kinds[depth]}: {before} states, {states.Count} after pruning (expand {expandMs} ms, prune {sw.ElapsedMilliseconds} ms)");
+                sw.Restart();
             }
 
-            return EvaluateAndReconstruct(states.Values.ToList());
+            var finals = states.Values.ToList();
+            var builds = EvaluateAndReconstruct(finals);
+            _progress?.Report($"  final evaluation {sw.ElapsedMilliseconds} ms");
+            return builds;
         }
 
         private sealed class NoPiece { public static readonly NoPiece Instance = new(); }
@@ -219,26 +262,52 @@ public sealed class Optimizer
         /// <summary>Drops states that cannot reach the targets any more and states dominated by another state with the same set/group/weapon-slot profile.</summary>
         private Dictionary<int[], State> Prune(Dictionary<int[], State> states, int depth)
         {
-            var feasible = states.Values.Where(s => Feasible(s.Key, depth)).ToList();
             var kept = new Dictionary<int[], State>(new KeyComparer());
-            foreach (var bucket in feasible.GroupBy(s => BucketKey(s.Key), StringComparer.Ordinal))
+            var buckets = new Dictionary<long, List<State>>();
+            foreach (var s in states.Values)
             {
-                var ordered = bucket.OrderByDescending(s => Sum(s.Key)).ToList();
+                if (!Feasible(s.Key, depth)) continue;
+                var b = BucketKey(s.Key);
+                (buckets.TryGetValue(b, out var l) ? l : buckets[b] = []).Add(s);
+            }
+            foreach (var bucket in buckets.Values)
+            {
+                bucket.Sort((a, b) => Sum(b.Key).CompareTo(Sum(a.Key)));
                 var front = new List<State>();
-                foreach (var s in ordered)
+                foreach (var s in bucket)
                 {
-                    if (front.Any(f => Dominates(f.Key, s.Key))) continue;
-                    front.Add(s);
+                    var dominated = false;
+                    var checks = Math.Min(front.Count, MaxFrontChecks);
+                    for (var i = 0; i < checks; i++) if (Dominates(front[i].Key, s.Key)) { dominated = true; break; }
+                    if (!dominated) front.Add(s);
                 }
                 foreach (var s in front) kept[s.Key] = s;
+            }
+
+            if (kept.Count > _maxStatesPerDepth && depth < _kinds.Length)
+            {
+                // beam cut: keep the most promising states (partial score plus a value for free slots)
+                var ranked = kept.Values.Select(s => (State: s, H: Heuristic(s.Key))).OrderByDescending(x => x.H).Take(_maxStatesPerDepth);
+                var cut = new Dictionary<int[], State>(new KeyComparer());
+                foreach (var (s, _) in ranked) cut[s.Key] = s;
+                return cut;
             }
             return kept;
         }
 
-        private string BucketKey(int[] key)
+        private double Heuristic(int[] key)
         {
-            var span = key.AsSpan(_offWeaponSlots, _keyLength - _offWeaponSlots);
-            return string.Join(",", span.ToArray());
+            var levels = key.AsSpan(0, _n).ToArray();
+            var slotValue = 3 * key[_offArmorSlots + 2] + 2 * key[_offArmorSlots + 1] + key[_offArmorSlots];
+            return Score(levels, key) + 4.0 * slotValue;
+        }
+
+        /// <summary>Mixed-radix id of the (weapon slots, set counts, group counts) part of a key; values are all below 5.</summary>
+        private long BucketKey(int[] key)
+        {
+            long id = 0;
+            for (var i = _offWeaponSlots; i < _keyLength; i++) id = id * 5 + key[i];
+            return id;
         }
 
         private int Sum(int[] key)
@@ -265,9 +334,9 @@ public sealed class Optimizer
             var arm2 = arm3 + key[_offArmorSlots + 1];
             var arm1 = arm2 + key[_offArmorSlots];
             for (var d = depth; d < _kinds.Length; d++) { arm3 += _maxSlotsPerKind[d][0]; arm2 += _maxSlotsPerKind[d][1]; arm1 += _maxSlotsPerKind[d][2]; }
-            var wpn3 = key[_offWeaponSlots + 2] + _weapon.Slots.Count(l => l >= 3);
-            var wpn2 = wpn3 + key[_offWeaponSlots + 1] + _weapon.Slots.Count(l => l == 2);
-            var wpn1 = wpn2 + key[_offWeaponSlots] + _weapon.Slots.Count(l => l == 1);
+            var wpn3 = key[_offWeaponSlots + 2] + _weaponSlots3;
+            var wpn2 = wpn3 + key[_offWeaponSlots + 1] + _weaponSlots2;
+            var wpn1 = wpn2 + key[_offWeaponSlots] + _weaponSlots1;
 
             int needA3 = 0, needA2 = 0, needA1 = 0, needW3 = 0, needW2 = 0, needW1 = 0;
             for (var s = 0; s < _n; s++)
@@ -349,7 +418,7 @@ public sealed class Optimizer
             for (var i = 0; i < _rel.SetBonuses.Count; i++) if (key[_offSets + i] > 0) sets[_rel.SetBonuses[i]] = key[_offSets + i];
             var groups = new Dictionary<string, int>();
             for (var i = 0; i < _rel.GroupSkills.Count; i++) if (key[_offGroups + i] > 0) groups[_rel.GroupSkills[i]] = key[_offGroups + i];
-            return DamageCalculator.Calculate(_weapon, new ActiveSkills(dict, dict, sets, groups), _cond).Total;
+            return DamageCalculator.Calculate(_weapon, new ActiveSkills(dict, dict, sets, groups), _cond, trace: false).Total;
         }
 
         private List<FreeSlot> SynthesizeSlots(int[] key)

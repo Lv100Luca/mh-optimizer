@@ -92,21 +92,21 @@ public static class DamageCalculator
         return Calculate(loadout.Weapon.Stats, skills, conditions ?? Conditions.Default);
     }
 
-    public static DamageResult Calculate(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond)
+    public static DamageResult Calculate(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace = true)
     {
         var notes = new List<string>();
         var type = weapon.Type;
         double rawPct = 1.0, rawFlat = 0, elePct = 1.0, eleFlat = 0;
         var affinity = weapon.Affinity;
-        notes.Add(Inv($"Weapon: {weapon.TrueRaw} raw, {weapon.Affinity}% affinity, {weapon.ElementDisplay} {weapon.Element} (display), {weapon.TopSharpness?.ToString() ?? "no"} sharpness"));
+        if (trace) notes.Add(Inv($"Weapon: {weapon.TrueRaw} raw, {weapon.Affinity}% affinity, {weapon.ElementDisplay} {weapon.Element} (display), {weapon.TopSharpness?.ToString() ?? "no"} sharpness"));
 
         int L(string skill) => skills.Level(skill);
-        void Pct(string label, double m) { if (m != 1.0) { rawPct *= m; notes.Add(Inv($"{label}: raw x{m:0.###}")); } }
-        void Flat(string label, int v) { if (v != 0) { rawFlat += v; notes.Add(Inv($"{label}: raw +{v}")); } }
-        void Aff(string label, int v) { if (v != 0) { affinity += v; notes.Add(Inv($"{label}: affinity {(v >= 0 ? "+" : "")}{v}%")); } }
+        void Pct(string label, double m) { if (m != 1.0) { rawPct *= m; if (trace) notes.Add(Inv($"{label}: raw x{m:0.###}")); } }
+        void Flat(string label, int v) { if (v != 0) { rawFlat += v; if (trace) notes.Add(Inv($"{label}: raw +{v}")); } }
+        void Aff(string label, int v) { if (v != 0) { affinity += v; if (trace) notes.Add(Inv($"{label}: affinity {(v >= 0 ? "+" : "")}{v}%")); } }
         var hasElement = weapon.ElementTrue > 0;
-        void ElePct(string label, double m) { if (hasElement && m != 1.0) { elePct *= m; notes.Add(Inv($"{label}: element x{m:0.###}")); } }
-        void EleFlat(string label, double v) { if (hasElement && v != 0) { eleFlat += v; notes.Add(Inv($"{label}: element +{v:0.#} (true)")); } }
+        void ElePct(string label, double m) { if (hasElement && m != 1.0) { elePct *= m; if (trace) notes.Add(Inv($"{label}: element x{m:0.###}")); } }
+        void EleFlat(string label, double v) { if (hasElement && v != 0) { eleFlat += v; if (trace) notes.Add(Inv($"{label}: element +{v:0.#} (true)")); } }
 
         // ---------------- weapon skills ----------------
         switch (L(SkillNames.AttackBoost))
@@ -263,14 +263,14 @@ public static class DamageCalculator
         {
             cap = Math.Max(baseEle * DamageConstants.ElementCapRate, baseEle + DamageConstants.ElementCapAdd);
             ele = baseEle * elePct + eleFlat;
-            if (ele > cap) { notes.Add(Inv($"Element capped at {cap:0.#} (was {ele:0.#})")); ele = cap; }
+            if (ele > cap) { if (trace) notes.Add(Inv($"Element capped at {cap:0.#} (was {ele:0.#})")); ele = cap; }
             critEleMult = DamageConstants.CriticalElement(type, L(SkillNames.CriticalElement));
             critEleFactor = aff > 0 ? 1.0 + aff / 100.0 * (critEleMult - 1.0) : 1.0;
         }
         var efe = ele * sharpEle * critEleFactor;
 
-        notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}; EFR {efr:0.#}"));
-        if (baseEle > 0)
+        if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}; EFR {efr:0.#}"));
+        if (trace && baseEle > 0)
             notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; sharpness x{sharpEle:0.###}; EFE {efe:0.#}"));
 
         return new DamageResult(

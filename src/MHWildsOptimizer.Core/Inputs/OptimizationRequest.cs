@@ -40,6 +40,8 @@ public sealed record OptimizerOptions
     public List<string> ExcludeSets { get; init; } = [];
     /// <summary>Add the weapon's core skills to the targets (Great Sword: Focus 3, Long Sword: Quick Sheathe 3).</summary>
     public bool RequireWeaponCoreSkills { get; init; } = true;
+    /// <summary>Search beam: partial builds kept per armor slot. Larger is closer to exhaustive but slower (default 100000).</summary>
+    public int MaxStatesPerDepth { get; init; } = 100_000;
 }
 
 /// <summary>Everything the optimizer needs, loadable from inputs/request.json (snake_case keys).</summary>
