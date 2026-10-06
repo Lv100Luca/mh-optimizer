@@ -69,6 +69,41 @@ public sealed record Conditions
 
     public static Conditions Default => new();
 
+    /// <summary>Every conditional skill counted as active (a theoretical maximum: full health and red health both "on", Resonance on its Local phase).</summary>
+    public static Conditions AllOn => new()
+    {
+        MonsterEnraged = true,
+        HittingWeakPoint = true,
+        HittingWound = true,
+        FullHealth = true,
+        RedHealth = true,
+        LowHealth = true,
+        StaminaFull = true,
+        MonsterStatused = true,
+        FrenzyOvercome = true,
+        BurstActive = true,
+        LatentPowerActive = true,
+        AdrenalineRushActive = true,
+        AdrenalineRushRetriggered = true,
+        CounterstrikeActive = true,
+        OffensiveGuardActive = true,
+        DrawAttack = true,
+        ChargedAttack = true,
+        CoalescenceActive = true,
+        ElementalAbsorptionActive = true,
+        AzureBoltActive = true,
+        Resonance = ResonanceMode.Local,
+        PowerhouseActive = true,
+        ProteinFiendActive = true,
+        BindingCounterActive = true,
+        WarCryActive = true,
+        FestivalActive = true,
+        ResuscitateActive = true,
+        InspirationActive = true,
+        AffinitySlidingActive = true,
+        GutsNotYetTriggered = true,
+    };
+
     /// <summary>Everything off: unconditional skills only.</summary>
     public static Conditions AllOff => new()
     {

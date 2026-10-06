@@ -104,8 +104,9 @@ public static class DamageCalculator
         void Pct(string label, double m) { if (m != 1.0) { rawPct *= m; notes.Add(Inv($"{label}: raw x{m:0.###}")); } }
         void Flat(string label, int v) { if (v != 0) { rawFlat += v; notes.Add(Inv($"{label}: raw +{v}")); } }
         void Aff(string label, int v) { if (v != 0) { affinity += v; notes.Add(Inv($"{label}: affinity {(v >= 0 ? "+" : "")}{v}%")); } }
-        void ElePct(string label, double m) { if (m != 1.0) { elePct *= m; notes.Add(Inv($"{label}: element x{m:0.###}")); } }
-        void EleFlat(string label, double v) { if (v != 0) { eleFlat += v; notes.Add(Inv($"{label}: element +{v:0.#} (true)")); } }
+        var hasElement = weapon.ElementTrue > 0;
+        void ElePct(string label, double m) { if (hasElement && m != 1.0) { elePct *= m; notes.Add(Inv($"{label}: element x{m:0.###}")); } }
+        void EleFlat(string label, double v) { if (hasElement && v != 0) { eleFlat += v; notes.Add(Inv($"{label}: element +{v:0.#} (true)")); } }
 
         // ---------------- weapon skills ----------------
         switch (L(SkillNames.AttackBoost))

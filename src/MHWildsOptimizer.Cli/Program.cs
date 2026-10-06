@@ -104,28 +104,5 @@ void RunExample()
         Console.WriteLine();
     }
 
-    var stats = loadout.Weapon.Stats;
-    Console.WriteLine($"Weapon: {stats.Type} / {stats.Focus} focus -> {stats.TrueRaw} true raw ({stats.DisplayAttack} display), {stats.Affinity}% affinity, {stats.TopSharpness} sharpness, slots [{string.Join(",", stats.Slots)}]");
-    Console.WriteLine($"        rolled: {stats.SetBonus} + {stats.GroupSkill}");
-    foreach (var piece in loadout.ArmorPieces)
-        Console.WriteLine($"{piece.Piece.Piece,-6} {piece.Piece.Name,-28} slots [{string.Join(",", piece.EffectiveSlots)}]  set: {string.Join(" / ", piece.Piece.SetBonus)}  group: {piece.Piece.GroupSkill ?? "-"}");
-    Console.WriteLine($"Talisman {loadout.Talisman?.Talisman}");
-    Console.WriteLine();
-
-    var skills = SkillAggregator.Aggregate(loadout, data);
-    Console.WriteLine("Skills:");
-    foreach (var (name, level) in skills.Levels.OrderBy(kv => data.Skill(kv.Key).Kind).ThenBy(kv => kv.Key))
-        Console.WriteLine($"  {name,-24} Lv{level} ({data.Skill(name).Kind})");
-    Console.WriteLine("Set bonuses: " + string.Join(", ", skills.SetBonusPieces.Select(kv => $"{kv.Key} {kv.Value}pc -> {skills.SetTier(kv.Key)}")));
-    Console.WriteLine("Group skills: " + string.Join(", ", skills.GroupSkillPieces.Select(kv => $"{kv.Key} {kv.Value}pc -> {(skills.GroupActive(kv.Key) ? "active" : "inactive")}")));
-    Console.WriteLine();
-
-    foreach (var (label, cond) in new[] { ("default conditions", Conditions.Default), ("everything off", Conditions.AllOff) })
-    {
-        var result = DamageCalculator.Calculate(loadout, data, cond);
-        Console.WriteLine($"== {label} ==");
-        foreach (var line in result.Breakdown) Console.WriteLine("  " + line);
-        Console.WriteLine($"  EFR {result.EffectiveRaw:0.0} + EFE {result.EffectiveElement:0.0} = {result.Total:0.0}");
-        Console.WriteLine();
-    }
+    Console.WriteLine(LoadoutReport.Render(loadout, data, Conditions.Default, "example build"));
 }
