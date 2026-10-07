@@ -1,5 +1,64 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="TargetsPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var resolved = App.Resolved;
+    var relevance = resolved?.Relevance;
+    var relevant = new HashSet<string>([.. relevance?.Skills ?? [], .. relevance?.SetBonuses ?? [], .. relevance?.GroupSkills ?? []]);
+    var core = resolved?.Targets.Where(t => t.FromCore).ToList() ?? [];
+    var targetErrors = resolved?.Errors.Where(e => e.StartsWith("Target", StringComparison.Ordinal)).ToList() ?? [];
+
+    <div class="panel">
+        <Section Title="Target skills"
+                 Hint="Minimum skill levels every reported build must reach. Set bonuses and group skills can be required too, by tier: a set bonus at I needs 2 pieces, at II 4 pieces, a group skill 3 pieces (the Gogma weapon counts when it rolled the bonus). Everything else is filled by the optimizer for damage. Skills the optimizer already values under your conditions are marked.">
+            @foreach (var e in targetErrors)
+            {
+                <Alert Kind="error">@e</Alert>
+            }
+            <SkillPicker Mode="SkillPicker.PickerMode.Target" Values="request.TargetSkills" Highlight="relevant"
+                         ValuesChanged="v => App.PatchRequest(r => r with { TargetSkills = v })" />
+        </Section>
+
+        @if (core.Count > 0)
+        {
+            <Section Title="Added automatically" Hint="Weapon core skills come from the Options tab (require weapon core skills).">
+                <div class="chip-row">
+                    @foreach (var t in core)
+                    {
+                        <SkillChip @key="t.Skill" Name="@t.Skill" Level="t.Level" />
+                    }
+                    <button class="linklike" @onclick="() => App.SetTab(Tab.Options)">change in Options</button>
+                </div>
+            </Section>
+        }
+
+        @if (relevance is not null)
+        {
+            <Section Title="What the optimizer values" Hint="Under the current conditions these skills, set bonuses and group skills change the score; others only matter if you make them a target. Required set bonuses and group skills are tracked even when they add nothing to the score.">
+                <div class="chip-row">
+                    @foreach (var s in relevance.Skills)
+                    {
+                        <SkillChip @key="s" Name="@s" Muted="@(!request.TargetSkills.ContainsKey(s))" />
+                    }
+                </div>
+                @if (relevance.SetBonuses.Count > 0 || relevance.GroupSkills.Count > 0)
+                {
+                    <div class="chip-row">
+                        @foreach (var s in relevance.SetBonuses)
+                        {
+                            <SkillHover @key="s" Name="@s" Class="@("chip skill set" + (request.TargetSkills.ContainsKey(s) ? "" : " muted"))">
+                                <SkillIcon Name="@s" Kind="SkillKind.Set" Size="18" />@s
+                            </SkillHover>
+                        }
+                        @foreach (var s in relevance.GroupSkills)
+                        {
+                            <SkillHover @key="s" Name="@s" Class="@("chip skill group" + (request.TargetSkills.ContainsKey(s) ? "" : " muted"))">
+                                <SkillIcon Name="@s" Kind="SkillKind.Group" Size="18" />@s
+                            </SkillHover>
+                        }
+                    </div>
+                }
+            </Section>
+        }
+    </div>
+}

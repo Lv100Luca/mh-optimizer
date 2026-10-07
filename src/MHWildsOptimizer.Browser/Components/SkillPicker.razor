@@ -1,0 +1,149 @@
+@inject AppState App
+@*
+    Pick skills with a level. Target mode = minimum level the build must reach (1..max); set bonuses and group skills can be
+    targets too, with the tier as the level (set I = 2 pieces, II = 4 pieces; group = 3 pieces; the weapon counts when it rolled it).
+    Limit mode = cap for the score (0 = exclude the skill, n = value it only up to n); armor and weapon skills only.
+*@
+@{
+    var skills = App.Catalog.Skills.Where(s => Mode == PickerMode.Target || s.Kind is SkillKind.Armor or SkillKind.Weapon).ToList();
+    var selected = skills.Where(s => Values.ContainsKey(s.Name)).ToList();
+    var available = Available(skills);
+    var min = Mode == PickerMode.Target ? 1 : 0;
+}
+<div class="skillpicker">
+    <div class="selected">
+        @if (selected.Count == 0)
+        {
+            <p class="muted">Nothing selected yet. Pick from the list below.</p>
+        }
+        @foreach (var s in selected)
+        {
+            var level = Values[s.Name];
+            var rank = s.Ranks.FirstOrDefault(r => r.Level == level);
+            var bonus = IsBonus(s);
+            <div @key="s.Name" class="skillrow @Kind(s)">
+                <SkillIcon Name="@s.Name" Size="28" />
+                <div class="skillrow-main">
+                    <div class="skillrow-title">
+                        <b>@s.Name</b> <KindTag Kind="s.Kind" /> <span class="muted">@(bonus ? PiecesText(s) : $"max {s.MaxLevel}")</span>
+                    </div>
+                    <div class="muted small">
+                        @(Mode == PickerMode.Limit && level == 0
+                            ? "Excluded from the optimization entirely."
+                            : bonus && rank?.Name is not null
+                                ? $"{rank.Name}: {rank.Description ?? ""}"
+                                : rank?.Description ?? s.Description)
+                        @if (Mode == PickerMode.Limit && level > 0)
+                        {
+                            <text> · levels above @level are shown but not valued</text>
+                        }
+                        @if (bonus)
+                        {
+                            <text> · every build must carry @PiecesRequired(s, level) pieces; the weapon counts when it rolled this bonus</text>
+                        }
+                    </div>
+                </div>
+                <div class="skillrow-actions">
+                    @if (s.Kind == SkillKind.Set)
+                    {
+                        <Segmented T="int" Small="true" Value="level" ValueChanged="v => Set(s.Name, v)"
+                                   Options="@(s.Ranks.Select(r => new SegmentOption<int>(r.Level, $"{Fmt.Roman(r.Level)} · {PiecesRequired(s, r.Level)} pc", Hint: r.Name)).ToList())" />
+                    }
+                    else if (s.Kind == SkillKind.Group)
+                    {
+                        <span class="muted small">@PiecesRequired(s, 1) pieces</span>
+                    }
+                    else
+                    {
+                        <Stepper Value="level" Min="min" Max="s.MaxLevel" ValueChanged="v => Set(s.Name, v)" />
+                    }
+                    @if (Mode == PickerMode.Limit && level > 0)
+                    {
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Set(s.Name, 0)">exclude</MudButton>
+                    }
+                    <button type="button" class="iconbtn" title="remove" @onclick="() => Set(s.Name, null)">×</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="picker-tools">
+        <SearchBox @bind-Value="_query" Class="search" Placeholder="@(Mode == PickerMode.Target ? "Search skills, set bonuses, group skills…" : "Search skills…")" />
+        <Segmented T="SkillKind?" Small="true" @bind-Value="_kind" Options="KindOptions" />
+        <span class="muted small">@available.Count @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills")</span>
+    </div>
+    <div class="available">
+        @foreach (var s in available)
+        {
+            <button @key="s.Name" type="button" class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")" @onclick="() => Add(s)"
+                    title="@(s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "")">
+                <SkillIcon Name="@s.Name" Size="22" />
+                <span class="name">@s.Name</span>
+                <KindTag Kind="s.Kind" />
+                <span class="muted">@(IsBonus(s) ? PiecesText(s) : $"max {s.MaxLevel}")</span>
+                <span class="desc muted">@(s.Description ?? s.Ranks.FirstOrDefault()?.Description)</span>
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Target = minimum levels a build must reach; Limit = caps for the score (0 excludes the skill).</summary>
+    public enum PickerMode { Target, Limit }
+
+    [Parameter] public PickerMode Mode { get; set; } = PickerMode.Target;
+    [Parameter, EditorRequired] public IReadOnlyDictionary<string, int> Values { get; set; } = new Dictionary<string, int>();
+    [Parameter] public EventCallback<Dictionary<string, int>> ValuesChanged { get; set; }
+
+    /// <summary>Skills, set bonuses and group skills to mark (e.g. the ones the optimizer values under the current conditions).</summary>
+    [Parameter] public IReadOnlySet<string>? Highlight { get; set; }
+
+    private string _query = "";
+    /// <summary>null = all kinds.</summary>
+    private SkillKind? _kind;
+
+    /// <summary>Pieces a set bonus tier / group skill needs, from the rank data (same fallback as RequestLoader.PiecesRequired).</summary>
+    public static int PiecesRequired(SkillDto s, int level) =>
+        s.Ranks.FirstOrDefault(r => r.Level == level)?.PiecesRequired ?? (s.Kind == SkillKind.Group ? 3 : level >= 2 ? 4 : 2);
+
+    private static bool IsBonus(SkillDto s) => s.Kind is SkillKind.Set or SkillKind.Group;
+
+    private static string Kind(SkillDto s) => s.Kind.ToString().ToLowerInvariant();
+
+    /// <summary>"I = 2 pieces · II = 4 pieces" for a set bonus, "3 pieces" for a group skill.</summary>
+    private static string PiecesText(SkillDto s) =>
+        s.Kind == SkillKind.Set
+            ? string.Join(" · ", s.Ranks.Select(r => $"{Fmt.Roman(r.Level)} = {PiecesRequired(s, r.Level)} pieces"))
+            : $"{PiecesRequired(s, 1)} pieces";
+
+    private static readonly IReadOnlyList<SegmentOption<SkillKind?>> LimitKinds =
+        [new(null, "All"), new(SkillKind.Weapon, "Weapon skills"), new(SkillKind.Armor, "Armor skills")];
+
+    private static readonly IReadOnlyList<SegmentOption<SkillKind?>> TargetKinds =
+        [.. LimitKinds, new(SkillKind.Set, "Set bonuses"), new(SkillKind.Group, "Group skills")];
+
+    private IReadOnlyList<SegmentOption<SkillKind?>> KindOptions => Mode == PickerMode.Target ? TargetKinds : LimitKinds;
+
+    private List<SkillDto> Available(List<SkillDto> skills)
+    {
+        var q = (_query ?? "").Trim().ToLowerInvariant();
+        return skills
+            .Where(s => !Values.ContainsKey(s.Name))
+            .Where(s => _kind is null || s.Kind == _kind)
+            .Where(s => q == "" || s.Name.Contains(q, StringComparison.OrdinalIgnoreCase) || (s.Description ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                || s.Ranks.Any(r => (r.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)))
+            .OrderByDescending(s => Highlight?.Contains(s.Name) == true)
+            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private Task Set(string name, int? level)
+    {
+        var next = new Dictionary<string, int>(Values);
+        if (level is { } l) next[name] = l;
+        else next.Remove(name);
+        return ValuesChanged.InvokeAsync(next);
+    }
+
+    private Task Add(SkillDto s) => Set(s.Name, Mode == PickerMode.Target ? s.MaxLevel : 1);
+}

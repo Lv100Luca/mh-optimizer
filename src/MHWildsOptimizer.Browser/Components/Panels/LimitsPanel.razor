@@ -1,5 +1,36 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="LimitsPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var limits = request.Conditions.SkillLimits;
+    var limitErrors = App.Resolved?.Errors.Where(e => e.StartsWith("Skill limit", StringComparison.Ordinal) || e.Contains("above its limit", StringComparison.Ordinal)).ToList() ?? [];
+    var burst = (request.Weapon.Spec?.Type ?? request.Weapon.Type) == "great-sword" ? 1 : 0;
+
+    <div class="panel">
+        <Section Title="Skill limits"
+                 Hint="Cap how much the optimizer values a skill. 0 removes it from the optimization (it is never slotted or chased); n values it only up to level n, so higher levels are shown but score nothing.">
+            <Actions>
+                @if (!limits.ContainsKey("Burst"))
+                {
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" title="Great Sword rarely reaches the five-hit Burst boost"
+                               OnClick="() => SetLimits(new Dictionary<string, int>(limits) { [BurstSkill] = burst })">
+                        + Burst ≤ @burst (slow weapons)
+                    </MudButton>
+                }
+            </Actions>
+            <ChildContent>
+                @foreach (var e in limitErrors)
+                {
+                    <Alert Kind="error">@e</Alert>
+                }
+                <SkillPicker Mode="SkillPicker.PickerMode.Limit" Values="limits" ValuesChanged="SetLimits" />
+            </ChildContent>
+        </Section>
+    </div>
+}
+
+@code {
+    private const string BurstSkill = "Burst";
+
+    private void SetLimits(Dictionary<string, int> limits) => App.PatchConditions(c => c with { SkillLimits = limits });
+}
