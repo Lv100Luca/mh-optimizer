@@ -12,17 +12,27 @@
     <header class="build-head">
         <div class="build-rank">@(TitleContent ?? (r => r.AddContent(0, Title ?? $"Build {b.Rank}")))</div>
         <div class="score">
-            <span class="efr">EFR @Fmt.N(b.Efr)</span>
-            <span class="plus">+</span>
-            <span class="efe">EFE @Fmt.N(b.Efe)</span>
-            @if (b.Procs > 0)
+            @if (BuildDamage.Of(b) is { } damage)
             {
-                <span class="plus">+</span>
-                <span class="procs" title="@string.Join(", ", s.ProcSources)">procs @Fmt.N(b.Procs)</span>
+                var r = b.StatsRequested;
+                <span class="total" title="@ScoreTitle(b)">@Fmt.N(damage, 0)</span>
+                <span class="muted">@BuildDamage.Label(b) · @Fmt.N(r.DamagePerMinute, 0) per minute</span>
+                <span class="muted small" title="The same attack with every hunt condition on">every condition on: @Fmt.N(b.StatsAllOn.DamagePerExecution, 0)</span>
             }
-            <span class="eq">=</span>
-            <span class="total">@Fmt.N(b.Score)</span>
-            <span class="muted small">every condition on: @Fmt.N(s.TotalAllConditions)</span>
+            else
+            {
+                <span class="efr">EFR @Fmt.N(b.Efr)</span>
+                <span class="plus">+</span>
+                <span class="efe">EFE @Fmt.N(b.Efe)</span>
+                @if (b.Procs > 0)
+                {
+                    <span class="plus">+</span>
+                    <span class="procs" title="@string.Join(", ", s.ProcSources)">procs @Fmt.N(b.Procs)</span>
+                }
+                <span class="eq">=</span>
+                <span class="total">@Fmt.N(b.Score)</span>
+                <span class="muted small">every condition on: @Fmt.N(s.TotalAllConditions)</span>
+            }
             @Delta
         </div>
         <div class="statchips">
@@ -42,12 +52,6 @@
                         <img src="@icon" alt="" />
                     }
                     @Fmt.TitleCase(s.Element) <b>@Fmt.N(s.ElementTrue, 0)</b> <small>@s.ElementDisplay display</small>
-                </span>
-            }
-            @if (b.StatsRequested.DamagePerExecution > 0)
-            {
-                <span class="statchip dmg" title="Damage against the target, before the monster's defense rate and per-hit rounding. Ranks builds exactly like the score.">
-                    DMG <b>@Fmt.N(b.StatsRequested.DamagePerExecution, 0)</b> <small>per @(b.StatsRequested.Execution ?? "attack"), @Fmt.N(b.StatsRequested.DamagePerMinute, 0) per minute</small>
                 </span>
             }
         </div>
@@ -286,6 +290,10 @@
             <span class="muted small"><Slots Numbers="numbers" Named="named" /></span>
         </span>
     };
+
+    private static string ScoreTitle(BuildDto b) =>
+        $"Against the target, before the monster's defense rate and per-hit rounding. Score: EFR {Fmt.N(b.Efr)} + EFE {Fmt.N(b.Efe)}"
+        + (b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "") + $" = {Fmt.N(b.Score)} per 100 MV; it ranks builds the same as the damage.";
 
     private static RenderFragment StatsBlock(string title, StatsDto r) => __builder =>
     {

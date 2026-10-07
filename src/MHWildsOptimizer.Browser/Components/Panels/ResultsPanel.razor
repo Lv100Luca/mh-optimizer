@@ -118,7 +118,7 @@
                     <SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="20" /><b>@p.SetBonus</b></SkillHover>
                     <span class="muted">+</span>
                     <SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="20" /><b>@p.GroupSkill</b></SkillHover>
-                    <span class="muted">best @Fmt.N(p.BestScore) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
+                    <span class="muted">best @(p.Builds.FirstOrDefault() is { } top && BuildDamage.Of(top) is { } topDamage ? $"{Fmt.N(topDamage, 0)} {BuildDamage.Label(top)}" : Fmt.N(p.BestScore)) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
                 </div>
                 @if (p.Builds.Count == 0)
                 {
@@ -128,7 +128,7 @@
                 {
                     var key = $"opt:{p.Rank}:{b.Rank}";
                     var label = result.Pairs.Count > 1 ? $"Pair #{p.Rank} build {b.Rank}" : $"Optimizer build {b.Rank}";
-                    <BuildCard @key="b.Rank" Build="b" Best="@(p.Rank == 1 && b.Rank == 1)" Delta="@(mine is null ? null : DeltaTo(b.Score, mine.Score, mineName))">
+                    <BuildCard @key="b.Rank" Build="b" Best="@(p.Rank == 1 && b.Rank == 1)" Delta="@(mine is null ? null : DeltaTo(b, mine, mineName))">
                         <Actions>
                             <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => EditCopy(b, label, key)"
                                        title="Copy this build into My builds to change pieces or decorations">
@@ -171,14 +171,17 @@
     private IReadOnlyList<SegmentOption<int>> MineOptions(IReadOnlyList<BuildInput> builds) =>
         builds.Select((b, i) =>
         {
-            var score = App.Evaluated is { } ev && i < ev.Count ? ev[i].Build?.Score : null;
+            var build = App.Evaluated is { } ev && i < ev.Count ? ev[i].Build : null;
             var name = string.IsNullOrEmpty(b.Name) ? "(unnamed)" : b.Name;
-            RenderFragment content = @<span>@name@if (score is { } s) {<small>@(" ")@Fmt.N(s)</small>}</span>;
+            RenderFragment content = @<span>@name@if (build is not null) {<small>@(" ")@BuildDamage.Text(build)</small>}</span>;
             return new SegmentOption<int>(i, name, content);
         }).ToList();
 
-    private static RenderFragment DeltaTo(double score, double reference, string label) =>
-        @<ScoreDelta Score="score" Reference="reference" Label="@label" />;
+    private static RenderFragment DeltaTo(BuildDto b, BuildDto reference, string label)
+    {
+        var (value, against, digits) = BuildDamage.Compare(b, reference);
+        return @<ScoreDelta Score="value" Reference="against" Digits="digits" Label="@label" />;
+    }
 
     private IEnumerable<string> BuildNames => App.Builds.Select(x => x.Name);
 

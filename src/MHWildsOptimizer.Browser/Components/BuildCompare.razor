@@ -3,12 +3,15 @@
 @{
     var sa = A.Summary;
     var sb = B.Summary;
-    var metrics = new List<Metric>
-    {
+    var metrics = new List<Metric>();
+    if (BuildDamage.Of(A) is { } damageA && BuildDamage.Of(B) is { } damageB)
+        metrics.Add(new(char.ToUpperInvariant(BuildDamage.Label(A)[0]) + BuildDamage.Label(A)[1..], damageA, damageB, 0));
+    metrics.AddRange(
+    [
         new("Score", A.Score, B.Score, 1),
         new("EFR", A.Efr, B.Efr, 1),
         new("EFE", A.Efe, B.Efe, 1),
-    };
+    ]);
     if (A.Procs > 0 || B.Procs > 0) metrics.Add(new("Procs", A.Procs, B.Procs, 1));
     metrics.Add(new("Every condition on", sa.TotalAllConditions, sb.TotalAllConditions, 1));
     metrics.Add(new("Attack (true)", sa.Attack, sb.Attack, 1));

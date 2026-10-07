@@ -63,7 +63,7 @@
                     var tab = i;
                     <button type="button" role="tab" aria-selected="@(i == index)" class="buildtab @(i == index ? "active" : "")" @onclick="() => App.SetBuildIndex(tab)">
                         <span>@if (x.Picked) {<span class="pickstar" title="the weapon's pick">★ </span>}@(x.Name.Length > 0 ? x.Name : "(unnamed)")</span>
-                        @if (e?.Build is { } eb) { <b>@Fmt.N(eb.Score)</b> } else { <span class="muted">…</span> }
+                        @if (e?.Build is { } eb) { <b>@BuildDamage.Text(eb)</b> } else { <span class="muted">…</span> }
                         @if (e is { Errors.Count: > 0 }) { <span class="err" title="@string.Join("\n", e.Errors)">!</span> }
                     </button>
                 }
@@ -79,8 +79,15 @@
     <div class="scorebar">
         @if (b is not null)
         {
-            <span class="scorebar-total"><span class="muted small">Score</span> <b>@Fmt.N(b.Score)</b></span>
-            <span class="muted small">EFR @Fmt.N(b.Efr) + EFE @Fmt.N(b.Efe)@(b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "")</span>
+            @if (BuildDamage.Of(b) is { } damage)
+            {
+                <span class="scorebar-total" title="@($"Score: EFR {Fmt.N(b.Efr)} + EFE {Fmt.N(b.Efe)}{(b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "")} = {Fmt.N(b.Score)} per 100 MV")"><b>@Fmt.N(damage, 0)</b> <span class="muted small">@BuildDamage.Label(b)</span></span>
+            }
+            else
+            {
+                <span class="scorebar-total"><span class="muted small">Score</span> <b>@Fmt.N(b.Score)</b></span>
+                <span class="muted small">EFR @Fmt.N(b.Efr) + EFE @Fmt.N(b.Efe)@(b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "")</span>
+            }
             <span class="statchip atk"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(b.Summary.Attack, 0)</b></span>
             <span class="statchip aff"><img src="@GameIcons.Affinity" alt="" />AFF <b>@b.Summary.Affinity%</b></span>
             @if (b.Summary.Element != Element.None)
@@ -93,7 +100,8 @@
             }
             @if (reference is not null && refBuild is not null)
             {
-                <ScoreDelta Score="b.Score" Reference="refBuild.Score" Label="@reference.Label" />
+                var (value, against, digits) = BuildDamage.Compare(b, refBuild);
+                <ScoreDelta Score="value" Reference="against" Digits="digits" Label="@reference.Label" />
             }
         }
         else
