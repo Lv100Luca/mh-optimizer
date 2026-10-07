@@ -434,6 +434,8 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .tcheck.miss { border-color: var(--err); background: rgba(224, 90, 79, 0.1); }
 .build-actions { display: flex; gap: 6px; }
 .mine-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.scored-on { margin: 0 0 8px; }
+.scored-on b { color: var(--text); }
 
 /* ---------------------------------------------------------------- compare */
 .compare { display: flex; flex-direction: column; gap: 14px; }

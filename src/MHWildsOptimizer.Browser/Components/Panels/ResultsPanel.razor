@@ -70,6 +70,10 @@
                     }
                 </div>
             }
+            @if (result?.Pairs.SelectMany(p => p.Builds).FirstOrDefault()?.StatsRequested.ScoredOn is { } scoredOn)
+            {
+                <p class="small scored-on">Scored on <b>@scoredOn</b> <span class="muted">(what this run used, saved with it)</span></p>
+            }
             @if (result is not null && builds.Count > 0)
             {
                 <div class="mine-strip">

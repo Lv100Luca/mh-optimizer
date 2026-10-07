@@ -30,10 +30,11 @@ public sealed record GroupSkillStateDto(string Name, int Pieces, string? RankNam
 
 /// <param name="DamagePerExecution">Damage of one execution of the attack or sequence against the target (<see cref="DamageResult.DamagePerExecution"/>); 0 in results saved before it.</param>
 /// <param name="Execution">What one execution is: "attack", "sequence" or "hit".</param>
+/// <param name="ScoredOn">The attack or sequence and the target the build was scored on ("Sequence: ... against Rey Dau, Head"); null in results saved before it.</param>
 public sealed record StatsDto(
     double TrueRaw, int DisplayAttack, int Affinity, double CritMultiplier, double CritFactor, SharpnessColor? Sharpness, double SharpnessRaw, double SharpnessElement,
     double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers,
-    double DamagePerExecution = 0, double DamagePerMinute = 0, string? Execution = null);
+    double DamagePerExecution = 0, double DamagePerMinute = 0, string? Execution = null, string? ScoredOn = null);
 
 /// <param name="Procs">Proc damage per 100 MV (Dark Arts shockwave, Bad Blood); 0 when off or absent.</param>
 public sealed record BuildSummaryDto(
@@ -114,8 +115,8 @@ public static class ResultMapper
             .Select(kv => new GroupSkillStateDto(kv.Key, kv.Value, RankName(data, kv.Key, 1), skills.GroupActive(kv.Key)))
             .ToList();
 
-        var requested = Stats(w, DamageCalculator.Calculate(w, skills, cond));
-        var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(cond)));
+        var requested = Stats(w, DamageCalculator.Calculate(w, skills, cond), cond.Target);
+        var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(cond)), cond.Target);
 
         var summary = new BuildSummaryDto(s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness, s.Element, s.ElementTrue, s.ElementDisplay,
             s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
@@ -128,13 +129,14 @@ public static class ResultMapper
 
     private static DecoDto? Deco(Decoration? d) => d is null ? null : new DecoDto(d.Name, d.Slot, d.Kind, d.IconColor, d.Skills);
 
-    private static StatsDto Stats(GogmaWeaponStats w, DamageResult r)
+    private static StatsDto Stats(GogmaWeaponStats w, DamageResult r, Target target)
     {
         var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ") && !l.StartsWith("Attack: ")).ToList();
         return new StatsDto(
             r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()), r.Affinity, r.CriticalMultiplier, r.CriticalFactor,
             r.Sharpness, r.SharpnessRawModifier, r.SharpnessElementModifier, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10), r.ElementCap, r.CriticalElementMultiplier,
-            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods, r.DamagePerExecution, r.DamagePerMinute, r.Attack.Execution);
+            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods, r.DamagePerExecution, r.DamagePerMinute, r.Attack.Execution,
+            $"{r.Attack.Name} against {target.Name} (raw hitzone {target.RawHitzone.ToString(System.Globalization.CultureInfo.InvariantCulture)})");
     }
 
     private static string? RankName(GameData data, string skill, int level) =>

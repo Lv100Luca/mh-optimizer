@@ -41,7 +41,7 @@ public sealed record AttackProfile
             var steps = (Sequence ?? []).Select(st => (Step: st, Def: Attacks.Find(type, st.Attack))).Where(x => x.Def is not null && x.Step.Repeat > 0).ToList();
             if (steps.Count == 0) return null;
             var hits = steps.SelectMany(x => Enumerable.Repeat(x.Def!.Hits, x.Step.Repeat).SelectMany(h => h)).ToList();
-            var name = steps.Count == 1 ? steps[0].Def!.Name + (steps[0].Step.Repeat > 1 ? $" x{steps[0].Step.Repeat}" : "") : $"Sequence of {steps.Sum(x => x.Step.Repeat)} attacks";
+            var name = "Sequence: " + string.Join(" + ", steps.Select(x => x.Def!.Name + (x.Step.Repeat > 1 ? $" x{x.Step.Repeat}" : "")));
             return (name, steps.Sum(x => x.Def!.Seconds * x.Step.Repeat), hits);
         }
         return AttackFor(type) is { } a ? (a.Name, a.Seconds, a.Hits.ToList()) : null;

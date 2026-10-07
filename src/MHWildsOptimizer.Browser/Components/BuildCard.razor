@@ -299,6 +299,10 @@
                 {
                     <dt>Element</dt><dd>@Fmt.N(r.ElementTrue, 1) true <span class="muted">(@r.ElementDisplay display, cap @Fmt.N(r.ElementCap, 1), crit element x@(Fmt.N(r.CritElement, 2)))</span></dd>
                 }
+                @if (r.ScoredOn is { } scoredOn)
+                {
+                    <dt>Scored on</dt><dd>@scoredOn</dd>
+                }
                 <dt>Score</dt>
                 <dd><b>EFR @Fmt.N(r.Efr)</b> + <b>EFE @Fmt.N(r.Efe)</b>@if (r.Procs > 0) {@(" + ")<b>procs @Fmt.N(r.Procs)</b>}@(" = ")<b class="total">@Fmt.N(r.Total)</b> <span class="muted">per 100 MV</span></dd>
                 @if (r.DamagePerExecution > 0)
