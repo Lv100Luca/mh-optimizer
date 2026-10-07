@@ -19,13 +19,25 @@
     <None Remove="client\**" />
   </ItemGroup>
 
+  <!-- what the built client depends on: a change to any of these rebuilds wwwroot/ on the next build -->
+  <ItemGroup>
+    <ClientSource Include="client\src\**\*;client\public\**\*;client\index.html;client\package.json;client\package-lock.json;client\vite.config.ts;client\tsconfig.json" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- a stamp that never exists forces the rebuild: on publish or with -p:BuildClient=true -->
+    <ClientBuildStamp>$(ClientIndex)</ClientBuildStamp>
+    <ClientBuildStamp Condition="'$(BuildClient)' == 'true' Or '$(_IsPublishing)' == 'true'">$(ClientDir)always-rebuild.stamp</ClientBuildStamp>
+  </PropertyGroup>
+
   <!--
-    Builds the Vite client into wwwroot/ when that output is missing (first `dotnet build`), on `dotnet publish`,
-    or when asked with -p:BuildClient=true. Pass -p:BuildClient=false to skip it. Needs node + npm on PATH;
-    without them the build still succeeds and the server shows setup instructions instead of the UI.
+    Builds the Vite client into wwwroot/ whenever a client source is newer than wwwroot/index.html (so running the project
+    from the IDE always serves the current UI), on `dotnet publish`, or when asked with -p:BuildClient=true.
+    Pass -p:BuildClient=false to skip it. Needs node + npm on PATH; without them the build still succeeds and the server
+    shows setup instructions instead of the UI.
   -->
-  <Target Name="BuildClient" BeforeTargets="Build"
-          Condition="'$(BuildClient)' != 'false' And Exists('$(ClientDir)package.json') And ('$(BuildClient)' == 'true' Or '$(_IsPublishing)' == 'true' Or !Exists('$(ClientIndex)'))">
+  <Target Name="BuildClient" BeforeTargets="Build" Inputs="@(ClientSource)" Outputs="$(ClientBuildStamp)"
+          Condition="'$(BuildClient)' != 'false' And Exists('$(ClientDir)package.json')">
     <Exec Command="npm install --no-audit --no-fund" WorkingDirectory="$(ClientDir)" Condition="!Exists('$(ClientDir)node_modules')" ContinueOnError="true" StandardOutputImportance="low" />
     <Exec Command="npm run build" WorkingDirectory="$(ClientDir)" ContinueOnError="true" StandardOutputImportance="low">
       <Output TaskParameter="ExitCode" PropertyName="ClientBuildExitCode" />

@@ -40,7 +40,7 @@ function useScored(input: BuildInput | null): EvaluatedBuild | null {
 }
 
 export function BuildsPanel() {
-  const { request, resolved, talismans, builds, evaluated, buildIndex, setBuildIndex, setBuilds, compareKey, setCompareKey, run, setTab } = useApp();
+  const { request, resolved, talismans, builds, evaluated, buildIndex, setBuildIndex, setBuilds, pickBuild, compareKey, setCompareKey, run, setTab } = useApp();
   const { catalog } = useCatalog();
 
   const index = Math.max(0, Math.min(buildIndex, builds.length - 1));
@@ -102,9 +102,13 @@ export function BuildsPanel() {
     <div className="panel">
       <Section
         title="My builds"
-        hint="Builds entered by hand are scored exactly like the optimizer's: same weapon (Weapon tab), conditions, skill limits and attack profile. They are saved with the configuration."
+        hint="Builds entered by hand are scored exactly like the optimizer's: same weapon (Weapon tab), conditions, skill limits and attack profile. They are saved with the weapon; the picked one (★) represents the weapon in the inventory."
         actions={
           <div className="btn-row">
+            <Button small kind={current.picked ? 'primary' : 'ghost'} onClick={() => pickBuild(current.picked ? null : index)}
+              title={current.picked ? "This is the weapon's pick: the inventory compares weapons by it. Click to unpick." : "Make this the weapon's pick: the inventory compares weapons by it"}>
+              {current.picked ? '★ Picked' : '☆ Pick'}
+            </Button>
             <Button small kind="primary" onClick={() => addNew(emptyBuild(uniqueName('My build', names)))}>+ New</Button>
             <Button small onClick={() => addNew({ ...structuredClone(current), name: uniqueName(`${current.name} copy`, names) })}>Duplicate</Button>
             <Button small kind="ghost" onClick={remove}>Delete</Button>
@@ -116,7 +120,7 @@ export function BuildsPanel() {
             const e = evaluated?.[i];
             return (
               <button key={i} type="button" role="tab" aria-selected={i === index} className={'buildtab' + (i === index ? ' active' : '')} onClick={() => setBuildIndex(i)}>
-                <span>{x.name || '(unnamed)'}</span>
+                <span>{x.picked && <span className="pickstar" title="the weapon's pick">★ </span>}{x.name || '(unnamed)'}</span>
                 {e?.build ? <b>{fmt(e.build.score)}</b> : <span className="muted">…</span>}
                 {e && e.errors.length > 0 && <span className="err" title={e.errors.join('\n')}>!</span>}
               </button>

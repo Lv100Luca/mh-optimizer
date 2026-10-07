@@ -14,7 +14,7 @@ builder.Services.ConfigureHttpJsonOptions(o => ApiJson.Configure(o.SerializerOpt
 builder.Services.AddSingleton(sp => AppPaths.Resolve(sp.GetRequiredService<IConfiguration>()));
 builder.Services.AddSingleton(sp => GameDataLoader.Load(sp.GetRequiredService<AppPaths>().Data));
 builder.Services.AddSingleton(sp => Catalog.Build(sp.GetRequiredService<GameData>()));
-builder.Services.AddSingleton<ConfigStore>();
+builder.Services.AddSingleton<ProfileStore>();
 
 var app = builder.Build();
 

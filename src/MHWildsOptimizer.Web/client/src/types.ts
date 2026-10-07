@@ -150,6 +150,8 @@ export interface BuildInput {
   waist: BuildArmorInput | null;
   legs: BuildArmorInput | null;
   talisman: BuildTalismanInput | null;
+  /** the weapon's chosen build: the one the inventory compares (at most one per weapon) */
+  picked?: boolean;
 }
 
 /** A requirement checked against a build: levels for skills, pieces for set bonuses and group skills. */
@@ -160,9 +162,29 @@ export interface EvaluatedBuild { name: string; errors: string[]; warnings: stri
 
 export interface ConfigPayload { request: OptimizationRequest; talismans: TalismanInput[]; builds?: BuildInput[] }
 
-export interface ConfigSummary { name: string; modified: string; has_results: boolean; summary: string | null }
+/** A weapon as the client saves it: the request and its hand-entered builds (the talismans belong to the profile). */
+export interface WeaponPayload { request: OptimizationRequest; builds: BuildInput[] }
 
-export interface ConfigFile { name: string; request: OptimizationRequest; talismans: TalismanInput[]; builds: BuildInput[]; has_results: boolean }
+// ---------------------------------------------------------------- profiles (inputs/profiles/<profile>/...)
+
+export interface ProfileSummary { name: string; weapons: number; talismans: number; modified: string }
+
+/** Account-wide data: the talisman pool every weapon draws from and the condition preset of each weapon type. */
+export interface Profile { name: string; talismans: TalismanInput[]; condition_presets: Record<string, Conditions> }
+
+/** Result of saving a weapon-type preset: saved weapons of that type followed it except where they override it. */
+export interface PresetSaved { profile: Profile; updated_weapons: string[] }
+
+export interface WeaponSummary { name: string; type: string; modified: string; has_results: boolean; summary: string | null }
+
+/** A weapon of a profile: its request and hand-entered builds (inputs/profiles/<profile>/weapons/<name>.json). */
+export interface WeaponFile { profile: string; name: string; request: OptimizationRequest; builds: BuildInput[]; has_results: boolean }
+
+/** One weapon of the inventory: its picked build scored now, the best build of its last run, stale = inputs changed since that run. */
+export interface InventoryEntry {
+  name: string; type: string; modified: string; summary: string; weapon: WeaponStats | null; errors: string[]; targets: ResolvedTarget[];
+  builds: number; picked: EvaluatedBuild | null; last_run: { completed_at: string; pair_label: string; build: Build } | null; stale: boolean;
+}
 
 // ---------------------------------------------------------------- resolve
 
@@ -237,7 +259,11 @@ export interface PairResult {
   work_label?: string; candidate_summary: string; builds: Build[];
 }
 
-export interface OptimizationResult { completed_at: string; elapsed_seconds: number; skill_pair_mode: SkillPairMode; pairs: PairResult[]; text: string }
+export interface OptimizationResult {
+  completed_at: string; elapsed_seconds: number; skill_pair_mode: SkillPairMode; pairs: PairResult[]; text: string;
+  /** fingerprint of the request and talismans of the run; null in results saved before profiles */
+  inputs_hash?: string | null;
+}
 
 export type OptimizeEvent =
   | { type: 'validation'; errors: string[]; warnings: string[] }

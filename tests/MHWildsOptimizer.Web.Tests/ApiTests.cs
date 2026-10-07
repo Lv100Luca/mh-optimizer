@@ -171,30 +171,101 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.Contains(dto.Errors, e => e.Contains("Not A Skill"));
     }
 
+    private static string ProfileDir(WebFixture f, string profile) => Path.Combine(f.InputsDirectory, "profiles", profile);
+
+    private async Task CreateProfile(string profile, IReadOnlyList<TalismanInput> talismans)
+    {
+        (await _fixture.Client.PostAsync($"/api/profiles/{profile}", null)).EnsureSuccessStatusCode();
+        (await _fixture.Client.PutAsJsonAsync($"/api/profiles/{profile}/talismans", new TalismansPayload([.. talismans]), _json)).EnsureSuccessStatusCode();
+    }
+
     [Fact]
-    public async Task Configs_round_trip_through_the_store()
+    public async Task Weapons_round_trip_through_the_profile_store()
     {
         var client = _fixture.Client;
         var payload = ExamplePayload();
+        await CreateProfile("roundtrip", payload.Talismans!);
 
-        var put = await client.PutAsJsonAsync("/api/configs/roundtrip", payload, _json);
+        var put = await client.PutAsJsonAsync("/api/profiles/roundtrip/weapons/gs", new WeaponPayload(payload.Request), _json);
         put.EnsureSuccessStatusCode();
-        Assert.True(File.Exists(Path.Combine(_fixture.InputsDirectory, "roundtrip.json")));
-        Assert.True(File.Exists(Path.Combine(_fixture.InputsDirectory, "roundtrip.talismans.json")));
+        var dir = ProfileDir(_fixture, "roundtrip");
+        Assert.True(File.Exists(Path.Combine(dir, "profile.json")));
+        Assert.True(File.Exists(Path.Combine(dir, "talismans.json")));
+        Assert.True(File.Exists(Path.Combine(dir, "weapons", "gs.json")));
 
-        var list = await client.GetFromJsonAsync<List<ConfigSummaryDto>>("/api/configs", _json);
-        Assert.NotNull(list);
-        Assert.Contains(list, c => c.Name == "roundtrip");
+        // the weapon file stays a plain request the CLI can run: its talismans come from the profile's pool
+        var resolved = RequestLoader.Load(Path.Combine(dir, "weapons", "gs.json"), TestGameData());
+        Assert.Equal(2, resolved.Talismans.Count(t => t.Source == TalismanSource.Random));
 
-        var loaded = await client.GetFromJsonAsync<ConfigDto>("/api/configs/roundtrip", _json);
+        var profiles = await client.GetFromJsonAsync<List<ProfileSummaryDto>>("/api/profiles", _json);
+        Assert.Contains(profiles!, p => p.Name == "roundtrip" && p.Weapons == 1 && p.Talismans == 2);
+        var list = await client.GetFromJsonAsync<List<WeaponSummaryDto>>("/api/profiles/roundtrip/weapons", _json);
+        Assert.Equal("great-sword", Assert.Single(list!).Type);
+
+        var loaded = await client.GetFromJsonAsync<WeaponDto>("/api/profiles/roundtrip/weapons/gs", _json);
         Assert.NotNull(loaded);
         Assert.Equal(payload.Request.TargetSkills, loaded.Request.TargetSkills);
-        Assert.Equal(2, loaded.Talismans.Count);
-        Assert.Equal("roundtrip.talismans.json", loaded.Request.Talismans.File);
+        Assert.Equal(ProfileFiles.SharedTalismanReference, loaded.Request.Talismans.File);
+        var profile = await client.GetFromJsonAsync<ProfileDto>("/api/profiles/roundtrip", _json);
+        Assert.Equal(2, profile!.Talismans.Count);
 
-        var delete = await client.DeleteAsync("/api/configs/roundtrip");
-        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/configs/roundtrip")).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync("/api/profiles/roundtrip/weapons/gs")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/profiles/roundtrip/weapons/gs")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.PutAsJsonAsync("/api/profiles/nobody/weapons/gs", new WeaponPayload(payload.Request), _json)).StatusCode);
+    }
+
+    private static GameData TestGameData() => GameDataLoader.Load(GameDataLoader.FindDataDirectory());
+
+    [Fact]
+    public async Task Saving_a_preset_moves_the_weapons_of_that_type_but_keeps_their_overrides()
+    {
+        var client = _fixture.Client;
+        var payload = ExamplePayload();
+        await CreateProfile("presets", payload.Talismans!);
+        var preset = Conditions.Default;
+        (await client.PutAsJsonAsync("/api/profiles/presets/presets/great-sword", preset, _json)).EnsureSuccessStatusCode();
+
+        var follows = payload.Request with { Conditions = preset with { } };
+        var overrides = payload.Request with { Conditions = preset with { CounterstrikeActive = true } };
+        (await client.PutAsJsonAsync("/api/profiles/presets/weapons/follows", new WeaponPayload(follows), _json)).EnsureSuccessStatusCode();
+        (await client.PutAsJsonAsync("/api/profiles/presets/weapons/overrides", new WeaponPayload(overrides), _json)).EnsureSuccessStatusCode();
+
+        // the new preset turns on red health and counterstrike and turns off full health
+        var next = preset with { RedHealth = true, FullHealth = false, CounterstrikeActive = true, SkillLimits = new() { ["Burst"] = 1 } };
+        var response = await client.PutAsJsonAsync("/api/profiles/presets/presets/great-sword", next, _json);
+        response.EnsureSuccessStatusCode();
+        var saved = await response.Content.ReadFromJsonAsync<PresetSavedDto>(_json);
+        Assert.Equal(["follows", "overrides"], saved!.UpdatedWeapons.Order().ToList());
+        Assert.True(saved.Profile.ConditionPresets["great-sword"].RedHealth);
+
+        var a = (await client.GetFromJsonAsync<WeaponDto>("/api/profiles/presets/weapons/follows", _json))!.Request.Conditions;
+        Assert.True(ConditionPresets.Same(a, next));
+        var b = (await client.GetFromJsonAsync<WeaponDto>("/api/profiles/presets/weapons/overrides", _json))!.Request.Conditions;
+        Assert.True(b.RedHealth);
+        Assert.False(b.FullHealth);
+        Assert.Equal(1, b.SkillLimits["Burst"]);
+        Assert.True(b.CounterstrikeActive); // its own override, which the preset now agrees with
+        Assert.Empty(ConditionPresets.Overrides(b, next));
+    }
+
+    [Fact]
+    public async Task Renaming_a_talisman_renames_it_in_the_builds_of_every_weapon()
+    {
+        var client = _fixture.Client;
+        var payload = ExamplePayload();
+        await CreateProfile("renames", payload.Talismans!);
+        var build = WornBuild();
+        (await client.PutAsJsonAsync("/api/profiles/renames/weapons/one", new WeaponPayload(payload.Request, [build]), _json)).EnsureSuccessStatusCode();
+        (await client.PutAsJsonAsync("/api/profiles/renames/weapons/two", new WeaponPayload(payload.Request, [build with { Name = "Other" }]), _json)).EnsureSuccessStatusCode();
+
+        var renamed = payload.Talismans!.Select(t => t.Name == "Secret Charm" ? t with { Name = "My best charm" } : t).ToList();
+        (await client.PutAsJsonAsync("/api/profiles/renames/talismans", new TalismansPayload(renamed, new() { ["Secret Charm"] = "My best charm" }), _json)).EnsureSuccessStatusCode();
+
+        foreach (var weapon in new[] { "one", "two" })
+        {
+            var loaded = await client.GetFromJsonAsync<WeaponDto>($"/api/profiles/renames/weapons/{weapon}", _json);
+            Assert.Equal("My best charm", Assert.Single(loaded!.Builds).Talisman!.Name);
+        }
     }
 
     private static BuildInput WornBuild() => new()
@@ -243,27 +314,30 @@ public class ApiTests : IClassFixture<WebFixture>
     }
 
     [Fact]
-    public async Task Builds_round_trip_with_the_configuration()
+    public async Task Builds_round_trip_with_the_weapon()
     {
         var client = _fixture.Client;
-        var payload = ExamplePayload() with { Builds = [WornBuild()] };
-        (await client.PutAsJsonAsync("/api/configs/withbuilds", payload, _json)).EnsureSuccessStatusCode();
-        Assert.True(File.Exists(Path.Combine(_fixture.InputsDirectory, "withbuilds.builds.json")));
+        var payload = ExamplePayload();
+        await CreateProfile("builds", payload.Talismans!);
+        (await client.PutAsJsonAsync("/api/profiles/builds/weapons/withbuilds", new WeaponPayload(payload.Request, [WornBuild() with { Picked = true }]), _json)).EnsureSuccessStatusCode();
+        var buildsFile = Path.Combine(ProfileDir(_fixture, "builds"), "weapons", "withbuilds.builds.json");
+        Assert.True(File.Exists(buildsFile));
 
-        var list = await client.GetFromJsonAsync<List<ConfigSummaryDto>>("/api/configs", _json);
+        var list = await client.GetFromJsonAsync<List<WeaponSummaryDto>>("/api/profiles/builds/weapons", _json);
         Assert.NotNull(list);
         Assert.Contains(list, c => c.Name == "withbuilds");
         Assert.DoesNotContain(list, c => c.Name.EndsWith(".builds"));
 
-        var loaded = await client.GetFromJsonAsync<ConfigDto>("/api/configs/withbuilds", _json);
+        var loaded = await client.GetFromJsonAsync<WeaponDto>("/api/profiles/builds/weapons/withbuilds", _json);
         Assert.NotNull(loaded);
         var build = Assert.Single(loaded.Builds);
         Assert.Equal("Worn", build.Name);
+        Assert.True(build.Picked);
         Assert.Equal("G. Fulgur Vambraces β", build.Arms!.Piece);
         Assert.Equal(["Attack Jewel III [3]", "Critical Jewel III [3]", null], build.WeaponDecorations);
 
-        Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync("/api/configs/withbuilds")).StatusCode);
-        Assert.False(File.Exists(Path.Combine(_fixture.InputsDirectory, "withbuilds.builds.json")));
+        Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync("/api/profiles/builds/weapons/withbuilds")).StatusCode);
+        Assert.False(File.Exists(buildsFile));
     }
 
     [Fact]
@@ -279,10 +353,11 @@ public class ApiTests : IClassFixture<WebFixture>
     }
 
     [Fact]
-    public async Task Invalid_config_names_are_rejected()
+    public async Task Invalid_names_are_rejected()
     {
-        Assert.Equal(HttpStatusCode.BadRequest, (await _fixture.Client.GetAsync("/api/configs/..%2Fsecret")).StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, (await _fixture.Client.PutAsJsonAsync("/api/configs/a%2Fb", ExamplePayload(), _json)).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await _fixture.Client.GetAsync("/api/profiles/..%2Fsecret")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await _fixture.Client.GetAsync("/api/profiles/ok/weapons/..%2Fsecret")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await _fixture.Client.PutAsJsonAsync("/api/profiles/ok/weapons/a%2Fb", new WeaponPayload(ExamplePayload().Request), _json)).StatusCode);
     }
 
     [Fact]
@@ -290,6 +365,7 @@ public class ApiTests : IClassFixture<WebFixture>
     {
         // Small, fast search: fixed pair, one target, tiny beam.
         var payload = ExamplePayload();
+        await CreateProfile("runs", payload.Talismans!);
         payload = payload with
         {
             Request = payload.Request with
@@ -299,7 +375,8 @@ public class ApiTests : IClassFixture<WebFixture>
             },
         };
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/optimize?save=streamed") { Content = JsonContent.Create(payload, options: _json) };
+        (await _fixture.Client.PutAsJsonAsync("/api/profiles/runs/weapons/streamed", new WeaponPayload(payload.Request, [WornBuild() with { Picked = true }]), _json)).EnsureSuccessStatusCode();
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/optimize?profile=runs&save=streamed") { Content = JsonContent.Create(payload, options: _json) };
         using var response = await _fixture.Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
         Assert.StartsWith("text/event-stream", response.Content.Headers.ContentType?.MediaType);
@@ -318,11 +395,25 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.Contains(best.Skills, s => s.Skill == "Weakness Exploit" && s.Level >= 3);
         Assert.Contains(best.Skills, s => s.Skill == "Focus" && s.Level >= 3);
         Assert.True(best.Score > 0);
-        Assert.True(File.Exists(Path.Combine(_fixture.InputsDirectory, "streamed.results.txt")));
+        Assert.True(File.Exists(Path.Combine(ProfileDir(_fixture, "runs"), "weapons", "streamed.results.txt")));
 
-        var saved = await _fixture.Client.GetFromJsonAsync<ResultDto>("/api/configs/streamed/results", _json);
+        var saved = await _fixture.Client.GetFromJsonAsync<ResultDto>("/api/profiles/runs/weapons/streamed/results", _json);
         Assert.NotNull(saved);
         Assert.Equal(dto.Pairs[0].BestScore, saved.Pairs[0].BestScore);
+        Assert.NotNull(saved.InputsHash);
+
+        // the inventory shows the run (fresh) and the picked build scored now
+        var entry = Assert.Single((await _fixture.Client.GetFromJsonAsync<List<InventoryEntryDto>>("/api/profiles/runs/inventory", _json))!);
+        Assert.Equal("streamed", entry.Name);
+        Assert.False(entry.Stale);
+        Assert.Equal(dto.Pairs[0].BestScore, entry.LastRun!.Build.Score, 6);
+        Assert.Equal("Worn", entry.Picked!.Name);
+        Assert.True(entry.Picked.Build!.Score > 0);
+
+        // new talismans make the run stale
+        (await _fixture.Client.PutAsJsonAsync("/api/profiles/runs/talismans", new TalismansPayload([.. payload.Talismans!.Take(1)]), _json)).EnsureSuccessStatusCode();
+        entry = Assert.Single((await _fixture.Client.GetFromJsonAsync<List<InventoryEntryDto>>("/api/profiles/runs/inventory", _json))!);
+        Assert.True(entry.Stale);
     }
 
     private static List<(string Type, string Data)> ParseSse(string body)

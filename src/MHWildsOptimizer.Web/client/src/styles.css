@@ -425,3 +425,22 @@ details summary { cursor: pointer; color: var(--accent-2); }
   .table.equip.editor tr { grid-template-columns: 32px minmax(0, 1fr); grid-template-areas: "icon name" "icon skills" "icon decos"; }
   .piecepick { min-width: 0; width: 100%; }
 }
+
+/* ---------------------------------------------------------------- inventory (profile weapons) */
+.inv-group + .inv-group { margin-top: 18px; }
+.inv-group h3 { font-size: 14px; margin: 4px 0 6px; gap: 8px; }
+.inv-table td { vertical-align: top; }
+.inv-table tr.inv-open td { background: rgba(79, 163, 230, 0.06); }
+.inv-table tr.inv-compared td { background: rgba(227, 182, 78, 0.08); }
+.inv-table .spinner { display: inline-block; vertical-align: middle; width: 12px; height: 12px; }
+.inv-name { font-weight: 600; font-size: 14px; text-decoration: none; }
+.inv-name:hover { text-decoration: underline; }
+.elem-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-left: 6px; vertical-align: middle; }
+.stale-badge { margin-left: 6px; padding: 0 6px; border-radius: 4px; font-size: 11px; color: var(--warn); border: 1px solid rgba(232, 176, 75, 0.5); }
+.pickstar { color: var(--accent); }
+.btn-row.nowrap { flex-wrap: nowrap; }
+
+/* condition presets per weapon type */
+.cond.overridden { border-style: dashed; border-color: var(--accent-2); }
+.ovr { margin-left: 8px; padding: 0 5px; border-radius: 4px; font-size: 10px; font-weight: 500; color: var(--accent-2); border: 1px solid rgba(79, 163, 230, 0.5); text-transform: uppercase; letter-spacing: 0.04em; }
+.chip.ovr-chip { border-color: rgba(79, 163, 230, 0.5); color: var(--accent-2); }

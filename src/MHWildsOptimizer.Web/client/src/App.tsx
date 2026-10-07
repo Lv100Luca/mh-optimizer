@@ -11,6 +11,7 @@ import { OptionsPanel } from './components/OptionsPanel';
 import { ReviewPanel } from './components/ReviewPanel';
 import { ResultsPanel } from './components/ResultsPanel';
 import { BuildsPanel } from './components/BuildsPanel';
+import { InventoryPanel } from './components/InventoryPanel';
 
 interface NavItem { id: Tab; label: string; icon: string; badge?: string | number; tone?: 'ok' | 'warn' | 'err' }
 
@@ -35,7 +36,9 @@ export function App() {
   const warnings = resolved?.warnings.length ?? 0;
   const weaponKind = request.weapon.spec?.type ?? request.weapon.type ?? 'great-sword';
 
+  const staleOrRunning = Object.values(app.batch).filter((b) => b.status === 'running' || b.status === 'queued').length;
   const nav: NavItem[] = [
+    { id: 'inventory', label: 'Inventory', icon: icons.weaponBase(weaponKind), badge: staleOrRunning ? `${staleOrRunning} …` : app.weapons.length || undefined },
     { id: 'weapon', label: 'Weapon', icon: icons.weapon(weaponKind) },
     { id: 'pair', label: 'Skill pair', icon: icons.skill('set'), badge: request.skill_pair.mode === 'fixed' ? 'fixed' : 'optimize' },
     { id: 'targets', label: 'Target skills', icon: icons.skill('offense'), badge: Object.keys(request.target_skills).length || undefined },
@@ -72,6 +75,7 @@ export function App() {
       </nav>
 
       <main className="content">
+        {tab === 'inventory' && <InventoryPanel />}
         {tab === 'weapon' && <WeaponPanel />}
         {tab === 'pair' && <SkillPairPanel />}
         {tab === 'targets' && <TargetsPanel />}

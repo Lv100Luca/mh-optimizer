@@ -66,7 +66,7 @@ export function ResultsPanel() {
         title={run.status === 'running' ? 'Searching…' : 'Results'}
         hint={
           run.status === 'running' ? `${elapsed?.toFixed(1)} s elapsed · talisman first, then one armor slot at a time; partial builds with the same skill state are merged.`
-          : result ? `${result.pairs.length} skill pair${result.pairs.length === 1 ? '' : 's'}, ${result.pairs.reduce((n, p) => n + p.builds.length, 0)} builds · search took ${result.elapsed_seconds.toFixed(1)} s · ${new Date(result.completed_at).toLocaleString()}${run.fromDisk && name ? ` · loaded from inputs/${name}.results.json` : ''}`
+          : result ? `${result.pairs.length} skill pair${result.pairs.length === 1 ? '' : 's'}, ${result.pairs.reduce((n, p) => n + p.builds.length, 0)} builds · search took ${result.elapsed_seconds.toFixed(1)} s · ${new Date(result.completed_at).toLocaleString()}${run.fromDisk && name ? ` · last run of ${name}` : ''}`
           : undefined
         }
         actions={
@@ -135,6 +135,10 @@ export function ResultsPanel() {
                   <>
                     <Button small onClick={() => addBuild(fromBuild(b, uniqueName(`${label} (copy)`, builds.map((x) => x.name))), key)} title="Copy this build into My builds to change pieces or decorations">
                       Edit a copy
+                    </Button>
+                    <Button small onClick={() => addBuild({ ...fromBuild(b, uniqueName(`${label} (picked)`, builds.map((x) => x.name))), picked: true }, key)}
+                      title="Keep this build as the weapon's pick: it is copied into My builds and the inventory compares weapons by it (save the weapon to keep it)">
+                      ★ Pick
                     </Button>
                     {mine && <Button small kind="ghost" onClick={() => { setCompareKey(key); setTab('builds'); }} title={`Compare side by side with ${mineName}`}>Compare</Button>}
                   </>

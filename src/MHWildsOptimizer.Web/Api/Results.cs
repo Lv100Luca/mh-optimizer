@@ -47,7 +47,8 @@ public sealed record BuildDto(
 
 public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string WorkLabel, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
 
-public sealed record ResultDto(DateTimeOffset CompletedAt, double ElapsedSeconds, SkillPairMode SkillPairMode, IReadOnlyList<PairResultDto> Pairs, string Text);
+/// <param name="InputsHash">Fingerprint of the request and talismans the run used (<see cref="ProfileStore.InputsHash"/>); null in results saved before profiles.</param>
+public sealed record ResultDto(DateTimeOffset CompletedAt, double ElapsedSeconds, SkillPairMode SkillPairMode, IReadOnlyList<PairResultDto> Pairs, string Text, string? InputsHash = null);
 
 /// <summary>Turns optimizer output into the JSON the client renders (equipment, decorations, skills with sources, stats).</summary>
 public static class ResultMapper

@@ -1,3 +1,4 @@
+import { overrides } from '../presets';
 import { useApp, useCatalog } from '../state';
 import type { AttackProfile, AttackProfilePreset, ConditionMeta, Conditions, OptimizationRequest, ResonanceMode, WeaponType } from '../types';
 import { Alert, Button, Field, OptionalNumberInput, Section, Segmented, SkillHover, SkillIcon } from './common';
@@ -25,7 +26,7 @@ export function attackProfileText(request: OptimizationRequest, weaponTypes: Map
 }
 
 export function ConditionsPanel() {
-  const { request, patchRequest, resolved } = useApp();
+  const { request, patchRequest, resolved, profile: profileName, name, presets, presetFor, savePreset } = useApp();
   const { catalog, skillsByName, weaponTypes } = useCatalog();
   if (!request || !catalog) return null;
   const c = request.conditions;
@@ -48,13 +49,26 @@ export function ConditionsPanel() {
   const profileErrors = resolved?.errors.filter((e) => e.includes('attack_profile')) ?? [];
   const customProfile = isCustom(profile);
 
+  // the weapon type's preset: the conditions every weapon of this type starts from and follows, except where it overrides them
+  const typePreset = presetFor(kind);
+  const hasPreset = kind in presets;
+  const overridden = overrides(c, typePreset);
+  const keyLabel = (key: string) =>
+    catalog.conditions.find((x) => x.key === key)?.label ?? ({ resonance: 'Omega Resonance phase', attack_profile: 'Attack profile', skill_limits: 'Skill limits' } as Record<string, string>)[key] ?? key;
+  const resetToPreset = () => patchRequest((r) => ({ ...r, conditions: structuredClone(typePreset) }));
+  const confirmSavePreset = () => {
+    if (window.confirm(`Save these conditions, skill limits and attack profile as the ${weaponLabel} preset of ${profileName}? New ${weaponLabel} weapons start from it, and saved ones follow it except where they override it.`))
+      void savePreset();
+  };
+
   const condition = (x: ConditionMeta) => {
     const on = c[x.key] === true;
+    const own = overridden.includes(x.key);
     return (
-      <label key={x.key} className={'cond' + (on ? ' on' : '')}>
+      <label key={x.key} className={'cond' + (on ? ' on' : '') + (own ? ' overridden' : '')}>
         <input type="checkbox" checked={on} onChange={(e) => set(x.key, e.target.checked)} />
         <span className="cond-text">
-          <b>{x.label}</b>
+          <b>{x.label}{own && <span className="ovr" title={`The ${weaponLabel} preset has this ${typePreset[x.key] === true ? 'on' : 'off'}; this weapon overrides it.`}>override</span>}</b>
           <span className="muted small">{x.description}</span>
           <span className="cond-skills">
             {x.skills.map((s) => {
@@ -70,6 +84,27 @@ export function ConditionsPanel() {
 
   return (
     <div className="panel">
+      <Section
+        title={`${weaponLabel} preset`}
+        hint={`Conditions are set per weapon type: every ${weaponLabel} of the profile starts from this preset (hunt conditions, skill limits and attack profile). A weapon can override single values; the rest follows the preset when it changes.`}
+        actions={
+          <div className="btn-row">
+            <Button small kind="ghost" onClick={resetToPreset} disabled={overridden.length === 0} title={`Drop this weapon's overrides and use the ${weaponLabel} preset`}>Reset to preset</Button>
+            <Button small onClick={confirmSavePreset} disabled={hasPreset && overridden.length === 0} title={`Make this weapon's conditions the ${weaponLabel} preset`}>Save as {weaponLabel} preset</Button>
+          </div>
+        }
+      >
+        {!hasPreset && <p className="muted small">The profile has no {weaponLabel} preset yet, so the defaults stand in. Set the conditions you usually play with and save them as the preset.</p>}
+        {overridden.length === 0 ? (
+          <p className="small"><span className="ok">✓</span> {name ?? 'This weapon'} follows the {weaponLabel} preset.</p>
+        ) : (
+          <div className="chip-row">
+            <span className="muted small">{name ?? 'This weapon'} overrides:</span>
+            {overridden.map((k) => <span key={k} className="chip ovr-chip">{keyLabel(k)}</span>)}
+          </div>
+        )}
+      </Section>
+
       <Section
         title="Hunt conditions"
         hint="A toggle only matters when a build actually carries the skill behind it: the calculator never invents a skill. Off means the skill scores nothing, so the optimizer will not chase it."

@@ -53,7 +53,7 @@ public static class SetupPage
         npm install
         npm run build</pre>
         <p>then reload this page. For development run <code>npm run dev</code> in that folder and open <a href="http://localhost:5173">http://localhost:5173</a>, which proxies <code>/api</code> to this server.</p>
-        <p>API: <a href="/api/catalog">/api/catalog</a>, <a href="/api/configs">/api/configs</a></p>
+        <p>API: <a href="/api/catalog">/api/catalog</a>, <a href="/api/profiles">/api/profiles</a></p>
         </body></html>
         """;
 }

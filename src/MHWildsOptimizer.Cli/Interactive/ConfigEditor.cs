@@ -41,12 +41,15 @@ public sealed class ConfigEditor
     {
         if (path is null)
         {
-            var files = RequestFiles.ListRequests(inputsDirectory);
+            // profile weapons (profiles/<p>/weapons/<w>.json) first, then stand-alone requests
+            var files = ProfileFiles.AllWeaponRequests(inputsDirectory).Concat(RequestFiles.ListRequests(inputsDirectory))
+                .Select(f => Path.GetRelativePath(inputsDirectory, f).Replace('\\', '/'))
+                .ToList();
             var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                 .Title("Which configuration?")
                 .PageSize(15)
-                .AddChoices(files.Select(Path.GetFileName).Append("New configuration")!));
-            path = choice == "New configuration" ? null : Path.Combine(inputsDirectory, choice);
+                .AddChoices(files.Select(Markup.Escape).Append("New configuration")));
+            path = choice == "New configuration" ? null : Path.Combine(inputsDirectory, files.First(f => Markup.Escape(f) == choice));
         }
         if (path is null) return new ConfigEditor(data);
 
@@ -542,9 +545,13 @@ public sealed class ConfigEditor
         if (_path is null || saveAs)
         {
             var defaultName = _path is null ? "my-request" : Path.GetFileNameWithoutExtension(_path);
-            var name = AnsiConsole.Prompt(new TextPrompt<string>("File name (saved under inputs/):").DefaultValue(defaultName));
+            // a profile weapon is saved as another weapon of that profile, so talismans.file still points at its pool
+            var directory = _path is null ? inputsDirectory : Path.GetDirectoryName(Path.GetFullPath(_path))!;
+            var relative = Path.GetRelativePath(inputsDirectory, directory).Replace('\\', '/');
+            var shown = relative == "." ? "inputs" : "inputs/" + relative;
+            var name = AnsiConsole.Prompt(new TextPrompt<string>($"File name (saved under {Markup.Escape(shown)}/):").DefaultValue(defaultName));
             if (!name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) name += ".json";
-            _path = Path.Combine(inputsDirectory, name);
+            _path = Path.Combine(directory, name);
         }
 
         var talismanFile = _request.Talismans.File ?? RequestFiles.DefaultTalismanFileName(_path);

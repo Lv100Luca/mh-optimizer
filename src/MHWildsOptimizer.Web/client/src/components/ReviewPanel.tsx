@@ -32,7 +32,7 @@ export function ReviewPanel() {
         {r?.errors.map((e) => <Alert key={e} kind="error">{e}</Alert>)}
         {r?.warnings.map((e) => <Alert key={e} kind="warning">{e}</Alert>)}
         {r?.is_valid && r.warnings.length === 0 && <Alert kind="ok">Everything checks out.</Alert>}
-        {name && dirty && <Alert kind="info">Unsaved changes: results of a run are written to inputs/{name}.results.txt, the configuration itself only when you save.</Alert>}
+        {name && dirty && <Alert kind="info">Unsaved changes: a run is saved as the last run of {name}, the weapon itself only when you save (until then the inventory shows that run as stale).</Alert>}
 
         <div className="review-grid">
           <div className="kv">

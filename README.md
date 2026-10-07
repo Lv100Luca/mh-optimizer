@@ -36,13 +36,19 @@ The search is a dynamic program over skill states (talisman, then one armor slot
 
 ## Web UI
 
-The web UI covers the same setup as the editor (weapon, rolled pair, skill pair mode, targets including set bonuses and group skills by tier, skill limits, conditions with the proc damage toggle and attack profile, talismans, options) with game icons, live validation and a weapon stat preview, runs the optimizer with live progress and renders the builds (equipment with decorations, skills with sources, stats under the requested and under all conditions). Configurations are the same `inputs/<name>.json` + `inputs/<name>.talismans.json` files the CLI uses; a run also writes `inputs/<name>.results.txt` and `.results.json`.
+The web UI covers the same setup as the editor (weapon, rolled pair, skill pair mode, targets including set bonuses and group skills by tier, skill limits, conditions with the proc damage toggle and attack profile, talismans, options) with game icons, live validation and a weapon stat preview, runs the optimizer with live progress and renders the builds (equipment with decorations, skills with sources, stats under the requested and under all conditions). The web UI organises configurations by **profile** (an account) under `inputs/profiles/<profile>/`:
+
+* `talismans.json` – the account's random talismans, shared by every weapon of the profile.
+* `profile.json` – a condition preset per weapon type (`condition_presets`, keyed by weapon kind such as `great-sword`). A weapon's conditions follow its type's preset value by value; values that differ from the preset are that weapon's overrides and stay when the preset changes.
+* `weapons/<name>.json` – one request per weapon (with `talismans.file` = `../talismans.json`, so the CLI runs it as is), plus `<name>.builds.json` (hand-entered builds; `"picked": true` marks the one the inventory compares) and `<name>.results.txt` / `.results.json` (the last run, with a fingerprint of its inputs so the inventory can flag it as stale).
+
+The Inventory tab lists a profile's weapons by type with the picked build (scored under today's conditions and talismans) and the best build of the last run, re-runs stale weapons in the background and compares two weapons side by side. The CLI editor lists profile weapons next to the stand-alone `inputs/<name>.json` requests.
 
 ```bash
 dotnet run --project src/MHWildsOptimizer.Web
 ```
 
-then open http://localhost:5214. The first `dotnet build` runs `npm install` + `npm run build` in `src/MHWildsOptimizer.Web/client` (needs node 20+); pass `-p:BuildClient=true` to rebuild the client or `-p:BuildClient=false` to skip it. For client development run `npm run dev` in that folder and open http://localhost:5173 (proxies `/api` to the .NET server). `--data <dir>` / `--inputs <dir>` override the dataset and configuration directories.
+then open http://localhost:5214. Every build runs `npm run build` in `src/MHWildsOptimizer.Web/client` when a client source changed since the last one (`npm install` first if needed; needs node 20+), so the server always serves the current UI; pass `-p:BuildClient=true` to force a rebuild or `-p:BuildClient=false` to skip it. For client development run `npm run dev` in that folder and open http://localhost:5173 (hot reload, proxies `/api` to the .NET server on :5214). In Rider, the shared run configuration **Web + client dev** (`.run/`) starts both. `--data <dir>` / `--inputs <dir>` override the dataset and configuration directories.
 
 API: `GET /api/catalog`, `GET|PUT|DELETE /api/configs/{name}`, `GET /api/configs/{name}/results`, `POST /api/resolve`, `POST /api/optimize` (server-sent events: `validation`, `progress`…, `result`).
 

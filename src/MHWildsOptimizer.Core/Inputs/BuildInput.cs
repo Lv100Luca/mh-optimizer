@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
@@ -41,6 +42,9 @@ public sealed record BuildInput
     public BuildArmorInput? Waist { get; init; }
     public BuildArmorInput? Legs { get; init; }
     public BuildTalismanInput? Talisman { get; init; }
+    /// <summary>The build chosen as the weapon's build: the one the profile's weapon comparison uses (at most one per weapon).</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool Picked { get; init; }
 
     public BuildArmorInput? Armor(ArmorPieceKind kind) => kind switch
     {
