@@ -50,7 +50,7 @@ The Inventory tab lists a profile's weapons by type with the picked build (score
 dotnet run --project src/MHWildsOptimizer.Web
 ```
 
-then open http://localhost:5214. Every build runs `npm run build` in `src/MHWildsOptimizer.Web/client` when a client source changed since the last one (`npm install` first if needed; needs node 20+), so the server always serves the current UI; pass `-p:BuildClient=true` to force a rebuild or `-p:BuildClient=false` to skip it. For client development run `npm run dev` in that folder and open http://localhost:5173 (hot reload, proxies `/api` to the .NET server on :5214). In Rider, the shared run configuration **Web + client dev** (`.run/`) starts both. `--data <dir>` / `--inputs <dir>` override the dataset and configuration directories.
+then open http://localhost:5214. Every build runs `npm run build` in `src/MHWildsOptimizer.Web/client` when a client source changed since the last one (`npm install` first if needed; needs node 20+), so the server always serves the current UI; pass `-p:BuildClient=true` to force a rebuild or `-p:BuildClient=false` to skip it. For client development run `npm run dev` in that folder and open http://localhost:5173 (hot reload, proxies `/api` to the .NET server on :5214). `--data <dir>` / `--inputs <dir>` override the dataset and configuration directories.
 
 API: `GET /api/catalog`, `GET|PUT|DELETE /api/configs/{name}`, `GET /api/configs/{name}/results`, `POST /api/resolve`, `POST /api/optimize` (server-sent events: `validation`, `progress`…, `result`).
 
@@ -69,6 +69,8 @@ Icons come from monsterhunterwiki.org (Capcom's Wilds UI icons; `python tools/fe
 dotnet run --project src/MHWildsOptimizer.Browser          # development, http://localhost:5240
 dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
 ```
+
+In Rider, the shared run configuration **Browser app** (`.run/`) runs the development server.
 
 The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). It runs at <https://mh-optimizer.luca-diegel.de>, published by CI on every push to `main` and served by Caddy ([`DEPLOY.md`](DEPLOY.md), [`deploy/Caddyfile`](deploy/Caddyfile)). With nginx:
 
