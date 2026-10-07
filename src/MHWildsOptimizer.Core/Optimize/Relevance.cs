@@ -83,7 +83,6 @@ public sealed class Relevance
         Add(SkillNames.CriticalBoost);
         Add(SkillNames.CriticalElement, hasElement);
         if (hasElement && SkillNames.ElementAttackSkill(weapon.Element) is { } ele) Add(ele);
-        Add(SkillNames.ThunderAttack, c.ProcDamage); // the Azure Bolt burst scales with it on any weapon
         Add(SkillNames.WeaknessExploit, c.HittingWeakPoint);
         Add(SkillNames.Agitator, c.MonsterEnraged);
         Add(SkillNames.PeakPerformance, c.FullHealth);
@@ -98,21 +97,20 @@ public sealed class Relevance
         Add(SkillNames.OffensiveGuard, c.OffensiveGuardActive);
         Add(SkillNames.PunishingDraw, c.DrawAttack);
         Add(SkillNames.Antivirus, c.FrenzyOvercome);
-        Add(SkillNames.Coalescence, hasElement && c.CoalescenceActive);
+        Add(SkillNames.Coalescence, hasElement && c.CoalescenceActive && c.FrenzyOvercome); // only with the Gore set bonus
         Add(SkillNames.ChargeMaster, hasElement && c.ChargedAttack);
         Add(SkillNames.ElementalAbsorption, hasElement && c.ElementalAbsorptionActive);
 
         var sets = new List<string>();
         void Set(string name, bool when = true) { if (when && !sets.Contains(name)) sets.Add(name); }
         Set(SkillNames.GoreMagalasTyranny);
-        Set(SkillNames.LeviathansFury, c.AzureBoltActive || c.ProcDamage);
+        Set(SkillNames.LeviathansFury, c.AzureBoltActive);
         Set(SkillNames.SeregiossTenacity, c.AdrenalineRushActive && c.AdrenalineRushRetriggered);
         Set(SkillNames.OmegaResonance, c.Resonance != ResonanceMode.None);
         Set(SkillNames.Gogmapocalypse, hasElement && c.MonsterEnraged);
         var shockwave = c.ProcDamage && weapon.Type == WeaponType.GreatSword && c.AttackProfile.Resolve(weapon.Type).ChargedLv3Share > 0;
         Set(SkillNames.SoulOfTheDarkKnight, (hasElement && c.RedHealth) || shockwave);
         Set(SkillNames.NuUdrasMutiny, c.ProcDamage && c.RedHealth);
-        Set(SkillNames.RathalossFlare, c.ProcDamage);
         Set(SkillNames.EbonyOdogaronsPower, c.BurstActive);
         Set(SkillNames.DoshagumasMight, c.PowerhouseActive);
         Set(SkillNames.XuWusVigor, c.ProteinFiendActive);

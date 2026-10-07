@@ -10,6 +10,7 @@ import { TalismansPanel } from './components/TalismansPanel';
 import { OptionsPanel } from './components/OptionsPanel';
 import { ReviewPanel } from './components/ReviewPanel';
 import { ResultsPanel } from './components/ResultsPanel';
+import { BuildsPanel } from './components/BuildsPanel';
 
 interface NavItem { id: Tab; label: string; icon: string; badge?: string | number; tone?: 'ok' | 'warn' | 'err' }
 
@@ -44,6 +45,7 @@ export function App() {
     { id: 'options', label: 'Options', icon: icons.defense },
     { id: 'review', label: 'Review', icon: icons.skill('item'), badge: errors ? `${errors} err` : warnings ? `${warnings} warn` : 'ok', tone: errors ? 'err' : warnings ? 'warn' : 'ok' },
     { id: 'results', label: 'Results', icon: icons.affinity, badge: run.status === 'running' ? '…' : run.result ? run.result.pairs.reduce((n, p) => n + p.builds.length, 0) : undefined },
+    { id: 'builds', label: 'My builds', icon: icons.armor('chest', 8), badge: app.builds.length || undefined },
   ];
 
   return (
@@ -79,6 +81,7 @@ export function App() {
         {tab === 'options' && <OptionsPanel />}
         {tab === 'review' && <ReviewPanel />}
         {tab === 'results' && <ResultsPanel />}
+        {tab === 'builds' && <BuildsPanel />}
       </main>
 
       <footer className="statusbar">

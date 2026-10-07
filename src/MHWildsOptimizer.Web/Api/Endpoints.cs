@@ -26,7 +26,7 @@ public static class Endpoints
 
         api.MapPut("/configs/{name}", (string name, ConfigPayload payload, ConfigStore store) =>
             !ConfigStore.IsValidName(name) ? Results.BadRequest(new { message = "Use letters, digits, spaces, '-', '_' or '.' for the name." })
-            : Results.Ok(store.Save(name, payload.Request, payload.Talismans ?? [])));
+            : Results.Ok(store.Save(name, payload.Request, payload.Talismans ?? [], payload.Builds ?? [])));
 
         api.MapDelete("/configs/{name}", (string name, ConfigStore store) =>
             !ConfigStore.IsValidName(name) ? Results.BadRequest(new { message = "Invalid configuration name." })
@@ -45,6 +45,10 @@ public static class Endpoints
 
         api.MapPost("/resolve", (ConfigPayload payload, GameData data, ConfigStore store) =>
             Resolving.Describe(Resolving.Resolve(payload, data, store.Directory), payload.Request.TargetSkills, data));
+
+        // Scores the payload's hand-entered builds with the request's weapon and conditions.
+        api.MapPost("/evaluate", (ConfigPayload payload, GameData data, ConfigStore store) =>
+            BuildEvaluation.Evaluate(payload, Resolving.Resolve(payload, data, store.Directory), data));
 
         // Server-sent events: "validation" {errors, warnings}, then "progress" {message}..., then "result" ResultDto or "error" {message}.
         api.MapPost("/optimize", (ConfigPayload payload, string? save, GameData data, ConfigStore store, HttpContext http) =>

@@ -1,8 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api } from './api';
-import type { Catalog, ConfigPayload, ConfigSummary, OptimizationRequest, OptimizationResult, OptimizeEvent, Resolved, TalismanInput, WeaponInput } from './types';
+import type {
+  ArmorSetPiece, BuildInput, Catalog, ConfigPayload, ConfigSummary, EvaluatedBuild, OptimizationRequest, OptimizationResult, OptimizeEvent, Resolved, TalismanInput, WeaponInput,
+} from './types';
 
-export type Tab = 'weapon' | 'pair' | 'targets' | 'limits' | 'conditions' | 'talismans' | 'options' | 'review' | 'results';
+export type Tab = 'weapon' | 'pair' | 'targets' | 'limits' | 'conditions' | 'talismans' | 'options' | 'review' | 'results' | 'builds';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'error' | 'cancelled';
 
@@ -29,6 +31,14 @@ export interface AppState {
   dirty: boolean;
   resolved: Resolved | null;
   resolving: boolean;
+  /** hand-entered builds of the configuration (inputs/<name>.builds.json) */
+  builds: BuildInput[];
+  /** builds scored under the current request, index-aligned with builds; null until the first evaluation */
+  evaluated: EvaluatedBuild[] | null;
+  /** the build shown in My builds and compared against in Results */
+  buildIndex: number;
+  /** what My builds compares the selected build with: "opt:<pair rank>:<build rank>" or "mine:<index>"; null = the best optimizer build */
+  compareKey: string | null;
   run: RunState;
   tab: Tab;
   notice: { text: string; kind: 'info' | 'error' } | null;
@@ -44,6 +54,11 @@ export interface AppActions {
   patchRequest(fn: (r: OptimizationRequest) => OptimizationRequest): void;
   patchWeapon(patch: Partial<WeaponInput>): void;
   setTalismans(fn: (t: TalismanInput[]) => TalismanInput[]): void;
+  setBuilds(fn: (b: BuildInput[]) => BuildInput[]): void;
+  setBuildIndex(index: number): void;
+  setCompareKey(key: string | null): void;
+  /** Appends a build, selects it and opens My builds (optionally comparing it with compareKey). */
+  addBuild(build: BuildInput, compareKey?: string | null): void;
   runOptimizer(): Promise<void>;
   cancelRun(): void;
   toast(text: string, kind?: 'info' | 'error'): void;
@@ -67,6 +82,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [dirty, setDirty] = useState(false);
   const [resolved, setResolved] = useState<Resolved | null>(null);
   const [resolving, setResolving] = useState(false);
+  const [builds, setBuildsState] = useState<BuildInput[]>([]);
+  const [evaluated, setEvaluated] = useState<EvaluatedBuild[] | null>(null);
+  const [buildIndex, setBuildIndex] = useState(0);
+  const [compareKey, setCompareKey] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>(idleRun);
   const [tab, setTab] = useState<Tab>('weapon');
   const [toastState, setToastState] = useState<AppState['notice']>(null);
@@ -119,12 +138,31 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return () => { controller.abort(); window.clearTimeout(handle); };
   }, [request, talismans]);
 
+  // live scoring of the hand-entered builds under the current request (debounced)
+  useEffect(() => {
+    if (!request) return;
+    if (builds.length === 0) { setEvaluated([]); return; }
+    const controller = new AbortController();
+    const handle = window.setTimeout(async () => {
+      try {
+        const r = await api.evaluate({ request, talismans, builds }, controller.signal);
+        if (!controller.signal.aborted) setEvaluated(r);
+      } catch (e) {
+        if (!controller.signal.aborted) setEvaluated(builds.map((b) => ({ name: b.name, errors: [`Scoring failed: ${(e as Error).message}`], warnings: [], build: null, targets: [] })));
+      }
+    }, 250);
+    return () => { controller.abort(); window.clearTimeout(handle); };
+  }, [request, talismans, builds]);
+
   const newConfig = useCallback(() => {
     if (!catalog) return;
     abortRun.current?.abort();
     setName(null);
     setRequest(structuredClone(catalog.default_request));
     setTalismansState([]);
+    setBuildsState([]);
+    setBuildIndex(0);
+    setCompareKey(null);
     setDirty(false);
     setRun(idleRun);
     setTab('weapon');
@@ -137,6 +175,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setName(file.name);
       setRequest(file.request);
       setTalismansState(file.talismans);
+      setBuildsState(file.builds ?? []);
+      setBuildIndex(0);
+      setCompareKey(null);
       setDirty(false);
       if (file.has_results) {
         try {
@@ -157,7 +198,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     const target = saveAs ?? name;
     if (!target) return false;
     try {
-      const file = await api.saveConfig(target, { request, talismans });
+      const file = await api.saveConfig(target, { request, talismans, builds });
       setName(file.name);
       setRequest(file.request);
       setDirty(false);
@@ -168,7 +209,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       toast(`Save failed: ${(e as Error).message}`, 'error');
       return false;
     }
-  }, [name, request, talismans, refreshConfigs, toast]);
+  }, [name, request, talismans, builds, refreshConfigs, toast]);
 
   const remove = useCallback(async (configName: string) => {
     try {
@@ -194,6 +235,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setTalismansState((t) => fn(t));
     setDirty(true);
   }, []);
+
+  const setBuilds = useCallback((fn: (b: BuildInput[]) => BuildInput[]) => {
+    setBuildsState((b) => fn(b));
+    setDirty(true);
+  }, []);
+
+  const addBuild = useCallback((build: BuildInput, compare?: string | null) => {
+    setBuildsState([...builds, build]);
+    setBuildIndex(builds.length);
+    setDirty(true);
+    setCompareKey(compare ?? null);
+    setTab('builds');
+  }, [builds]);
 
   const cancelRun = useCallback(() => {
     abortRun.current?.abort();
@@ -230,14 +284,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [name, request, talismans, refreshConfigs]);
 
   const value = useMemo<AppState & AppActions>(() => ({
-    catalog, loadError, configs, name, request, talismans, dirty, resolved, resolving, run, tab, notice: toastState,
-    setTab, refreshConfigs, newConfig, openConfig, save, remove, patchRequest, patchWeapon, setTalismans, runOptimizer, cancelRun,
-    toast,
-  }), [catalog, loadError, configs, name, request, talismans, dirty, resolved, resolving, run, tab, toastState,
-    refreshConfigs, newConfig, openConfig, save, remove, patchRequest, patchWeapon, setTalismans, runOptimizer, cancelRun, toast]);
+    catalog, loadError, configs, name, request, talismans, dirty, resolved, resolving, builds, evaluated, buildIndex, compareKey, run, tab, notice: toastState,
+    setTab, refreshConfigs, newConfig, openConfig, save, remove, patchRequest, patchWeapon, setTalismans, setBuilds, setBuildIndex, setCompareKey, addBuild,
+    runOptimizer, cancelRun, toast,
+  }), [catalog, loadError, configs, name, request, talismans, dirty, resolved, resolving, builds, evaluated, buildIndex, compareKey, run, tab, toastState,
+    refreshConfigs, newConfig, openConfig, save, remove, patchRequest, patchWeapon, setTalismans, setBuilds, addBuild, runOptimizer, cancelRun, toast]);
 
   return <StateContext.Provider value={value}>{children}</StateContext.Provider>;
 }
+
+/** An armor piece with what its set contributes (set bonuses, group skill). */
+export interface ArmorEntry extends ArmorSetPiece { set: string; set_bonus: string[]; group_skill: string | null }
 
 /** Lookups over the catalog that panels share. */
 export function useCatalog() {
@@ -246,6 +303,11 @@ export function useCatalog() {
     const skillsByName = new Map(catalog?.skills.map((s) => [s.name, s]) ?? []);
     const setsByName = new Map(catalog?.armor_sets.map((s) => [s.name, s]) ?? []);
     const weaponTypes = new Map(catalog?.weapon_types.map((w) => [w.kind, w]) ?? []);
-    return { catalog, skillsByName, setsByName, weaponTypes };
+    const armorByName = new Map<string, ArmorEntry>();
+    for (const set of catalog?.armor_sets ?? [])
+      for (const p of set.pieces) armorByName.set(p.name, { ...p, set: set.name, set_bonus: set.set_bonus, group_skill: set.group_skill });
+    const decorationsByName = new Map(catalog?.decorations.map((d) => [d.name, d]) ?? []);
+    const charmsByName = new Map(catalog?.charms.map((c) => [c.name, c]) ?? []);
+    return { catalog, skillsByName, setsByName, weaponTypes, armorByName, decorationsByName, charmsByName };
   }, [catalog]);
 }

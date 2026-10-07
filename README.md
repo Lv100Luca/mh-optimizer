@@ -32,7 +32,7 @@ Validate a saved configuration and show the resolved inputs:
 dotnet run --project src/MHWildsOptimizer.Cli -- request inputs/request.example.json
 ```
 
-The search is a dynamic program over skill states (talisman, then one armor slot at a time): partial builds with the same relevant skill levels, slot counts and set/group counts are merged, dominated and target-infeasible states are dropped, and every surviving final state gets its decorations (exact cover of the targets, then greedy damage fill) and an EFR + EFE score. `options.max_states_per_depth` (default 100000) bounds the beam; raise it for a slower, more exhaustive run. In optimize mode the 294 rollable pairs collapse into score-equivalent classes that are searched in parallel.
+The search is a dynamic program over skill states (talisman, then one armor slot at a time): partial builds with the same relevant skill levels, slot counts and set/group counts are merged, dominated and target-infeasible states are dropped, and every surviving final state gets its decorations (exact cover of the targets, then greedy damage fill) and an EFR + EFE score. `options.max_states_per_depth` (default 100000) bounds the beam; raise it for a slower, more exhaustive run. In optimize mode the 294 rollable pairs collapse into score-equivalent classes that are searched in parallel. `options.max_threads` (default 0 = all logical processors) caps the threads used, both across classes and inside each search; the results are identical for any thread count.
 
 ## Web UI
 

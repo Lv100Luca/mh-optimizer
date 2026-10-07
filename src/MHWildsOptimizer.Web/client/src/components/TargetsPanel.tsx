@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useApp } from '../state';
-import { Alert, Section, SkillChip, SkillIcon } from './common';
+import { Alert, Section, SkillChip, SkillHover, SkillIcon } from './common';
 import { SkillPicker } from './SkillPicker';
 
 export function TargetsPanel() {
@@ -40,8 +40,8 @@ export function TargetsPanel() {
           </div>
           {(resolved.relevance.set_bonuses.length > 0 || resolved.relevance.group_skills.length > 0) && (
             <div className="chip-row">
-              {resolved.relevance.set_bonuses.map((s) => <span key={s} className={'chip skill set' + (s in request.target_skills ? '' : ' muted')}><SkillIcon name={s} kind="set" size={18} />{s}</span>)}
-              {resolved.relevance.group_skills.map((s) => <span key={s} className={'chip skill group' + (s in request.target_skills ? '' : ' muted')}><SkillIcon name={s} kind="group" size={18} />{s}</span>)}
+              {resolved.relevance.set_bonuses.map((s) => <SkillHover key={s} name={s} className={'chip skill set' + (s in request.target_skills ? '' : ' muted')}><SkillIcon name={s} kind="set" size={18} />{s}</SkillHover>)}
+              {resolved.relevance.group_skills.map((s) => <SkillHover key={s} name={s} className={'chip skill group' + (s in request.target_skills ? '' : ' muted')}><SkillIcon name={s} kind="group" size={18} />{s}</SkillHover>)}
             </div>
           )}
         </Section>

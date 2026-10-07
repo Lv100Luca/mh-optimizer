@@ -197,6 +197,87 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/configs/roundtrip")).StatusCode);
     }
 
+    private static BuildInput WornBuild() => new()
+    {
+        Name = "Worn",
+        WeaponDecorations = ["Attack Jewel III [3]", "Critical Jewel III [3]", null],
+        Head = new BuildArmorInput { Piece = "Bale Burgeonet α", Decorations = ["Protection Jewel [1]", "Protection Jewel [1]"] },
+        Chest = new BuildArmorInput { Piece = "Udra Miremail γ", Decorations = ["Challenger Jewel [3]", "Challenger Jewel [3]"] },
+        Arms = new BuildArmorInput { Piece = "G. Fulgur Vambraces β", Transcended = true, Decorations = ["Chain Jewel [3]", "Tenderizer Jewel [3]"] },
+        Waist = new BuildArmorInput { Piece = "Dahaad Shardcoil γ", Decorations = ["Protection Jewel [1]"] },
+        Legs = new BuildArmorInput { Piece = "Udra Miregreaves γ", Decorations = ["Furor Jewel [2]"] },
+        Talisman = new BuildTalismanInput { Name = "Secret Charm" },
+    };
+
+    [Fact]
+    public async Task Evaluate_scores_hand_entered_builds_and_checks_the_targets()
+    {
+        var payload = ExamplePayload();
+        payload = payload with
+        {
+            Request = payload.Request with { TargetSkills = new Dictionary<string, int> { ["Agitator"] = 5, ["Weakness Exploit"] = 5, ["Lord's Soul"] = 1 } },
+            Builds = [WornBuild(), new BuildInput { Name = "Typo", Head = new BuildArmorInput { Piece = "No Such Helm" } }],
+        };
+        var response = await _fixture.Client.PostAsJsonAsync("/api/evaluate", payload, _json);
+        response.EnsureSuccessStatusCode();
+        var dto = await response.Content.ReadFromJsonAsync<List<EvaluatedBuildDto>>(_json);
+        Assert.NotNull(dto);
+        Assert.Equal(2, dto.Count);
+
+        var worn = dto[0];
+        Assert.Empty(worn.Errors);
+        Assert.NotNull(worn.Build);
+        Assert.True(worn.Build.Score > 0);
+        Assert.Equal(worn.Build.Efr + worn.Build.Efe + worn.Build.Procs, worn.Build.Score, 6);
+        Assert.Equal(5, worn.Build.Armor.Count);
+        Assert.True(worn.Build.Armor.Single(a => a.Kind == ArmorPieceKind.Arms).Transcended);
+        Assert.StartsWith("=== Worn  -  EFR", worn.Build.Text);
+        Assert.Contains(worn.Targets, t => t.Skill == "Agitator" && t.Met && t.Actual == 5);
+        Assert.Contains(worn.Targets, t => t.Skill == "Weakness Exploit" && !t.Met && t.Actual == 1);
+        Assert.Contains(worn.Targets, t => t.Skill == "Lord's Soul" && t.Kind == SkillKind.Group && t.Met && t.Required == 3);
+        Assert.Contains(worn.Targets, t => t.Skill == "Focus" && t.FromCore && !t.Met);
+
+        var typo = dto[1];
+        Assert.Contains(typo.Errors, e => e.Contains("No Such Helm"));
+        Assert.NotNull(typo.Build); // still scored (weapon only) so the editor keeps showing numbers
+    }
+
+    [Fact]
+    public async Task Builds_round_trip_with_the_configuration()
+    {
+        var client = _fixture.Client;
+        var payload = ExamplePayload() with { Builds = [WornBuild()] };
+        (await client.PutAsJsonAsync("/api/configs/withbuilds", payload, _json)).EnsureSuccessStatusCode();
+        Assert.True(File.Exists(Path.Combine(_fixture.InputsDirectory, "withbuilds.builds.json")));
+
+        var list = await client.GetFromJsonAsync<List<ConfigSummaryDto>>("/api/configs", _json);
+        Assert.NotNull(list);
+        Assert.Contains(list, c => c.Name == "withbuilds");
+        Assert.DoesNotContain(list, c => c.Name.EndsWith(".builds"));
+
+        var loaded = await client.GetFromJsonAsync<ConfigDto>("/api/configs/withbuilds", _json);
+        Assert.NotNull(loaded);
+        var build = Assert.Single(loaded.Builds);
+        Assert.Equal("Worn", build.Name);
+        Assert.Equal("G. Fulgur Vambraces β", build.Arms!.Piece);
+        Assert.Equal(["Attack Jewel III [3]", "Critical Jewel III [3]", null], build.WeaponDecorations);
+
+        Assert.Equal(HttpStatusCode.NoContent, (await client.DeleteAsync("/api/configs/withbuilds")).StatusCode);
+        Assert.False(File.Exists(Path.Combine(_fixture.InputsDirectory, "withbuilds.builds.json")));
+    }
+
+    [Fact]
+    public async Task Catalog_lists_charms_and_piece_rarities()
+    {
+        var catalog = await _fixture.Client.GetFromJsonAsync<JsonElement>("/api/catalog", _json);
+        var charms = catalog.GetProperty("charms").EnumerateArray().ToList();
+        Assert.Contains(charms, c => c.GetProperty("is_max_rank").GetBoolean());
+        Assert.Contains(charms, c => !c.GetProperty("is_max_rank").GetBoolean());
+        var fulgur = catalog.GetProperty("armor_sets").EnumerateArray().SelectMany(s => s.GetProperty("pieces").EnumerateArray())
+            .Single(p => p.GetProperty("name").GetString() == "G. Fulgur Vambraces β");
+        Assert.Equal(6, fulgur.GetProperty("rarity").GetInt32());
+    }
+
     [Fact]
     public async Task Invalid_config_names_are_rejected()
     {

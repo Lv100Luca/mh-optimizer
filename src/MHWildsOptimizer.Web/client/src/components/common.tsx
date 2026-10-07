@@ -1,6 +1,7 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { icons } from '../icons';
-import type { Deco, SkillGrant, SkillKind } from '../types';
+import type { Deco, Skill, SkillGrant, SkillKind } from '../types';
 import { useCatalog } from '../state';
 
 export function Section({ title, hint, actions, children, className }: { title: ReactNode; hint?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
@@ -174,7 +175,78 @@ export function SearchBox({ value, onChange, placeholder }: { value: string; onC
 export function SkillIcon({ name, kind, size }: { name: string; kind?: SkillKind; size?: number }) {
   const { skillsByName } = useCatalog();
   const skill = skillsByName.get(name);
-  return <img className="icon" width={size ?? 20} height={size ?? 20} src={icons.skill(skill?.icon, skill?.kind ?? kind)} alt="" title={skill?.description ?? name} />;
+  return <img className="icon" width={size ?? 20} height={size ?? 20} src={icons.skill(skill?.icon, skill?.kind ?? kind)} alt="" />;
+}
+
+const romanLevels: Record<string, number> = { I: 1, II: 2, III: 3 };
+
+/** Finds the catalog skill behind a display name such as "Gore Magala's Tyranny II (Black Eclipse II)" or "Lord's Soul (Guts)"; a trailing tier is returned as the level. */
+function resolveSkill(skillsByName: Map<string, Skill>, name: string): { skill: Skill; level?: number } | null {
+  const exact = skillsByName.get(name);
+  if (exact) return { skill: exact };
+  const bare = name.replace(/\s*\(.*\)$/, '');
+  const plain = skillsByName.get(bare);
+  if (plain) return { skill: plain };
+  const tier = /^(.*) (I{1,3})$/.exec(bare);
+  const tiered = tier && skillsByName.get(tier[1]);
+  return tiered ? { skill: tiered, level: romanLevels[tier![2]] } : null;
+}
+
+/** Hover / focus handlers plus the floating card for a skill; spread the handlers on the element that should trigger it. */
+function useSkillTip(name: string, level?: number) {
+  const { skillsByName } = useCatalog();
+  const [anchor, setAnchor] = useState<DOMRect | null>(null);
+  const show = (e: { currentTarget: Element }) => setAnchor(e.currentTarget.getBoundingClientRect());
+  const hide = () => setAnchor(null);
+  const resolved = resolveSkill(skillsByName, name);
+  const tip = anchor && resolved
+    ? createPortal(<SkillCard skill={resolved.skill} level={level ?? resolved.level} anchor={anchor} />, document.body)
+    : null;
+  return { handlers: { onMouseEnter: show, onMouseLeave: hide, onFocus: show, onBlur: hide }, tip };
+}
+
+function SkillCard({ skill, level, anchor }: { skill: Skill; level?: number; anchor: DOMRect }) {
+  const bonus = skill.kind === 'set' || skill.kind === 'group';
+  const current = level !== undefined && !bonus ? skill.ranks.find((r) => r.level === level) : undefined;
+  // below the anchor, or above it when the anchor sits in the lower part of the window
+  const below = anchor.bottom < window.innerHeight * 0.6;
+  const style: CSSProperties = {
+    left: Math.max(8, Math.min(anchor.left, window.innerWidth - 328)),
+    ...(below ? { top: anchor.bottom + 6 } : { bottom: window.innerHeight - anchor.top + 6 }),
+  };
+  return (
+    <div className={`skilltip ${skill.kind}`} style={style} role="tooltip">
+      <div className="skilltip-head">
+        <SkillIcon name={skill.name} size={22} />
+        <b>{skill.name}</b>
+        <span className={`kindtag ${skill.kind}`}>{skill.kind}</span>
+        {!bonus && <span className="muted small right">max {skill.max_level}</span>}
+      </div>
+      {skill.description && <p>{skill.description}</p>}
+      {bonus ? (
+        <ul>
+          {skill.ranks.map((r) => (
+            <li key={r.level} className={r.level === level ? 'current' : ''}>
+              <b>{r.name ?? `Tier ${r.level}`}</b>{r.pieces_required ? <span className="muted"> · {r.pieces_required} pc</span> : null}
+              {r.description && <span className="muted"> · {r.description}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : current ? (
+        <p className="current"><b>Lv {current.level}:</b> {current.description}</p>
+      ) : (
+        <ul>
+          {skill.ranks.map((r) => <li key={r.level}><b>Lv {r.level}:</b> <span className="muted">{r.description}</span></li>)}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Any element that shows the skill card on hover, e.g. a set bonus chip. */
+export function SkillHover({ name, level, className, title, children }: { name: string; level?: number; className?: string; title?: string; children: ReactNode }) {
+  const { handlers, tip } = useSkillTip(name, level);
+  return <span className={className} title={title} {...handlers}>{children}{tip}</span>;
 }
 
 /** "Weakness Exploit 5" with its icon; weapon-kind skills get the blue accent like the console output. */
@@ -182,13 +254,15 @@ export function SkillChip({ name, level, effective, max, onClick, muted }: { nam
   const { skillsByName } = useCatalog();
   const skill = skillsByName.get(name);
   const kind = skill?.kind ?? 'armor';
+  const { handlers, tip } = useSkillTip(name, level);
   const Tag = onClick ? 'button' : 'span';
   return (
-    <Tag className={`chip skill ${kind}` + (muted ? ' muted' : '')} onClick={onClick} title={skill?.description ?? undefined} type={onClick ? 'button' : undefined}>
+    <Tag className={`chip skill ${kind}` + (muted ? ' muted' : '')} onClick={onClick} type={onClick ? 'button' : undefined} {...handlers}>
       <SkillIcon name={name} size={18} />
       <span>{name}</span>
       {level !== undefined && <b>{level}{max !== undefined ? <span className="of">/{max}</span> : null}</b>}
       {effective !== undefined && level !== undefined && effective < level && <span className="valued">valued at {effective}</span>}
+      {tip}
     </Tag>
   );
 }

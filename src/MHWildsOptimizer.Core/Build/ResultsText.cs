@@ -31,9 +31,12 @@ public static class ResultsText
     }
 
     /// <summary>"Build 1  -  EFR 569.0 + EFE 59.8 + procs 12.3 = 641.1" (the proc term only when there is one).</summary>
-    public static string BuildTitle(int rank, RankedBuild b) =>
-        string.Format(CultureInfo.InvariantCulture, "Build {0}  -  EFR {1:0.0} + EFE {2:0.0}{3} = {4:0.0}",
-            rank, b.Result.EffectiveRaw, b.Result.EffectiveElement,
+    public static string BuildTitle(int rank, RankedBuild b) => BuildTitle($"Build {rank}", b);
+
+    /// <summary>"My build  -  EFR 569.0 + EFE 59.8 = 628.8"</summary>
+    public static string BuildTitle(string label, RankedBuild b) =>
+        string.Format(CultureInfo.InvariantCulture, "{0}  -  EFR {1:0.0} + EFE {2:0.0}{3} = {4:0.0}",
+            label, b.Result.EffectiveRaw, b.Result.EffectiveElement,
             b.Result.ProcDamage > 0 ? string.Format(CultureInfo.InvariantCulture, " + procs {0:0.0}", b.Result.ProcDamage) : "",
             b.Score);
 }

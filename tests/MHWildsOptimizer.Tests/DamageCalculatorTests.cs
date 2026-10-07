@@ -51,6 +51,24 @@ public class DamageCalculatorTests
         Assert.Equal(off.Total, on.Total, Tol);
     }
 
+    [Theory]
+    [InlineData(5, 3, 20)] // Peak Performance 5 (+20) beats Resentment 3 (+15)
+    [InlineData(2, 5, 25)] // Resentment 5 (+25) beats Peak Performance 2 (+6)
+    public void FullAndRedHealthAreExclusiveAndScoredAtTheBetterSide(int peak, int resentment, int expectedFlat)
+    {
+        var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data).Stats;
+        var levels = new Dictionary<string, int> { [SkillNames.PeakPerformance] = peak, [SkillNames.Resentment] = resentment };
+        var skills = new ActiveSkills(levels, levels, new Dictionary<string, int>(), new Dictionary<string, int>());
+        var both = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { FullHealth = true, RedHealth = true });
+        Assert.Equal(215 + expectedFlat, both.TrueRaw, Tol);
+        Assert.Contains(both.Breakdown, l => l.StartsWith("Full health excludes"));
+
+        var full = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { FullHealth = true });
+        var red = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { RedHealth = true });
+        Assert.Equal(Math.Max(full.Total, red.Total), both.Total, Tol);
+        Assert.Equal(both.Total, DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { FullHealth = true, RedHealth = true }, trace: false).Total, Tol);
+    }
+
     [Fact]
     public void AgitatorAppliesOnlyWhenEnraged()
     {
@@ -86,12 +104,46 @@ public class DamageCalculatorTests
         // base element 450 + 30 + 50 = 530 display = 53 true; white sharpness element x1.15
         var calm = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
         Assert.Equal(53, calm.BaseElementTrue, Tol);
-        Assert.Equal(53 * 1.15, calm.EffectiveElement, Tol);
+        Assert.Equal(53 * 1.15 * GreatSwordElementScale, calm.EffectiveElement, Tol);
         Assert.Equal(Math.Max(53 * 2.3, 53 + 40), calm.ElementCap, Tol);
 
         var enraged = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { MonsterEnraged = true });
         Assert.Equal(53 * 1.2 + 2, enraged.ElementTrue, Tol);
-        Assert.Equal((53 * 1.2 + 2) * 1.15, enraged.EffectiveElement, Tol);
+        Assert.Equal((53 * 1.2 + 2) * 1.15 * GreatSwordElementScale, enraged.EffectiveElement, Tol);
+    }
+
+    /// <summary>Great Sword preset: element hitzone 0.4 of raw, applied once per 190 MV hit.</summary>
+    private const double GreatSwordElementScale = 0.4 * 100 / 190;
+
+    [Fact]
+    public void ElementIsScoredPerHundredMvAtTheElementHitzone()
+    {
+        var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Element, Element = Element.Dragon }, TestData.Data).Stats;
+        var none = new Dictionary<string, int>();
+        var skills = new ActiveSkills(none, none, none, none);
+        var big = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { AverageMv = 200, ElementHitzoneRatio = 0.5 } });
+        var small = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { AverageMv = 50, ElementHitzoneRatio = 0.5 } });
+        var perHit = big.ElementTrue * big.SharpnessElementModifier;
+        Assert.Equal(perHit * 0.5 * 100 / 200, big.EffectiveElement, Tol);  // one element hit per 200 MV
+        Assert.Equal(4 * big.EffectiveElement, small.EffectiveElement, Tol); // four 50 MV hits per 200 MV
+        Assert.Equal(big.EffectiveRaw, small.EffectiveRaw, Tol);
+    }
+
+    [Fact]
+    public void CoalescenceOnlyCountsWithTheGoreSetBonus()
+    {
+        var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Element, Element = Element.Dragon }, TestData.Data).Stats;
+        var levels = new Dictionary<string, int> { [SkillNames.Coalescence] = 3 };
+        var none = new Dictionary<string, int>();
+        var cond = Conditions.AllOff with { CoalescenceActive = true, FrenzyOvercome = true };
+        var withoutGore = DamageCalculator.Calculate(weapon, new ActiveSkills(levels, levels, none, none), cond);
+        var gore = new Dictionary<string, int> { [SkillNames.GoreMagalasTyranny] = 2 };
+        var withGore = DamageCalculator.Calculate(weapon, new ActiveSkills(levels, levels, gore, none), cond);
+        var notOvercome = DamageCalculator.Calculate(weapon, new ActiveSkills(levels, levels, gore, none), cond with { FrenzyOvercome = false });
+
+        Assert.Equal(weapon.ElementTrue, withoutGore.ElementTrue, Tol);
+        Assert.Equal(weapon.ElementTrue * 1.3, withGore.ElementTrue, Tol);
+        Assert.Equal(weapon.ElementTrue, notOvercome.ElementTrue, Tol);
     }
 
     [Fact]
@@ -136,28 +188,23 @@ public class DamageCalculatorTests
         AttackProfile = new AttackProfile { HitsPerMinute = 20, AverageMv = 100, ChargedLv3Share = 0.5 }, // 3 s per hit
     };
 
-    [Fact]
-    public void AzureBoltBurstIsSpreadOverItsCooldown()
+    [Theory]
+    [InlineData("Leviathan's Fury", "Lagiacrus α")]   // Azure Bolt bursts
+    [InlineData("Rathalos's Flare", "Rathalos α")]    // Scorcher
+    public void UnreliableProcsAreNotCounted(string setBonus, string armorSet)
     {
         var data = TestData.Data;
-        var spec = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = "Leviathan's Fury" };
-        Loadout Build(params Decoration?[] decos) => new()
+        var spec = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, SetBonus = setBonus };
+        var build = new Loadout
         {
-            Weapon = new EquippedWeapon(spec, data, decos),
-            Head = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Head)),
-            Chest = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Chest)),
-            Arms = new EquippedArmor(TestData.PieceOf("Lagiacrus α", ArmorPieceKind.Arms)),
+            Weapon = new EquippedWeapon(spec, data),
+            Head = new EquippedArmor(TestData.PieceOf(armorSet, ArmorPieceKind.Head)),
+            Chest = new EquippedArmor(TestData.PieceOf(armorSet, ArmorPieceKind.Chest)),
+            Arms = new EquippedArmor(TestData.PieceOf(armorSet, ArmorPieceKind.Arms)),
         };
-        var off = DamageCalculator.Calculate(Build(), data, Conditions.AllOff);
-        var on = DamageCalculator.Calculate(Build(), data, ProcsOnly);
-        // tier II burst 60 + 200 thunder, one per 30 s; at 3 s per hit that is 0.1 bursts per 100-MV hit
-        Assert.Equal(0, off.ProcDamage);
-        Assert.Equal(26, on.ProcDamage, Tol);
-        Assert.Equal(off.Total + 26, on.Total, Tol);
-
-        // Thunder Attack 3 scales the thunder part on a non-thunder weapon: 60 + 200 * 1.2 + 6 = 306
-        var bolt = DamageCalculator.Calculate(Build(data.Decoration("Bolt Jewel III [3]")), data, ProcsOnly);
-        Assert.Equal(30.6, bolt.ProcDamage, Tol);
+        var on = DamageCalculator.Calculate(build, data, ProcsOnly);
+        Assert.Equal(0, on.ProcDamage);
+        Assert.Equal(DamageCalculator.Calculate(build, data, Conditions.AllOff).Total, on.Total, Tol);
     }
 
     [Fact]
@@ -170,23 +217,23 @@ public class DamageCalculatorTests
             Head = new EquippedArmor(TestData.PieceOf("Bale Armor α", ArmorPieceKind.Head)),
         };
         var gs = DamageCalculator.Calculate(Build(WeaponType.GreatSword), data, ProcsOnly);
-        // half the hits add a 30 MV raw shockwave plus 6 true dragon (white sharpness x1.15), no red health needed
-        Assert.Equal(0.5 * (gs.EffectiveRaw * 0.30 + 6 * 1.15), gs.ProcDamage, Tol);
+        // half the hits add a 30 MV raw shockwave plus 6 true dragon (white sharpness x1.15, element hitzone 0.4), no red health needed
+        Assert.Equal(0.5 * (gs.EffectiveRaw * 0.30 + 6 * 1.15 * 0.4), gs.ProcDamage, Tol);
 
         var ls = DamageCalculator.Calculate(Build(WeaponType.LongSword), data, ProcsOnly);
         Assert.Equal(0, ls.ProcDamage);
     }
 
     [Fact]
-    public void ProcsPerHitRespectChanceAndCooldown()
+    public void ProcsPerHitRespectTheCooldown()
     {
-        var gs = new ResolvedAttackProfile(20, 100, 0); // 3 s per hit
+        var gs = new ResolvedAttackProfile(20, 100, 0, 0.4); // 3 s per hit
         Assert.Equal(0.1, gs.ProcsPerHit(30), Tol);
         Assert.Equal(1.0, gs.ProcsPerHit(2), Tol);       // Bad Blood is ready on every hit
-        Assert.Equal(0.33, gs.ProcsPerHit(2.4, 0.33), Tol);
-        var ls = new ResolvedAttackProfile(50, 35, 0);   // 1.2 s per hit: Scorcher rolls every other hit
-        Assert.Equal(0.33 * 0.5, ls.ProcsPerHit(2.4, 0.33), Tol);
-        Assert.Equal(new ResolvedAttackProfile(30, 120, 0.3), new AttackProfile { HitsPerMinute = 30 }.Resolve(WeaponType.GreatSword));
+        var ls = new ResolvedAttackProfile(50, 35, 0, 0.4);   // 1.2 s per hit: a 2.4 s cooldown is ready every other hit
+        Assert.Equal(0.5, ls.ProcsPerHit(2.4), Tol);
+        // every Great Sword hit is a full charge
+        Assert.Equal(new ResolvedAttackProfile(30, 190, 1.0, AttackProfile.DefaultElementHitzoneRatio), new AttackProfile { HitsPerMinute = 30 }.Resolve(WeaponType.GreatSword));
     }
 
     [Fact]

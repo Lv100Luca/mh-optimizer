@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
@@ -47,13 +48,22 @@ public sealed class Optimizer
         var started = DateTime.UtcNow;
         var results = new List<SkillPairResult>();
 
+        // one scheduler for the class loop and every loop inside a search, so nesting never exceeds the thread budget
+        var threads = _request.Options.EffectiveThreads;
+        var parallel = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = threads,
+            TaskScheduler = new ConcurrentExclusiveSchedulerPair(TaskScheduler.Default, threads).ConcurrentScheduler,
+            CancellationToken = ct,
+        };
+
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
             var pair = _request.SkillPairCandidates.FirstOrDefault();
             var weapon = _request.Weapon with { SetBonus = pair?.SetBonus ?? _request.Weapon.SetBonus, GroupSkill = pair?.GroupSkill ?? _request.Weapon.GroupSkill };
             var label = $"{weapon.SetBonus ?? "-"} + {weapon.GroupSkill ?? "-"}";
-            progress?.Report($"Searching builds for {label}");
-            results.Add(Search(weapon, pair, label, _request.Options.TopN, progress, ct));
+            progress?.Report($"Searching builds for {label} on {threads} thread{(threads == 1 ? "" : "s")}");
+            results.Add(Search(weapon, pair, label, _request.Options.TopN, parallel, progress));
         }
         else
         {
@@ -62,10 +72,10 @@ public sealed class Optimizer
                 .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
                                Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
                 .ToList();
-            progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel");
+            progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel on {threads} thread{(threads == 1 ? "" : "s")}");
             var done = 0;
-            var bag = new System.Collections.Concurrent.ConcurrentBag<SkillPairResult>();
-            Parallel.ForEach(classes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = ct }, cls =>
+            var bag = new ConcurrentBag<SkillPairResult>();
+            Parallel.ForEach(classes, parallel, cls =>
             {
                 var representative = cls.First();
                 var label = $"{cls.Key.Set} + {cls.Key.Group}";
@@ -75,7 +85,7 @@ public sealed class Optimizer
                     GroupSkill = cls.Key.Group == OtherLabel ? null : representative.GroupSkill,
                 };
                 var pair = cls.Key.Set == OtherLabel && cls.Key.Group == OtherLabel ? null : representative;
-                var r = Search(weapon, pair, label, _request.Options.TopN, null, ct);
+                var r = Search(weapon, pair, label, _request.Options.TopN, parallel, null);
                 bag.Add(r);
                 var n = Interlocked.Increment(ref done);
                 progress?.Report($"[{n}/{classes.Count}] {label}: best {r.BestScore:0.0} ({cls.Count()} rollable pairs)");
@@ -86,7 +96,7 @@ public sealed class Optimizer
         return new OptimizationResult(results, DateTime.UtcNow - started);
     }
 
-    private SkillPairResult Search(GogmaWeaponStats weapon, GogmaSkillPair? pair, string label, int topN, IProgress<string>? progress, CancellationToken ct)
+    private SkillPairResult Search(GogmaWeaponStats weapon, GogmaSkillPair? pair, string label, int topN, ParallelOptions parallel, IProgress<string>? progress)
     {
         var rel = Relevance.Build(weapon, _request, _data);
         var armor = Candidates.Armor(_data, rel, _request.Options);
@@ -96,7 +106,7 @@ public sealed class Optimizer
         var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}";
         progress?.Report("  " + summary);
 
-        var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, progress, ct);
+        var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);
         var builds = search.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
         progress?.Report($"  {search.StatesEvaluated} final states scored, {builds.Count} builds kept");
         return new SkillPairResult(label, pair, builds, search.StatesEvaluated, summary);
@@ -108,6 +118,11 @@ public sealed class Optimizer
     {
         public required int[] Key { get; init; }       // levels | armorSlots(3) | weaponSlots(3) | setCounts | groupCounts
         public List<(State? Prev, object Item)> Preds { get; } = [];
+        /// <summary>Beam heuristic, computed on demand (it runs the damage calculator).</summary>
+        public double? Heuristic;
+        // filled while pruning
+        public int Sum;
+        public long Bucket;
     }
 
     private sealed class KeyComparer : IEqualityComparer<int[]>
@@ -138,8 +153,11 @@ public sealed class Optimizer
         private readonly ArmorPieceKind[] _kinds;
         private readonly List<TalismanCandidate> _talismans;
         private readonly int _topN;
+        private readonly ParallelOptions _parallel;
+        private readonly int _threads;
         private readonly IProgress<string>? _progress;
         private readonly CancellationToken _ct;
+        private static readonly KeyComparer Keys = new();
 
         private readonly int _n, _offArmorSlots, _offWeaponSlots, _offSets, _offGroups, _keyLength;
         private readonly int[][] _maxPerKind;
@@ -149,14 +167,16 @@ public sealed class Optimizer
         private readonly (int MinLevel, int MaxGrant, bool Weapon)[] _targetDecoInfo;
         private readonly int _weaponSlots3, _weaponSlots2, _weaponSlots1;
 
-        public long StatesEvaluated { get; private set; }
+        private long _statesEvaluated;
+        public long StatesEvaluated => Interlocked.Read(ref _statesEvaluated);
 
         public StateSearch(GameData data, Relevance rel, GogmaWeaponStats weapon, Conditions cond, DecorationFiller filler,
             Dictionary<ArmorPieceKind, List<ArmorCandidate>> armor, ArmorPieceKind[] kinds, List<TalismanCandidate> talismans,
-            int topN, int maxStatesPerDepth, IProgress<string>? progress, CancellationToken ct)
+            int topN, int maxStatesPerDepth, ParallelOptions parallel, IProgress<string>? progress)
         {
             _data = data; _rel = rel; _weapon = weapon; _cond = cond; _filler = filler; _armor = armor; _kinds = kinds;
-            _talismans = talismans; _topN = topN; _maxStatesPerDepth = Math.Max(1000, maxStatesPerDepth); _progress = progress; _ct = ct;
+            _talismans = talismans; _topN = topN; _maxStatesPerDepth = Math.Max(1000, maxStatesPerDepth); _progress = progress;
+            _parallel = parallel; _threads = Math.Max(1, parallel.MaxDegreeOfParallelism); _ct = parallel.CancellationToken;
             _n = rel.Skills.Count;
             _weaponSlots3 = weapon.Slots.Count(l => l >= 3); _weaponSlots2 = weapon.Slots.Count(l => l == 2); _weaponSlots1 = weapon.Slots.Count(l => l == 1);
             _offArmorSlots = _n; _offWeaponSlots = _n + 3; _offSets = _n + 6; _offGroups = _offSets + rel.SetBonuses.Count;
@@ -204,7 +224,7 @@ public sealed class Optimizer
         public IReadOnlyList<RankedBuild> Run()
         {
             // depth 0: talismans
-            var states = new Dictionary<int[], State>(new KeyComparer());
+            var initial = new Dictionary<int[], State>(Keys);
             foreach (var t in _talismans)
             {
                 var key = new int[_keyLength];
@@ -213,39 +233,22 @@ public sealed class Optimizer
                 if (_weapon.SetBonus is { } ws && _rel.SetIndex.TryGetValue(ws, out var si)) key[_offSets + si] = 1;
                 if (_weapon.GroupSkill is { } wg && _rel.GroupIndex.TryGetValue(wg, out var gi)) key[_offGroups + gi] = 1;
                 Normalize(key, 0);
-                Merge(states, key, null, t);
+                Merge(initial, key, null, t);
             }
-            states = Prune(states, 0);
+            var states = Prune([.. initial.Values], 0);
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
             for (var depth = 0; depth < _kinds.Length; depth++)
             {
                 _ct.ThrowIfCancellationRequested();
-                var next = new Dictionary<int[], State>(new KeyComparer());
-                var candidates = _armor[_kinds[depth]];
-                foreach (var state in states.Values)
-                {
-                    if (candidates.Count == 0) { Merge(next, state.Key, state, NoPiece.Instance); continue; }
-                    foreach (var c in candidates)
-                    {
-                        var key = (int[])state.Key.Clone();
-                        for (var s = 0; s < _n; s++) key[s] = Math.Min(_rel.Caps[s], key[s] + c.Skills[s]);
-                        for (var i = 0; i < 3; i++) key[_offArmorSlots + i] += c.ArmorSlots[i];
-                        foreach (var si in c.SetIds) key[_offSets + si] = Math.Min(SetCap, key[_offSets + si] + 1);
-                        if (c.GroupId >= 0) key[_offGroups + c.GroupId] = Math.Min(GroupCap, key[_offGroups + c.GroupId] + 1);
-                        Normalize(key, depth + 1);
-                        Merge(next, key, state, c);
-                    }
-                }
-                var before = next.Count;
+                var next = Expand(states, depth);
                 var expandMs = sw.ElapsedMilliseconds; sw.Restart();
                 states = Prune(next, depth + 1);
-                _progress?.Report($"  {_kinds[depth]}: {before} states, {states.Count} after pruning (expand {expandMs} ms, prune {sw.ElapsedMilliseconds} ms)");
+                _progress?.Report($"  {_kinds[depth]}: {next.Count} states, {states.Count} after pruning (expand {expandMs} ms, prune {sw.ElapsedMilliseconds} ms)");
                 sw.Restart();
             }
 
-            var finals = states.Values.ToList();
-            var builds = EvaluateAndReconstruct(finals);
+            var builds = EvaluateAndReconstruct(states);
             _progress?.Report($"  final evaluation {sw.ElapsedMilliseconds} ms");
             return builds;
         }
@@ -259,41 +262,144 @@ public sealed class Optimizer
             if (state.Preds.Count < MaxPredsPerState) state.Preds.Add((prev, item));
         }
 
-        /// <summary>Drops states that cannot reach the targets any more and states dominated by another state with the same set/group/weapon-slot profile.</summary>
-        private Dictionary<int[], State> Prune(Dictionary<int[], State> states, int depth)
+        /// <summary>Runs <paramref name="body"/> over [0, count) in contiguous ranges on the search's threads.</summary>
+        private void ForRanges(int count, Action<int, int> body, int minRange = 256)
         {
-            var kept = new Dictionary<int[], State>(new KeyComparer());
-            var buckets = new Dictionary<long, List<State>>();
-            foreach (var s in states.Values)
+            if (count == 0) return;
+            if (_threads == 1 || count <= minRange) { body(0, count); return; }
+            var size = Math.Max(minRange, count / (_threads * 8) + 1);
+            Parallel.ForEach(Partitioner.Create(0, count, size), _parallel, r => body(r.Item1, r.Item2));
+        }
+
+        /// <summary>
+        /// Adds every candidate of the kind at <paramref name="depth"/> to every state. Children are produced per chunk of states and
+        /// routed to hash partitions; each partition then merges its children chunk by chunk, so identical keys meet in one partition
+        /// and their predecessors keep the same order as a single-threaded pass.
+        /// </summary>
+        private List<State> Expand(List<State> states, int depth)
+        {
+            var candidates = _armor[_kinds[depth]];
+            var partitions = _threads == 1 ? 1 : _threads * 4;
+            var chunks = Math.Max(1, Math.Min(states.Count, _threads * 8));
+            var buffers = new List<(int[] Key, State Prev, object Item)>[chunks][];
+            var chunkSize = (states.Count + chunks - 1) / chunks;
+
+            Parallel.For(0, chunks, _parallel, chunk =>
             {
-                if (!Feasible(s.Key, depth)) continue;
-                var b = BucketKey(s.Key);
-                (buckets.TryGetValue(b, out var l) ? l : buckets[b] = []).Add(s);
-            }
-            foreach (var bucket in buckets.Values)
-            {
-                bucket.Sort((a, b) => Sum(b.Key).CompareTo(Sum(a.Key)));
-                var front = new List<State>();
-                foreach (var s in bucket)
+                var local = new List<(int[] Key, State Prev, object Item)>[partitions];
+                for (var p = 0; p < partitions; p++) local[p] = [];
+                var end = Math.Min(states.Count, (chunk + 1) * chunkSize);
+                for (var i = chunk * chunkSize; i < end; i++)
                 {
-                    var dominated = false;
-                    var checks = Math.Min(front.Count, MaxFrontChecks);
-                    for (var i = 0; i < checks; i++) if (Dominates(front[i].Key, s.Key)) { dominated = true; break; }
-                    if (!dominated) front.Add(s);
+                    var state = states[i];
+                    if (candidates.Count == 0) { local[PartitionOf(state.Key, partitions)].Add((state.Key, state, NoPiece.Instance)); continue; }
+                    foreach (var c in candidates)
+                    {
+                        var key = (int[])state.Key.Clone();
+                        for (var s = 0; s < _n; s++) key[s] = Math.Min(_rel.Caps[s], key[s] + c.Skills[s]);
+                        for (var j = 0; j < 3; j++) key[_offArmorSlots + j] += c.ArmorSlots[j];
+                        foreach (var si in c.SetIds) key[_offSets + si] = Math.Min(SetCap, key[_offSets + si] + 1);
+                        if (c.GroupId >= 0) key[_offGroups + c.GroupId] = Math.Min(GroupCap, key[_offGroups + c.GroupId] + 1);
+                        Normalize(key, depth + 1);
+                        local[PartitionOf(key, partitions)].Add((key, state, c));
+                    }
                 }
-                foreach (var s in front) kept[s.Key] = s;
-            }
+                buffers[chunk] = local;
+            });
+
+            var merged = new List<State>[partitions];
+            Parallel.For(0, partitions, _parallel, p =>
+            {
+                var dict = new Dictionary<int[], State>(Keys);
+                for (var chunk = 0; chunk < chunks; chunk++)
+                    foreach (var (key, prev, item) in buffers[chunk][p]) Merge(dict, key, prev, item);
+                merged[p] = [.. dict.Values];
+            });
+            return [.. merged.SelectMany(m => m)];
+        }
+
+        private static int PartitionOf(int[] key, int partitions) => partitions == 1 ? 0 : (int)((uint)Keys.GetHashCode(key) % (uint)partitions);
+
+        /// <summary>
+        /// Drops states that cannot reach the targets any more and states dominated by another state with the same set/group/weapon-slot
+        /// profile, then applies the beam. The result order depends only on the keys, never on the thread count.
+        /// </summary>
+        private List<State> Prune(List<State> states, int depth)
+        {
+            var feasible = new bool[states.Count];
+            ForRanges(states.Count, (from, to) =>
+            {
+                for (var i = from; i < to; i++)
+                {
+                    var s = states[i];
+                    if (!Feasible(s.Key, depth)) continue;
+                    feasible[i] = true;
+                    s.Sum = Sum(s.Key);
+                    s.Bucket = BucketKey(s.Key);
+                }
+            });
+            var buckets = new Dictionary<long, List<State>>();
+            for (var i = 0; i < states.Count; i++)
+                if (feasible[i]) (buckets.TryGetValue(states[i].Bucket, out var l) ? l : buckets[states[i].Bucket] = []).Add(states[i]);
+
+            var ordered = buckets.OrderBy(b => b.Key).Select(b => b.Value).ToList();
+            var fronts = new List<State>[ordered.Count];
+            // biggest buckets first so a long one does not start last
+            var schedule = Enumerable.Range(0, ordered.Count).OrderByDescending(b => ordered[b].Count).ToArray();
+            Parallel.ForEach(schedule, _parallel, b => fronts[b] = Front(ordered[b]));
+            var kept = fronts.SelectMany(f => f).ToList();
 
             if (kept.Count > _maxStatesPerDepth)
             {
-                // beam cut: keep the most promising states (partial score plus a value for free slots)
-                var ranked = kept.Values.Select(s => (State: s, H: Heuristic(s.Key))).OrderByDescending(x => x.H).Take(_maxStatesPerDepth);
-                var cut = new Dictionary<int[], State>(new KeyComparer());
-                foreach (var (s, _) in ranked) cut[s.Key] = s;
-                return cut;
+                // beam cut: keep the most promising states (partial score plus a value for free slots); OrderBy is stable
+                ComputeHeuristics(kept);
+                return [.. kept.OrderByDescending(s => s.Heuristic!.Value).Take(_maxStatesPerDepth)];
             }
             return kept;
         }
+
+        /// <summary>
+        /// Pareto front of one bucket, strongest first. A state is only checked against the first <see cref="MaxFrontChecks"/> front
+        /// members; once the front has that many, the checks for the rest are independent and run in parallel.
+        /// </summary>
+        private List<State> Front(List<State> bucket)
+        {
+            bucket.Sort(StrongestFirst);
+            var front = new List<State>();
+            var i = 0;
+            for (; i < bucket.Count && front.Count < MaxFrontChecks; i++)
+                if (!DominatedByFront(bucket[i].Key, front, front.Count)) front.Add(bucket[i]);
+            if (i == bucket.Count) return front;
+
+            var start = i;
+            var dominated = new bool[bucket.Count - start];
+            ForRanges(dominated.Length, (from, to) =>
+            {
+                for (var k = from; k < to; k++) dominated[k] = DominatedByFront(bucket[start + k].Key, front, MaxFrontChecks);
+            });
+            for (var k = 0; k < dominated.Length; k++) if (!dominated[k]) front.Add(bucket[start + k]);
+            return front;
+        }
+
+        private bool DominatedByFront(int[] key, List<State> front, int checks)
+        {
+            for (var i = 0; i < checks; i++) if (Dominates(front[i].Key, key)) return true;
+            return false;
+        }
+
+        /// <summary>Higher level/slot sum first; ties broken by the key itself so the order is total.</summary>
+        private static int StrongestFirst(State a, State b)
+        {
+            if (a.Sum != b.Sum) return b.Sum.CompareTo(a.Sum);
+            for (var i = 0; i < a.Key.Length; i++) if (a.Key[i] != b.Key[i]) return b.Key[i].CompareTo(a.Key[i]);
+            return 0;
+        }
+
+        private void ComputeHeuristics(List<State> states) =>
+            ForRanges(states.Count, (from, to) =>
+            {
+                for (var i = from; i < to; i++) states[i].Heuristic ??= Heuristic(states[i].Key);
+            }, minRange: 64);
 
         private double Heuristic(int[] key)
         {
@@ -368,57 +474,40 @@ public sealed class Optimizer
 
         private sealed record Scored(State State, double Score, int[] Levels, List<DecoCandidate> Decos);
 
+        /// <summary>Heap order for the kept builds: the root is the worst (lowest score, then latest in evaluation order).</summary>
+        private static readonly Comparer<(double Score, int Index)> WorstFirst =
+            Comparer<(double Score, int Index)>.Create((a, b) => a.Score != b.Score ? a.Score.CompareTo(b.Score) : b.Index.CompareTo(a.Index));
+
+        private double _threshold;
+
         private IReadOnlyList<RankedBuild> EvaluateAndReconstruct(List<State> finals)
         {
-            var best = new PriorityQueue<Scored, double>();
             var keep = Math.Max(_topN * 3, _topN + 5);
-            var threshold = double.NegativeInfinity;
             // most promising first so the threshold rises quickly and the bound check skips the rest
             var maxFinals = Math.Max(2000, _maxStatesPerDepth / 5);
-            var ordered = finals.OrderByDescending(s => Heuristic(s.Key)).Take(maxFinals).ToList();
+            ComputeHeuristics(finals);
+            var ordered = finals.OrderByDescending(s => s.Heuristic!.Value).Take(maxFinals).ToList();
             if (finals.Count > ordered.Count) _progress?.Report($"  scoring the {ordered.Count} most promising of {finals.Count} final states");
-            foreach (var state in ordered)
-            {
-                StatesEvaluated++;
-                if ((StatesEvaluated & 255) == 0) _ct.ThrowIfCancellationRequested();
-                var free = SynthesizeSlots(state.Key);
-                var baseLevels = state.Key.AsSpan(0, _n).ToArray();
-                var covers = _filler.CoverTargets(baseLevels, free);
-                if (covers.Count == 0) continue;
-                var sets = state.Key; // set/group counts live in the key
 
-                if (best.Count >= keep)
+            // each worker keeps its own best list; the worst score in any full list is a safe global threshold, because that
+            // worker already holds `keep` builds at least that good. Skipping only strictly worse states keeps the result
+            // independent of scheduling.
+            _threshold = double.NegativeInfinity;
+            var kept = new List<(Scored Scored, (double Score, int Index) Priority)>();
+            if (ordered.Count > 0)
+                Parallel.ForEach(Partitioner.Create(0, ordered.Count, 16), _parallel,
+                () => new PriorityQueue<Scored, (double Score, int Index)>(WorstFirst),
+                (range, _, local) =>
                 {
-                    // bound with the cheapest cover: base score plus the best single-decoration gains, one per remaining free slot
-                    var cheapest = covers[0];
-                    var covered = (int[])baseLevels.Clone();
-                    foreach (var d in cheapest.Values) foreach (var (skill, level) in d.Grants) covered[skill] += level;
-                    var freeCount = free.Count - cheapest.Count;
-                    var maxSlotLevel = free.Count == 0 ? 0 : free.Max(f => f.Level);
-                    var bound = Score(covered, sets) + _filler.RelaxedGainBound(covered, freeCount, maxSlotLevel, l => Score(l, sets));
-                    if (bound <= threshold) continue;
-                }
-
-                Scored? bestHere = null;
-                foreach (var cover in covers)
-                {
-                    var levels = (int[])baseLevels.Clone();
-                    foreach (var d in cover.Values) foreach (var (skill, level) in d.Grants) levels[skill] += level;
-                    var placed = new Dictionary<FreeSlot, DecoCandidate>(cover);
-                    _filler.FillGreedy(levels, free, placed, l => Score(l, sets));
-                    var score = Score(levels, sets);
-                    if (bestHere is null || score > bestHere.Score)
-                        bestHere = new Scored(state, score, levels, placed.Values.ToList());
-                }
-                if (bestHere is null || (best.Count >= keep && bestHere.Score <= threshold)) continue;
-                best.Enqueue(bestHere, bestHere.Score);
-                if (best.Count > keep) best.Dequeue();
-                if (best.Count >= keep) threshold = best.Peek().Score;
-            }
+                    for (var i = range.Item1; i < range.Item2; i++) Evaluate(ordered[i], i, local, keep);
+                    return local;
+                },
+                local => { lock (kept) kept.AddRange(local.UnorderedItems.Select(x => (x.Element, x.Priority))); });
+            var best = kept.OrderByDescending(x => x.Priority, WorstFirst).Take(keep).Select(x => x.Scored);
 
             var builds = new List<RankedBuild>();
             var seen = new HashSet<string>();
-            foreach (var scored in best.UnorderedItems.Select(x => x.Element).OrderByDescending(s => s.Score))
+            foreach (var scored in best)
             {
                 foreach (var combo in Paths(scored.State).Take(MaxPredsPerState))
                 {
@@ -431,6 +520,60 @@ public sealed class Optimizer
                 }
             }
             return builds.OrderByDescending(b => b.Score).Take(_topN).ToList();
+        }
+
+        private void Evaluate(State state, int index, PriorityQueue<Scored, (double Score, int Index)> local, int keep)
+        {
+            if ((Interlocked.Increment(ref _statesEvaluated) & 255) == 0) _ct.ThrowIfCancellationRequested();
+            var free = SynthesizeSlots(state.Key);
+            var baseLevels = state.Key.AsSpan(0, _n).ToArray();
+            var covers = _filler.CoverTargets(baseLevels, free);
+            if (covers.Count == 0) return;
+            var sets = state.Key; // set/group counts live in the key
+
+            var threshold = Volatile.Read(ref _threshold);
+            if (local.Count >= keep && local.TryPeek(out _, out var worst)) threshold = Math.Max(threshold, worst.Score);
+            if (!double.IsNegativeInfinity(threshold))
+            {
+                // bound with the cheapest cover: base score plus the best single-decoration gains, one per remaining free slot
+                var cheapest = covers[0];
+                var covered = (int[])baseLevels.Clone();
+                foreach (var d in cheapest.Values) foreach (var (skill, level) in d.Grants) covered[skill] += level;
+                var freeCount = free.Count - cheapest.Count;
+                var maxSlotLevel = free.Count == 0 ? 0 : free.Max(f => f.Level);
+                var bound = Score(covered, sets) + _filler.RelaxedGainBound(covered, freeCount, maxSlotLevel, l => Score(l, sets));
+                if (bound < threshold) return;
+            }
+
+            Scored? bestHere = null;
+            foreach (var cover in covers)
+            {
+                var levels = (int[])baseLevels.Clone();
+                foreach (var d in cover.Values) foreach (var (skill, level) in d.Grants) levels[skill] += level;
+                var placed = new Dictionary<FreeSlot, DecoCandidate>(cover);
+                _filler.FillGreedy(levels, free, placed, l => Score(l, sets));
+                var score = Score(levels, sets);
+                if (bestHere is null || score > bestHere.Score)
+                    bestHere = new Scored(state, score, levels, placed.Values.ToList());
+            }
+            if (bestHere is null) return;
+
+            var priority = (bestHere.Score, index);
+            if (local.Count >= keep && local.TryPeek(out _, out var root) && WorstFirst.Compare(priority, root) <= 0) return;
+            local.Enqueue(bestHere, priority);
+            if (local.Count > keep) local.Dequeue();
+            if (local.Count >= keep && local.TryPeek(out _, out var newWorst)) RaiseThreshold(newWorst.Score);
+        }
+
+        private void RaiseThreshold(double value)
+        {
+            var current = Volatile.Read(ref _threshold);
+            while (value > current)
+            {
+                var seen = Interlocked.CompareExchange(ref _threshold, value, current);
+                if (seen == current) return;
+                current = seen;
+            }
         }
 
         private double Score(int[] levels, int[] key)

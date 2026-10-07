@@ -43,6 +43,11 @@ public sealed record OptimizerOptions
     public bool RequireWeaponCoreSkills { get; init; } = true;
     /// <summary>Search beam: partial builds kept per armor slot. Larger is closer to exhaustive but slower (default 100000).</summary>
     public int MaxStatesPerDepth { get; init; } = 100_000;
+    /// <summary>Worker threads for the search; 0 = all logical processors. Values above the processor count are capped.</summary>
+    public int MaxThreads { get; init; }
+
+    /// <summary>The thread count actually used: <see cref="MaxThreads"/> resolved against this machine.</summary>
+    public int EffectiveThreads => MaxThreads <= 0 ? Environment.ProcessorCount : Math.Min(MaxThreads, Environment.ProcessorCount);
 }
 
 /// <summary>Everything the optimizer needs, loadable from inputs/request.json (snake_case keys).</summary>
@@ -158,11 +163,12 @@ public static class RequestLoader
                 errors.Add($"Target '{name}' {target} is above its limit {limit}; raise the limit or lower the target.");
         }
 
-        // attack profile (proc damage)
+        // attack profile (element and proc damage)
         var profile = request.Conditions.AttackProfile;
         if (profile.HitsPerMinute is <= 0) errors.Add("conditions.attack_profile.hits_per_minute must be above 0.");
         if (profile.AverageMv is <= 0) errors.Add("conditions.attack_profile.average_mv must be above 0.");
         if (profile.ChargedLv3Share is < 0 or > 1) errors.Add("conditions.attack_profile.charged_lv3_share must be between 0 and 1.");
+        if (profile.ElementHitzoneRatio is < 0 or > 1) errors.Add("conditions.attack_profile.element_hitzone_ratio must be between 0 and 1.");
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();
@@ -205,6 +211,7 @@ public static class RequestLoader
 
         // options
         if (request.Options.TopN < 1) errors.Add("options.top_n must be at least 1.");
+        if (request.Options.MaxThreads < 0) errors.Add("options.max_threads must be 0 (all processors) or more.");
         foreach (var set in request.Options.ExcludeSets)
             if (!data.Armor.Any(a => a.Set == set)) warnings.Add($"options.exclude_sets: no armor set named '{set}'.");
 

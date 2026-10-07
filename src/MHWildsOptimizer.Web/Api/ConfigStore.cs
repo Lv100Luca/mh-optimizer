@@ -6,20 +6,25 @@ namespace MHWildsOptimizer.Web.Api;
 
 public sealed record ConfigSummaryDto(string Name, DateTimeOffset Modified, bool HasResults, string? Summary);
 
-public sealed record ConfigDto(string Name, OptimizationRequest Request, IReadOnlyList<TalismanInput> Talismans, bool HasResults);
+public sealed record ConfigDto(string Name, OptimizationRequest Request, IReadOnlyList<TalismanInput> Talismans, IReadOnlyList<BuildInput> Builds, bool HasResults);
 
-/// <summary>What the client sends to validate, save or run: the request plus the random talismans (kept in a sibling file on disk).</summary>
-public sealed record ConfigPayload(OptimizationRequest Request, List<TalismanInput>? Talismans);
+/// <summary>
+/// What the client sends to validate, save, run or evaluate: the request plus the random talismans and the hand-entered builds
+/// (both kept in sibling files on disk).
+/// </summary>
+public sealed record ConfigPayload(OptimizationRequest Request, List<TalismanInput>? Talismans, List<BuildInput>? Builds = null);
 
 /// <summary>
 /// Saved configurations in the inputs directory, using the CLI's file layout:
-/// &lt;name&gt;.json (request), &lt;name&gt;.talismans.json (random talismans), &lt;name&gt;.results.txt / .results.json (last run).
+/// &lt;name&gt;.json (request), &lt;name&gt;.talismans.json (random talismans), &lt;name&gt;.builds.json (hand-entered builds),
+/// &lt;name&gt;.results.txt / .results.json (last run).
 /// </summary>
 public sealed partial class ConfigStore(AppPaths paths)
 {
     public string Directory => paths.Inputs;
 
-    public static bool IsValidName(string name) => NamePattern().IsMatch(name) && !name.EndsWith(".talismans", StringComparison.OrdinalIgnoreCase) && !name.EndsWith(".results", StringComparison.OrdinalIgnoreCase);
+    public static bool IsValidName(string name) =>
+        NamePattern().IsMatch(name) && !new[] { ".talismans", ".results", ".builds" }.Any(s => name.EndsWith(s, StringComparison.OrdinalIgnoreCase));
 
     public IReadOnlyList<ConfigSummaryDto> List()
     {
@@ -52,24 +57,25 @@ public sealed partial class ConfigStore(AppPaths paths)
         if (!File.Exists(path)) return null;
         var request = RequestLoader.Read(path);
         var talismans = RequestFiles.LoadTalismansFor(request, path);
-        return new ConfigDto(name, request, talismans, File.Exists(ResultsJsonPath(name)));
+        return new ConfigDto(name, request, talismans, RequestFiles.LoadBuildsFor(path), File.Exists(ResultsJsonPath(name)));
     }
 
-    /// <summary>Saves request + talismans; the request's talisman file is pointed at the sibling file.</summary>
-    public ConfigDto Save(string name, OptimizationRequest request, IReadOnlyList<TalismanInput> talismans)
+    /// <summary>Saves request + talismans + builds; the request's talisman file is pointed at the sibling file.</summary>
+    public ConfigDto Save(string name, OptimizationRequest request, IReadOnlyList<TalismanInput> talismans, IReadOnlyList<BuildInput> builds)
     {
         var path = RequestPath(name);
         var talismanFile = RequestFiles.DefaultTalismanFileName(path);
         request = request with { Talismans = request.Talismans with { File = talismanFile } };
         RequestFiles.SaveRequest(request, path);
         RequestFiles.SaveTalismans(talismans, RequestFiles.TalismanPathFor(request, path)!);
-        return new ConfigDto(name, request, talismans, File.Exists(ResultsJsonPath(name)));
+        RequestFiles.SaveBuildsFor(builds, path);
+        return new ConfigDto(name, request, talismans, builds, File.Exists(ResultsJsonPath(name)));
     }
 
     public bool Delete(string name)
     {
         var any = false;
-        foreach (var p in new[] { RequestPath(name), Path.Combine(Directory, name + RequestFiles.TalismanFileSuffix), ResultsJsonPath(name), ResultsTextPath(name) })
+        foreach (var p in new[] { RequestPath(name), Path.Combine(Directory, name + RequestFiles.TalismanFileSuffix), RequestFiles.BuildsPathFor(RequestPath(name)), ResultsJsonPath(name), ResultsTextPath(name) })
         {
             if (!File.Exists(p)) continue;
             File.Delete(p);

@@ -180,6 +180,15 @@ button.chip:hover { border-color: var(--accent); }
 .chip.pick img { width: 18px; height: 18px; }
 .chip.pick.active { border-color: var(--tint, var(--accent)); box-shadow: inset 0 0 0 1px var(--tint, var(--accent)); color: var(--tint, var(--accent)); }
 .chip.deco { padding-right: 10px; }
+.skilltip { position: fixed; z-index: 20; width: 320px; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border-2); border-left: 3px solid var(--armor); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); font-size: 12.5px; line-height: 1.45; white-space: normal; pointer-events: none; }
+.skilltip.weapon { border-left-color: var(--weapon); }
+.skilltip.set { border-left-color: var(--set); }
+.skilltip.group { border-left-color: var(--group); }
+.skilltip-head { display: flex; align-items: center; gap: 6px; }
+.skilltip p { margin: 6px 0 0; }
+.skilltip ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.skilltip .current { color: var(--accent); }
+.skilltip .current .muted { color: var(--text); }
 .kindtag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 5px; border-radius: 4px; background: var(--border); color: var(--muted); }
 .kindtag.weapon { color: var(--weapon); }
 .kindtag.armor { color: var(--armor); }
@@ -336,3 +345,83 @@ dl.stats dd { margin: 0; }
 .mods { margin: 0; padding-left: 18px; font-size: 12px; color: var(--muted); columns: 2; }
 .rawtext { font: 11.5px/1.45 ui-monospace, Consolas, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; overflow: auto; max-height: 500px; }
 details summary { cursor: pointer; color: var(--accent-2); }
+
+/* ---------------------------------------------------------------- picker (searchable dropdown) */
+.picker-btn { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; background: var(--bg-2); border: 1px solid var(--border-2); border-radius: 6px; padding: 5px 10px; cursor: pointer; text-align: left; color: var(--text); }
+.picker-btn:hover, .picker-btn.open { border-color: var(--accent); }
+.picker-pop { position: fixed; z-index: 30; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); box-shadow: var(--shadow); max-width: calc(100vw - 16px); }
+.picker-list { display: flex; flex-direction: column; overflow-y: auto; min-height: 0; }
+.picker-group { position: sticky; top: 0; background: var(--panel-2); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 6px 3px; }
+.picker-opt { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border: none; border-radius: 5px; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.picker-opt.active { background: var(--border); }
+.picker-opt.clear { color: var(--muted); font-style: italic; }
+.picker-empty { padding: 8px 6px; }
+.opt-main { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.opt-main .small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.opt-name { font-weight: 600; }
+.opt-side { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; max-width: 130px; text-align: right; }
+
+/* ---------------------------------------------------------------- my builds */
+.buildtabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.buildtab { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-2); background: var(--bg-2); color: var(--text); cursor: pointer; }
+.buildtab b { color: var(--ok); }
+.buildtab.active { border-color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
+.buildname { width: 280px; max-width: 100%; }
+.scorebar { position: sticky; top: -18px; z-index: 5; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 16px; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); box-shadow: var(--shadow); }
+.scorebar-total b { font-size: 20px; color: var(--ok); }
+.tcount { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--bg-2); }
+.score-delta { display: inline-flex; align-items: baseline; gap: 4px; font-size: 13px; }
+.delta { font-weight: 700; font-variant-numeric: tabular-nums; }
+.delta.up { color: var(--ok); }
+.delta.down { color: var(--err); }
+.delta.same { color: var(--muted); }
+.table.equip.editor td { vertical-align: top; }
+.table.equip.editor .icon-cell { padding-top: 10px; }
+.table.equip.editor .piece { padding-top: 14px; }
+.table.equip.editor .decos { width: 250px; }
+.piecepick { min-width: 220px; }
+.piece-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.check { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text); }
+.check input { accent-color: var(--accent); }
+.pairpick { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 8px; align-items: center; }
+.slotpicks { display: flex; flex-direction: column; gap: 4px; }
+.slotpick { width: 100%; padding: 3px 8px 3px 4px; }
+.slotpick.vacant .slotpick-name { color: var(--muted); font-style: italic; }
+.slotpick.bad { border-color: var(--err); }
+.slotpick-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12.5px; }
+.tcheck.met { border-color: rgba(95, 191, 122, 0.5); }
+.tcheck.miss { border-color: var(--err); background: rgba(224, 90, 79, 0.1); }
+.build-actions { display: flex; gap: 6px; }
+.mine-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------- compare */
+.compare { display: flex; flex-direction: column; gap: 14px; }
+.compare h4 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.compare-metrics { max-width: 640px; }
+.compare-metrics td, .compare-metrics th { font-variant-numeric: tabular-nums; }
+.compare-metrics tr.headline td { font-weight: 700; font-size: 15px; }
+.compare-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.compare-skills td { padding: 4px 8px; }
+.bonuslist { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.compare-equip .piece { width: 80px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.compare-equip tr.differs td { background: rgba(227, 182, 78, 0.07); }
+.compare-equip tr.differs .piece { color: var(--accent); }
+.equipview { display: flex; flex-direction: column; gap: 3px; }
+.equipview-decos { display: inline-flex; gap: 3px; }
+
+/* the build editor stacks each row on narrow screens: icon | piece, then skills and slots side by side (one column on phones) */
+@media (max-width: 1100px) {
+  .table.equip.editor, .table.equip.editor tbody { display: block; }
+  .table.equip.editor tr { display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "icon name name" "icon skills decos"; gap: 8px 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .table.equip.editor tr:last-child { border-bottom: none; }
+  .table.equip.editor td { border: none; padding: 0; }
+  .table.equip.editor .icon-cell { grid-area: icon; padding-top: 2px; }
+  .table.equip.editor .piece { display: none; }
+  .table.equip.editor .name { grid-area: name; min-width: 0; }
+  .table.equip.editor .skills { grid-area: skills; }
+  .table.equip.editor .decos { grid-area: decos; width: auto; }
+}
+@media (max-width: 600px) {
+  .table.equip.editor tr { grid-template-columns: 32px minmax(0, 1fr); grid-template-areas: "icon name" "icon skills" "icon decos"; }
+  .piecepick { min-width: 0; width: 100%; }
+}

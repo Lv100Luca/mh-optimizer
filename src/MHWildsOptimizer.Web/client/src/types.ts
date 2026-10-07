@@ -18,7 +18,10 @@ export interface Skill {
 
 export interface Decoration { id: number; name: string; kind: SkillKind; slot: number; rarity: number; icon_color: string | null; skills: SkillGrant[] }
 
-export interface ArmorSetPiece { id: number; name: string; kind: ArmorPieceKind; skills: SkillGrant[]; slots: number[]; slots_transcended: number[] }
+export interface ArmorSetPiece { id: number; name: string; kind: ArmorPieceKind; rarity: number; skills: SkillGrant[]; slots: number[]; slots_transcended: number[] }
+
+/** A craftable charm at one rank; the optimizer uses the max rank of each line. */
+export interface Charm { name: string; rarity: number; is_max_rank: boolean; skills: SkillGrant[] }
 
 export interface ArmorSet { name: string; rarity: number; set_bonus: string[]; group_skill: string | null; pieces: ArmorSetPiece[] }
 
@@ -27,10 +30,10 @@ export interface SharpnessBar { red: number; orange: number; yellow: number; gre
 export interface GogmaVariant { name: string; raw: number; display_attack: number; affinity: number; sharpness: SharpnessBar | null; slots: number[] }
 
 /** The weapon type's attack profile preset; an unset request value falls back to it. */
-export interface AttackProfilePreset { hits_per_minute: number; average_mv: number; charged_lv3_share: number }
+export interface AttackProfilePreset { hits_per_minute: number; average_mv: number; charged_lv3_share: number; element_hitzone_ratio: number }
 
-/** conditions.attack_profile: how the hunter attacks, used only to turn proc damage into damage per 100 MV. null = weapon preset. */
-export interface AttackProfile { hits_per_minute: number | null; average_mv: number | null; charged_lv3_share: number | null }
+/** conditions.attack_profile: how the hunter attacks, turns element and proc damage (once per hit) into damage per 100 MV. null = weapon preset. */
+export interface AttackProfile { hits_per_minute: number | null; average_mv: number | null; charged_lv3_share: number | null; element_hitzone_ratio: number | null }
 
 export interface WeaponType {
   kind: string; label: string; gunner: boolean; supported: boolean; bloat: number;
@@ -57,6 +60,7 @@ export interface Catalog {
   skills: Skill[];
   decorations: Decoration[];
   armor_sets: ArmorSet[];
+  charms: Charm[];
   weapon_types: WeaponType[];
   reinforcements: ReinforcementOption[];
   elements: Element[];
@@ -70,6 +74,8 @@ export interface Catalog {
   conditions_default: Conditions;
   conditions_all_on: Conditions;
   conditions_all_off: Conditions;
+  /** logical processors of the server machine (options.max_threads 0 = all of them) */
+  processor_count: number;
 }
 
 // ---------------------------------------------------------------- request (inputs/<name>.json)
@@ -96,7 +102,7 @@ export interface Conditions {
   [key: string]: boolean | ResonanceMode | Record<string, number> | AttackProfile | undefined;
   resonance: ResonanceMode;
   skill_limits: Record<string, number>;
-  /** count proc damage (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher) in the score */
+  /** count proc damage (Dark Arts shockwave, Bad Blood) in the score */
   proc_damage: boolean;
   attack_profile: AttackProfile;
 }
@@ -111,16 +117,46 @@ export interface OptimizationRequest {
   options: {
     allow_transcendence: boolean; top_n: number; min_rarity: number; exclude_sets: string[];
     require_weapon_core_skills: boolean; max_states_per_depth: number;
+    /** worker threads for the search; 0 = all processors */
+    max_threads: number;
   };
 }
 
 export interface TalismanInput { name: string; rarity: number; skills: Record<string, number>; slots: string[] }
 
-export interface ConfigPayload { request: OptimizationRequest; talismans: TalismanInput[] }
+// ---------------------------------------------------------------- hand-entered builds (inputs/<name>.builds.json)
+
+/** Decorations by name in slot order, null for an empty slot. */
+export interface BuildArmorInput { piece: string; transcended: boolean; decorations: (string | null)[] }
+
+/** One of the configuration's random talismans or a craftable charm, by name. */
+export interface BuildTalismanInput { name: string; decorations: (string | null)[] }
+
+/** A build entered by hand; the weapon is the request's, set_bonus / group_skill replace its rolled pair when not null. */
+export interface BuildInput {
+  name: string;
+  set_bonus: string | null;
+  group_skill: string | null;
+  weapon_decorations: (string | null)[];
+  head: BuildArmorInput | null;
+  chest: BuildArmorInput | null;
+  arms: BuildArmorInput | null;
+  waist: BuildArmorInput | null;
+  legs: BuildArmorInput | null;
+  talisman: BuildTalismanInput | null;
+}
+
+/** A requirement checked against a build: levels for skills, pieces for set bonuses and group skills. */
+export interface TargetCheck { skill: string; kind: SkillKind; label: string; required: number; actual: number; met: boolean; from_core: boolean }
+
+/** A hand-entered build scored under the request's conditions; build is null when the weapon cannot be resolved. */
+export interface EvaluatedBuild { name: string; errors: string[]; warnings: string[]; build: Build | null; targets: TargetCheck[] }
+
+export interface ConfigPayload { request: OptimizationRequest; talismans: TalismanInput[]; builds?: BuildInput[] }
 
 export interface ConfigSummary { name: string; modified: string; has_results: boolean; summary: string | null }
 
-export interface ConfigFile { name: string; request: OptimizationRequest; talismans: TalismanInput[]; has_results: boolean }
+export interface ConfigFile { name: string; request: OptimizationRequest; talismans: TalismanInput[]; builds: BuildInput[]; has_results: boolean }
 
 // ---------------------------------------------------------------- resolve
 

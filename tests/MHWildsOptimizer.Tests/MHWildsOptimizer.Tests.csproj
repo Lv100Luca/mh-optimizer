@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- the optimizer allocates millions of small state keys on many threads; workstation GC serializes them -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

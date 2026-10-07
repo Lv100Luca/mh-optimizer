@@ -32,7 +32,7 @@ public sealed record StatsDto(
     double TrueRaw, int DisplayAttack, int Affinity, double CritMultiplier, double CritFactor, SharpnessColor? Sharpness, double SharpnessRaw, double SharpnessElement,
     double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers);
 
-/// <param name="Procs">Proc damage per 100 MV (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher); 0 when off or absent.</param>
+/// <param name="Procs">Proc damage per 100 MV (Dark Arts shockwave, Bad Blood); 0 when off or absent.</param>
 public sealed record BuildSummaryDto(
     double Attack, int DisplayAttack, int BaseAttack, int Affinity, int BaseAffinity, double CritMultiplier, SharpnessColor? Sharpness,
     Element Element, double ElementTrue, int ElementDisplay, double Efr, double Efe, double Procs, double Total, double TotalAllConditions,
@@ -63,7 +63,8 @@ public static class ResultMapper
         return new ResultDto(DateTimeOffset.UtcNow, result.Elapsed.TotalSeconds, resolved.SkillPair.Mode, pairs, ResultsText.Render(result, resolved, data));
     }
 
-    public static BuildDto MapBuild(int rank, RankedBuild b, Conditions cond, GameData data)
+    /// <param name="label">Title of the text report instead of "Build &lt;rank&gt;" (e.g. the name of a hand-entered build).</param>
+    public static BuildDto MapBuild(int rank, RankedBuild b, Conditions cond, GameData data, string? label = null)
     {
         var loadout = b.Loadout;
         var w = loadout.Weapon.Stats;
@@ -116,7 +117,7 @@ public static class ResultMapper
             s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
             s.DependsOn, s.Description);
 
-        var text = LoadoutReport.Render(loadout, data, cond, ResultsText.BuildTitle(rank, b)).TrimEnd();
+        var text = LoadoutReport.Render(loadout, data, cond, label is null ? ResultsText.BuildTitle(rank, b) : ResultsText.BuildTitle(label, b)).TrimEnd();
 
         return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, b.Result.ProcDamage, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text);
     }

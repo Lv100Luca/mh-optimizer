@@ -7,7 +7,7 @@ import { Alert, Button, Field, Section, Segmented, Select, SkillChip, Slots, Ste
 interface Draft { name: string; rarity: number; primary: { skill: string; level: number } | null; secondary: ({ skill: string; level: number } | null)[]; slots: string }
 
 export function TalismansPanel() {
-  const { request, patchRequest, talismans, setTalismans, resolved } = useApp();
+  const { request, patchRequest, talismans, setTalismans, setBuilds, resolved } = useApp();
   const { catalog, skillsByName } = useCatalog();
   const [draft, setDraft] = useState<{ index: number | null; value: Draft } | null>(null);
 
@@ -50,6 +50,10 @@ export function TalismansPanel() {
     if (!draft) return;
     const value = fromDraft(draft.value);
     setTalismans((list) => (draft.index === null ? [...list, value] : list.map((t, i) => (i === draft.index ? value : t))));
+    // hand-entered builds refer to talismans by name; follow a rename
+    const old = draft.index === null ? null : talismans[draft.index]?.name;
+    if (old && old !== value.name)
+      setBuilds((list) => list.map((b) => (b.talisman?.name === old ? { ...b, talisman: { ...b.talisman, name: value.name } } : b)));
     setDraft(null);
   };
 

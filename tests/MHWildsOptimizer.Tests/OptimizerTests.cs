@@ -47,6 +47,29 @@ public class OptimizerTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void ResultsDoNotDependOnTheThreadCount()
+    {
+        var data = TestData.Data;
+        var request = RequestLoader.Load(Path.Combine(RepoRoot, "inputs", "request.example.json"), data);
+        Assert.True(request.IsValid);
+        request = request with { Options = request.Options with { MaxStatesPerDepth = 20_000 } };
+
+        string Fingerprint(int threads)
+        {
+            var result = new Optimizer(data, request with { Options = request.Options with { MaxThreads = threads } }).Run();
+            return string.Join("\n", result.AllBuilds.Select(b =>
+                $"{b.Score:R} {string.Join(",", b.Loadout.ArmorPieces.Select(a => a.Piece.Id))} {b.Loadout.Talisman?.Talisman.Name} " +
+                string.Join(",", (b.Loadout.Weapon.Decorations ?? []).Concat(b.Loadout.ArmorPieces.SelectMany(a => a.Decorations ?? [])).Select(d => d?.Id ?? 0))));
+        }
+
+        var single = Fingerprint(1);
+        output.WriteLine(single);
+        Assert.NotEmpty(single);
+        Assert.Equal(single, Fingerprint(Environment.ProcessorCount));
+        Assert.Equal(single, Fingerprint(3));
+    }
+
+    [Fact]
     public void OptimizeModeRanksSkillPairClasses()
     {
         var data = TestData.Data;
@@ -95,9 +118,12 @@ public class OptimizerTests(ITestOutputHelper output)
         Assert.NotEmpty(builds);
         foreach (var b in builds)
         {
+            // armor may carry Burst past the cap as a side effect of its other skills; decorations must not add any above it
             var decos = b.Loadout.ArmorPieces.SelectMany(a => a.Decos).Concat(b.Loadout.Weapon.Decos).Concat(b.Loadout.Talisman?.Decos ?? [])
-                .Where(d => d is not null).Select(d => d!.Name).ToList();
-            Assert.True(SkillAggregator.Aggregate(b.Loadout, data).RawLevels.GetValueOrDefault("Burst") <= 1, $"Burst invested past its cap: {string.Join(", ", decos)}");
+                .Where(d => d is not null).Select(d => d!).ToList();
+            var burstFromDecos = decos.SelectMany(d => d.Skills).Where(g => g.Skill == "Burst").Sum(g => g.Level);
+            var total = SkillAggregator.Aggregate(b.Loadout, data).RawLevels.GetValueOrDefault("Burst");
+            Assert.True(burstFromDecos == 0 || total <= 1, $"Burst invested past its cap: {string.Join(", ", decos.Select(d => d.Name))}");
             var summary = BuildSummary.Create(b.Loadout, data, request.Conditions);
             var burst = summary.Skills.FirstOrDefault(s => s.Skill == "Burst");
             if (burst.Skill is not null) Assert.True(burst.Effective <= 1);
@@ -177,7 +203,7 @@ public class OptimizerTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public void ProcDamageMakesItsSetsAndThunderAttackRelevant()
+    public void ProcDamageMakesOnlyTheCountedProcSetsRelevant()
     {
         var data = TestData.Data;
         var rawGs = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }.Resolve(data);
@@ -185,16 +211,16 @@ public class OptimizerTests(ITestOutputHelper output)
 
         var on = Relevance.Build(rawGs, targets, Conditions.Default, data);
         Assert.Contains("Soul of the Dark Knight", on.SetBonuses); // shockwave helps a raw Great Sword
-        Assert.Contains("Rathalos's Flare", on.SetBonuses);
-        Assert.Contains("Leviathan's Fury", on.SetBonuses);
-        Assert.Contains("Thunder Attack", on.Skills);
+        Assert.Contains("Leviathan's Fury", on.SetBonuses);        // through its affinity window only
+        Assert.DoesNotContain("Rathalos's Flare", on.SetBonuses);  // Scorcher is not counted
+        Assert.DoesNotContain("Thunder Attack", on.Skills);        // neither is the Azure Bolt burst it scales
         Assert.DoesNotContain("Nu Udra's Mutiny", on.SetBonuses); // Bad Blood needs red health
+
+        var noWindow = Relevance.Build(rawGs, targets, Conditions.Default with { AzureBoltActive = false }, data);
+        Assert.DoesNotContain("Leviathan's Fury", noWindow.SetBonuses);
 
         var off = Relevance.Build(rawGs, targets, Conditions.Default with { ProcDamage = false, AzureBoltActive = false }, data);
         Assert.DoesNotContain("Soul of the Dark Knight", off.SetBonuses);
-        Assert.DoesNotContain("Rathalos's Flare", off.SetBonuses);
-        Assert.DoesNotContain("Leviathan's Fury", off.SetBonuses);
-        Assert.DoesNotContain("Thunder Attack", off.Skills);
     }
 
     [Fact]

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { icons } from '../icons';
 import { useApp, useCatalog } from '../state';
-import { Button, Field, NumberInput, RarityBadge, SearchBox, Section, Segmented, SkillChip, SkillIcon, Toggle } from './common';
+import { Button, Field, NumberInput, RarityBadge, SearchBox, Section, Segmented, SkillChip, SkillHover, SkillIcon, Toggle } from './common';
 
 const beamPresets = [
   { value: 20000, label: 'Fast', hint: '20k states per slot' },
@@ -29,6 +29,14 @@ export function OptionsPanel() {
   const excluded = new Set(o.exclude_sets);
   const toggleSet = (name: string) => patch({ exclude_sets: excluded.has(name) ? o.exclude_sets.filter((s) => s !== name) : [...o.exclude_sets, name] });
   const isPreset = beamPresets.some((p) => p.value === o.max_states_per_depth);
+  const cores = catalog.processor_count;
+  const threads = o.max_threads ?? 0;
+  const threadPresets = [
+    { value: 0, label: `All (${cores})`, hint: 'every logical processor' },
+    ...(cores >= 4 ? [{ value: Math.floor(cores / 2), label: 'Half', hint: `${Math.floor(cores / 2)} threads, leaves the rest for other work` }] : []),
+    { value: 1, label: 'One', hint: 'single-threaded' },
+  ];
+  const isThreadPreset = threadPresets.some((p) => p.value === threads);
   const setWarnings = resolved?.warnings.filter((w) => w.startsWith('options.exclude_sets')) ?? [];
 
   return (
@@ -55,6 +63,13 @@ export function OptionsPanel() {
                 <NumberInput value={o.max_states_per_depth} min={1000} max={10000000} step={1000} width={120} onChange={(max_states_per_depth) => patch({ max_states_per_depth })} />
               </div>
             </Field>
+            <Field label="Threads" hint={`CPU threads the search may use (this machine has ${cores}). Results are identical for any count; fewer threads only take longer. 0 = all.`}>
+              <div className="btn-row">
+                <Segmented<number> value={isThreadPreset ? threads : -1} onChange={(v) => v >= 0 && patch({ max_threads: v })}
+                  options={[...threadPresets, ...(isThreadPreset ? [] : [{ value: -1, label: 'Custom', hint: 'custom value' }])]} />
+                <NumberInput value={threads} min={0} max={cores} step={1} width={70} onChange={(max_threads) => patch({ max_threads })} />
+              </div>
+            </Field>
           </div>
         </Section>
       </div>
@@ -75,8 +90,8 @@ export function OptionsPanel() {
                 <span className="setname">{s.name}</span>
                 <RarityBadge rarity={s.rarity} />
                 <span className="muted small setinfo">
-                  {s.set_bonus.map((b) => <span key={b} className="with-icon"><SkillIcon name={b} kind="set" size={14} />{b}</span>)}
-                  {s.group_skill && <span className="with-icon"><SkillIcon name={s.group_skill} kind="group" size={14} />{s.group_skill}</span>}
+                  {s.set_bonus.map((b) => <SkillHover key={b} name={b} className="with-icon"><SkillIcon name={b} kind="set" size={14} />{b}</SkillHover>)}
+                  {s.group_skill && <SkillHover name={s.group_skill} className="with-icon"><SkillIcon name={s.group_skill} kind="group" size={14} />{s.group_skill}</SkillHover>}
                   <span>{s.pieces.length} piece{s.pieces.length === 1 ? '' : 's'}</span>
                 </span>
               </label>

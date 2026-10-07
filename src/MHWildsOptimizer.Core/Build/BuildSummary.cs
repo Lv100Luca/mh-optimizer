@@ -126,7 +126,7 @@ public sealed record BuildSummary(
         _ when label.StartsWith("Offensive Guard") => "perfect guard",
         _ when label.StartsWith("Punishing Draw") => "draw attacks",
         _ when label.StartsWith("Charge Master") => "charged attacks",
-        _ when label.StartsWith("Coalescence") => "recovering from a blight",
+        _ when label.StartsWith("Coalescence") => "Frenzy cure (Gore set)",
         _ when label.StartsWith("Elemental Absorption") => "taking elemental damage",
         _ when label.StartsWith("Azure Bolt") => "Azure Bolt window",
         _ when label.StartsWith("Resonance") => "Resonance phase",

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../state';
-import { Alert, Button, Section, SkillIcon, fmt } from './common';
+import { fromBuild, uniqueName } from '../builds';
+import { Alert, Button, Section, Segmented, SkillHover, SkillIcon, fmt } from './common';
 import { BuildCard } from './BuildCard';
+import { ScoreDelta } from './BuildCompare';
 
 export function ResultsPanel() {
-  const { run, runOptimizer, cancelRun, resolved, name } = useApp();
+  const { run, runOptimizer, cancelRun, resolved, name, builds, evaluated, buildIndex, setBuildIndex, addBuild, setCompareKey, setTab } = useApp();
   const [showLog, setShowLog] = useState(false);
   const [now, setNow] = useState(Date.now());
   const logRef = useRef<HTMLPreElement>(null);
@@ -21,6 +23,11 @@ export function ResultsPanel() {
 
   const elapsed = run.startedAt ? ((run.finishedAt ?? now) - run.startedAt) / 1000 : null;
   const result = run.result;
+
+  // the selected hand-entered build every result is compared with
+  const mineIndex = Math.max(0, Math.min(buildIndex, builds.length - 1));
+  const mineName = builds[mineIndex]?.name ?? '';
+  const mine = evaluated?.[mineIndex]?.build ?? null;
 
   const download = () => {
     if (!result) return;
@@ -74,6 +81,14 @@ export function ResultsPanel() {
         {run.status === 'error' && <Alert kind="error">{run.error}</Alert>}
         {run.status === 'cancelled' && <Alert kind="warning">Run cancelled after {elapsed?.toFixed(1)} s.</Alert>}
         {logBlock}
+        {result && builds.length > 0 && (
+          <div className="mine-strip">
+            <span className="muted">Differences against</span>
+            <Segmented<number> small value={mineIndex} onChange={setBuildIndex}
+              options={builds.map((b, i) => ({ value: i, label: <span>{b.name || '(unnamed)'}{evaluated?.[i]?.build ? <small> {fmt(evaluated[i].build!.score)}</small> : null}</span> }))} />
+            <span className="muted small">your builds are scored under the current conditions; rerun after changing them</span>
+          </div>
+        )}
       </Section>
 
       {result && result.skill_pair_mode === 'optimize' && result.pairs.length > 1 && (
@@ -84,8 +99,8 @@ export function ResultsPanel() {
               {result.pairs.map((p) => (
                 <tr key={p.rank} onClick={() => document.getElementById(`pair-${p.rank}`)?.scrollIntoView({ behavior: 'smooth' })}>
                   <td>{p.rank}</td>
-                  <td><span className="with-icon"><SkillIcon name={p.set_bonus} kind="set" size={18} />{p.set_bonus}</span></td>
-                  <td><span className="with-icon"><SkillIcon name={p.group_skill} kind="group" size={18} />{p.group_skill}</span></td>
+                  <td><SkillHover name={p.set_bonus} className="with-icon"><SkillIcon name={p.set_bonus} kind="set" size={18} />{p.set_bonus}</SkillHover></td>
+                  <td><SkillHover name={p.group_skill} className="with-icon"><SkillIcon name={p.group_skill} kind="group" size={18} />{p.group_skill}</SkillHover></td>
                   <td className="num"><b>{fmt(p.best_score)}</b></td>
                   <td className="num muted">{p.rank === 1 ? '—' : fmt(p.best_score - result.pairs[0].best_score)}</td>
                   <td className="num">{p.builds.length}</td>
@@ -101,13 +116,32 @@ export function ResultsPanel() {
         <div key={p.rank} id={`pair-${p.rank}`} className="pair-block">
           <div className="pairhead">
             <span className="rank">#{p.rank}</span>
-            <span className="with-icon"><SkillIcon name={p.set_bonus} kind="set" size={20} /><b>{p.set_bonus}</b></span>
+            <SkillHover name={p.set_bonus} className="with-icon"><SkillIcon name={p.set_bonus} kind="set" size={20} /><b>{p.set_bonus}</b></SkillHover>
             <span className="muted">+</span>
-            <span className="with-icon"><SkillIcon name={p.group_skill} kind="group" size={20} /><b>{p.group_skill}</b></span>
+            <SkillHover name={p.group_skill} className="with-icon"><SkillIcon name={p.group_skill} kind="group" size={20} /><b>{p.group_skill}</b></SkillHover>
             <span className="muted">best {fmt(p.best_score)} · {p.states_evaluated.toLocaleString('en-US')} final states scored · {p.candidate_summary}</span>
           </div>
           {p.builds.length === 0 && <Alert kind="warning">No build satisfies the targets for this pair.</Alert>}
-          {p.builds.map((b) => <BuildCard key={b.rank} build={b} best={p.rank === 1 && b.rank === 1} />)}
+          {p.builds.map((b) => {
+            const key = `opt:${p.rank}:${b.rank}`;
+            const label = result.pairs.length > 1 ? `Pair #${p.rank} build ${b.rank}` : `Optimizer build ${b.rank}`;
+            return (
+              <BuildCard
+                key={b.rank}
+                build={b}
+                best={p.rank === 1 && b.rank === 1}
+                delta={mine && <ScoreDelta score={b.score} reference={mine.score} label={mineName} />}
+                actions={
+                  <>
+                    <Button small onClick={() => addBuild(fromBuild(b, uniqueName(`${label} (copy)`, builds.map((x) => x.name))), key)} title="Copy this build into My builds to change pieces or decorations">
+                      Edit a copy
+                    </Button>
+                    {mine && <Button small kind="ghost" onClick={() => { setCompareKey(key); setTab('builds'); }} title={`Compare side by side with ${mineName}`}>Compare</Button>}
+                  </>
+                }
+              />
+            );
+          })}
         </div>
       ))}
     </div>

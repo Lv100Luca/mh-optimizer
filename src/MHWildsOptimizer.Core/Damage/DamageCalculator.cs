@@ -49,7 +49,6 @@ public static class SkillNames
     public const string ButteryLeathercraft = "Buttery Leathercraft";
 
     public const string NuUdrasMutiny = "Nu Udra's Mutiny";
-    public const string RathalossFlare = "Rathalos's Flare";
     public const string ThunderAttack = "Thunder Attack";
 
     public static string? ElementAttackSkill(Element element) => element switch
@@ -80,15 +79,16 @@ public sealed record DamageResult(
     double ProcDamage,
     IReadOnlyList<string> Breakdown)
 {
-    /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value at hitzone 100.</summary>
+    /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value at raw hitzone 100.</summary>
     public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
 }
 
 /// <summary>
 /// Effective Raw / Effective Element calculator for a Gogma weapon loadout.
-/// raw = (baseRaw * prod(percent) + sum(flat)) * sharpness * critFactor ; element = min(ele, cap) * sharpness * critElementFactor.
-/// Proc damage (extra damage instances) is converted to per 100 MV with the attack profile of the conditions.
-/// Hitzone is fixed at 100 and monster resistances are ignored (project assumption).
+/// raw = (baseRaw * prod(percent) + sum(flat)) * sharpness * critFactor ;
+/// element = min(ele, cap) * sharpness * critElementFactor * elementHitzoneRatio * 100 / averageMv.
+/// Element and proc damage (extra damage instances) land once per hit whatever the MV, so the attack profile of the conditions
+/// converts them to per 100 MV. The raw hitzone is fixed at 100 (project assumption); the element hitzone is a share of it.
 /// </summary>
 public static class DamageCalculator
 {
@@ -98,7 +98,36 @@ public static class DamageCalculator
         return Calculate(loadout.Weapon.Stats, skills, conditions ?? Conditions.Default);
     }
 
+    /// <remarks>
+    /// Full health excludes red and low health. When both sides are toggled on, the loadout is scored at whichever side
+    /// is better for it, so the search considers Peak Performance builds and Resentment / Dark Arts / Heroics builds alike.
+    /// </remarks>
     public static DamageResult Calculate(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace = true)
+    {
+        if (!cond.FullHealth || !(cond.RedHealth || cond.LowHealth))
+            return CalculateAt(weapon, skills, cond, trace);
+
+        var hurt = cond with { FullHealth = false };
+        var full = cond with { RedHealth = false, LowHealth = false };
+        // skip the second pass when only one side has skills to trigger
+        if (cond.Effective(SkillNames.PeakPerformance, skills.Level(SkillNames.PeakPerformance)) == 0)
+            return CalculateAt(weapon, skills, hurt, trace);
+        var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
+                         || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
+                         || skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+        if (!hurtSkills)
+            return CalculateAt(weapon, skills, full, trace);
+
+        var atFull = CalculateAt(weapon, skills, full, trace);
+        var atHurt = CalculateAt(weapon, skills, hurt, trace);
+        var fullWins = atFull.Total >= atHurt.Total;
+        var (best, other) = fullWins ? (atFull, atHurt) : (atHurt, atFull);
+        if (!trace) return best;
+        var (side, otherSide) = fullWins ? ("full health", "red/low health") : ("red/low health", "full health");
+        return best with { Breakdown = [.. best.Breakdown, Inv($"Full health excludes red/low health, scored at {side} ({best.Total:0.#} vs {other.Total:0.#} at {otherSide})")] };
+    }
+
+    private static DamageResult CalculateAt(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace)
     {
         var notes = new List<string>();
         var type = weapon.Type;
@@ -189,7 +218,9 @@ public static class DamageCalculator
             ElePct($"{eleSkill} {lv}", pct);
             EleFlat($"{eleSkill} {lv}", flat);
         }
-        if (cond.CoalescenceActive && L(SkillNames.Coalescence) > 0)
+        var gore = skills.SetTier(SkillNames.GoreMagalasTyranny);
+        // Coalescence needs a natural recovery from a status; in practice that is the Frenzy cure of the Gore set bonus
+        if (gore != SetBonusTier.None && cond.FrenzyOvercome && cond.CoalescenceActive && L(SkillNames.Coalescence) > 0)
             ElePct("Coalescence", DamageConstants.Coalescence(type, L(SkillNames.Coalescence)));
         if (cond.ChargedAttack && L(SkillNames.ChargeMaster) > 0)
             ElePct("Charge Master", DamageConstants.ChargeMaster(L(SkillNames.ChargeMaster)));
@@ -200,7 +231,6 @@ public static class DamageCalculator
         }
 
         // ---------------- set bonuses ----------------
-        var gore = skills.SetTier(SkillNames.GoreMagalasTyranny);
         if (gore != SetBonusTier.None)
         {
             if (cond.FrenzyOvercome)
@@ -271,50 +301,35 @@ public static class DamageCalculator
             critEleMult = DamageConstants.CriticalElement(type, L(SkillNames.CriticalElement));
             critEleFactor = aff > 0 ? 1.0 + aff / 100.0 * (critEleMult - 1.0) : 1.0;
         }
-        var efe = ele * sharpEle * critEleFactor;
+        // element lands once per hit at the element hitzone, whatever the MV: put it on the per-100-MV, raw-hitzone-100 scale of EFR
+        var profile = cond.AttackProfile.Resolve(type);
+        var efe = ele * sharpEle * critEleFactor * profile.ElementHitzoneRatio * profile.PerHundredMv;
 
         // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
         double procs = 0;
         if (cond.ProcDamage)
         {
-            var profile = cond.AttackProfile.Resolve(type);
-            var mvScale = profile.AverageMv / 100.0;
             void Proc(string label, double damage, double perHit, string how)
             {
                 if (damage <= 0 || perHit <= 0) return;
-                var v = damage * perHit / mvScale;
+                var v = damage * perHit * profile.PerHundredMv;
                 procs += v;
                 if (trace) notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
             }
 
-            var bolt = skills.SetTier(SkillNames.LeviathansFury);
-            if (bolt != SetBonusTier.None)
-            {
-                var (fixedPart, thunder) = DamageConstants.AzureBolt(bolt);
-                var (pct, flat) = DamageConstants.ElementAttack(L(SkillNames.ThunderAttack));
-                Proc($"Azure Bolt {bolt} burst", fixedPart + thunder * pct + flat,
-                    profile.ProcsPerHit(DamageConstants.AzureBoltCooldownSeconds), Inv($"every {DamageConstants.AzureBoltCooldownSeconds:0} s"));
-            }
+            // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
             if (type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
-                Proc("Dark Arts shockwave", efr * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle,
+                Proc("Dark Arts shockwave", efr * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle * profile.ElementHitzoneRatio,
                     profile.ChargedLv3Share, Inv($"on {profile.ChargedLv3Share:0%} of hits"));
             var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
             if (badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
                 Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
                     profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds), Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
-            var scorcher = skills.SetTier(SkillNames.RathalossFlare);
-            if (scorcher != SetBonusTier.None)
-            {
-                var (fixedPart, fire) = DamageConstants.Scorcher(scorcher);
-                Proc($"Scorcher {scorcher}", fixedPart + fire,
-                    profile.ProcsPerHit(DamageConstants.ScorcherIntervalSeconds, DamageConstants.ScorcherChance),
-                    Inv($"at {DamageConstants.ScorcherChance:0%} per {DamageConstants.ScorcherIntervalSeconds:0.#} s check"));
-            }
         }
 
         if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}; EFR {efr:0.#}"));
         if (trace && baseEle > 0)
-            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; sharpness x{sharpEle:0.###}; EFE {efe:0.#}"));
+            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; sharpness x{sharpEle:0.###}; element hitzone x{profile.ElementHitzoneRatio:0.##} of raw, once per {profile.AverageMv:0.#} MV hit; EFE {efe:0.#}"));
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,

@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { icons, elementCss, sharpnessCss } from '../icons';
 import type { Build, Stats } from '../types';
-import { DecoIcon, RarityBadge, SkillChip, SkillIcon, Slots, fmt, titleCase } from './common';
+import { DecoIcon, RarityBadge, SkillChip, SkillHover, SkillIcon, Slots, fmt, titleCase } from './common';
 
 const pieceLabel: Record<string, string> = { head: 'Head', chest: 'Chest', arms: 'Arms', waist: 'Waist', legs: 'Legs' };
 
-export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) {
+/**
+ * One scored build. title replaces "Build <rank>"; delta (e.g. the difference to your own build) sits next to the score;
+ * actions go to the right of the header; compact leaves out the equipment table and decoration list (the build editor shows those).
+ */
+export function BuildCard({ build: b, best, title, delta, actions, compact }: {
+  build: Build; best?: boolean; title?: ReactNode; delta?: ReactNode; actions?: ReactNode; compact?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const s = b.summary;
   const w = b.weapon;
@@ -13,7 +19,7 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
   return (
     <article className={'build' + (best ? ' best' : '')}>
       <header className="build-head">
-        <div className="build-rank">Build {b.rank}</div>
+        <div className="build-rank">{title ?? `Build ${b.rank}`}</div>
         <div className="score">
           <span className="efr">EFR {fmt(b.efr)}</span>
           <span className="plus">+</span>
@@ -27,6 +33,7 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
           <span className="eq">=</span>
           <span className="total">{fmt(b.score)}</span>
           <span className="muted small">every condition on: {fmt(s.total_all_conditions)}</span>
+          {delta}
         </div>
         <div className="statchips">
           <span className="statchip atk" title={`base ${s.base_attack} true`}><img src={icons.attack} alt="" />ATK <b>{fmt(s.attack, 0)}</b> <small>{s.display_attack} display</small></span>
@@ -39,6 +46,7 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
             </span>
           )}
         </div>
+        {actions && <div className="build-actions">{actions}</div>}
       </header>
 
       <div className="build-body">
@@ -46,12 +54,12 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
           <span className="label">Sets</span>
           <span className="chip-row">
             {s.active_set_bonuses.length === 0 && <span className="muted">-</span>}
-            {s.active_set_bonuses.map((x) => <span key={x} className="chip skill set"><SkillIcon name={x.replace(/ (I|II)( \(.*\))?$/, '')} kind="set" size={18} />{x}</span>)}
+            {s.active_set_bonuses.map((x) => <SkillHover key={x} name={x} className="chip skill set"><SkillIcon name={x.replace(/ (I|II)( \(.*\))?$/, '')} kind="set" size={18} />{x}</SkillHover>)}
           </span>
           <span className="label">Groups</span>
           <span className="chip-row">
             {s.active_group_skills.length === 0 && <span className="muted">-</span>}
-            {s.active_group_skills.map((x) => <span key={x} className="chip skill group"><SkillIcon name={x.replace(/ \(.*\)$/, '')} kind="group" size={18} />{x}</span>)}
+            {s.active_group_skills.map((x) => <SkillHover key={x} name={x.replace(/ \(.*\)$/, '')} className="chip skill group"><SkillIcon name={x.replace(/ \(.*\)$/, '')} kind="group" size={18} />{x}</SkillHover>)}
           </span>
         </div>
         <div className="build-row">
@@ -62,7 +70,7 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
         </div>
         <p className="why muted">{s.description}</p>
 
-        <table className="table equip">
+        {!compact && <table className="table equip">
           <tbody>
             <tr>
               <td className="icon-cell"><img className="icon" src={icons.weapon(w.type)} alt="" width={32} height={32} /></td>
@@ -78,8 +86,8 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
                 <td className="name">
                   <b>{a.name}</b> <RarityBadge rarity={a.rarity} transcended={a.transcended} />
                   <div className="muted small">
-                    {a.set_bonus.map((x) => <span key={x} className="with-icon"><SkillIcon name={x} kind="set" size={14} />{x}</span>)}
-                    {a.group_skill && <span className="with-icon"><SkillIcon name={a.group_skill} kind="group" size={14} />{a.group_skill}</span>}
+                    {a.set_bonus.map((x) => <SkillHover key={x} name={x} className="with-icon"><SkillIcon name={x} kind="set" size={14} />{x}</SkillHover>)}
+                    {a.group_skill && <SkillHover name={a.group_skill} className="with-icon"><SkillIcon name={a.group_skill} kind="group" size={14} />{a.group_skill}</SkillHover>}
                   </div>
                 </td>
                 <td className="skills"><span className="chip-row">{a.skills.map((g) => <SkillChip key={g.skill} name={g.skill} level={g.level} />)}</span></td>
@@ -98,9 +106,9 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
               ) : <td colSpan={3} className="muted">-</td>}
             </tr>
           </tbody>
-        </table>
+        </table>}
 
-        <div className="build-row">
+        {!compact && <div className="build-row">
           <span className="label">Decorations ({b.decorations.reduce((n, d) => n + d.count, 0)})</span>
           <span className="chip-row">
             {b.decorations.length === 0 && <span className="muted">none</span>}
@@ -112,7 +120,7 @@ export function BuildCard({ build: b, best }: { build: Build; best?: boolean }) 
               </span>
             ))}
           </span>
-        </div>
+        </div>}
 
         <button className="linklike details-toggle" onClick={() => setOpen((o) => !o)}>{open ? '▾ Hide details' : '▸ Skill sources, stats and the text report'}</button>
 

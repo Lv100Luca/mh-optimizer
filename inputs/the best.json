@@ -24,11 +24,11 @@
       3,
       3
     ],
-    "set_bonus": "Soul of the Dark Knight",
-    "group_skill": "Lord\u0027s Favor"
+    "set_bonus": "Leviathan\u0027s Fury",
+    "group_skill": "Lord\u0027s Soul"
   },
   "skill_pair": {
-    "mode": "fixed",
+    "mode": "optimize",
     "top_n": 3
   },
   "target_skills": {
@@ -53,7 +53,7 @@
     "offensive_guard_active": false,
     "draw_attack": false,
     "charged_attack": false,
-    "coalescence_active": true,
+    "coalescence_active": false,
     "elemental_absorption_active": false,
     "azure_bolt_active": true,
     "resonance": "none",
@@ -73,7 +73,7 @@
     }
   },
   "talismans": {
-    "file": "Current.talismans.json",
+    "file": "the best.talismans.json",
     "include_craftable": true
   },
   "options": {

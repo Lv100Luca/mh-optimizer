@@ -1,7 +1,7 @@
 import { icons, elementCss } from '../icons';
 import { useApp, useCatalog } from '../state';
 import type { ResolvedTarget } from '../types';
-import { Alert, Button, Section, SkillChip, SkillIcon, Slots, fmt, titleCase } from './common';
+import { Alert, Button, Section, SkillChip, SkillHover, SkillIcon, Slots, fmt, titleCase } from './common';
 import { PROC_GROUP, attackProfileText } from './ConditionsPanel';
 import { roman } from './SkillPicker';
 import { SharpnessBar } from './SharpnessBar';
@@ -64,12 +64,12 @@ export function ReviewPanel() {
             <h4><button className="linklike" onClick={() => setTab('targets')}>Targets</button></h4>
             <div className="chip-row">
               {targets.map((t) => t.kind === 'set' || t.kind === 'group' ? (
-                <span key={t.skill} className={`chip skill ${t.kind}`} title={t.label}>
+                <SkillHover key={t.skill} name={t.skill} level={t.level} className={`chip skill ${t.kind}`}>
                   <SkillIcon name={t.skill} kind={t.kind} size={18} />
                   <span>{t.skill}</span>
                   {t.kind === 'set' && <b>{roman(t.level)}</b>}
                   {t.pieces !== null && <span className="muted small">{t.pieces} pieces</span>}
-                </span>
+                </SkillHover>
               ) : (
                 <SkillChip key={t.skill} name={t.skill} level={t.level} muted={t.from_core} />
               ))}
@@ -82,7 +82,7 @@ export function ReviewPanel() {
             <h4><button className="linklike" onClick={() => setTab('limits')}>Skill limits</button></h4>
             <div className="chip-row">
               {limits.length === 0 && <span className="muted">none</span>}
-              {limits.map(([s, n]) => <span key={s} className="chip skill armor"><SkillIcon name={s} size={18} />{s} <b>{n === 0 ? 'excluded' : `≤ ${n}`}</b></span>)}
+              {limits.map(([s, n]) => <SkillHover key={s} name={s} className="chip skill armor"><SkillIcon name={s} size={18} />{s} <b>{n === 0 ? 'excluded' : `≤ ${n}`}</b></SkillHover>)}
             </div>
           </div>
 
@@ -102,7 +102,7 @@ export function ReviewPanel() {
             <h4><button className="linklike" onClick={() => setTab('options')}>Options</button></h4>
             <div className="small">
               transcendence {request.options.allow_transcendence ? 'on' : 'off'} · core skills {request.options.require_weapon_core_skills ? 'on' : 'off'} · top {request.options.top_n} · rarity {request.options.min_rarity}+ ·
-              beam {request.options.max_states_per_depth.toLocaleString('en-US')} · {request.options.exclude_sets.length} sets excluded
+              beam {request.options.max_states_per_depth.toLocaleString('en-US')} · {request.options.max_threads ? `${request.options.max_threads} threads` : 'all threads'} · {request.options.exclude_sets.length} sets excluded
             </div>
           </div>
 
@@ -120,8 +120,8 @@ export function ReviewPanel() {
         <Section title="Skills in play" hint="Everything the search tracks: targets plus the skills, set bonuses and group skills that change the score under your conditions.">
           <div className="chip-row">
             {r.relevance.skills.map((s) => <SkillChip key={s} name={s} muted={!(s in request.target_skills)} />)}
-            {r.relevance.set_bonuses.map((s) => <span key={s} className="chip skill set"><SkillIcon name={s} kind="set" size={18} />{s}</span>)}
-            {r.relevance.group_skills.map((s) => <span key={s} className="chip skill group"><SkillIcon name={s} kind="group" size={18} />{s}</span>)}
+            {r.relevance.set_bonuses.map((s) => <SkillHover key={s} name={s} className="chip skill set"><SkillIcon name={s} kind="set" size={18} />{s}</SkillHover>)}
+            {r.relevance.group_skills.map((s) => <SkillHover key={s} name={s} className="chip skill group"><SkillIcon name={s} kind="group" size={18} />{s}</SkillHover>)}
           </div>
         </Section>
       )}

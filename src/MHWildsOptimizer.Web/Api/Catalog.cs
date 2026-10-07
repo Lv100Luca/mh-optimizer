@@ -10,7 +10,10 @@ public sealed record SkillDto(int Id, string Name, SkillKind Kind, int MaxLevel,
 
 public sealed record DecorationDto(int Id, string Name, SkillKind Kind, int Slot, int Rarity, string? IconColor, IReadOnlyList<SkillGrant> Skills);
 
-public sealed record ArmorSetPieceDto(int Id, string Name, ArmorPieceKind Kind, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<int> Slots, IReadOnlyList<int> SlotsTranscended);
+public sealed record ArmorSetPieceDto(int Id, string Name, ArmorPieceKind Kind, int Rarity, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<int> Slots, IReadOnlyList<int> SlotsTranscended);
+
+/// <summary>A craftable charm at one rank; <paramref name="IsMaxRank"/> marks the rank the optimizer uses.</summary>
+public sealed record CharmDto(string Name, int Rarity, bool IsMaxRank, IReadOnlyList<SkillGrant> Skills);
 
 public sealed record ArmorSetDto(string Name, int Rarity, IReadOnlyList<string> SetBonus, string? GroupSkill, IReadOnlyList<ArmorSetPieceDto> Pieces);
 
@@ -19,7 +22,7 @@ public sealed record SharpnessBarDto(int Red, int Orange, int Yellow, int Green,
 public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, int Affinity, SharpnessBarDto? Sharpness, IReadOnlyList<int> Slots);
 
 /// <summary>The attack profile preset of a weapon type (what an unset <c>conditions.attack_profile</c> value falls back to).</summary>
-public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share);
+public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share, double ElementHitzoneRatio);
 
 public sealed record WeaponTypeDto(
     string Kind,
@@ -49,6 +52,7 @@ public sealed record Catalog(
     IReadOnlyList<SkillDto> Skills,
     IReadOnlyList<DecorationDto> Decorations,
     IReadOnlyList<ArmorSetDto> ArmorSets,
+    IReadOnlyList<CharmDto> Charms,
     IReadOnlyList<WeaponTypeDto> WeaponTypes,
     IReadOnlyList<ReinforcementOptionDto> Reinforcements,
     IReadOnlyList<string> Elements,
@@ -61,7 +65,8 @@ public sealed record Catalog(
     OptimizationRequest DefaultRequest,
     Conditions ConditionsDefault,
     Conditions ConditionsAllOn,
-    Conditions ConditionsAllOff)
+    Conditions ConditionsAllOff,
+    int ProcessorCount)
 {
     public static Catalog Build(GameData data)
     {
@@ -82,9 +87,11 @@ public sealed record Catalog(
                 g.Max(a => a.Rarity),
                 g.SelectMany(a => a.SetBonus).Distinct().OrderBy(x => x).ToList(),
                 g.Select(a => a.GroupSkill).FirstOrDefault(x => x is not null),
-                g.OrderBy(a => a.Piece).Select(a => new ArmorSetPieceDto(a.Id, a.Name, a.Piece, a.Skills, a.Slots, a.SlotsTranscended)).ToList()))
+                g.OrderBy(a => a.Piece).Select(a => new ArmorSetPieceDto(a.Id, a.Name, a.Piece, a.Rarity, a.Skills, a.Slots, a.SlotsTranscended)).ToList()))
             .OrderByDescending(s => s.Rarity).ThenBy(s => s.Name)
             .ToList();
+
+        var charms = data.Charms.Select(c => new CharmDto(c.Name, c.Rarity, c.IsMaxRank, c.Skills)).OrderBy(c => c.Name).ToList();
 
         var weaponTypes = Enum.GetValues<WeaponType>()
             .Select(t => new WeaponTypeDto(
@@ -133,6 +140,7 @@ public sealed record Catalog(
             skills,
             decorations,
             sets,
+            charms,
             weaponTypes,
             reinforcements,
             Enum.GetNames<Element>().Select(e => e.ToLowerInvariant()).ToList(),
@@ -145,7 +153,8 @@ public sealed record Catalog(
             NewRequest(),
             Core.Damage.Conditions.Default,
             Core.Damage.Conditions.AllOn,
-            Core.Damage.Conditions.AllOff);
+            Core.Damage.Conditions.AllOff,
+            Environment.ProcessorCount);
     }
 
     /// <summary>The same starting point as the CLI editor: a raw attack-focus Great Sword with no rolled pair.</summary>
@@ -158,7 +167,7 @@ public sealed record Catalog(
         Talismans = new TalismanSettings { IncludeCraftable = true },
     };
 
-    private static AttackProfileDto Profile(ResolvedAttackProfile p) => new(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share);
+    private static AttackProfileDto Profile(ResolvedAttackProfile p) => new(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, p.ElementHitzoneRatio);
 
     public static string WeaponLabel(WeaponType type) => type switch
     {

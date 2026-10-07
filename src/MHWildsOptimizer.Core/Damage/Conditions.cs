@@ -16,7 +16,7 @@ public sealed record Conditions
     public bool HittingWeakPoint { get; init; } = true;
     /// <summary>Weakness Exploit wound bonus.</summary>
     public bool HittingWound { get; init; } = false;
-    /// <summary>Peak Performance.</summary>
+    /// <summary>Peak Performance. Excludes <see cref="RedHealth"/> and <see cref="LowHealth"/>: with both on, each loadout is scored at the better side.</summary>
     public bool FullHealth { get; init; } = true;
     /// <summary>Resentment, Dark Arts.</summary>
     public bool RedHealth { get; init; } = false;
@@ -42,6 +42,7 @@ public sealed record Conditions
     public bool DrawAttack { get; init; } = false;
     /// <summary>Charge Master applies to charged attacks only.</summary>
     public bool ChargedAttack { get; init; } = false;
+    /// <summary>Coalescence after the Frenzy cure; only counted with the Gore set bonus and <see cref="FrenzyOvercome"/>.</summary>
     public bool CoalescenceActive { get; init; } = false;
     public bool ElementalAbsorptionActive { get; init; } = false;
     /// <summary>Azure Bolt (Leviathan's Fury) affinity window.</summary>
@@ -68,7 +69,7 @@ public sealed record Conditions
     public bool GutsNotYetTriggered { get; init; } = true;
 
     // ----- proc damage -----
-    /// <summary>Count extra damage instances (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher), converted to per 100 MV with <see cref="AttackProfile"/>.</summary>
+    /// <summary>Count extra damage instances (Dark Arts shockwave, Bad Blood; Azure Bolt bursts and Scorcher are never counted), converted to per 100 MV with <see cref="AttackProfile"/>.</summary>
     public bool ProcDamage { get; init; } = true;
     public AttackProfile AttackProfile { get; init; } = new();
 
@@ -83,7 +84,7 @@ public sealed record Conditions
 
     public static Conditions Default => new();
 
-    /// <summary>Every conditional skill counted as active (a theoretical maximum: full health and red health both "on", Resonance on its Local phase).</summary>
+    /// <summary>Every conditional skill counted as active (a theoretical maximum: the better of full and red/low health, Resonance on its Local phase).</summary>
     public static Conditions AllOn => new()
     {
         MonsterEnraged = true,

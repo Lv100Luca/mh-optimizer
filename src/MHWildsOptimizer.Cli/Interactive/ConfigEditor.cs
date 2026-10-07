@@ -369,7 +369,7 @@ public sealed class ConfigEditor
     {
         var current = _request.Conditions.AttackProfile;
         var preset = AttackProfile.Preset(_request.Weapon.Validate(_data).Count == 0 ? _request.Weapon.ToStats(_data).Type : WeaponType.GreatSword);
-        AnsiConsole.MarkupLine("[grey]Turns proc damage (Azure Bolt, Dark Arts shockwave, Bad Blood, Scorcher) into the per-100-MV score. Leave a value empty to use the weapon preset.[/]");
+        AnsiConsole.MarkupLine("[grey]Puts element and proc damage (Dark Arts shockwave, Bad Blood), which land once per hit, on the per-100-MV score. Leave a value empty to use the weapon preset.[/]");
         double? Ask(string label, double? value, double fallback, double min, double max, bool exclusiveMin)
         {
             var text = AnsiConsole.Prompt(new TextPrompt<string>($"{label} [grey](preset {fallback.ToString(CultureInfo.InvariantCulture)})[/]:")
@@ -387,6 +387,7 @@ public sealed class ConfigEditor
             HitsPerMinute = Ask("Landed hits per minute", current.HitsPerMinute, preset.HitsPerMinute, 0, 600, exclusiveMin: true),
             AverageMv = Ask("Average motion value per hit", current.AverageMv, preset.AverageMv, 0, 1000, exclusiveMin: true),
             ChargedLv3Share = Ask("Share of hits that are Lv3 charged slashes (Great Sword)", current.ChargedLv3Share, preset.ChargedLv3Share, 0, 1, exclusiveMin: false),
+            ElementHitzoneRatio = Ask("Element hitzone / raw hitzone where you hit", current.ElementHitzoneRatio, preset.ElementHitzoneRatio, 0, 1, exclusiveMin: false),
         };
         _request = _request with { Conditions = _request.Conditions with { AttackProfile = profile } };
         _dirty = true;

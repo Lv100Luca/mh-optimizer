@@ -26,9 +26,9 @@ public static class ConditionCatalog
         [nameof(Conditions.HittingWound)] = new("Hitting wounds", GroupMonster, "Hits land on a wound, which adds the Weakness Exploit wound bonus.", ["Weakness Exploit"]),
         [nameof(Conditions.MonsterStatused)] = new("Monster poisoned or paralyzed", GroupMonster, "The monster suffers from poison or paralysis.", ["Foray"]),
 
-        [nameof(Conditions.FullHealth)] = new("Full health", GroupHunter, "Your health bar is full.", ["Peak Performance"]),
-        [nameof(Conditions.RedHealth)] = new("Red health", GroupHunter, "You have recoverable (red) health.", ["Resentment", "Soul of the Dark Knight (Dark Arts)"]),
-        [nameof(Conditions.LowHealth)] = new("Low health (35% or less)", GroupHunter, "Health at or below 35%.", ["Heroics"]),
+        [nameof(Conditions.FullHealth)] = new("Full health", GroupHunter, "Your health bar is full. Cannot coexist with red or low health: with both on, each build is scored at whichever is better for it.", ["Peak Performance"]),
+        [nameof(Conditions.RedHealth)] = new("Red health", GroupHunter, "You have recoverable (red) health, so not full health: with both on, each build is scored at whichever is better for it.", ["Resentment", "Soul of the Dark Knight (Dark Arts)"]),
+        [nameof(Conditions.LowHealth)] = new("Low health (35% or less)", GroupHunter, "Health at or below 35%, so not full health: with both on, each build is scored at whichever is better for it.", ["Heroics"]),
         [nameof(Conditions.StaminaFull)] = new("Stamina full", GroupHunter, "Stamina has been full for at least 3 seconds.", ["Maximum Might"]),
         [nameof(Conditions.FrenzyOvercome)] = new("Frenzy overcome", GroupHunter, "You overcame the Frenzy virus (Gore Magala set bonus): +15% affinity, Antivirus bonus, Black Eclipse II recovery.", ["Gore Magala's Tyranny (Black Eclipse)", "Antivirus"]),
 
@@ -40,7 +40,7 @@ public static class ConditionCatalog
         [nameof(Conditions.OffensiveGuardActive)] = new("Offensive Guard active", GroupSkills, "A perfectly timed guard activated Offensive Guard.", ["Offensive Guard"]),
         [nameof(Conditions.DrawAttack)] = new("Draw attacks", GroupSkills, "The attack is a draw attack.", ["Punishing Draw"]),
         [nameof(Conditions.ChargedAttack)] = new("Charged attacks", GroupSkills, "The attack is a charged attack.", ["Charge Master"]),
-        [nameof(Conditions.CoalescenceActive)] = new("Coalescence active", GroupSkills, "You just recovered from a blight or abnormal status.", ["Coalescence"]),
+        [nameof(Conditions.CoalescenceActive)] = new("Coalescence active", GroupSkills, "The Frenzy cure triggered Coalescence. Needs a natural status recovery, so it is only counted with the Gore Magala set bonus and Frenzy overcome.", ["Coalescence"]),
         [nameof(Conditions.ElementalAbsorptionActive)] = new("Elemental Absorption active", GroupSkills, "You took elemental damage recently.", ["Elemental Absorption"]),
 
         [nameof(Conditions.AzureBoltActive)] = new("Azure Bolt window", GroupBonuses, "Leviathan's Fury (Lagiacrus): the Azure Bolt affinity window is up.", ["Leviathan's Fury (Azure Bolt)"]),
@@ -55,8 +55,8 @@ public static class ConditionCatalog
         [nameof(Conditions.GutsNotYetTriggered)] = new("Guts not yet used", GroupBonuses, "Lord's Soul: Guts keeps its attack bonus until it saves you once.", ["Lord's Soul (Guts)"]),
 
         [nameof(Conditions.ProcDamage)] = new("Count proc damage", GroupProcs,
-            "Extra damage instances that do not scale the hit: Azure Bolt, the Dark Arts shockwave (Great Sword), Bad Blood (needs Resentment and red health) and Scorcher. The attack profile converts them to damage per 100 MV and adds them to the score.",
-            ["Leviathan's Fury (Azure Bolt)", "Soul of the Dark Knight (Dark Arts)", "Nu Udra's Mutiny (Bad Blood)", "Rathalos's Flare (Scorcher)", "Thunder Attack"]),
+            "Extra damage instances that do not scale the hit: the Dark Arts shockwave (Great Sword Lv3 charged slashes) and Bad Blood (needs Resentment and red health). The attack profile converts them to damage per 100 MV and adds them to the score. Azure Bolt bursts and Scorcher are too unreliable to build around and are never counted.",
+            ["Soul of the Dark Knight (Dark Arts)", "Nu Udra's Mutiny (Bad Blood)"]),
     };
 
     public static IReadOnlyList<PropertyInfo> BoolProperties() =>

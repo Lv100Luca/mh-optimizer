@@ -1,4 +1,4 @@
-import type { Catalog, ConfigFile, ConfigPayload, ConfigSummary, OptimizationResult, OptimizeEvent, Resolved } from './types';
+import type { Catalog, ConfigFile, ConfigPayload, ConfigSummary, EvaluatedBuild, OptimizationResult, OptimizeEvent, Resolved } from './types';
 
 async function json<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -29,6 +29,9 @@ export const api = {
   results: (name: string) => fetch(`/api/configs/${encodeURIComponent(name)}/results`).then(json<OptimizationResult>),
   resolve: (payload: ConfigPayload, signal?: AbortSignal) =>
     fetch('/api/resolve', { method: 'POST', headers, body: JSON.stringify(payload), signal }).then(json<Resolved>),
+  /** Scores payload.builds with the request's weapon and conditions. */
+  evaluate: (payload: ConfigPayload, signal?: AbortSignal) =>
+    fetch('/api/evaluate', { method: 'POST', headers, body: JSON.stringify(payload), signal }).then(json<EvaluatedBuild[]>),
 
   /** Runs the optimizer; events arrive as server-sent events until "result" or "error". */
   async optimize(payload: ConfigPayload, save: string | null, onEvent: (e: OptimizeEvent) => void, signal: AbortSignal): Promise<void> {
