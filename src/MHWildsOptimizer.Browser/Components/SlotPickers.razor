@@ -1,0 +1,58 @@
+@inject AppState App
+
+@* One decoration picker per slot; the values are kept one entry per slot. *@
+@if (Slots.Count == 0)
+{
+    <span class="muted small">no slots</span>
+}
+else
+{
+    <div class="slotpicks">
+        @for (var i = 0; i < Slots.Count; i++)
+        {
+            var slot = Slots[i];
+            var index = i;
+            var name = i < Values.Count ? Values[i] : null;
+            var deco = name is not null ? App.Index.DecorationsByName.GetValueOrDefault(name) : null;
+            <Picker T="string" AnchorClass="block" Class="@("slotpick" + (name is null ? " vacant" : "") + (name is not null && !BuildHelpers.Fits(deco, slot) ? " bad" : ""))"
+                    Title="@(deco is not null ? $"{deco.Name}: {string.Join(", ", deco.Skills.Select(g => $"{g.Skill} {g.Level}"))}" : $"empty level {slot.Level} {slot.Kind.ToString().ToLowerInvariant()} slot")"
+                    Options="Options(slot)" OnPick="n => Set(index, n)"
+                    OnClear="@(name is not null ? EventCallback.Factory.Create(this, () => Set(index, null)) : default)"
+                    ClearLabel="— empty slot —" Placeholder="@($"Level {slot.Level} {slot.Kind.ToString().ToLowerInvariant()} slot: search jewels or skills…")">
+                <Trigger>
+                    <span class="slot @(slot.Kind == SkillKind.Weapon ? "weapon" : "")">@slot.Level</span>
+                    <DecoIcon Decoration="deco" SlotLevel="slot.Level" Size="22" />
+                    <span class="slotpick-name">@(deco?.Name ?? (name is not null ? $"{name} (unknown)" : "empty"))</span>
+                </Trigger>
+            </Picker>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<SlotSpec> Slots { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<string?> Values { get; set; } = [];
+    [Parameter] public EventCallback<List<string?>> ValuesChanged { get; set; }
+
+    private static readonly Dictionary<(SkillKind, int), List<PickerOption<string>>> Cache = new();
+
+    private List<PickerOption<string>> Options(SlotSpec slot)
+    {
+        if (Cache.TryGetValue((slot.Kind, slot.Level), out var list)) return list;
+        list = App.Catalog.Decorations
+            .Where(d => BuildHelpers.Fits(d, slot))
+            .OrderByDescending(d => d.Slot).ThenBy(d => d.Name)
+            .Select(d => new PickerOption<string>(d.Name, d.Name, string.Join(' ', [d.Name, .. d.Skills.Select(g => g.Skill)]).ToLowerInvariant(),
+                @<text>
+                    <DecoIcon Decoration="d" Size="22" />
+                    <span class="opt-main"><span class="opt-name">@d.Name</span><span class="muted small">@string.Join(", ", d.Skills.Select(g => $"{g.Skill} {g.Level}"))</span></span>
+                </text>,
+                $"Level {d.Slot}"))
+            .ToList();
+        Cache[(slot.Kind, slot.Level)] = list;
+        return list;
+    }
+
+    private Task Set(int index, string? name) =>
+        ValuesChanged.InvokeAsync(Slots.Select((_, j) => j == index ? name : j < Values.Count ? Values[j] : null).ToList());
+}

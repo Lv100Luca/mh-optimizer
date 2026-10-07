@@ -7,7 +7,9 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 * `tools/` – Python scripts that regenerate `data/*.json` from `data/raw` and scrape the wiki tables.
 * `src/MHWildsOptimizer.Core` – domain model, damage calculator, optimizer (C# / .NET 10).
 * `src/MHWildsOptimizer.Cli` – command-line front end.
+* `src/MHWildsOptimizer.Api` – what the web UIs show (catalog, validation, build scoring, inventory, result mapping, the profile store contract), shared by the server and the browser app.
 * `src/MHWildsOptimizer.Web` – web front end: ASP.NET Core API + React client (`client/`), game icons under `client/public/icons` (fetched by `tools/fetch_icons.py`).
+* `src/MHWildsOptimizer.Browser` – the same UI as a static web app (Blazor WebAssembly + MudBlazor) that runs everything in the browser: profiles in browser storage, CP-SAT in WebAssembly. See [Browser app](#browser-app).
 * `tests/MHWildsOptimizer.Tests` – xunit tests; `tests/MHWildsOptimizer.Web.Tests` – API integration tests.
 
 * `inputs/` – optimizer inputs: `request.example.json` (weapon as the game shows it, skill-pair mode, target skills, conditions, talisman file, options) and `talismans.example.json` (your random talismans with skills and decoration slots).
@@ -53,6 +55,43 @@ then open http://localhost:5214. Every build runs `npm run build` in `src/MHWild
 API: `GET /api/catalog`, `GET|PUT|DELETE /api/configs/{name}`, `GET /api/configs/{name}/results`, `POST /api/resolve`, `POST /api/optimize` (server-sent events: `validation`, `progress`…, `result`).
 
 Icons come from monsterhunterwiki.org (Capcom's Wilds UI icons; `python tools/fetch_icons.py` refreshes them, see `client/public/icons/manifest.json`). Skill icon categories and decoration colors are the ones wilds.mhdb.io reports (`icon` in `skills.json`, `icon_color` in `decorations.json`).
+
+## Browser app
+
+`src/MHWildsOptimizer.Browser` is the web UI as a static site: no server code, everything runs in the visitor's browser.
+
+* **Optimizer**: CP-SAT only, solved by [or-tools-wasm](https://github.com/Axelwickm/or-tools-wasm) on WebAssembly threads at about native speed (`solver/` is bundled into `wwwroot/solver` by npm on build). The beam search does not fit WebAssembly's memory. `options.max_threads` 0 uses every core the browser reports; a solve uses up to 4 CP-SAT workers and spare cores solve skill pair classes side by side. Measurements are in `spikes/WasmSpeedTest/README.md`.
+* **Profiles** live in the browser's local storage (about 5 MB per site; results are stored gzipped). The profile menu next to the profile picker exports a profile as one `.mhwo-profile.json` file and imports such a file or the files of a server profile folder (`inputs/profiles/<profile>/profile.json`, `talismans.json`, `weapons/*.json` with `.builds.json` / `.results.json`).
+* **Hosting** needs only the published files, served with two headers that make the page cross-origin isolated (WebAssembly threads need it): `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`, over HTTPS (or localhost). Hosts that cannot send headers still work: `wwwroot/coi-sw.js`, a service worker, adds them and reloads the page once.
+* First visit: about 4.5 MB compressed (the .NET runtime and app, the CP-SAT WebAssembly module, the dataset); the browser caches it.
+
+```bash
+dotnet run --project src/MHWildsOptimizer.Browser          # development, http://localhost:5240
+dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
+```
+
+The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). With nginx:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name optimizer.example.com;
+    root /var/www/mhwilds-optimizer;   # the contents of publish/browser/wwwroot
+
+    # CP-SAT runs on WebAssembly threads, which need a cross-origin isolated page
+    add_header Cross-Origin-Opener-Policy "same-origin" always;
+    add_header Cross-Origin-Embedder-Policy "require-corp" always;
+
+    include mime.types;                # has application/wasm
+    gzip_static on;                    # the publish output has a .gz (and .br) next to every file
+
+    location / {
+        try_files $uri $uri/ /index.html;   # page URLs such as /Luca/weapon/Current/results
+    }
+}
+```
+
+To serve it under a path such as `/optimizer/`, change `<base href="/">` in the published `index.html` to `<base href="/optimizer/">`.
 
 ```bash
 dotnet build

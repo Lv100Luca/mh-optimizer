@@ -15,6 +15,8 @@
     <SolverDir>$(MSBuildProjectDirectory)/solver/</SolverDir>
     <SolverBundle>$(MSBuildProjectDirectory)/wwwroot/solver/bridge.js</SolverBundle>
     <RepoDir>$(MSBuildProjectDirectory)/../../</RepoDir>
+    <!-- OR-Tools' native solver bindings cannot be linked into WebAssembly; they are never called (solves go to or-tools-wasm) -->
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);WASM0001</MSBuildWarningsAsMessages>
   </PropertyGroup>
 
   <ItemGroup>

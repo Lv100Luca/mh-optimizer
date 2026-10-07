@@ -1,0 +1,250 @@
+@inject AppState App
+
+@* The editor of a hand-entered build: weapon pair and decorations, the five armor pieces with their decorations, the talisman. *@
+@{
+    var request = App.Request!;
+    var rw = App.Resolved?.Weapon;
+    var weaponSlots = (rw?.Slots ?? [3, 3, 3]).Select(l => new SlotSpec(l, SkillKind.Weapon)).ToList();
+    var t = Build.Talisman;
+    var randomTalisman = t is not null ? App.Talismans.FirstOrDefault(x => x.Name == t.Name) : null;
+    var charm = t is not null && randomTalisman is null ? App.Index.CharmsByName.GetValueOrDefault(t.Name) : null;
+    var talismanSlots = randomTalisman?.Slots.Select(BuildHelpers.ParseSlot).ToList() ?? [];
+    var talismanSkills = randomTalisman is not null
+        ? randomTalisman.Skills.Select(kv => new SkillGrant(kv.Key, 0, kv.Value)).ToList()
+        : charm?.Skills.ToList() ?? [];
+    var talismanRarity = randomTalisman?.Rarity ?? charm?.Rarity ?? 1;
+}
+<table class="table equip editor">
+    <tbody>
+        <tr>
+            <td class="icon-cell"><img class="icon" src="@GameIcons.Weapon(rw?.Type ?? App.WeaponKind)" alt="" width="32" height="32" /></td>
+            <td class="piece">Weapon</td>
+            <td class="name">
+                @if (rw is not null)
+                {
+                    <b>@rw.Label</b> <span class="muted small">from the <button class="linklike" @onclick="() => App.SetTab(Tab.Weapon)">Weapon tab</button></span>
+                    <div class="muted small">
+                        @rw.DisplayAttack attack, @rw.Affinity% affinity, @(rw.Element == Element.None ? "no element" : $"{rw.ElementDisplay} {Fmt.TitleCase(rw.Element)}")@(rw.Sharpness is { } sh ? $", {Fmt.TitleCase(sh)} sharpness" : "")
+                    </div>
+                }
+                else
+                {
+                    <span class="err">Weapon has errors</span>
+                }
+            </td>
+            <td class="skills">
+                <div class="pairpick">
+                    <span class="with-icon muted small"><SkillIcon Name="set" Kind="SkillKind.Set" Size="16" /> set bonus</span>
+                    <SelectBox Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {rw?.SetBonus ?? "none"}")"
+                               Options="@App.Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList()" />
+                    <span class="with-icon muted small"><SkillIcon Name="group" Kind="SkillKind.Group" Size="16" /> group skill</span>
+                    <SelectBox Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {rw?.GroupSkill ?? "none"}")"
+                               Options="@App.Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList()" />
+                </div>
+            </td>
+            <td class="decos">
+                <SlotPickers Slots="weaponSlots" Values="Build.WeaponDecorations" ValuesChanged="v => Update.Invoke(b => b with { WeaponDecorations = v })" />
+            </td>
+        </tr>
+
+        @foreach (var kind in BuildHelpers.ArmorKinds)
+        {
+            var a = Build.Armor(kind);
+            var p = a is not null ? App.Index.ArmorByName.GetValueOrDefault(a.Piece) : null;
+            <tr>
+                <td class="icon-cell"><img class="icon" src="@(p is not null ? GameIcons.Armor(kind, p.Rarity) : GameIcons.ArmorBase(kind))" alt="" width="32" height="32" /></td>
+                <td class="piece">@BuildHelpers.PieceLabel(kind)</td>
+                <td class="name">
+                    <Picker T="string" Class="piecepick" Options="ArmorOptions(kind)" OnPick="name => PickPiece(kind, name)"
+                            OnClear="@(a is not null ? EventCallback.Factory.Create(this, () => SetArmor(kind, null)) : default)"
+                            ClearLabel="— nothing equipped —" Placeholder="Search pieces, sets, skills, set bonuses…">
+                        <Trigger>
+                            @if (p is not null)
+                            {
+                                <b>@p.Name</b> <RarityBadge Rarity="p.Rarity" Transcended="@(a!.Transcended && CanTranscend(p))" />
+                            }
+                            else if (a is not null)
+                            {
+                                <span class="err">@a.Piece (unknown)</span>
+                            }
+                            else
+                            {
+                                <span class="muted">— choose @BuildHelpers.PieceLabel(kind).ToLowerInvariant() —</span>
+                            }
+                        </Trigger>
+                    </Picker>
+                    @if (p is not null)
+                    {
+                        <div class="muted small piece-meta">
+                            @foreach (var x in p.SetBonus)
+                            {
+                                <SkillHover Name="@x" Class="with-icon"><SkillIcon Name="@x" Kind="SkillKind.Set" Size="14" />@x</SkillHover>
+                            }
+                            @if (p.GroupSkill is { } g)
+                            {
+                                <SkillHover Name="@g" Class="with-icon"><SkillIcon Name="@g" Kind="SkillKind.Group" Size="14" />@g</SkillHover>
+                            }
+                            @if (CanTranscend(p))
+                            {
+                                <label class="check" title="Transcended rarity 5/6 armor gets better decoration slots">
+                                    <input type="checkbox" checked="@a!.Transcended" @onchange="e => SetTranscended(kind, a!, e.Value is true)" />
+                                    transcended <Slots Numbers="p.Piece.Slots" /> → <Slots Numbers="p.Piece.SlotsTranscended" />
+                                </label>
+                            }
+                        </div>
+                    }
+                </td>
+                <td class="skills">
+                    <span class="chip-row">
+                        @foreach (var g in p?.Piece.Skills ?? [])
+                        {
+                            <SkillChip Name="@g.Skill" Level="g.Level" />
+                        }
+                    </span>
+                </td>
+                <td class="decos">
+                    @if (a is not null && p is not null)
+                    {
+                        <SlotPickers Slots="ArmorSlots(a)" Values="a.Decorations" ValuesChanged="v => SetArmor(kind, a with { Decorations = v })" />
+                    }
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td class="icon-cell">
+                @if (t is not null)
+                {
+                    <img class="icon" src="@GameIcons.Talisman(talismanRarity)" alt="" width="32" height="32" />
+                }
+            </td>
+            <td class="piece">Talisman</td>
+            <td class="name">
+                <Picker T="string" Class="piecepick" Options="TalismanOptions()" OnPick="PickTalisman"
+                        OnClear="@(t is not null ? EventCallback.Factory.Create(this, () => Update.Invoke(b => b with { Talisman = null })) : default)"
+                        ClearLabel="— no talisman —" Placeholder="Search talismans, charms, skills…">
+                    <Trigger>
+                        @if (t is null)
+                        {
+                            <span class="muted">— choose talisman —</span>
+                        }
+                        else if (randomTalisman is not null || charm is not null)
+                        {
+                            <b>@t.Name</b> <RarityBadge Rarity="talismanRarity" />
+                        }
+                        else
+                        {
+                            <span class="err">@t.Name (not found)</span>
+                        }
+                    </Trigger>
+                </Picker>
+                @if (t is not null)
+                {
+                    <div class="muted small">@(randomTalisman is not null ? "your random talisman" : charm is not null ? "craftable charm" : "not in your talisman list; pick it again")</div>
+                }
+            </td>
+            <td class="skills">
+                <span class="chip-row">
+                    @foreach (var g in talismanSkills)
+                    {
+                        <SkillChip Name="@g.Skill" Level="g.Level" />
+                    }
+                </span>
+            </td>
+            <td class="decos">
+                @if (t is not null)
+                {
+                    <SlotPickers Slots="talismanSlots" Values="t.Decorations" ValuesChanged="v => Update.Invoke(b => b with { Talisman = t with { Decorations = v } })" />
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] public BuildInput Build { get; set; } = default!;
+    /// <summary>Applies a change to the build.</summary>
+    [Parameter, EditorRequired] public Action<Func<BuildInput, BuildInput>> Update { get; set; } = default!;
+
+    private static bool CanTranscend(ArmorEntry p) =>
+        p.Piece.SlotsTranscended.Count > 0 && !p.Piece.SlotsTranscended.SequenceEqual(p.Piece.Slots);
+
+    private static string GrantsText(IEnumerable<SkillGrant> grants) => string.Join(", ", grants.Select(g => $"{g.Skill} {g.Level}"));
+
+    // option lists, built once per catalog / talisman pool
+    private Dictionary<ArmorPieceKind, List<PickerOption<string>>>? _armorOptions;
+    private IReadOnlyList<TalismanInput>? _talismanSource;
+    private List<PickerOption<string>>? _talismanOptions;
+
+    private List<PickerOption<string>> ArmorOptions(ArmorPieceKind kind)
+    {
+        _armorOptions ??= App.Index.ArmorByName.Values
+            .OrderByDescending(p => p.Rarity).ThenBy(p => p.Set).ThenBy(p => p.Name)
+            .GroupBy(p => p.Kind)
+            .ToDictionary(g => g.Key, g => g.Select(p => new PickerOption<string>(p.Name, p.Name,
+                string.Join(' ', [p.Name, p.Set, .. p.Piece.Skills.Select(s => s.Skill), .. p.SetBonus, p.GroupSkill ?? ""]).ToLowerInvariant(),
+                @<text>
+                    <img class="icon" src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" width="24" height="24" />
+                    <span class="opt-main"><span class="opt-name">@p.Name</span><span class="muted small">@GrantsText(p.Piece.Skills)</span></span>
+                    <span class="opt-side">
+                        <Slots Numbers="@(CanTranscend(p) ? p.Piece.SlotsTranscended : p.Piece.Slots)" />
+                        <span class="muted tiny">@string.Join(" · ", p.SetBonus.Append(p.GroupSkill ?? "").Where(x => x.Length > 0))</span>
+                    </span>
+                </text>,
+                $"Rarity {p.Rarity}")).ToList());
+        return _armorOptions.GetValueOrDefault(kind) ?? [];
+    }
+
+    private List<PickerOption<string>> TalismanOptions()
+    {
+        if (_talismanOptions is not null && ReferenceEquals(_talismanSource, App.Talismans)) return _talismanOptions;
+        PickerOption<string> Option(string name, int rarity, IReadOnlyList<SkillGrant> skills, IReadOnlyList<string> slots, string group) => new(
+            group + name, name, string.Join(' ', [name, .. skills.Select(g => g.Skill)]).ToLowerInvariant(),
+            @<text>
+                <img class="icon" src="@GameIcons.Talisman(rarity)" alt="" width="24" height="24" />
+                <span class="opt-main"><span class="opt-name">@name</span><span class="muted small">@GrantsText(skills)</span></span>
+                @if (slots.Count > 0)
+                {
+                    <span class="opt-side"><Slots Named="slots" /></span>
+                }
+            </text>,
+            group);
+        var charms = App.Catalog.Charms;
+        _talismanSource = App.Talismans;
+        _talismanOptions =
+        [
+            .. App.Talismans.Select(t => Option(t.Name, t.Rarity, t.Skills.Select(kv => new SkillGrant(kv.Key, 0, kv.Value)).ToList(), t.Slots, "Your talismans")),
+            .. charms.Where(c => c.IsMaxRank).Select(c => Option(c.Name, c.Rarity, c.Skills, [], "Craftable charms (max rank)")),
+            .. charms.Where(c => !c.IsMaxRank).Select(c => Option(c.Name, c.Rarity, c.Skills, [], "Craftable charms (lower ranks)")),
+        ];
+        return _talismanOptions;
+    }
+
+    private List<SlotSpec> ArmorSlots(BuildArmorInput a)
+    {
+        if (App.Index.ArmorByName.GetValueOrDefault(a.Piece) is not { } p) return [];
+        return (a.Transcended && CanTranscend(p) ? p.Piece.SlotsTranscended : p.Piece.Slots).Select(l => new SlotSpec(l, SkillKind.Armor)).ToList();
+    }
+
+    private void SetArmor(ArmorPieceKind kind, BuildArmorInput? a) => Update.Invoke(b => b.WithArmor(kind, a));
+
+    private void PickPiece(ArmorPieceKind kind, string name)
+    {
+        var p = App.Index.ArmorByName[name];
+        var next = new BuildArmorInput { Piece = name, Transcended = App.Request!.Options.AllowTranscendence && CanTranscend(p) };
+        SetArmor(kind, next with { Decorations = BuildHelpers.FitDecorations(Build.Armor(kind)?.Decorations ?? [], ArmorSlots(next), App.Index.DecorationsByName) });
+    }
+
+    private void SetTranscended(ArmorPieceKind kind, BuildArmorInput a, bool transcended)
+    {
+        var next = a with { Transcended = transcended };
+        SetArmor(kind, next with { Decorations = BuildHelpers.FitDecorations(a.Decorations, ArmorSlots(next), App.Index.DecorationsByName) });
+    }
+
+    private void PickTalisman(string name)
+    {
+        var r = App.Talismans.FirstOrDefault(x => x.Name == name);
+        var slots = r?.Slots.Select(BuildHelpers.ParseSlot).ToList() ?? [];
+        Update.Invoke(b => b with { Talisman = new BuildTalismanInput { Name = name, Decorations = BuildHelpers.FitDecorations(b.Talisman?.Decorations ?? [], slots, App.Index.DecorationsByName) } });
+    }
+}

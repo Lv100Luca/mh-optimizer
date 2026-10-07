@@ -1,7 +1,7 @@
 @typeparam T
 @* A button that opens a searchable list (armor pieces, decorations, talismans). Arrow keys move, Enter picks, Escape closes. *@
-<div class="picker-anchor @Class">
-    <button type="button" class="picker-btn @(_open ? "open" : "")" title="@Title" @onclick="Toggle" aria-haspopup="listbox" aria-expanded="@_open">
+<div class="picker-anchor @AnchorClass">
+    <button type="button" class="picker-btn @Class @(_open ? "open" : "")" title="@Title" @onclick="Toggle" aria-haspopup="listbox" aria-expanded="@_open">
         @Trigger
     </button>
     <MudPopover Open="_open" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="picker-pop" MaxHeight="460" Fixed="false">
@@ -46,7 +46,10 @@
     [Parameter] public EventCallback OnClear { get; set; }
     [Parameter] public string? ClearLabel { get; set; }
     [Parameter] public string? Placeholder { get; set; }
+    /// <summary>Classes of the button (as the server client's className).</summary>
     [Parameter] public string? Class { get; set; }
+    /// <summary>Classes of the wrapper; "block" makes the button fill the width.</summary>
+    [Parameter] public string? AnchorClass { get; set; }
     [Parameter] public string? Title { get; set; }
 
     private bool _open;
