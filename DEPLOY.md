@@ -50,11 +50,15 @@ sudo chmod 600 /home/mh-deploy/.ssh/authorized_keys
 rsync target is the bare `mh-deploy@host:`, which rrsync maps to `/opt/mh-optimizer/site`, and the key cannot open a
 shell.
 
-Then store the private half in the repo and delete both files:
+Then store the private half in the repo and delete both files. Run it in Git Bash: PowerShell has no `<`, and piping
+the file through PowerShell re-encodes it, which leaves a key OpenSSH cannot load ("error in libcrypto").
 
 ```bash
 gh secret set VPS_SSH_KEY -R Lv100Luca/mh-optimizer < mh-deploy
 ```
+
+The deploy job prints the key's fingerprint; `ssh-keygen -lf /home/mh-deploy/.ssh/authorized_keys` on the VPS must show
+the same one.
 
 **4. Caddy.** Append [`deploy/Caddyfile`](deploy/Caddyfile) to `/etc/caddy/Caddyfile`, then:
 
