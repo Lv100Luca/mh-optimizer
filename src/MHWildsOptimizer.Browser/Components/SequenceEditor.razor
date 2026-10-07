@@ -1,0 +1,131 @@
+@inherits AppComponent
+@* The steps of a custom attack sequence: attack, repeat, and hunt conditions that differ during the step. *@
+
+<div class="sequence">
+    <div class="sequence-head">
+        <SelectBox Value="@((string?)null)" Placeholder="Load an example…" Options="ExampleOptions" ValueChanged="LoadExample" Style="max-width: 300px" />
+        <span class="muted small">@Steps.Sum(s => s.Repeat) attacks · @Num(Math.Round(TotalMv)) MV</span>
+    </div>
+    @if (Steps.Count == 0)
+    {
+        <p class="muted small">No steps yet: add the attacks of your rotation in order, or load an example.</p>
+    }
+    <ol class="sequence-steps">
+        @for (var i = 0; i < Steps.Count; i++)
+        {
+            var index = i;
+            var step = Steps[i];
+            var mv = StepMv(step);
+            <li @key="index" class="sequence-step">
+                <div class="step-row">
+                    <span class="step-no">@(index + 1)</span>
+                    <SelectBox Value="@step.Attack" Options="AttackOptions" ValueChanged="id => Update(index, s => s with { Attack = id ?? s.Attack })" Class="step-attack" />
+                    <span class="step-repeat" title="How often the attack is repeated at this point">
+                        ×<NumberInput T="int" Value="step.Repeat" Min="1" Max="20" Width="70" ValueChanged="n => Update(index, s => s with { Repeat = n })" />
+                    </span>
+                    <span class="muted small step-share" title="Share of the sequence's motion value: how much the step weighs in the score">@Num(Math.Round(mv * step.Repeat)) MV · @Percent(TotalMv > 0 ? mv * step.Repeat / TotalMv : 0)%</span>
+                    <span class="step-actions">
+                        <button type="button" class="iconbtn" title="Move up" disabled="@(index == 0)" @onclick="() => Move(index, -1)">↑</button>
+                        <button type="button" class="iconbtn" title="Move down" disabled="@(index == Steps.Count - 1)" @onclick="() => Move(index, 1)">↓</button>
+                        <button type="button" class="iconbtn" title="Remove the step" @onclick="() => Remove(index)">×</button>
+                    </span>
+                </div>
+                <div class="step-conds">
+                    @foreach (var (key, value) in step.Conditions)
+                    {
+                        <span @key="key" class="chip step-cond @(value ? "on" : "off")" title="Differs from the hunt conditions during this step">
+                            @Label(key): @(value ? "on" : "off")
+                            <button type="button" class="iconbtn" title="Back to the hunt condition" @onclick="() => Update(index, s => s with { Conditions = Without(s.Conditions, key) })">×</button>
+                        </span>
+                    }
+                    <SelectBox Value="@((string?)null)" Placeholder="Condition differs in this step…" Options="ConditionOptions(step)" Class="step-cond-picker"
+                               ValueChanged="key => AddCondition(index, key)" />
+                </div>
+            </li>
+        }
+    </ol>
+    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="Add">+ Add step</MudButton>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<SequenceStep> Steps { get; set; } = [];
+    [Parameter, EditorRequired] public AttackProfileDto Preset { get; set; } = default!;
+    /// <summary>The hunt conditions the steps differ from.</summary>
+    [Parameter, EditorRequired] public Conditions Base { get; set; } = default!;
+    [Parameter] public EventCallback<IReadOnlyList<SequenceStep>> StepsChanged { get; set; }
+
+    /// <summary>Hunt conditions a step cannot change: health holds for the whole sequence, proc damage is all or nothing.</summary>
+    private static readonly HashSet<string> NotPerStep = ["full_health", "red_health", "low_health", "proc_damage"];
+
+    private double TotalMv => Steps.Sum(s => StepMv(s) * s.Repeat);
+
+    /// <summary>Motion value of one execution of the step's attack (the normal True Charged Slash finisher; the power one is decided by the target).</summary>
+    private double StepMv(SequenceStep step) => Preset.Attacks.FirstOrDefault(a => a.Id == step.Attack)?.Hits.Sum(h => h.Mv * h.Count) ?? 0;
+
+    private IReadOnlyList<SelectOption> AttackOptions =>
+        Preset.Attacks.Select(a => new SelectOption(a.Id, a.Name, a.Combo ? "Combos" : "Moves")).OrderBy(o => o.Group == "Combos").ToList();
+
+    private IReadOnlyList<SelectOption> ExampleOptions => Preset.Sequences.Select(s => new SelectOption(s.Id, s.Name)).ToList();
+
+    private IReadOnlyList<SelectOption> ConditionOptions(SequenceStep step) =>
+        Catalog.Conditions
+            .Where(c => c.Group != ConditionCatalog.GroupProcs && !NotPerStep.Contains(c.Key) && !step.Conditions.ContainsKey(c.Key))
+            .Select(c => new SelectOption(c.Key, $"{c.Label}: {(ConditionAccess.Get(Base, c.Property) ? "off" : "on")}", c.Group))
+            .ToList();
+
+    private string Label(string key) => Catalog.Conditions.FirstOrDefault(c => c.Key == key)?.Label ?? key;
+
+    private Task Set(List<SequenceStep> steps) => StepsChanged.InvokeAsync(steps);
+
+    private Task Update(int index, Func<SequenceStep, SequenceStep> fn)
+    {
+        var steps = Steps.ToList();
+        steps[index] = fn(steps[index]);
+        return Set(steps);
+    }
+
+    private Task AddCondition(int index, string? key)
+    {
+        if (key is null || Catalog.Conditions.FirstOrDefault(c => c.Key == key) is not { } cond) return Task.CompletedTask;
+        // a step change flips the hunt condition
+        var value = !ConditionAccess.Get(Base, cond.Property);
+        return Update(index, s => s with { Conditions = new Dictionary<string, bool>(s.Conditions) { [key] = value } });
+    }
+
+    private static Dictionary<string, bool> Without(Dictionary<string, bool> conditions, string key)
+    {
+        var copy = new Dictionary<string, bool>(conditions);
+        copy.Remove(key);
+        return copy;
+    }
+
+    private Task Move(int index, int delta)
+    {
+        var steps = Steps.ToList();
+        (steps[index], steps[index + delta]) = (steps[index + delta], steps[index]);
+        return Set(steps);
+    }
+
+    private Task Remove(int index)
+    {
+        var steps = Steps.ToList();
+        steps.RemoveAt(index);
+        return Set(steps);
+    }
+
+    private Task Add()
+    {
+        var steps = Steps.ToList();
+        steps.Add(new SequenceStep { Attack = Steps.LastOrDefault()?.Attack ?? Preset.DefaultAttack ?? Preset.Attacks[0].Id });
+        return Set(steps);
+    }
+
+    private Task LoadExample(string? id) =>
+        Preset.Sequences.FirstOrDefault(s => s.Id == id) is { } example
+            ? Set(example.Steps.Select(s => s with { Conditions = new Dictionary<string, bool>(s.Conditions) }).ToList())
+            : Task.CompletedTask;
+
+    private static string Num(double n) => n.ToString(CultureInfo.InvariantCulture);
+
+    private static string Percent(double share) => Math.Round(share * 100, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
+}

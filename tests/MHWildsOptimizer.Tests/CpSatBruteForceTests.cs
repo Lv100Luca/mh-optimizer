@@ -39,20 +39,45 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
     /// <summary>The CP-SAT score is fixed point (multipliers to 1e-4), so builds closer than this may swap places.</summary>
     private const double RoundingBand = 0.1;
 
-    [Fact]
-    public void CpSatMatchesAnExhaustiveEnumeration()
+    /// <summary>
+    /// The plain case, and a Great Sword attack sequence whose Strong Charged Slash step runs without Maximum Might (after a
+    /// tackle): the CP model adds the sequence's segments up weighted by their motion value.
+    /// </summary>
+    [Theory]
+    [InlineData("long sword")]
+    [InlineData("great sword sequence")]
+    public void CpSatMatchesAnExhaustiveEnumeration(string name)
     {
         var data = TestData.Data;
+        var conditions = Conditions.AllOff with
+        {
+            HittingWeakPoint = true, MonsterEnraged = true, StaminaFull = true, FrenzyOvercome = true, GutsNotYetTriggered = true,
+        };
+        var weapon = new WeaponStatsInput { Type = "long-sword", Attack = 660, Affinity = 0, Slots = [1], SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" };
+        if (name == "great sword sequence")
+        {
+            weapon = weapon with { Type = "great-sword", Attack = 960 };
+            conditions = conditions with
+            {
+                AttackProfile = new AttackProfile
+                {
+                    Attack = Attacks.Sequence,
+                    Sequence =
+                    [
+                        new SequenceStep { Attack = "true-charged-slash" },
+                        new SequenceStep { Attack = "tackle" },
+                        new SequenceStep { Attack = "strong-charged-slash", Conditions = new() { ["stamina_full"] = false } },
+                    ],
+                },
+            };
+        }
         var excluded = data.Armor.Where(a => a.Rarity >= 7 && a.Set is not null && !KeptSets.Contains(a.Set)).Select(a => a.Set!).Distinct().ToList();
         var request = new OptimizationRequest
         {
             // few weapon slots and several armor skills competing for slots, so combinations do not all max out the same skills
-            Weapon = new WeaponStatsInput { Type = "long-sword", Attack = 660, Affinity = 0, Slots = [1], SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" },
+            Weapon = weapon,
             TargetSkills = new() { ["Weakness Exploit"] = 4 },
-            Conditions = Conditions.AllOff with
-            {
-                HittingWeakPoint = true, MonsterEnraged = true, StaminaFull = true, FrenzyOvercome = true, GutsNotYetTriggered = true,
-            },
+            Conditions = conditions,
             Talismans = new TalismanSettings { IncludeCraftable = false },
             Options = new OptimizerOptions { TopN = TopN, MinRarity = 7, ExcludeSets = excluded, RequireWeaponCoreSkills = false, Engine = OptimizerEngine.CpSat },
         };

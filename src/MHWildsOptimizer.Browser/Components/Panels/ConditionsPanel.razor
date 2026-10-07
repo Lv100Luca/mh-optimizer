@@ -117,7 +117,15 @@
                         {
                             <SelectBox Value="@attackId" Options="AttackOptions(preset)" ValueChanged="id => SetAttack(id, preset)" Style="max-width: 360px" />
                         }
-                        @if (attack is not null)
+                        @if (profile.IsSequence)
+                        {
+                            <p class="muted small">
+                                Your rotation in order. Every step adds its hits; a step can change hunt conditions (e.g. Maximum Might off after a tackle used stamina),
+                                and steps are weighted by their share of the motion value, so big finishers count most without dropping the hits before them.
+                            </p>
+                            <SequenceEditor Steps="profile.Sequence ?? []" Preset="preset" Base="c" StepsChanged="steps => SetProfile(p => p with { Sequence = steps.ToList() })" />
+                        }
+                        else if (attack is not null)
                         {
                             <p class="muted small">@attack.Description</p>
                             @HitTable(attack, weapon)
@@ -134,7 +142,7 @@
                                 <OptionalNumberInput Value="profile.HitsPerMinute" Preset="Math.Round(resolved?.HitsPerMinute ?? preset.HitsPerMinute, 1)" Min="1" Max="600"
                                                      ValueChanged="n => SetProfile(p => p with { HitsPerMinute = n })" />
                             </Field>
-                            @if (attack is null)
+                            @if (attack is null && !profile.IsSequence)
                             {
                                 <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV.">
                                     <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
@@ -212,7 +220,7 @@
     /// <summary>The condition group that holds the proc damage toggle; it is rendered with the attack profile, not as a hunt condition.</summary>
     public const string ProcGroup = ConditionCatalog.GroupProcs;
 
-    private static readonly AttackProfileDto FallbackProfile = new(40, 50, 0, null, []);
+    private static readonly AttackProfileDto FallbackProfile = new(40, 50, 0, null, [], []);
 
     private static readonly Dictionary<string, string> OtherLabels = new()
     {
@@ -244,8 +252,10 @@
     }
 
     private static IReadOnlyList<SelectOption> AttackOptions(AttackProfileDto preset) =>
-        preset.Attacks.Select(a => new SelectOption(a.Id, a.Id == preset.DefaultAttack ? $"{a.Name} (default)" : a.Name))
-            .Append(new SelectOption(Attacks.Average, "Average hit (motion value per hit)"))
+        preset.Attacks.Select(a => new SelectOption(a.Id, a.Id == preset.DefaultAttack ? $"{a.Name} (default)" : a.Name, a.Combo ? "Combos" : "Moves"))
+            .OrderBy(o => o.Group == "Combos")
+            .Append(new SelectOption(Attacks.Sequence, "Custom sequence (your rotation)", "Other"))
+            .Append(new SelectOption(Attacks.Average, "Average hit (motion value per hit)", "Other"))
             .ToList();
 
     private static readonly IReadOnlyList<SegmentOption<TargetKind>> TargetKindOptions =
@@ -266,7 +276,14 @@
         }).ToList();
 
     private void SetAttack(string? id, AttackProfileDto preset) =>
-        SetProfile(p => p with { Attack = id is null || id == (preset.DefaultAttack ?? Attacks.Average) ? null : id });
+        SetProfile(p => p with
+        {
+            Attack = id is null || id == (preset.DefaultAttack ?? Attacks.Average) ? null : id,
+            // a new sequence starts from the first example, or from the attack picked so far
+            Sequence = id == Attacks.Sequence && p.Sequence is not { Count: > 0 }
+                ? preset.Sequences.FirstOrDefault()?.Steps.ToList() ?? [new SequenceStep { Attack = p.Attack ?? preset.DefaultAttack ?? preset.Attacks[0].Id }]
+                : p.Sequence,
+        });
 
     private void SetTarget(Func<Target, Target> fn) => App.PatchConditions(c => c with { Target = fn(c.Target ?? new Target()) });
 
@@ -329,7 +346,9 @@
         var p = request.Conditions.AttackProfile ?? new AttackProfile();
         var preset = AttackProfilePreset(request, index);
         var id = p.Attack ?? preset.DefaultAttack ?? Attacks.Average;
-        var attack = preset.Attacks.FirstOrDefault(a => a.Id == id)?.Name ?? $"average hit of {Num(p.AverageMv ?? preset.AverageMv)} MV";
+        var attack = p.IsSequence
+            ? $"sequence of {p.Sequence?.Sum(s => s.Repeat) ?? 0} attacks"
+            : preset.Attacks.FirstOrDefault(a => a.Id == id)?.Name ?? $"average hit of {Num(p.AverageMv ?? preset.AverageMv)} MV";
         var t = request.Conditions.Target ?? new Target();
         var element = request.Weapon.Spec?.Element ?? Element.None;
         return $"{attack} · {t.Name} (raw {Num(t.RawHitzone)}, element {Num(t.ElementHitzoneFor(element))})";

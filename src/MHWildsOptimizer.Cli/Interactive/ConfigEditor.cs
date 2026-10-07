@@ -396,6 +396,8 @@ public sealed class ConfigEditor
             var choices = attacks.Select(a => (a.Id, Label: a.Name + (a.Id == fallback ? " (default)" : "")))
                 .Append((Id: Attacks.Average, Label: "Average hit (motion value per hit)"))
                 .ToList();
+            if (current.IsSequence)
+                choices.Insert(0, (Id: Attacks.Sequence, Label: $"Keep the custom sequence ({current.Sequence?.Sum(st => st.Repeat) ?? 0} attacks; edit it in the request file or the web UI)"));
             var picked = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Attack to score").AddChoices(choices.Select(c => Markup.Escape(c.Label))));
             attack = choices.First(c => Markup.Escape(c.Label) == picked).Id;
             if (attack == fallback) attack = null;

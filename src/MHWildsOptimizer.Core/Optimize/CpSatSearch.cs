@@ -21,6 +21,7 @@ internal sealed class CpSatSearch
 {
     private const long S = 10_000;          // multipliers in 1e-4
     private const long Micro = 1_000_000;   // score terms in 1e-6
+    private const long WeightScale = 100_000_000; // sequence segment weights in 1e-8
     private const long DecoPenalty = 1;     // per decoration, in 1/ObjectiveScale of a micro point: keeps useless jewels out
     private const long ObjectiveScale = 32;
 
@@ -148,7 +149,7 @@ internal sealed class CpSatSearch
         var built = true;
         var score = Scores is null ? CheckedScore() : Scores.GetOrBuild(_weapon, _rel, _cond, CheckedScore, out built);
         _progress?.Report(built
-            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.Sides.Count} health side(s), built in {sw.ElapsedMilliseconds} ms"
+            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.HealthSides} health side(s){(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} sequence parts" : "")}, built in {sw.ElapsedMilliseconds} ms"
             : $"  score model: {score.Units.Count} units, shared with an earlier search");
 
         _model = new CpModel();
@@ -233,6 +234,18 @@ internal sealed class CpSatSearch
             return idx;
         }).ToList();
         var sideScores = score.Sides.Select((_, side) => SideScore(m, score, side, unitIndex)).ToList();
+        // a sequence's segments add up weighted by their share of the motion value (weights in 1e-8), per health side
+        if (score.Sides.Count > score.HealthSides)
+            sideScores = score.Sides.Select((s, i) => (s, i)).GroupBy(x => x.s.Health).Select(g =>
+            {
+                var weights = g.Select(x => (long)Math.Round(x.s.Weight * WeightScale)).ToList();
+                var parts = g.Select(x => sideScores[x.i]).ToList();
+                long lb = 0, ub = 0;
+                for (var i = 0; i < parts.Count; i++) { lb += parts[i].Lb * weights[i]; ub += parts[i].Ub * weights[i]; }
+                var health = NewVar(m, Math.Min(0, lb / WeightScale - 1), ub / WeightScale + 1, $"health{g.Key}");
+                m.AddDivisionEquality(health.Var, LinearExpr.WeightedSum(parts.Select(p => (LinearExpr)p.Var), weights), WeightScale);
+                return health;
+            }).ToList();
         IntVar total;
         if (sideScores.Count == 1) total = sideScores[0].Var;
         else
@@ -342,7 +355,7 @@ internal sealed class CpSatSearch
             m.AddMultiplicationEquality(ec.Var, ele.Var, cef.Var);
             var ecMicro = NewVar(m, ec.Lb / 100_000, ec.Ub / 100_000, $"ecMicro{side}");
             m.AddDivisionEquality(ecMicro.Var, ec.Var, 100_000);
-            var eleFactor = (long)Math.Round(score.ElementScale * Micro);
+            var eleFactor = (long)Math.Round(sc.ElementScale * Micro);
             var efe = NewVar(m, ecMicro.Lb * eleFactor / Micro, ecMicro.Ub * eleFactor / Micro + 1, $"efe{side}");
             m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
             terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
@@ -360,10 +373,10 @@ internal sealed class CpSatSearch
             var on = shock[0].Var;
             var shockEfr = NewVar(m, Math.Min(efr.Lb, 0), efr.Ub, $"shockEfr{side}");
             m.AddMultiplicationEquality(shockEfr.Var, on, efr.Var);
-            var share = (long)Math.Round(score.ShockwaveRawShare * Micro);
+            var share = (long)Math.Round(sc.ShockwaveRawShare * Micro);
             var shockRaw = NewVar(m, Math.Min(shockEfr.Lb * share / Micro, 0), shockEfr.Ub * share / Micro + 1, $"shockRaw{side}");
             m.AddDivisionEquality(shockRaw.Var, LinearExpr.Term(shockEfr.Var, share), Micro);
-            var constant = (long)Math.Round(score.ShockwaveConstant[side] * Micro);
+            var constant = (long)Math.Round(sc.ShockwaveConstant * Micro);
             terms.Add(shockRaw.Var); terms.Add(LinearExpr.Term(on, constant));
             ub += shockRaw.Ub + constant; lb += Math.Min(0, shockRaw.Lb);
         }

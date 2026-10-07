@@ -64,6 +64,8 @@ public sealed class Relevance
     {
         setTargets ??= new Dictionary<string, int>();
         groupTargets ??= new Dictionary<string, int>();
+        // a sequence step can turn a condition on: count the skills any step can use
+        c = Conditions.Union(c, c.Segments(weapon));
         var skills = new List<string>();
         var offensive = new HashSet<string>();
         void Add(string name, bool when = true)

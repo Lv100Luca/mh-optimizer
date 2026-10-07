@@ -24,14 +24,16 @@ public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, in
 /// <summary>One hit of an attack; <paramref name="PowerMv"/> is the power True Charged Slash finisher that replaces it on a weak spot.</summary>
 public sealed record AttackHitDto(string Name, double Mv, double Element, int Count, double? ElementPhialElement, bool SwordMode, SharpnessColor? FixedSharpness, double? PowerMv);
 
-public sealed record AttackDto(string Id, string Name, string Description, double Seconds, IReadOnlyList<AttackHitDto> Hits);
+/// <param name="Combo">A combo of several inputs; the others are single moves (the sequence editor lists both).</param>
+public sealed record AttackDto(string Id, string Name, string Description, double Seconds, bool Combo, IReadOnlyList<AttackHitDto> Hits);
 
 /// <summary>
 /// The attack profile defaults of a weapon type: what an unset <c>conditions.attack_profile</c> value falls back to. Types with
 /// <paramref name="Attacks"/> are scored with <paramref name="DefaultAttack"/>; the others (and the "average" attack) with the
-/// average-hit numbers.
+/// average-hit numbers. <paramref name="Sequences"/> are example sequences to start the sequence editor from.
 /// </summary>
-public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share, string? DefaultAttack, IReadOnlyList<AttackDto> Attacks);
+public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share, string? DefaultAttack, IReadOnlyList<AttackDto> Attacks,
+    IReadOnlyList<SequencePreset> Sequences);
 
 public sealed record WeaponTypeDto(
     string Kind,
@@ -184,10 +186,10 @@ public sealed record Catalog(
     {
         var p = AttackProfile.Preset(type);
         var attacks = Attacks.For(type)
-            .Select(a => new AttackDto(a.Id, a.Name, a.Description, a.Seconds,
+            .Select(a => new AttackDto(a.Id, a.Name, a.Description, a.Seconds, a.Combo,
                 a.Hits.Select(h => new AttackHitDto(h.Name, h.Mv, h.Element, h.Count, h.ElementPhialElement, h.SwordMode, h.FixedSharpness, h.Power?.Mv)).ToList()))
             .ToList();
-        return new AttackProfileDto(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, Attacks.DefaultFor(type), attacks);
+        return new AttackProfileDto(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, Attacks.DefaultFor(type), attacks, Attacks.SequencePresetsFor(type));
     }
 
     public static string WeaponLabel(WeaponType type) => type switch

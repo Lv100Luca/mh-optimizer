@@ -108,26 +108,63 @@ public static class DamageCalculator
     public static DamageResult Calculate(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace = true)
     {
         if (!cond.FullHealth || !(cond.RedHealth || cond.LowHealth))
-            return CalculateAt(weapon, skills, cond, trace);
+            return CalculateSequence(weapon, skills, cond, trace);
 
         var hurt = cond with { FullHealth = false };
         var full = cond with { RedHealth = false, LowHealth = false };
         // skip the second pass when only one side has skills to trigger
         if (cond.Effective(SkillNames.PeakPerformance, skills.Level(SkillNames.PeakPerformance)) == 0)
-            return CalculateAt(weapon, skills, hurt, trace);
+            return CalculateSequence(weapon, skills, hurt, trace);
         var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
                          || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
                          || skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
         if (!hurtSkills)
-            return CalculateAt(weapon, skills, full, trace);
+            return CalculateSequence(weapon, skills, full, trace);
 
-        var atFull = CalculateAt(weapon, skills, full, trace);
-        var atHurt = CalculateAt(weapon, skills, hurt, trace);
+        var atFull = CalculateSequence(weapon, skills, full, trace);
+        var atHurt = CalculateSequence(weapon, skills, hurt, trace);
         var fullWins = atFull.Total >= atHurt.Total;
         var (best, other) = fullWins ? (atFull, atHurt) : (atHurt, atFull);
         if (!trace) return best;
         var (side, otherSide) = fullWins ? ("full health", "red/low health") : ("red/low health", "full health");
         return best with { Breakdown = [.. best.Breakdown, Inv($"Full health excludes red/low health, scored at {side} ({best.Total:0.#} vs {other.Total:0.#} at {otherSide})")] };
+    }
+
+    /// <summary>
+    /// A sequence whose steps change conditions is scored per segment (<see cref="Conditions.Segments"/>) and the segments are
+    /// weighted by their share of the motion value: damage per 100 MV of the whole sequence. The result shows the stats of the
+    /// segment with the most motion value, with EFR, EFE and procs of the whole sequence.
+    /// </summary>
+    private static DamageResult CalculateSequence(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace)
+    {
+        var segments = cond.Segments(weapon);
+        if (segments.Count == 1) return CalculateAt(weapon, skills, segments[0], trace);
+
+        var results = segments.Select(c => CalculateAt(weapon, skills, c, trace)).ToList();
+        var totalMv = results.Sum(r => r.Attack.TotalMv);
+        double Weighted(Func<DamageResult, double> value) => results.Sum(r => value(r) * r.Attack.TotalMv / totalMv);
+        var main = results.MaxBy(r => r.Attack.TotalMv)!;
+        var notes = new List<string>();
+        if (trace)
+        {
+            notes.AddRange(main.Breakdown);
+            for (var i = 0; i < segments.Count; i++)
+            {
+                var r = results[i];
+                var changed = ConditionToggles.StepKeys.Where(k => ConditionToggles.Get(segments[i], k) != ConditionToggles.Get(cond, k))
+                    .Select(k => $"{k} {(ConditionToggles.Get(segments[i], k) ? "on" : "off")}");
+                var steps = string.Join(", ", segments[i].AttackProfile.Sequence!.Select(s => s.Repeat > 1 ? $"{s.Attack} x{s.Repeat}" : s.Attack));
+                notes.Add(Inv($"Sequence part {steps} ({r.Attack.TotalMv / totalMv:0%} of the MV{(changed.Any() ? ", " + string.Join(", ", changed) : "")}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
+            }
+        }
+        return main with
+        {
+            EffectiveRaw = Weighted(r => r.EffectiveRaw),
+            EffectiveElement = Weighted(r => r.EffectiveElement),
+            ProcDamage = Weighted(r => r.ProcDamage),
+            Attack = cond.Attack(weapon),
+            Breakdown = notes,
+        };
     }
 
     private static DamageResult CalculateAt(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace)

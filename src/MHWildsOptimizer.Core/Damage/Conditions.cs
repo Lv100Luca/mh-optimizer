@@ -78,8 +78,37 @@ public sealed record Conditions
     /// <summary>Where the hits land: raw and element hitzone.</summary>
     public Target Target { get; init; } = new();
 
-    /// <summary>The attack profile resolved for <paramref name="weapon"/> against the <see cref="Target"/>.</summary>
+    /// <summary>The attack profile resolved for <paramref name="weapon"/> against the <see cref="Target"/> (a whole sequence, ignoring step overrides).</summary>
     public ResolvedAttackProfile Attack(GogmaWeaponStats weapon) => AttackProfile.Resolve(weapon, Target);
+
+    /// <summary>
+    /// The parts of the attack scored under different conditions: one per distinct set of sequence step overrides (steps with the
+    /// same overrides are scored together, the order does not change the score). Each segment carries the base conditions with its
+    /// overrides applied and an attack profile of just its steps, at the hits per minute of the whole sequence. Without step
+    /// overrides there is one segment: these conditions. The score is the segments' scores weighted by their share of the
+    /// sequence's motion value (<see cref="DamageCalculator"/>).
+    /// </summary>
+    public IReadOnlyList<Conditions> Segments(GogmaWeaponStats weapon)
+    {
+        var p = AttackProfile;
+        if (!p.IsSequence || p.Sequence is not { Count: > 0 } steps) return [this];
+        // only overrides that change something count; keys in a fixed order so equal override sets group together
+        var effective = steps
+            .Select(st => (Step: st, Overrides: st.Conditions
+                .Where(kv => ConditionToggles.StepKeys.Contains(kv.Key) && ConditionToggles.Get(this, kv.Key) != kv.Value)
+                .OrderBy(kv => kv.Key, StringComparer.Ordinal)
+                .ToList()))
+            .ToList();
+        if (effective.All(e => e.Overrides.Count == 0)) return [this];
+        var hitsPerMinute = p.HitsPerMinute ?? Attack(weapon).HitsPerMinute;
+        return effective
+            .GroupBy(e => string.Join(",", e.Overrides.Select(kv => $"{kv.Key}={kv.Value}")))
+            .Select(g => ConditionToggles.With(this, g.First().Overrides.ToDictionary(kv => kv.Key, kv => kv.Value)) with
+            {
+                AttackProfile = p with { HitsPerMinute = hitsPerMinute, Sequence = g.Select(e => e.Step with { Conditions = new() }).ToList() },
+            })
+            .ToList();
+    }
 
     /// <summary>
     /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
@@ -130,6 +159,13 @@ public sealed record Conditions
 
     /// <summary><see cref="AllOn"/> with the attack and target of <paramref name="basis"/>, so the two compare on the same attack.</summary>
     public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target };
+
+    /// <summary><paramref name="basis"/> with every toggle on that is on in any of <paramref name="parts"/> (the segments of a sequence): what can matter somewhere.</summary>
+    public static Conditions Union(Conditions basis, IReadOnlyList<Conditions> parts)
+    {
+        var on = ConditionToggles.StepKeys.Where(k => parts.Any(c => ConditionToggles.Get(c, k))).ToDictionary(k => k, _ => true);
+        return ConditionToggles.With(basis, on);
+    }
 
     /// <summary>Everything off: unconditional skills only.</summary>
     public static Conditions AllOff => new()
