@@ -11,6 +11,8 @@ namespace MHWildsOptimizer.Core.Damage;
 /// default attack and preset (<see cref="Preset"/>). The score is damage per 100 MV of the attack on the raw-hitzone-100 scale
 /// of EFR: the target's element hitzone / raw hitzone weighs the element. With <see cref="Attacks.Sequence"/> the attack is the
 /// <see cref="Sequence"/> of steps, each step scored under its own condition overrides (see <see cref="Conditions.Segments"/>).
+/// For one attack or sequence the score is its real damage times a constant (<see cref="ResolvedAttackProfile.DamagePerExecution"/>),
+/// so it ranks builds like the damage the whole attack or sequence deals.
 /// </summary>
 public sealed record AttackProfile
 {
@@ -56,7 +58,7 @@ public sealed record AttackProfile
         {
             var mv = AverageMv ?? p.AverageMv;
             return new ResolvedAttackProfile("Average hit", HitsPerMinute ?? p.HitsPerMinute, 1, mv, sharpRaw, sharpEle * ratio * 100.0 / mv,
-                ChargedLv3Share ?? p.ChargedLv3Share, ratio);
+                ChargedLv3Share ?? p.ChargedLv3Share, ratio, target.RawHitzone, Execution: "hit");
         }
 
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
@@ -80,7 +82,7 @@ public sealed record AttackProfile
 
         var name = phial is { } ph ? $"{attack.Name} ({ph} phial)" : attack.Name;
         return new ResolvedAttackProfile(name, HitsPerMinute ?? hits * 60.0 / attack.Seconds, hits, totalMv, raw / totalMv, ele * ratio * 100.0 / totalMv,
-            shockwaves, ratio);
+            shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack");
     }
 
     /// <summary>
@@ -183,8 +185,11 @@ public readonly record struct AveragePreset(double HitsPerMinute, double Average
 /// <param name="ElementFactor">Element per true element point per 100 MV: sum over hits of element modifier x element sharpness x phial, x element hitzone ratio x 100 / total MV.</param>
 /// <param name="Shockwaves">Lv3 charged slashes per execution (Dark Arts shockwave).</param>
 /// <param name="ElementHitzoneRatio">The target's element hitzone / raw hitzone for the weapon's element.</param>
+/// <param name="RawHitzone">The target's raw hitzone: takes a score off the raw-hitzone-100 scale (<see cref="DamagePerExecution"/>).</param>
+/// <param name="Execution">What one execution is: "attack", "sequence" or "hit" (average-hit model).</param>
 public readonly record struct ResolvedAttackProfile(
-    string Name, double HitsPerMinute, double Hits, double TotalMv, double RawFactor, double ElementFactor, double Shockwaves, double ElementHitzoneRatio)
+    string Name, double HitsPerMinute, double Hits, double TotalMv, double RawFactor, double ElementFactor, double Shockwaves, double ElementHitzoneRatio,
+    double RawHitzone = 100, string Execution = "attack")
 {
     public double SecondsPerHit => 60.0 / HitsPerMinute;
 
@@ -192,6 +197,19 @@ public readonly record struct ResolvedAttackProfile(
 
     /// <summary>Converts damage dealt once per execution into damage per 100 MV of landed attacks.</summary>
     public double PerHundredMv => 100.0 / TotalMv;
+
+    /// <summary>Executions of the attack (or sequence) per minute of attacking, from the landed hits per minute.</summary>
+    public double ExecutionsPerMinute => HitsPerMinute / Hits;
+
+    /// <summary>
+    /// The damage one execution of the attack deals to the target for a <paramref name="score"/> (per 100 MV, raw-hitzone-100
+    /// scale), before the monster's defense rate and per-hit rounding. A constant factor per attack and target, so it ranks
+    /// builds exactly like the score.
+    /// </summary>
+    public double DamagePerExecution(double score) => score * TotalMv / 100.0 * RawHitzone / 100.0;
+
+    /// <summary><see cref="DamagePerExecution"/> over a minute of attacking at <see cref="HitsPerMinute"/>.</summary>
+    public double DamagePerMinute(double score) => DamagePerExecution(score) * ExecutionsPerMinute;
 
     /// <summary>Procs per landed hit for an effect that triggers on a hit and then waits <paramref name="cooldownSeconds"/> before it can trigger again.</summary>
     public double ProcsPerHit(double cooldownSeconds) => Math.Min(1.0, SecondsPerHit / cooldownSeconds);

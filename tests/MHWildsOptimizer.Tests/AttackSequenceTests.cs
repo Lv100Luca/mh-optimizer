@@ -68,6 +68,44 @@ public class AttackSequenceTests
     }
 
     [Fact]
+    public void DamagePerSequenceIsTheDamageOfItsSegmentsAddedUp()
+    {
+        var skills = Skills(("Maximum Might", 3));
+        var tcs = DamageCalculator.Calculate(Gs, skills, Conditions.Default with { AttackProfile = new AttackProfile { Attack = "true-charged-slash" } });
+        var scsNoMight = DamageCalculator.Calculate(Gs, skills,
+            Conditions.Default with { StaminaFull = false, AttackProfile = new AttackProfile { Attack = "strong-charged-slash" } });
+        var r = DamageCalculator.Calculate(Gs, skills, Conditions.Default with
+        {
+            AttackProfile = Sequence(new SequenceStep { Attack = "strong-charged-slash", Conditions = new() { ["stamina_full"] = false } },
+                new SequenceStep { Attack = "true-charged-slash" }),
+        });
+        Assert.Equal("sequence", r.Attack.Execution);
+        Assert.Equal(tcs.DamagePerExecution + scsNoMight.DamagePerExecution, r.DamagePerExecution, 1e-6);
+    }
+
+    [Fact]
+    public void RepeatingAWholeAttackKeepsTheScoreAndMultipliesTheDamagePerSequence()
+    {
+        var single = DamageCalculator.Calculate(Gs, Skills(), Conditions.Default with { AttackProfile = new AttackProfile { Attack = "charge-combo" } });
+        var thrice = DamageCalculator.Calculate(Gs, Skills(), Conditions.Default with { AttackProfile = Sequence(new SequenceStep { Attack = "charge-combo", Repeat = 3 }) });
+        Assert.Equal(single.Total, thrice.Total, 1e-6);
+        Assert.Equal(3 * single.DamagePerExecution, thrice.DamagePerExecution, 1e-6);
+        Assert.Equal(single.DamagePerMinute, thrice.DamagePerMinute, 1e-6);
+    }
+
+    [Fact]
+    public void DamagePerAttackTakesTheScoreBackToRealDamage()
+    {
+        // no element, no procs, no weak spot: one TCS deals true raw x crit factor x sharpness x MV / 100 x raw hitzone / 100
+        var gs = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }.Resolve(TestData.Data);
+        var r = DamageCalculator.Calculate(gs, Skills(), Conditions.AllOff with { Target = new Target { RawHitzone = 30, ElementHitzone = 0 }, ProcDamage = false });
+        var sharpRaw = DamageConstants.SharpnessRaw(gs.TopSharpness!.Value);
+        Assert.Equal(r.TrueRaw * r.CriticalFactor * sharpRaw * 225 / 100 * 30 / 100, r.DamagePerExecution, 1e-6);
+        Assert.Equal(r.DamagePerExecution * r.Attack.HitsPerMinute / 2, r.DamagePerMinute, 1e-6);
+        Assert.Equal("attack", r.Attack.Execution);
+    }
+
+    [Fact]
     public void OverridesThatChangeNothingDoNotSplitTheSequence()
     {
         var cond = Conditions.Default with

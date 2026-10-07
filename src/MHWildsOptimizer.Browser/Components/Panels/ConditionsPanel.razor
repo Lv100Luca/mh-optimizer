@@ -201,7 +201,8 @@
                 @if (resolved is { } rp)
                 {
                     <p class="small attack-summary">
-                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
+                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV,
+                        @Num(Math.Round(rp.ExecutionsPerMinute, 2)) per minute (results show its damage per @rp.Execution and per minute).
                         Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (sharpness@(type == WeaponType.SwitchAxe ? ", phial" : "")),
                         element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).

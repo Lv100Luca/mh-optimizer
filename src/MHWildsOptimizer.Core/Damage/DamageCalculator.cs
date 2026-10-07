@@ -83,6 +83,12 @@ public sealed record DamageResult(
 {
     /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value of the attack, on the raw-hitzone-100 scale.</summary>
     public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
+
+    /// <summary>Damage of one execution of the attack (or sequence) against the target; ranks like <see cref="Total"/>.</summary>
+    public double DamagePerExecution => Attack.DamagePerExecution(Total);
+
+    /// <summary>Damage per minute of attacking at the attack profile's hits per minute.</summary>
+    public double DamagePerMinute => Attack.DamagePerMinute(Total);
 }
 
 /// <summary>

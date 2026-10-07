@@ -28,9 +28,12 @@ public sealed record SetBonusStateDto(string Name, int Pieces, int Tier, string?
 
 public sealed record GroupSkillStateDto(string Name, int Pieces, string? RankName, bool Active);
 
+/// <param name="DamagePerExecution">Damage of one execution of the attack or sequence against the target (<see cref="DamageResult.DamagePerExecution"/>); 0 in results saved before it.</param>
+/// <param name="Execution">What one execution is: "attack", "sequence" or "hit".</param>
 public sealed record StatsDto(
     double TrueRaw, int DisplayAttack, int Affinity, double CritMultiplier, double CritFactor, SharpnessColor? Sharpness, double SharpnessRaw, double SharpnessElement,
-    double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers);
+    double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers,
+    double DamagePerExecution = 0, double DamagePerMinute = 0, string? Execution = null);
 
 /// <param name="Procs">Proc damage per 100 MV (Dark Arts shockwave, Bad Blood); 0 when off or absent.</param>
 public sealed record BuildSummaryDto(
@@ -131,7 +134,7 @@ public static class ResultMapper
         return new StatsDto(
             r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()), r.Affinity, r.CriticalMultiplier, r.CriticalFactor,
             r.Sharpness, r.SharpnessRawModifier, r.SharpnessElementModifier, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10), r.ElementCap, r.CriticalElementMultiplier,
-            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods);
+            r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods, r.DamagePerExecution, r.DamagePerMinute, r.Attack.Execution);
     }
 
     private static string? RankName(GameData data, string skill, int level) =>

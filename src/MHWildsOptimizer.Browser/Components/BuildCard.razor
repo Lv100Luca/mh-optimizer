@@ -44,6 +44,12 @@
                     @Fmt.TitleCase(s.Element) <b>@Fmt.N(s.ElementTrue, 0)</b> <small>@s.ElementDisplay display</small>
                 </span>
             }
+            @if (b.StatsRequested.DamagePerExecution > 0)
+            {
+                <span class="statchip dmg" title="Damage against the target, before the monster's defense rate and per-hit rounding. Ranks builds exactly like the score.">
+                    DMG <b>@Fmt.N(b.StatsRequested.DamagePerExecution, 0)</b> <small>per @(b.StatsRequested.Execution ?? "attack"), @Fmt.N(b.StatsRequested.DamagePerMinute, 0) per minute</small>
+                </span>
+            }
         </div>
         @if (Actions is not null)
         {
@@ -294,7 +300,14 @@
                     <dt>Element</dt><dd>@Fmt.N(r.ElementTrue, 1) true <span class="muted">(@r.ElementDisplay display, cap @Fmt.N(r.ElementCap, 1), crit element x@(Fmt.N(r.CritElement, 2)))</span></dd>
                 }
                 <dt>Score</dt>
-                <dd><b>EFR @Fmt.N(r.Efr)</b> + <b>EFE @Fmt.N(r.Efe)</b>@if (r.Procs > 0) {@(" + ")<b>procs @Fmt.N(r.Procs)</b>}@(" = ")<b class="total">@Fmt.N(r.Total)</b></dd>
+                <dd><b>EFR @Fmt.N(r.Efr)</b> + <b>EFE @Fmt.N(r.Efe)</b>@if (r.Procs > 0) {@(" + ")<b>procs @Fmt.N(r.Procs)</b>}@(" = ")<b class="total">@Fmt.N(r.Total)</b> <span class="muted">per 100 MV</span></dd>
+                @if (r.DamagePerExecution > 0)
+                {
+                    <dt>Damage</dt>
+                    <dd title="Against the target, before the monster's defense rate and per-hit rounding. Ranks builds exactly like the score.">
+                        <b>@Fmt.N(r.DamagePerExecution, 0)</b> per @(r.Execution ?? "attack") · <b>@Fmt.N(r.DamagePerMinute, 0)</b> per minute
+                    </dd>
+                }
             </dl>
             @if (r.Modifiers.Count > 0)
             {
