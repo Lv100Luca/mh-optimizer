@@ -14,6 +14,14 @@ public enum SkillPairMode
     Optimize,
 }
 
+public enum OptimizerEngine
+{
+    /// <summary>Dynamic programming over skill states with a beam (<see cref="OptimizerOptions.MaxStatesPerDepth"/>); fast, not guaranteed optimal.</summary>
+    Beam,
+    /// <summary>Constraint programming (OR-Tools CP-SAT) over pieces, talisman and decoration counts with the exact score; proves the optimum.</summary>
+    CpSat,
+}
+
 public sealed record SkillPairSettings
 {
     public SkillPairMode Mode { get; init; } = SkillPairMode.Fixed;
@@ -45,6 +53,10 @@ public sealed record OptimizerOptions
     public int MaxStatesPerDepth { get; init; } = 100_000;
     /// <summary>Worker threads for the search; 0 = all logical processors. Values above the processor count are capped.</summary>
     public int MaxThreads { get; init; }
+    /// <summary>Search engine: the state search with a beam (default) or the exact CP-SAT model.</summary>
+    public OptimizerEngine Engine { get; init; } = OptimizerEngine.Beam;
+    /// <summary>CP-SAT only: time limit per solve in seconds; the best build found so far is used when it runs out.</summary>
+    public double CpSatTimeLimitSeconds { get; init; } = 120;
 
     /// <summary>The thread count actually used: <see cref="MaxThreads"/> resolved against this machine.</summary>
     public int EffectiveThreads => MaxThreads <= 0 ? Environment.ProcessorCount : Math.Min(MaxThreads, Environment.ProcessorCount);
@@ -212,6 +224,7 @@ public static class RequestLoader
         // options
         if (request.Options.TopN < 1) errors.Add("options.top_n must be at least 1.");
         if (request.Options.MaxThreads < 0) errors.Add("options.max_threads must be 0 (all processors) or more.");
+        if (request.Options.CpSatTimeLimitSeconds <= 0) errors.Add("options.cp_sat_time_limit_seconds must be above 0.");
         foreach (var set in request.Options.ExcludeSets)
             if (!data.Armor.Any(a => a.Set == set)) warnings.Add($"options.exclude_sets: no armor set named '{set}'.");
 

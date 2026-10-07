@@ -223,6 +223,89 @@ public class OptimizerTests(ITestOutputHelper output)
         Assert.DoesNotContain("Soul of the Dark Knight", off.SetBonuses);
     }
 
+    public static TheoryData<string> ScoreModelCases => new() { "default", "all on", "all off", "red health", "long sword raw" };
+
+    [Theory]
+    [MemberData(nameof(ScoreModelCases))]
+    public void CpSatScoreModelMatchesTheDamageCalculator(string name)
+    {
+        var data = TestData.Data;
+        var dragonGs = new GogmaWeaponSpec
+        {
+            Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, Element = Element.Dragon, Infused = true, AttackParts = 3,
+        }.Resolve(data);
+        var rawLs = new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity }.Resolve(data);
+        var (weapon, cond) = name switch
+        {
+            "default" => (dragonGs, Conditions.Default),
+            "all on" => (dragonGs, Conditions.AllOn),
+            "all off" => (dragonGs, Conditions.AllOff),
+            "red health" => (dragonGs, Conditions.Default with { RedHealth = true, CounterstrikeActive = true, PowerhouseActive = true }),
+            _ => (rawLs, Conditions.AllOn),
+        };
+        var targets = new Dictionary<string, int> { ["Weakness Exploit"] = 3 };
+        var rel = Relevance.Build(weapon, targets, cond, data);
+        var score = ScoreDecomposition.Build(weapon, rel, cond);
+        output.WriteLine($"{score.Units.Count} units, joint: {string.Join("; ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))}");
+        Assert.True(score.Verify(3000) < 1e-6);
+    }
+
+    [Fact]
+    public void CpSatFindsBuildsAtLeastAsGoodAsTheBeam()
+    {
+        var data = TestData.Data;
+        var request = RequestLoader.Load(Path.Combine(RepoRoot, "inputs", "request.example.json"), data);
+        request = request with { Options = request.Options with { MinRarity = 7, TopN = 3 } };
+        var beam = new Optimizer(data, request).Run().PairResults[0];
+        var cp = new Optimizer(data, request with { Options = request.Options with { Engine = OptimizerEngine.CpSat } }).Run(new Progress<string>(output.WriteLine)).PairResults[0];
+        output.WriteLine($"beam {beam.BestScore:0.000}, cp-sat {cp.BestScore:0.000} ({cp.CandidateSummary})");
+
+        Assert.NotEmpty(cp.Builds);
+        Assert.True(cp.BestScore >= beam.BestScore - 1e-6, $"cp-sat {cp.BestScore} < beam {beam.BestScore}");
+        Assert.Equal(cp.Builds.Select(b => b.Score).OrderByDescending(s => s), cp.Builds.Select(b => b.Score));
+        foreach (var b in cp.Builds)
+        {
+            Assert.Empty(b.Loadout.Validate(data));
+            var skills = SkillAggregator.Aggregate(b.Loadout, data);
+            foreach (var (skill, level) in request.TargetSkills)
+                Assert.True(skills.Level(skill) >= level, $"{skill} {skills.Level(skill)} < {level}");
+        }
+    }
+
+    [Fact]
+    public void CpSatHonoursRequiredSetBonusesAndReportsInfeasibleTargets()
+    {
+        var data = TestData.Data;
+        var request = new OptimizationRequest
+        {
+            Weapon = new WeaponStatsInput { Type = "long-sword", Attack = 660, Affinity = 10, SetBonus = "Nu Udra's Mutiny", GroupSkill = "Scaling Prowess" },
+            TargetSkills = new() { ["Nu Udra's Mutiny"] = 2, ["Scaling Prowess"] = 1, ["Weakness Exploit"] = 3 },
+            Conditions = Conditions.AllOff with { HittingWeakPoint = true },
+            Talismans = new TalismanSettings { IncludeCraftable = true },
+            Options = new OptimizerOptions { TopN = 2, MinRarity = 7, RequireWeaponCoreSkills = false, Engine = OptimizerEngine.CpSat },
+        };
+        var resolved = RequestLoader.Resolve(request, data, RepoRoot);
+        Assert.True(resolved.IsValid, string.Join("; ", resolved.Errors));
+        var builds = new Optimizer(data, resolved).Run().PairResults[0].Builds;
+        Assert.NotEmpty(builds);
+        foreach (var b in builds)
+        {
+            var skills = SkillAggregator.Aggregate(b.Loadout, data);
+            Assert.Equal(SetBonusTier.II, skills.SetTier("Nu Udra's Mutiny"));
+            Assert.True(skills.GroupActive("Scaling Prowess"));
+            Assert.True(skills.Level("Weakness Exploit") >= 3);
+        }
+
+        var impossible = RequestLoader.Resolve(new OptimizationRequest
+        {
+            Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000 },
+            TargetSkills = new() { ["Weakness Exploit"] = 5, ["Agitator"] = 5, ["Burst"] = 5, ["Maximum Might"] = 3, ["Peak Performance"] = 5, ["Latent Power"] = 5, ["Adrenaline Rush"] = 5, ["Counterstrike"] = 3, ["Foray"] = 5 },
+            Talismans = new TalismanSettings { IncludeCraftable = false },
+            Options = new OptimizerOptions { TopN = 1, RequireWeaponCoreSkills = false, Engine = OptimizerEngine.CpSat },
+        }, data, RepoRoot);
+        Assert.Empty(new Optimizer(data, impossible).Run().PairResults[0].Builds);
+    }
+
     [Fact]
     public void DominancePruningKeepsTheBestPieces()
     {
