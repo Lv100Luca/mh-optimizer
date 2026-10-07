@@ -4,7 +4,7 @@
 @{ var resolved = App.Index.ResolveSkill(Name); }
 @if (resolved is { } r)
 {
-    <MudTooltip Placement="Placement.Bottom" Delay="250" Class="skilltip-pop" RootClass="@("skillhover " + Class)" RootStyle="display: inline-flex">
+    <MudTooltip Placement="Placement.Bottom" Delay="250" Class="skilltip-pop" RootClass="skillhover" RootStyle="display: inline-flex">
         <ChildContent><span class="@Class" title="@Title">@ChildContent</span></ChildContent>
         <TooltipContent><SkillCard Skill="r.Skill" Level="@(Level ?? r.Level)" /></TooltipContent>
     </MudTooltip>
