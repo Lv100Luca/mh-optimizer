@@ -9,7 +9,7 @@
 <div class="configbar">
     <div class="configpick">
         <MudSelect T="string" Value="App.Profile" ValueChanged="PickProfile" Label="Profile" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
-                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" ToStringFunc="@(p => p)">
             @foreach (var p in App.Profiles)
             {
                 <MudSelectItem Value="p.Name">@p.Name <span class="muted small">· @Fmt.Plural(p.Weapons, "weapon"), @Fmt.Plural(p.Talismans, "talisman")</span></MudSelectItem>

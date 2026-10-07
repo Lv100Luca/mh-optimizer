@@ -1,2 +1,5 @@
 # bundled from solver/ by npm (see the BuildSolver target)
 wwwroot/solver/
+# copied from data/ and the web client's icons on build (see the CopyGameAssets target)
+wwwroot/data/
+wwwroot/icons/

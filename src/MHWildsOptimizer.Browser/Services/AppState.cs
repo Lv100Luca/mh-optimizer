@@ -141,6 +141,7 @@ public sealed class AppState : IDisposable
             Ready = true;
             _nav.LocationChanged += OnLocationChanged;
             SyncUrl();
+            ScheduleValidation();
         }
         catch (Exception e)
         {

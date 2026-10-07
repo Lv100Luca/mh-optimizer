@@ -35,11 +35,22 @@
     <TrimmerRootAssembly Include="Google.Protobuf" />
   </ItemGroup>
 
-  <!-- the dataset and the wiki icons the server version serves, as static files -->
+  <!--
+    The dataset and the wiki icons the server version serves, copied into wwwroot/data and wwwroot/icons (git-ignored) on
+    every build: the dev server only serves files that are really under wwwroot, linked ones come out empty.
+  -->
   <ItemGroup>
-    <Content Include="$(RepoDir)data\*.json" Link="wwwroot\data\%(Filename)%(Extension)" />
-    <Content Include="$(RepoDir)src\MHWildsOptimizer.Web\client\public\icons\**\*" Link="wwwroot\icons\%(RecursiveDir)%(Filename)%(Extension)" />
+    <GameDataFile Include="$(RepoDir)data\*.json" />
+    <IconFile Include="$(RepoDir)src\MHWildsOptimizer.Web\client\public\icons\**\*" />
   </ItemGroup>
+
+  <Target Name="CopyGameAssets" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="@(GameDataFile)" DestinationFiles="@(GameDataFile->'wwwroot\data\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(IconFile)" DestinationFiles="@(IconFile->'wwwroot\icons\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <Content Include="wwwroot\data\**\*;wwwroot\icons\**\*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <!-- the solver bundle is built by npm (vite), not by MSBuild -->
