@@ -1,5 +1,143 @@
 @inherits AppComponent
+@inject BrowserProfileStore Store
 
-<div class="panel">
-    <Section Title="OptionsPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var o = request.Options;
+    var kind = request.Weapon.Spec?.Type ?? request.Weapon.Type ?? "great-sword";
+    var core = Cat.WeaponTypes.GetValueOrDefault(kind)?.CoreSkills ?? [];
+    var excluded = o.ExcludeSets.ToHashSet();
+    var cores = OptimizerOptions.ProcessorCount;
+    var threads = o.MaxThreads;
+    var threadPresets = new List<SegmentOption<int>> { new(0, $"All ({cores})", Hint: "every core of this browser") };
+    if (cores >= 4) threadPresets.Add(new(cores / 2, "Half", Hint: $"{cores / 2} threads, leaves the rest for other work"));
+    threadPresets.Add(new(1, "One", Hint: "single-threaded"));
+    var isThreadPreset = threadPresets.Any(p => p.Value == threads);
+    if (!isThreadPreset) threadPresets.Add(new(-1, "Custom", Hint: "custom value"));
+    var setWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.exclude_sets")).ToList() ?? [];
+    var q = _query.Trim().ToLowerInvariant();
+    var sets = Catalog.ArmorSets
+        .Where(s => s.Rarity >= o.MinRarity)
+        .Where(s => q == "" || s.Name.ToLowerInvariant().Contains(q) || s.SetBonus.Any(b => b.ToLowerInvariant().Contains(q)) || (s.GroupSkill ?? "").ToLowerInvariant().Contains(q))
+        .ToList();
+    var used = Store.StorageUsed();
+
+    <div class="panel two-col">
+        <div class="col">
+            <Section Title="Search options">
+                <div class="form-grid">
+                    <Toggle Checked="o.AllowTranscendence" CheckedChanged="v => Patch(x => x with { AllowTranscendence = v })"
+                            Label="Allow transcended slots" Hint="Armor Transcendence (HR 100+): rarity 5 armor gains +1 level on all three slot positions, rarity 6 on the first two." />
+                    <div>
+                        <Toggle Checked="o.RequireWeaponCoreSkills" CheckedChanged="v => Patch(x => x with { RequireWeaponCoreSkills = v })"
+                                Label="Require the weapon's core skills" Hint="@(core.Count > 0 ? null : "This weapon type has no core skills defined.")" />
+                        @if (core.Count > 0)
+                        {
+                            <span class="chip-row core-skills">
+                                @foreach (var c in core)
+                                {
+                                    <SkillChip @key="c.Skill" Name="@c.Skill" Level="c.Level" />
+                                }
+                            </span>
+                        }
+                    </div>
+                    <Field Label="Builds to report per skill pair" Inline="true">
+                        <NumberInput T="int" Value="o.TopN" Min="1" Max="50" Width="90" ValueChanged="v => Patch(x => x with { TopN = v })" />
+                    </Field>
+                    <Field Label="Minimum armor rarity" Hint="Rarity 5 and 6 pieces are only worth it with transcendence; raise this to speed the search up.">
+                        <Segmented T="int" Value="o.MinRarity" ValueChanged="v => Patch(x => x with { MinRarity = v })" Options="RarityOptions" />
+                    </Field>
+                    <Field Label="Search engine" Hint="Runs in this browser always use CP-SAT: it proves the best build for each skill pair (one solve per reported build) and keeps memory small. The beam search of the desktop version does not fit WebAssembly.">
+                        <span><b>CP-SAT (exact)</b></span>
+                    </Field>
+                    <Field Label="Time limit per solve (s)" Inline="true" Hint="When a solve runs out of time the best build found so far is used and the result is no longer proven optimal.">
+                        <NumberInput T="double" Value="o.CpSatTimeLimitSeconds" Min="1" Max="3600" Step="10" Width="90" ValueChanged="v => Patch(x => x with { CpSatTimeLimitSeconds = v })" />
+                    </Field>
+                    <Field Label="Threads" Hint="@($"CPU threads the search may use (this browser reports {cores} cores). Results are identical for any count; fewer threads only take longer. 0 = all cores of this browser.")">
+                        <div class="btn-row">
+                            <Segmented T="int" Value="@(isThreadPreset ? threads : -1)" Options="threadPresets"
+                                       ValueChanged="v => { if (v >= 0) Patch(x => x with { MaxThreads = v }); }" />
+                            <NumberInput T="int" Value="threads" Min="0" Max="cores" Step="1" Width="70" ValueChanged="v => Patch(x => x with { MaxThreads = v })" />
+                        </div>
+                    </Field>
+                </div>
+            </Section>
+
+            <Section Title="Storage" Hint="Profiles, weapons, talismans and last runs are saved in this browser only.">
+                <p class="small">
+                    This app uses <b>@StorageText(used)</b> of the about 5 MB the browser gives it (@Math.Round(100.0 * used / Quota)%).
+                </p>
+                <MudProgressLinear Value="@Math.Min(100, 100.0 * used / Quota)" Color="@(used > Quota * 0.8 ? Color.Warning : Color.Primary)" Rounded="true" Class="storage-bar" />
+                <p class="muted small">
+                    Clearing the site data of this browser deletes them. Export your profiles now and then as a backup: the menu next to the profile picker
+                    has Export, and Import brings a profile back (also on another device).
+                </p>
+            </Section>
+        </div>
+
+        <div class="col">
+            <Section Title="@($"Excluded armor sets ({o.ExcludeSets.Count})")"
+                     Hint="Leave out sets you do not own, e.g. event or collaboration gear. Only sets at or above the minimum rarity are listed.">
+                <Actions>
+                    @if (o.ExcludeSets.Count > 0)
+                    {
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Patch(x => x with { ExcludeSets = [] })">Clear</MudButton>
+                    }
+                </Actions>
+                <ChildContent>
+                    @foreach (var w in setWarnings)
+                    {
+                        <p @key="w" class="warn small">@w</p>
+                    }
+                    <SearchBox Value="@_query" ValueChanged="v => _query = v ?? string.Empty" Placeholder="Search sets, set bonuses, group skills…" />
+                    <div class="setlist">
+                        @foreach (var s in sets)
+                        {
+                            <label @key="s.Name" class="setrow @(excluded.Contains(s.Name) ? "excluded" : "")">
+                                <input type="checkbox" checked="@excluded.Contains(s.Name)" @onchange="() => ToggleSet(s.Name)" />
+                                <img class="icon" src="@GameIcons.Armor(ArmorPieceKind.Head, s.Rarity)" alt="" width="22" height="22" />
+                                <span class="setname">@s.Name</span>
+                                <RarityBadge Rarity="s.Rarity" />
+                                <span class="muted small setinfo">
+                                    @foreach (var b in s.SetBonus)
+                                    {
+                                        <SkillHover @key="b" Name="@b" Class="with-icon"><SkillIcon Name="@b" Kind="SkillKind.Set" Size="14" />@b</SkillHover>
+                                    }
+                                    @if (s.GroupSkill is { } group)
+                                    {
+                                        <SkillHover Name="@group" Class="with-icon"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" />@group</SkillHover>
+                                    }
+                                    <span>@Fmt.Plural(s.Pieces.Count, "piece")</span>
+                                </span>
+                            </label>
+                        }
+                    </div>
+                </ChildContent>
+            </Section>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>What browsers give a site in local storage (about 5 MB, counted in characters).</summary>
+    private const long Quota = 5L * 1024 * 1024;
+
+    private static readonly IReadOnlyList<SegmentOption<int>> RarityOptions = new[] { 5, 6, 7, 8 }
+        .Select(r => new SegmentOption<int>(r, $"R{r}+", RarityLabel(r)))
+        .ToList();
+
+    private string _query = "";
+
+    private static RenderFragment RarityLabel(int r) =>
+        @<span class="with-icon"><img src="@GameIcons.Armor(ArmorPieceKind.Chest, r)" alt="" width="18" height="18" /> R@(r)+</span>;
+
+    private static string StorageText(long chars) =>
+        chars < 1024 * 1024 ? $"{Math.Ceiling(chars / 1024.0)} KB" : $"{(chars / (1024.0 * 1024)).ToString("0.0", CultureInfo.InvariantCulture)} MB";
+
+    private void Patch(Func<OptimizerOptions, OptimizerOptions> fn) => App.PatchOptions(fn);
+
+    private void ToggleSet(string name) => Patch(o => o with
+    {
+        ExcludeSets = o.ExcludeSets.Contains(name) ? o.ExcludeSets.Where(s => s != name).ToList() : [.. o.ExcludeSets, name],
+    });
+}

@@ -1,5 +1,195 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="TalismansPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var talismans = App.Talismans;
+    var notes = (App.Resolved?.Errors ?? []).Select(e => (Kind: "error", Text: e))
+        .Concat((App.Resolved?.Warnings ?? []).Select(w => (Kind: "warning", Text: w)))
+        .Where(n => n.Text.StartsWith("Talisman"))
+        .ToList();
+
+    <div class="panel">
+        <Section Title="@($"Talismans of {App.Profile}")"
+                 Hint="Talismans belong to the account: every weapon of the profile draws from this pool, and changes are saved in this browser right away. Craftable charm lines are always available at their highest rank. Add the random (melded) talismans you own; the optimizer picks the best one per build.">
+            <Actions>
+                @if (_draft is null)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => Edit(null)">+ Add talisman</MudButton>
+                }
+            </Actions>
+            <ChildContent>
+                <Toggle Checked="request.Talismans.IncludeCraftable" CheckedChanged="SetIncludeCraftable"
+                        Label="@($"Include the {Catalog.CraftableTalismanCount} craftable charm lines")"
+                        Hint="Every charm line at max rank (e.g. Challenger Charm III)." />
+
+                @if (talismans.Count == 0 && _draft is null)
+                {
+                    <p class="muted">No random talismans yet.</p>
+                }
+                @if (talismans.Count > 0)
+                {
+                    <table class="table talisman-table">
+                        <thead><tr><th></th><th>Name</th><th>Skills</th><th>Slots</th><th></th></tr></thead>
+                        <tbody>
+                            @for (var i = 0; i < talismans.Count; i++)
+                            {
+                                var index = i;
+                                var t = talismans[i];
+                                <tr @key="index">
+                                    <td><img class="icon" src="@GameIcons.Talisman(t.Rarity)" alt="" width="28" height="28" title="@($"rarity {t.Rarity}")" /></td>
+                                    <td><b>@t.Name</b><div class="muted small">rarity @t.Rarity</div></td>
+                                    <td>
+                                        <div class="chip-row">
+                                            @foreach (var (s, lv) in t.Skills)
+                                            {
+                                                <SkillChip @key="s" Name="@s" Level="lv" />
+                                            }
+                                        </div>
+                                    </td>
+                                    <td><Slots Named="t.Slots" /></td>
+                                    <td class="right">
+                                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Edit(index)">Edit</MudButton>
+                                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Remove(index)">Remove</MudButton>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                @foreach (var n in notes)
+                {
+                    <Alert Kind="@n.Kind">@n.Text</Alert>
+                }
+            </ChildContent>
+        </Section>
+
+        @if (_draft is { } draft)
+        {
+            <Section Title="@(_index is { } editing ? $"Edit {talismans.ElementAtOrDefault(editing)?.Name}" : "New talisman")"
+                     Hint="Skill 1 is the weapon-kind line a random talisman rolls first; skills 2 and 3 are armor-kind lines.">
+                <div class="form-grid">
+                    <Field Label="Name">
+                        <input class="text" value="@draft.Name" @oninput="e => _draft = _draft! with { Name = e.Value?.ToString() ?? string.Empty }" />
+                    </Field>
+                    <Field Label="Rarity">
+                        <Segmented T="int" Value="draft.Rarity" ValueChanged="r => _draft = _draft! with { Rarity = r }" Options="_rarityOptions" />
+                    </Field>
+                    @SkillField("Skill 1 (weapon-kind)", _primary, draft.Primary, p => _draft = _draft! with { Primary = p }, null)
+                    @SkillField("Skill 2 (armor-kind)", _secondary, draft.Second, p => _draft = _draft! with { Second = p }, draft.Third?.Skill)
+                    @SkillField("Skill 3 (armor-kind)", _secondary, draft.Third, p => _draft = _draft! with { Third = p }, draft.Second?.Skill)
+                    <Field Label="Decoration slots" Hint="Random talismans roll these layouts; w = weapon-kind slot, a = armor-kind slot.">
+                        <SelectBox Value="@(draft.Slots == "" ? null : draft.Slots)" Placeholder="(no slots)" Options="_slotOptions"
+                                   ValueChanged="s => _draft = _draft! with { Slots = s ?? string.Empty }" />
+                    </Field>
+                </div>
+                <div class="btn-row">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Commit"
+                               Disabled="draft.Primary is null && draft.Second is null && draft.Third is null">@(_index is null ? "Add" : "Apply")</MudButton>
+                    <MudButton Variant="Variant.Text" OnClick="() => _draft = null">Cancel</MudButton>
+                </div>
+            </Section>
+        }
+    </div>
+}
+
+@code {
+    private sealed record Pick(string Skill, int Level);
+
+    private sealed record Draft(string Name, int Rarity, Pick? Primary, Pick? Second, Pick? Third, string Slots);
+
+    private static readonly string[] FallbackSlotPatterns =
+        ["", "armor1", "armor1,armor1", "armor1,armor1,armor1", "armor2", "armor2,armor1", "armor3", "weapon1", "weapon1,armor1", "weapon1,armor1,armor1"];
+
+    /// <summary>The talisman being added (<see cref="_index"/> null) or edited; null = no editor open.</summary>
+    private Draft? _draft;
+    private int? _index;
+
+    private IReadOnlyList<PoolSkillDto> _primary = [];
+    private IReadOnlyList<PoolSkillDto> _secondary = [];
+    private HashSet<string> _primaryNames = [];
+    private IReadOnlyList<SelectOption> _slotOptions = [];
+    private IReadOnlyList<SegmentOption<int>> _rarityOptions = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var pool = Catalog.TalismanPool;
+        _primary = pool?.Primary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Weapon).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
+        _secondary = pool?.Secondary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Armor).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
+        _primaryNames = _primary.Select(p => p.Skill).ToHashSet();
+        _slotOptions = (pool?.SlotPatterns.Select(p => string.Join(',', p)) ?? FallbackSlotPatterns)
+            .Distinct()
+            .Where(p => p != "")
+            .OrderBy(p => p.Length).ThenBy(p => p, StringComparer.Ordinal)
+            .Select(p => new SelectOption(p, string.Join(" · ", p.Split(',').Select(s => s.Replace("armor", "a").Replace("weapon", "w")))))
+            .ToList();
+        IReadOnlyList<int> rarities = pool is { Rarities.Count: > 0 } ? pool.Rarities : [4, 5, 6, 7];
+        _rarityOptions = rarities.Select(r => new SegmentOption<int>(r, $"R{r}", RarityLabel(r))).ToList();
+    }
+
+    private static RenderFragment RarityLabel(int r) => @<span class="with-icon"><img src="@GameIcons.Talisman(r)" alt="" width="18" height="18" /> R@(r)</span>;
+
+    private void SetIncludeCraftable(bool include) => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeCraftable = include } });
+
+    private void Edit(int? index)
+    {
+        _index = index;
+        _draft = ToDraft(index is { } i ? App.Talismans[i] : null);
+    }
+
+    private void Remove(int index) => App.SetTalismans(list => list.Where((_, j) => j != index).ToList());
+
+    private Draft ToDraft(TalismanInput? t)
+    {
+        var entries = t?.Skills.ToList() ?? [];
+        var p = entries.FirstOrDefault(e => _primaryNames.Contains(e.Key));
+        var rest = entries.Where(e => !_primaryNames.Contains(e.Key)).ToList();
+        return new Draft(
+            t?.Name ?? $"Talisman {App.Talismans.Count + 1}",
+            t?.Rarity ?? 7,
+            p.Key is null ? null : new Pick(p.Key, p.Value),
+            rest.Count > 0 ? new Pick(rest[0].Key, rest[0].Value) : null,
+            rest.Count > 1 ? new Pick(rest[1].Key, rest[1].Value) : null,
+            string.Join(',', t?.Slots ?? []));
+    }
+
+    private static TalismanInput FromDraft(Draft d)
+    {
+        var skills = new Dictionary<string, int>();
+        if (d.Primary is { } primary) skills[primary.Skill] = primary.Level;
+        foreach (var s in new[] { d.Second, d.Third })
+            if (s is not null) skills.TryAdd(s.Skill, s.Level);
+        var name = d.Name.Trim();
+        return new TalismanInput { Name = name == "" ? "Talisman" : name, Rarity = d.Rarity, Skills = skills, Slots = d.Slots == "" ? [] : [.. d.Slots.Split(',')] };
+    }
+
+    private void Commit()
+    {
+        if (_draft is null) return;
+        var value = FromDraft(_draft);
+        var index = _index;
+        // hand-entered builds refer to talismans by name: the builds of every weapon (saved and open) follow a rename
+        var old = index is { } i ? App.Talismans.ElementAtOrDefault(i)?.Name : null;
+        var renames = old is not null && old != value.Name ? new Dictionary<string, string> { [old] = value.Name } : null;
+        App.SetTalismans(list => index is null ? [.. list, value] : list.Select((t, j) => j == index ? value : t).ToList(), renames);
+        _draft = null;
+        _index = null;
+    }
+
+    private RenderFragment SkillField(string label, IReadOnlyList<PoolSkillDto> pool, Pick? value, Action<Pick?> onChange, string? exclude) => __builder =>
+    {
+        var skillMax = value is null ? 1 : Cat.SkillsByName.GetValueOrDefault(value.Skill)?.MaxLevel ?? 7;
+        var poolMax = value is null ? null : pool.FirstOrDefault(p => p.Skill == value.Skill)?.MaxLevel;
+        var options = pool.Where(p => p.Skill != exclude || p.Skill == value?.Skill).Select(p => new SelectOption(p.Skill, p.Skill)).ToList();
+        <Field Label="@label" Hint="@(value is not null && poolMax < skillMax ? $"random talismans roll {value.Skill} at most at level {poolMax}" : null)">
+            <div class="btn-row">
+                <SelectBox Value="@value?.Skill" Placeholder="(none)" Options="options"
+                           ValueChanged="skill => onChange(skill is null ? null : new Pick(skill, Math.Min(Cat.SkillsByName.GetValueOrDefault(skill)?.MaxLevel ?? 1, pool.FirstOrDefault(p => p.Skill == skill)?.MaxLevel ?? 1)))" />
+                @if (value is not null)
+                {
+                    <Stepper Value="value.Level" Min="1" Max="skillMax" ValueChanged="level => onChange(value with { Level = level })" />
+                }
+            </div>
+        </Field>
+    };
+}
