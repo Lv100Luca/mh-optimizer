@@ -17,6 +17,7 @@ namespace MHWildsOptimizer.Tests;
 /// Run only these:  dotnet test --filter Category=Benchmark
 /// Skip them:       dotnet test --filter Category!=Benchmark
 /// Thread count:     set BENCH_THREADS (e.g. 1, 8); default is the request's max_threads (0 = all processors).
+/// Every scenario runs on both engines: the beam state search and the exact CP-SAT model.
 /// </summary>
 [Trait("Category", "Benchmark")]
 public partial class OptimizerBenchmarks(ITestOutputHelper output)
@@ -48,6 +49,14 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
         GroupSkill = "Lord's Favor",
     };
 
+    /// <summary>The conditions of a typical red-health Great Sword configuration (Counterstrike, Coalescence, Powerhouse on, Burst capped at 1).</summary>
+    private static Conditions RedHealthManyConditions => Conditions.AllOff with
+    {
+        MonsterEnraged = true, HittingWeakPoint = true, RedHealth = true, StaminaFull = true, FrenzyOvercome = true,
+        CounterstrikeActive = true, CoalescenceActive = true, AzureBoltActive = true, PowerhouseActive = true, GutsNotYetTriggered = true, ProcDamage = true,
+        SkillLimits = new() { ["Burst"] = 1 },
+    };
+
     private static Conditions RedHealthConditions => Conditions.AllOff with
     {
         MonsterEnraged = true, HittingWeakPoint = true, RedHealth = true, StaminaFull = true, FrenzyOvercome = true,
@@ -77,6 +86,16 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
             Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
         }, MinBestScore: 680.63),
 
+        // loose targets with many conditions on: the beam fills at every depth (1M beam: ~100 s, ~11 GB) and still misses the optimum
+        new Scenario("GS dragon, loose targets, many conditions", new OptimizationRequest
+        {
+            Weapon = DragonGreatSword,
+            TargetSkills = new() { ["Stun Resistance"] = 3 },
+            Conditions = RedHealthManyConditions,
+            Talismans = new TalismanSettings { IncludeCraftable = true },
+            Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
+        }, MinBestScore: 0),
+
         // required set bonus tier II on a raw weapon (the weapon counts as one of the four pieces)
         new Scenario("LS raw, set bonus target", new OptimizationRequest
         {
@@ -99,21 +118,30 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
         }, MinBestScore: 696.22),
     ];
 
-    public static TheoryData<string> Scenarios => new(All.Select(s => s.Name));
+    public static TheoryData<string, OptimizerEngine> Scenarios
+    {
+        get
+        {
+            var data = new TheoryData<string, OptimizerEngine>();
+            foreach (var s in All) foreach (var engine in Enum.GetValues<OptimizerEngine>()) data.Add(s.Name, engine);
+            return data;
+        }
+    }
 
     [Theory]
     [MemberData(nameof(Scenarios))]
-    public void Benchmark(string name)
+    public void Benchmark(string name, OptimizerEngine engine)
     {
         var scenario = All.Single(s => s.Name == name);
         var data = TestData.Data;
-        var resolved = RequestLoader.Resolve(scenario.Request, data, RepoRoot, Talismans);
+        var request = scenario.Request with { Options = scenario.Request.Options with { Engine = engine } };
+        var resolved = RequestLoader.Resolve(request, data, RepoRoot, Talismans);
         Assert.True(resolved.IsValid, string.Join("; ", resolved.Errors));
         if (int.TryParse(Environment.GetEnvironmentVariable("BENCH_THREADS"), out var threads))
             resolved = resolved with { Options = resolved.Options with { MaxThreads = threads } };
 
-        // warm-up: JIT and data caches, on a tiny beam so it stays cheap
-        var warmup = resolved with { Options = resolved.Options with { MaxStatesPerDepth = 1000 } };
+        // warm-up: JIT and data caches, on a tiny beam so it stays cheap (CP-SAT warms up on a short time limit)
+        var warmup = resolved with { Options = resolved.Options with { MaxStatesPerDepth = 1000, CpSatTimeLimitSeconds = 1, TopN = 1 } };
         new Optimizer(data, warmup).Run();
 
         var progress = new LineProgress();
@@ -128,9 +156,9 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
         var best = result.PairResults.Count == 0 ? 0 : result.PairResults.Max(p => p.BestScore);
         var states = result.PairResults.Sum(p => p.StatesEvaluated);
 
-        output.WriteLine($"=== {scenario.Name} ({resolved.Options.EffectiveThreads} threads, {(System.Runtime.GCSettings.IsServerGC ? "server" : "workstation")} GC) ===");
+        output.WriteLine($"=== {scenario.Name} [{engine}] ({resolved.Options.EffectiveThreads} threads, {(System.Runtime.GCSettings.IsServerGC ? "server" : "workstation")} GC) ===");
         output.WriteLine($"total {sw.ElapsedMilliseconds} ms | expand {expandMs} ms, prune {pruneMs} ms, final {finalMs} ms (single-search phases)");
-        output.WriteLine($"best {best:0.00} | {result.PairResults.Count} pair result(s) | {states} final states scored");
+        output.WriteLine($"best {best:0.00} | {result.PairResults.Count} pair result(s) | {states} {(engine == OptimizerEngine.Beam ? "final states scored" : "CP-SAT solves")}");
         output.WriteLine("--- progress ---");
         foreach (var line in lines) output.WriteLine(line);
 

@@ -21,7 +21,7 @@ public static class ResultsRenderer
         {
             rank++;
             AnsiConsole.WriteLine();
-            AnsiConsole.Write(new Rule($"[bold yellow]#{rank}  {Markup.Escape(pr.Label)}[/]   [grey]best {pr.BestScore.ToString("0.0", Inv)}  |  {pr.StatesEvaluated} final states scored[/]").LeftJustified().RuleStyle("yellow"));
+            AnsiConsole.Write(new Rule($"[bold yellow]#{rank}  {Markup.Escape(pr.Label)}[/]   [grey]best {pr.BestScore.ToString("0.0", Inv)}  |  {pr.StatesEvaluated} {pr.WorkLabel}[/]").LeftJustified().RuleStyle("yellow"));
             if (pr.Builds.Count == 0) AnsiConsole.MarkupLine("  [red]no build satisfies the targets[/]");
             var i = 0;
             foreach (var b in pr.Builds)

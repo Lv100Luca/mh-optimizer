@@ -14,9 +14,13 @@ public sealed record RankedBuild(Loadout Loadout, DamageResult Result, GogmaSkil
 }
 
 /// <summary>Results for one (set bonus, group skill) class; in fixed mode there is exactly one.</summary>
-public sealed record SkillPairResult(string Label, GogmaSkillPair? Pair, IReadOnlyList<RankedBuild> Builds, long StatesEvaluated, string CandidateSummary)
+/// <param name="StatesEvaluated">Search work: final states scored (beam) or solves (CP-SAT), see <see cref="WorkLabel"/>.</param>
+public sealed record SkillPairResult(string Label, GogmaSkillPair? Pair, IReadOnlyList<RankedBuild> Builds, long StatesEvaluated, string CandidateSummary,
+    OptimizerEngine Engine = OptimizerEngine.Beam)
 {
     public double BestScore => Builds.Count > 0 ? Builds[0].Score : 0;
+    /// <summary>What <see cref="StatesEvaluated"/> counts, for display after the number.</summary>
+    public string WorkLabel => Engine == OptimizerEngine.CpSat ? "CP-SAT solves" : "final states scored";
 }
 
 public sealed record OptimizationResult(IReadOnlyList<SkillPairResult> PairResults, TimeSpan Elapsed)
@@ -75,7 +79,11 @@ public sealed class Optimizer
             progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel on {threads} thread{(threads == 1 ? "" : "s")}");
             var done = 0;
             var bag = new ConcurrentBag<SkillPairResult>();
-            Parallel.ForEach(classes, parallel, cls =>
+            // CP-SAT spreads each solve over all threads itself, so its classes run one after another
+            var classLoop = _request.Options.Engine == OptimizerEngine.CpSat
+                ? new ParallelOptions { MaxDegreeOfParallelism = 1, CancellationToken = ct }
+                : parallel;
+            Parallel.ForEach(classes, classLoop, cls =>
             {
                 var representative = cls.First();
                 var label = $"{cls.Key.Set} + {cls.Key.Group}";
@@ -105,6 +113,15 @@ public sealed class Optimizer
         var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
         var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}";
         progress?.Report("  " + summary);
+
+        if (_request.Options.Engine == OptimizerEngine.CpSat)
+        {
+            var cp = new CpSatSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN,
+                parallel.MaxDegreeOfParallelism, _request.Options.CpSatTimeLimitSeconds, progress, parallel.CancellationToken);
+            var cpBuilds = cp.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
+            progress?.Report($"  {cp.Summary}, {cpBuilds.Count} builds kept");
+            return new SkillPairResult(label, pair, cpBuilds, cp.Solves, $"{summary}; {cp.Summary}", OptimizerEngine.CpSat);
+        }
 
         var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);
         var builds = search.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();

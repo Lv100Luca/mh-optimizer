@@ -94,7 +94,7 @@ export function ResultsPanel() {
       {result && result.skill_pair_mode === 'optimize' && result.pairs.length > 1 && (
         <Section title="Skill pair ranking" hint="Best score each rollable pair class can reach. '(any other)' means the set bonus or group skill does not matter for the score.">
           <table className="table pairs">
-            <thead><tr><th>#</th><th>Set bonus</th><th>Group skill</th><th className="num">Best</th><th className="num">vs #1</th><th className="num">Builds</th><th className="num">States</th></tr></thead>
+            <thead><tr><th>#</th><th>Set bonus</th><th>Group skill</th><th className="num">Best</th><th className="num">vs #1</th><th className="num">Builds</th><th className="num">Work</th></tr></thead>
             <tbody>
               {result.pairs.map((p) => (
                 <tr key={p.rank} onClick={() => document.getElementById(`pair-${p.rank}`)?.scrollIntoView({ behavior: 'smooth' })}>
@@ -104,7 +104,7 @@ export function ResultsPanel() {
                   <td className="num"><b>{fmt(p.best_score)}</b></td>
                   <td className="num muted">{p.rank === 1 ? '—' : fmt(p.best_score - result.pairs[0].best_score)}</td>
                   <td className="num">{p.builds.length}</td>
-                  <td className="num muted">{p.states_evaluated.toLocaleString('en-US')}</td>
+                  <td className="num muted" title={p.work_label ?? 'final states scored'}>{p.states_evaluated.toLocaleString('en-US')}</td>
                 </tr>
               ))}
             </tbody>
@@ -119,7 +119,7 @@ export function ResultsPanel() {
             <SkillHover name={p.set_bonus} className="with-icon"><SkillIcon name={p.set_bonus} kind="set" size={20} /><b>{p.set_bonus}</b></SkillHover>
             <span className="muted">+</span>
             <SkillHover name={p.group_skill} className="with-icon"><SkillIcon name={p.group_skill} kind="group" size={20} /><b>{p.group_skill}</b></SkillHover>
-            <span className="muted">best {fmt(p.best_score)} · {p.states_evaluated.toLocaleString('en-US')} final states scored · {p.candidate_summary}</span>
+            <span className="muted">best {fmt(p.best_score)} · {p.states_evaluated.toLocaleString('en-US')} {p.work_label ?? 'final states scored'} · {p.candidate_summary}</span>
           </div>
           {p.builds.length === 0 && <Alert kind="warning">No build satisfies the targets for this pair.</Alert>}
           {p.builds.map((b) => {

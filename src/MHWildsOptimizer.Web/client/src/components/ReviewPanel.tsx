@@ -102,7 +102,9 @@ export function ReviewPanel() {
             <h4><button className="linklike" onClick={() => setTab('options')}>Options</button></h4>
             <div className="small">
               transcendence {request.options.allow_transcendence ? 'on' : 'off'} · core skills {request.options.require_weapon_core_skills ? 'on' : 'off'} · top {request.options.top_n} · rarity {request.options.min_rarity}+ ·
-              beam {request.options.max_states_per_depth.toLocaleString('en-US')} · {request.options.max_threads ? `${request.options.max_threads} threads` : 'all threads'} · {request.options.exclude_sets.length} sets excluded
+              {request.options.engine === 'cp_sat'
+                ? `CP-SAT (exact, ${request.options.cp_sat_time_limit_seconds ?? 120} s per solve)`
+                : `beam ${request.options.max_states_per_depth.toLocaleString('en-US')}`} · {request.options.max_threads ? `${request.options.max_threads} threads` : 'all threads'} · {request.options.exclude_sets.length} sets excluded
             </div>
           </div>
 
