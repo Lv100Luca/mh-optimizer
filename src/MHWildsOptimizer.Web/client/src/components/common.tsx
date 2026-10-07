@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { icons } from '../icons';
 import type { Deco, Skill, SkillGrant, SkillKind } from '../types';
 import { useCatalog } from '../state';
+import { currentZoom } from '../uiScale';
 
 export function Section({ title, hint, actions, children, className }: { title: ReactNode; hint?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
   return (
@@ -208,11 +209,13 @@ function useSkillTip(name: string, level?: number) {
 function SkillCard({ skill, level, anchor }: { skill: Skill; level?: number; anchor: DOMRect }) {
   const bonus = skill.kind === 'set' || skill.kind === 'group';
   const current = level !== undefined && !bonus ? skill.ranks.find((r) => r.level === level) : undefined;
-  // below the anchor, or above it when the anchor sits in the lower part of the window
+  // below the anchor, or above it when the anchor sits in the lower part of the window; the anchor is in screen px,
+  // the card's position in page px (screen px / UI zoom)
+  const z = currentZoom();
   const below = anchor.bottom < window.innerHeight * 0.6;
   const style: CSSProperties = {
-    left: Math.max(8, Math.min(anchor.left, window.innerWidth - 328)),
-    ...(below ? { top: anchor.bottom + 6 } : { bottom: window.innerHeight - anchor.top + 6 }),
+    left: Math.max(8, Math.min(anchor.left, window.innerWidth - 328 * z)) / z,
+    ...(below ? { top: (anchor.bottom + 6) / z } : { bottom: (window.innerHeight - anchor.top + 6) / z }),
   };
   return (
     <div className={`skilltip ${skill.kind}`} style={style} role="tooltip">

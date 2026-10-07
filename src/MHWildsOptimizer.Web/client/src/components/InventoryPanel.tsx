@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
-import { api } from '../api';
+import { useMemo, useState } from 'react';
 import { elementCss, icons } from '../icons';
 import { useApp, useCatalog } from '../state';
 import type { Build, InventoryEntry } from '../types';
@@ -22,21 +21,12 @@ const ago = (iso: string) => {
 };
 
 export function InventoryPanel() {
-  const { profile, name: openName, savedVersion, openWeapon, newWeapon, dirty, batch: runs, runWeapons: runAll, stopWeapons: cancelRuns } = useApp();
+  const {
+    profile, name: openName, openWeapon, newWeapon, remove, unsaved, inventory: entries, inventoryError: error, inventoryCompare: compare,
+    setInventoryCompare: setCompare, batch: runs, runWeapons: runAll, stopWeapons: cancelRuns,
+  } = useApp();
   const { catalog, weaponTypes } = useCatalog();
-  const [entries, setEntries] = useState<InventoryEntry[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [compare, setCompare] = useState<string[]>([]);
   const [newKind, setNewKind] = useState('great-sword');
-
-  useEffect(() => {
-    if (!profile) return;
-    const controller = new AbortController();
-    api.inventory(profile, controller.signal)
-      .then((list) => { setEntries(list); setError(null); })
-      .catch((e) => { if (!controller.signal.aborted) setError((e as Error).message); });
-    return () => controller.abort();
-  }, [profile, savedVersion]);
 
   const groups = useMemo(() => {
     const byType = new Map<string, InventoryEntry[]>();
@@ -53,9 +43,12 @@ export function InventoryPanel() {
   const toggleCompare = (weapon: string) =>
     setCompare((c) => (c.includes(weapon) ? c.filter((x) => x !== weapon) : [...c.slice(-1), weapon]));
 
-  const open = (weapon: string, tab?: 'builds' | 'results') => {
-    if (dirty && !window.confirm('Discard unsaved changes?')) return;
-    void openWeapon(weapon, tab);
+  const open = (weapon: string, tab: 'weapon' | 'builds' | 'results' = 'weapon') => void openWeapon(weapon, tab);
+
+  const del = (weapon: string) => {
+    const lost = unsaved.includes(weapon) ? ' Its unsaved changes are lost too.' : '';
+    if (!window.confirm(`Delete ${weapon} from ${profile}, with its builds and last run?${lost} This cannot be undone.`)) return;
+    void remove(weapon);
   };
 
   const compared = compare.map((n) => entries?.find((e) => e.name === n)).filter((e): e is InventoryEntry => !!e);
@@ -79,7 +72,7 @@ export function InventoryPanel() {
             <select className="select" value={newKind} onChange={(e) => setNewKind(e.target.value)} title="Weapon type of the new weapon">
               {catalog.weapon_types.filter((w) => w.supported).map((w) => <option key={w.kind} value={w.kind}>{w.label}</option>)}
             </select>
-            <Button small kind="primary" onClick={() => { if (!dirty || window.confirm('Discard unsaved changes?')) newWeapon(newKind); }}>+ New weapon</Button>
+            <Button small kind="primary" onClick={() => newWeapon(newKind)}>+ New weapon</Button>
           </div>
         }
       >
@@ -96,6 +89,7 @@ export function InventoryPanel() {
           return (
             <div key={kind} className="inv-group">
               <h3 className="with-icon"><img src={icons.weapon(kind)} alt="" width={22} height={22} />{typeLabel(kind)} <span className="muted small">· {list.length} weapon{list.length > 1 ? 's' : ''}</span></h3>
+              <div className="inv-scroll">
               <table className="table inv-table">
                 <thead>
                   <tr>
@@ -121,6 +115,7 @@ export function InventoryPanel() {
                         <td><input type="checkbox" checked={compare.includes(e.name)} onChange={() => toggleCompare(e.name)} disabled={!rep} aria-label={`Compare ${e.name}`} /></td>
                         <td>
                           <button className="linklike inv-name" onClick={() => open(e.name)}>{e.name}</button>
+                          {unsaved.includes(e.name) && <span className="unsaved-badge" title="Opened with changes that are not saved yet; the numbers here are from the saved file">unsaved</span>}
                           {element !== 'none' && <span className="elem-dot" style={{ background: elementCss[element] }} title={titleCase(element)} />}
                           <div className="muted small">{e.weapon ? `${e.weapon.set_bonus ?? '-'} / ${e.weapon.group_skill ?? '-'}` : ''}</div>
                           <div className="muted tiny">{e.targets.filter((t) => !t.from_core).map((t) => t.label).join(', ') || 'no targets'}</div>
@@ -161,6 +156,7 @@ export function InventoryPanel() {
                             <Button small onClick={() => open(e.name, 'builds')}>Builds</Button>
                             {e.last_run && <Button small kind="ghost" onClick={() => open(e.name, 'results')}>Results</Button>}
                             <Button small kind="ghost" onClick={() => void runAll([e.name])} disabled={running || e.errors.length > 0} title="Run the optimizer for this weapon (saved setup)">▶</Button>
+                            <Button small kind="ghost" onClick={() => del(e.name)} disabled={mark?.status === 'running' || mark?.status === 'queued'} title={`Delete ${e.name} with its builds and last run`}>✕</Button>
                           </div>
                         </td>
                       </tr>
@@ -168,6 +164,7 @@ export function InventoryPanel() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           );
         })}

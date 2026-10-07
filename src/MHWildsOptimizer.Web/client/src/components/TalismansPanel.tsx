@@ -7,7 +7,7 @@ import { Alert, Button, Field, Section, Segmented, Select, SkillChip, Slots, Ste
 interface Draft { name: string; rarity: number; primary: { skill: string; level: number } | null; secondary: ({ skill: string; level: number } | null)[]; slots: string }
 
 export function TalismansPanel() {
-  const { request, patchRequest, talismans, setTalismans, builds, setBuilds, resolved, profile } = useApp();
+  const { request, patchRequest, talismans, setTalismans, resolved, profile } = useApp();
   const { catalog, skillsByName } = useCatalog();
   const [draft, setDraft] = useState<{ index: number | null; value: Draft } | null>(null);
 
@@ -49,12 +49,10 @@ export function TalismansPanel() {
   const commit = () => {
     if (!draft) return;
     const value = fromDraft(draft.value);
-    // hand-entered builds refer to talismans by name; the saved builds of every weapon follow a rename, and so does the open weapon
+    // hand-entered builds refer to talismans by name: the builds of every weapon (saved and open) follow a rename
     const old = draft.index === null ? null : talismans[draft.index]?.name;
     const renamed = !!old && old !== value.name;
     setTalismans((list) => (draft.index === null ? [...list, value] : list.map((t, i) => (i === draft.index ? value : t))), renamed ? { [old]: value.name } : undefined);
-    if (renamed && builds.some((b) => b.talisman?.name === old))
-      setBuilds((list) => list.map((b) => (b.talisman?.name === old ? { ...b, talisman: { ...b.talisman, name: value.name } } : b)));
     setDraft(null);
   };
 

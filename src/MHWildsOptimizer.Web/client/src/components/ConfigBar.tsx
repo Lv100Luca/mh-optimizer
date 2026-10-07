@@ -1,20 +1,18 @@
 import { useState } from 'react';
-import { useApp } from '../state';
+import { NEW_WEAPON, useApp } from '../state';
 import { Button } from './common';
 
 const NEW_PROFILE = '\u0000new-profile';
 const namePattern = /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/;
 
 export function ConfigBar() {
-  const { profiles, profile, openProfile, createProfile, weapons, name, dirty, newWeapon, openWeapon, save, remove, runOptimizer, cancelRun, run, resolved } = useApp();
+  const { profiles, profile, openProfile, createProfile, weapons, name, dirty, unsaved, newWeapon, openWeapon, save, revert, remove, runOptimizer, cancelRun, run, resolved } = useApp();
   const [saveAs, setSaveAs] = useState<string | null>(null);
 
-  const confirmDiscard = () => !dirty || window.confirm('Discard unsaved changes?');
-
+  // switching keeps unsaved edits (they stay with their weapon, also across reloads), so no "discard?" questions here
   const onPickWeapon = (value: string) => {
-    if (value === '') { if (confirmDiscard()) newWeapon(); return; }
-    if (value === name) return;
-    if (confirmDiscard()) void openWeapon(value);
+    if (value === '') { if (name !== null) newWeapon(); return; }
+    if (value !== name) void openWeapon(value);
   };
 
   const onPickProfile = (value: string) => {
@@ -22,10 +20,10 @@ export function ConfigBar() {
       const entered = window.prompt('Name of the new profile (an account with its own talismans, presets and weapons):', '')?.trim();
       if (!entered) return;
       if (!namePattern.test(entered)) { window.alert("Use letters, digits, spaces, '-', '_' or '.'."); return; }
-      if (confirmDiscard()) void createProfile(entered);
+      void createProfile(entered);
       return;
     }
-    if (value !== profile && confirmDiscard()) void openProfile(value);
+    if (value !== profile) void openProfile(value);
   };
 
   const submitSaveAs = async () => {
@@ -52,10 +50,10 @@ export function ConfigBar() {
       <label className="configpick">
         <span className="muted">Weapon</span>
         <select value={name ?? ''} onChange={(e) => onPickWeapon(e.target.value)}>
-          <option value="">New weapon</option>
+          <option value="">New weapon{unsaved.includes(NEW_WEAPON) ? ' *' : ''}</option>
           {weapons.map((c) => (
             <option key={c.name} value={c.name} title={c.summary ?? undefined}>
-              {c.name}{c.has_results ? ' ✓' : ''}
+              {c.name}{c.has_results ? ' ✓' : ''}{unsaved.includes(c.name) ? ' *' : ''}
             </option>
           ))}
         </select>
@@ -67,6 +65,12 @@ export function ConfigBar() {
       {saveAs === null ? (
         <>
           <Button onClick={() => void save()} disabled={!name || !dirty} title={name ? `Save ${name}` : 'Use Save as… first'}>Save</Button>
+          {dirty && (
+            <Button kind="ghost" onClick={() => { if (window.confirm(name ? `Drop the unsaved changes of ${name}?` : 'Start the new weapon over?')) void revert(); }}
+              title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">
+              Revert
+            </Button>
+          )}
           <Button onClick={() => setSaveAs(name ?? 'my-weapon')}>Save as…</Button>
           {name && (
             <Button kind="ghost" onClick={() => { if (window.confirm(`Delete the weapon ${name}, its builds and results?`)) void remove(name); }} title="Delete this weapon">

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { currentZoom } from '../uiScale';
 
 /** One choice; search is the lower-case text the query is matched against (every word must occur). */
 export interface PickerOption<T> { key: string; value: T; search: string; render: ReactNode; group?: string }
@@ -39,12 +40,14 @@ export function Picker<T>({ trigger, options, onPick, onClear, clearLabel, place
   // place the panel below the button, or above it when there is more room there
   useLayoutEffect(() => {
     if (!open || !button.current) return;
+    // the button rect is in screen px, the panel is positioned in page px (screen px / UI zoom)
+    const z = currentZoom();
     const r = button.current.getBoundingClientRect();
     const below = window.innerHeight - r.bottom;
-    const left = Math.max(8, Math.min(r.left, window.innerWidth - popWidth - 8));
-    setStyle(below >= 320 || below >= r.top
-      ? { left, top: r.bottom + 4, maxHeight: Math.min(460, below - 12) }
-      : { left, bottom: window.innerHeight - r.top + 4, maxHeight: Math.min(460, r.top - 12) });
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - (popWidth + 8) * z)) / z;
+    setStyle(below >= 320 * z || below >= r.top
+      ? { left, top: (r.bottom + 4) / z, maxHeight: Math.min(460, (below - 12) / z) }
+      : { left, bottom: (window.innerHeight - r.top + 4) / z, maxHeight: Math.min(460, (r.top - 12) / z) });
   }, [open]);
 
   // close on a click outside, on scrolling the page underneath and on resize

@@ -11,11 +11,13 @@ export function ResultsPanel() {
   const [now, setNow] = useState(Date.now());
   const logRef = useRef<HTMLPreElement>(null);
 
+  // the clock runs while the shown run does; switching to another weapon's run catches it up at once
   useEffect(() => {
     if (run.status !== 'running') return;
+    setNow(Date.now());
     const t = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(t);
-  }, [run.status]);
+  }, [run.status, run.startedAt]);
 
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
