@@ -1,0 +1,92 @@
+@page "/"
+@using System.Diagnostics
+@using System.Globalization
+@using System.Text.Json
+@using MHWildsOptimizer.Core.Data
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<PageTitle>WASM speed test</PageTitle>
+
+<h1>WASM speed test (@Mode, 1 thread)</h1>
+<p>@_status</p>
+
+@if (_data is not null)
+{
+    <p>
+        @foreach (var c in Bench.Cases)
+        {
+            <button disabled="@_running" @onclick="() => RunAsync(c)">Run @c.Name</button>
+            <text> </text>
+        }
+    </p>
+}
+
+<table>
+    <thead><tr><th>case</th><th>seconds</th><th>states</th><th>best</th></tr></thead>
+    <tbody>
+        @foreach (var r in _results)
+        {
+            <tr><td>@r.Case</td><td>@r.Seconds.ToString("F2")</td><td>@r.States</td><td>@r.Best.ToString("F1")</td><td>@r.Error</td></tr>
+        }
+    </tbody>
+</table>
+
+@code {
+#if AOT
+    private const string Mode = "AOT";
+#else
+    private const string Mode = "interpreted";
+#endif
+    private GameData? _data;
+    private bool _running;
+    private string _status = "Loading game data...";
+    private readonly List<BenchResult> _results = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        (_data, _status) = await BenchFiles.LoadAsync(Http);
+
+        // ?run=<case name> starts a case on load, for scripted runs
+        var query = new Uri(Nav.Uri).Query;
+        var run = Uri.UnescapeDataString(query.Split("run=", 2).ElementAtOrDefault(1) ?? "");
+        if (Bench.Cases.FirstOrDefault(c => c.Name == run) is { } auto) _ = RunAsync(auto);
+        if (run is "probe-small" or "probe-large") Probe(run == "probe-small" ? 30 : 4_000_000);
+    }
+
+    /// <summary>Allocates int arrays of the given length and keeps them until the runtime runs out of memory.</summary>
+    private void Probe(int length)
+    {
+        var keep = new List<int[]>();
+        long bytes = 0;
+        try
+        {
+            while (true)
+            {
+                keep.Add(new int[length]);
+                bytes += 4L * length + 24;
+                if (keep.Count % 1_000_000 == 0 || length > 1000) Console.WriteLine($"PROBE {bytes / 1048576} MB");
+            }
+        }
+        catch (OutOfMemoryException) { }
+        Console.WriteLine($"PROBE DONE {bytes / 1048576} MB in {keep.Count} arrays");
+    }
+
+    private async Task RunAsync(BenchCase c)
+    {
+        var name = c.Name;
+        _running = true;
+        _status = $"Running {name}... (the page is frozen until it finishes)";
+        StateHasChanged();
+        await Task.Delay(50);
+        BenchResult r;
+        try { r = Bench.Run(_data!, BenchFiles.Weapons, c, threads: 1); }
+        catch (Exception e) { r = new BenchResult(name, 1, 0, 0, 0, e.ToString()); }
+        _results.Add(r);
+        Console.WriteLine("BENCH " + JsonSerializer.Serialize(r));
+        _status = $"Done: {name} in {r.Seconds:F2}s.";
+        _running = false;
+        StateHasChanged();
+    }
+}

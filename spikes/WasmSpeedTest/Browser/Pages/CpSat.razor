@@ -1,0 +1,133 @@
+@page "/cpsat"
+@using System.Diagnostics
+@using System.Text.Json
+@using MHWildsOptimizer.Core.Data
+@using MHWildsOptimizer.Core.Optimize
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>CP-SAT in the browser</PageTitle>
+
+<h1>CP-SAT in the browser (@Mode)</h1>
+<p>@_environment</p>
+<p>@_status</p>
+
+@if (_data is not null)
+{
+    <p>
+        Threads <input type="number" min="1" max="64" @bind="_threads" />
+        Concurrent <input type="number" min="1" max="4" @bind="_concurrent" />
+        Parameters <input style="width: 40em" @bind="_parameters" />
+        @foreach (var config in Configs)
+        {
+            <button disabled="@_running" @onclick="() => RunAsync(config)">Run @config</button>
+            <text> </text>
+        }
+    </p>
+}
+
+@foreach (var run in _runs)
+{
+    <h2>@run.Config, @run.Threads threads: @run.Seconds.ToString("F2")s, best @run.Best.ToString("F2")</h2>
+    <p>@run.Parameters</p>
+    <p>@run.Summary</p>
+    <table>
+        <thead><tr><th>solve</th><th>serialize</th><th>bridge</th><th>parse</th><th>solver wall</th></tr></thead>
+        <tbody>
+            @for (var i = 0; i < run.Solves.Count; i++)
+            {
+                var s = run.Solves[i];
+                <tr><td>@(i + 1)</td><td>@s.Serialize.ToString("F3")</td><td>@s.Solve.ToString("F2")</td><td>@s.Parse.ToString("F3")</td><td>@s.SolverWall.ToString("F2")</td></tr>
+            }
+        </tbody>
+    </table>
+    <pre>@string.Join("\n", run.Log)</pre>
+}
+
+@code {
+#if AOT
+    private const string Mode = "AOT";
+#else
+    private const string Mode = "interpreted";
+#endif
+    private static readonly string[] Configs = ["Test", "Current"];
+
+    public sealed record Run(string Config, int Threads, string Parameters, double Seconds, double Best, string Summary,
+        List<(double Serialize, double Solve, double Parse, double SolverWall)> Solves, List<string> Log);
+
+    private sealed class LineProgress(List<string> lines, Stopwatch sw) : IProgress<string>
+    {
+        public void Report(string value) => lines.Add($"[{sw.Elapsed.TotalSeconds,6:F2}s] {value}");
+    }
+
+    private GameData? _data;
+    private IJSObjectReference? _bridge;
+    private bool _running;
+    private int _threads = 16;
+    private int _concurrent = 1;
+    private string _parameters = "";
+    private string _status = "Loading game data...";
+    private string _environment = "";
+    private readonly List<Run> _runs = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        (_data, _status) = await BenchFiles.LoadAsync(Http);
+        var sw = Stopwatch.StartNew();
+        _bridge = await JS.InvokeAsync<IJSObjectReference>("import", "./ortools/bridge.js");
+        var env = await _bridge.InvokeAsync<JsonElement>("environment");
+        var importSeconds = sw.Elapsed.TotalSeconds;
+        sw.Restart();
+        await _bridge.InvokeVoidAsync("warmUp");
+        _environment = $"{env}; bridge imported in {importSeconds:F2}s, solver runtime started in {sw.Elapsed.TotalSeconds:F2}s";
+        _threads = env.TryGetProperty("cores", out var cores) ? cores.GetInt32() : 16;
+
+        // ?run=Test&threads=8 starts a run on load, for scripted runs
+        var query = System.Web.HttpUtility.ParseQueryString(new Uri(Nav.Uri).Query);
+        if (int.TryParse(query["threads"], out var t)) _threads = t;
+        if (int.TryParse(query["concurrent"], out var n)) _concurrent = n;
+        if (query["params"] is { } p) _parameters = p;
+        if (query["run"] is { } run && Configs.Contains(run)) _ = RunAsync(run);
+    }
+
+    private async Task RunAsync(string config)
+    {
+        _running = true;
+        _status = $"Running {config} on {_threads} threads, {_concurrent} at once...";
+        StateHasChanged();
+        try
+        {
+            var sw = Stopwatch.StartNew();
+            var runs = await Task.WhenAll(Enumerable.Range(0, _concurrent).Select(i => SearchAsync(config, _concurrent > 1 ? i : null)));
+            foreach (var run in runs)
+            {
+                _runs.Add(run);
+                Console.WriteLine("CPSAT " + JsonSerializer.Serialize(new { run.Config, run.Threads, run.Parameters, run.Seconds, run.Best, run.Summary,
+                    Solves = run.Solves.Select(x => new { x.Serialize, x.Solve, x.Parse, x.SolverWall }) }));
+            }
+            _status = $"Done: {config} x{_concurrent} in {sw.Elapsed.TotalSeconds:F2}s.";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("CPSAT ERROR " + e);
+            _status = "Failed: " + e.Message;
+        }
+        _running = false;
+        StateHasChanged();
+    }
+
+    private async Task<Run> SearchAsync(string config, int? lane)
+    {
+        var sw = Stopwatch.StartNew();
+        var log = new List<string>();
+        var r = Bench.Resolve(_data!, BenchFiles.Weapons, new BenchCase(config, CpSat: true), _threads);
+        var s = CpSatSetup.ForFixedPair(_data!, r);
+        log.Add($"[{sw.Elapsed.TotalSeconds,6:F2}s] resolved and candidates built");
+        var solver = new WasmCpSolver(_bridge!) { Lane = lane };
+        var search = new CpSatAsyncSearch(_data!, s.Rel, s.Weapon, r.Conditions, s.Filler, s.Armor, s.Kinds, s.Talismans, r.Options.TopN,
+            _threads, r.Options.CpSatTimeLimitSeconds, new LineProgress(log, sw), CancellationToken.None) { Parameters = _parameters };
+        var builds = await search.RunAsync(solver);
+        return new Run(config, _threads, _parameters, sw.Elapsed.TotalSeconds, builds.FirstOrDefault()?.Score ?? 0, search.Summary, solver.Timings, log);
+    }
+}

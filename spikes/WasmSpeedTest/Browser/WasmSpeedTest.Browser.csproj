@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- the beam search holds 1-1.5 GB at its peak; the default ceiling is 2 GB -->
+    <EmccMaximumHeapSize>4294901760</EmccMaximumHeapSize>
+    <!-- dotnet publish -p:Aot=true compiles to WebAssembly ahead of time (needs the wasm-tools workload) -->
+    <RunAOTCompilation Condition="'$(Aot)' == 'true'">true</RunAOTCompilation>
+    <DefineConstants Condition="'$(Aot)' == 'true'">$(DefineConstants);AOT</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.8" PrivateAssets="all" />
+    <!-- only the managed model classes are used here; solves go to or-tools-wasm (wwwroot/ortools, built by node/vite.config.js) -->
+    <PackageReference Include="Google.OrTools" Version="9.15.6755" />
+  </ItemGroup>
+
+  <!-- Core compiled in from source; Generated has an async copy of CpSatSearch (make-copies.py), Shared the bench helpers -->
+  <PropertyGroup>
+    <CoreDir>..\..\..\src\MHWildsOptimizer.Core\</CoreDir>
+    <RepoDir>..\..\..\</RepoDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(CoreDir)**\*.cs" Exclude="$(CoreDir)bin\**;$(CoreDir)obj\**" LinkBase="Core" />
+    <Compile Include="..\Shared\*.cs" LinkBase="Shared" />
+  </ItemGroup>
+
+  <!-- the game data and Luca's configs, served under bench/ -->
+  <ItemGroup>
+    <Content Include="$(RepoDir)data\*.json" Link="wwwroot\bench\data\%(Filename)%(Extension)" />
+    <Content Include="$(RepoDir)inputs\profiles\Luca\talismans.json" Link="wwwroot\bench\inputs\talismans.json" />
+    <Content Include="$(RepoDir)inputs\profiles\Luca\weapons\*.json" Exclude="$(RepoDir)inputs\profiles\Luca\weapons\*.*.json"
+             Link="wwwroot\bench\inputs\weapons\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

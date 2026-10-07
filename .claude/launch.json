@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "--project", "src/MHWildsOptimizer.Web", "-p:BuildClient=true", "--", "--urls", "http://localhost:5216"],
       "port": 5216,
       "autoPort": false
+    },
+    {
+      "name": "wasm-speedtest",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["spikes/WasmSpeedTest/serve.py", "5231", "spikes/WasmSpeedTest/out"],
+      "port": 5231,
+      "autoPort": false
     }
   ]
 }

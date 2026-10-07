@@ -1,0 +1,5 @@
+bin/
+obj/
+out/
+# bundled by node/vite.config.js
+Browser/wwwroot/ortools/
