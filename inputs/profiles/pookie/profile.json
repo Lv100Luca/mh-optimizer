@@ -1,0 +1,41 @@
+{
+  "condition_presets": {
+    "great-sword": {
+      "monster_enraged": true,
+      "hitting_weak_point": true,
+      "hitting_wound": false,
+      "full_health": false,
+      "red_health": true,
+      "low_health": false,
+      "stamina_full": true,
+      "monster_statused": false,
+      "frenzy_overcome": true,
+      "burst_active": true,
+      "latent_power_active": false,
+      "adrenaline_rush_active": false,
+      "adrenaline_rush_retriggered": false,
+      "counterstrike_active": true,
+      "offensive_guard_active": false,
+      "draw_attack": false,
+      "charged_attack": false,
+      "coalescence_active": true,
+      "elemental_absorption_active": false,
+      "azure_bolt_active": true,
+      "resonance": "local",
+      "powerhouse_active": true,
+      "protein_fiend_active": false,
+      "binding_counter_active": false,
+      "war_cry_active": false,
+      "festival_active": false,
+      "resuscitate_active": false,
+      "inspiration_active": false,
+      "affinity_sliding_active": false,
+      "guts_not_yet_triggered": true,
+      "proc_damage": true,
+      "attack_profile": {},
+      "skill_limits": {
+        "Burst": 1
+      }
+    }
+  }
+}

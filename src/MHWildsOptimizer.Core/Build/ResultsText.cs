@@ -16,7 +16,7 @@ public static class ResultsText
         foreach (var pr in result.PairResults)
         {
             rank++;
-            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} {pr.WorkLabel}; {pr.CandidateSummary})");
+            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore.ToString(BuildSummary.ScoreFormat, CultureInfo.InvariantCulture)}   ({pr.StatesEvaluated} {pr.WorkLabel}; {pr.CandidateSummary})");
             if (pr.Builds.Count == 0) sb.AppendLine("  no build satisfies the targets");
             var i = 0;
             foreach (var b in pr.Builds)
@@ -30,13 +30,13 @@ public static class ResultsText
         return sb.ToString();
     }
 
-    /// <summary>"Build 1  -  EFR 569.0 + EFE 59.8 + procs 12.3 = 641.1" (the proc term only when there is one).</summary>
+    /// <summary>"Build 1  -  EFR 569.00 + EFE 59.80 + procs 12.30 = 641.10" (the proc term only when there is one).</summary>
     public static string BuildTitle(int rank, RankedBuild b) => BuildTitle($"Build {rank}", b);
 
-    /// <summary>"My build  -  EFR 569.0 + EFE 59.8 = 628.8"</summary>
+    /// <summary>"My build  -  EFR 569.00 + EFE 59.80 = 628.80"</summary>
     public static string BuildTitle(string label, RankedBuild b) =>
-        string.Format(CultureInfo.InvariantCulture, "{0}  -  EFR {1:0.0} + EFE {2:0.0}{3} = {4:0.0}",
+        string.Format(CultureInfo.InvariantCulture, "{0}  -  EFR {1:0.00} + EFE {2:0.00}{3} = {4:0.00}",
             label, b.Result.EffectiveRaw, b.Result.EffectiveElement,
-            b.Result.ProcDamage > 0 ? string.Format(CultureInfo.InvariantCulture, " + procs {0:0.0}", b.Result.ProcDamage) : "",
+            b.Result.ProcDamage > 0 ? string.Format(CultureInfo.InvariantCulture, " + procs {0:0.00}", b.Result.ProcDamage) : "",
             b.Score);
 }

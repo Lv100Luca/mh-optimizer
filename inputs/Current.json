@@ -83,7 +83,9 @@
     "exclude_sets": [],
     "require_weapon_core_skills": true,
     "max_states_per_depth": 300000,
-    "max_threads": 0,
-    "effective_threads": 16
+    "max_threads": 12,
+    "engine": "cp_sat",
+    "cp_sat_time_limit_seconds": 5,
+    "effective_threads": 12
   }
 }

@@ -486,5 +486,5 @@ src/MHWildsOptimizer.Web/wwwroot/
 node_modules/
 
 # optimizer results in machine form (the web UI reloads them; the .results.txt reports stay tracked)
-inputs/*.results.json
+inputs/**/*.results.json
 src/MHWildsOptimizer.Web/client/tsconfig.tsbuildinfo

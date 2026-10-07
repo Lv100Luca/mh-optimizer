@@ -24,8 +24,8 @@
       3,
       3
     ],
-    "set_bonus": "Leviathan\u0027s Fury",
-    "group_skill": "Lord\u0027s Soul"
+    "set_bonus": "Leviathan's Fury",
+    "group_skill": "Lord's Soul"
   },
   "skill_pair": {
     "mode": "fixed",
@@ -73,7 +73,7 @@
     }
   },
   "talismans": {
-    "file": "Current new reroll.talismans.json",
+    "file": "../talismans.json",
     "include_craftable": true
   },
   "options": {

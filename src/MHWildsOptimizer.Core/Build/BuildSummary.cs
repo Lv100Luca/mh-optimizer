@@ -34,7 +34,10 @@ public sealed record BuildSummary(
     string Description)
 {
     /// <summary>"EFR a + EFE b", plus the proc term when there is one.</summary>
-    public string ScoreTerms(string format = "0.0") =>
+    /// <summary>Format for scores and their EFR / EFE / procs terms: two decimals, so near-ties are visible.</summary>
+    public const string ScoreFormat = "0.00";
+
+    public string ScoreTerms(string format = ScoreFormat) =>
         $"EFR {Efr.ToString(format, CultureInfo.InvariantCulture)} + EFE {Efe.ToString(format, CultureInfo.InvariantCulture)}"
         + (Procs > 0 ? $" + procs {Procs.ToString(format, CultureInfo.InvariantCulture)}" : "");
 

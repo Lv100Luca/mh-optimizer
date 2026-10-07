@@ -4,14 +4,14 @@
       "type": "great-sword",
       "focus": "attack",
       "element": "dragon",
-      "infused": true,
+      "infused": false,
       "attack_parts": 3,
       "reinforcements": [
-        "sharpness EX",
+        "attack EX",
+        "attack EX",
         "attack III",
         "attack III",
-        "affinity III",
-        "affinity EX"
+        "element EX"
       ]
     },
     "attack_is_display": true,
@@ -24,16 +24,15 @@
       3,
       3
     ],
-    "set_bonus": "Leviathan\u0027s Fury",
-    "group_skill": "Lord\u0027s Soul"
+    "set_bonus": "Soul of the Dark Knight"
   },
   "skill_pair": {
     "mode": "fixed",
     "top_n": 3
   },
   "target_skills": {
-    "Stun Resistance": 3,
-    "Focus": 3
+    "Focus": 3,
+    "Stun Resistance": 3
   },
   "conditions": {
     "monster_enraged": true,
@@ -45,7 +44,7 @@
     "stamina_full": true,
     "monster_statused": false,
     "frenzy_overcome": true,
-    "burst_active": false,
+    "burst_active": true,
     "latent_power_active": false,
     "adrenaline_rush_active": false,
     "adrenaline_rush_retriggered": false,
@@ -53,10 +52,10 @@
     "offensive_guard_active": false,
     "draw_attack": false,
     "charged_attack": false,
-    "coalescence_active": false,
+    "coalescence_active": true,
     "elemental_absorption_active": false,
     "azure_bolt_active": true,
-    "resonance": "none",
+    "resonance": "local",
     "powerhouse_active": true,
     "protein_fiend_active": false,
     "binding_counter_active": false,
@@ -73,7 +72,7 @@
     }
   },
   "talismans": {
-    "file": "Current new reroll.talismans.json",
+    "file": "pookie.talismans.json",
     "include_craftable": true
   },
   "options": {
@@ -82,10 +81,10 @@
     "min_rarity": 5,
     "exclude_sets": [],
     "require_weapon_core_skills": true,
-    "max_states_per_depth": 300000,
-    "max_threads": 8,
+    "max_states_per_depth": 100000,
+    "max_threads": 12,
     "engine": "cp_sat",
-    "cp_sat_time_limit_seconds": 120,
-    "effective_threads": 8
+    "cp_sat_time_limit_seconds": 15,
+    "effective_threads": 12
   }
 }

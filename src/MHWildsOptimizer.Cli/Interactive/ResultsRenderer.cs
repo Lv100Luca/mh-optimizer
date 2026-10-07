@@ -21,7 +21,7 @@ public static class ResultsRenderer
         {
             rank++;
             AnsiConsole.WriteLine();
-            AnsiConsole.Write(new Rule($"[bold yellow]#{rank}  {Markup.Escape(pr.Label)}[/]   [grey]best {pr.BestScore.ToString("0.0", Inv)}  |  {pr.StatesEvaluated} {pr.WorkLabel}[/]").LeftJustified().RuleStyle("yellow"));
+            AnsiConsole.Write(new Rule($"[bold yellow]#{rank}  {Markup.Escape(pr.Label)}[/]   [grey]best {pr.BestScore.ToString(BuildSummary.ScoreFormat, Inv)}  |  {pr.StatesEvaluated} {pr.WorkLabel}[/]").LeftJustified().RuleStyle("yellow"));
             if (pr.Builds.Count == 0) AnsiConsole.MarkupLine("  [red]no build satisfies the targets[/]");
             var i = 0;
             foreach (var b in pr.Builds)
@@ -38,7 +38,7 @@ public static class ResultsRenderer
         var lines = new List<IRenderable>
         {
             new Markup(string.Format(Inv,
-                "[bold white on grey23] {0} = [/][bold black on green] {1:0.0} [/]   [grey]every condition on: {2:0.0}[/]",
+                "[bold white on grey23] {0} = [/][bold black on green] {1:0.00} [/]   [grey]every condition on: {2:0.00}[/]",
                 s.ScoreTerms(), s.Total, s.TotalAllConditions)),
             new Markup(string.Format(Inv,
                 "[red]ATK {0:0}[/] [grey]({1} display, base {2})[/]   [yellow]AFF {3}%[/] [grey](base {4}%)[/]   [orange1]CRIT x{5:0.00}[/]   [white]{6} sharpness[/]{7}",

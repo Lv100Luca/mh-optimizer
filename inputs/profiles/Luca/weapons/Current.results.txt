@@ -1,7 +1,7 @@
-##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 681,6   (5 CP-SAT solves; candidates after pruning: Waist 22, Chest 23, Arms 23, Legs 27, Head 29, talismans 14; cp-sat 5 solve(s): 4 optimal, 1 time limit)
+##### #1 skill pair: Soul of the Dark Knight + Lord's Favor   best 681.59   (5 CP-SAT solves; candidates after pruning: Waist 22, Chest 23, Arms 23, Legs 27, Head 29, talismans 14; cp-sat 5 solve(s): 5 optimal)
 
-=== Build 1  -  EFR 554.9 + EFE 13.9 + procs 112.8 = 681.6 ===
-TL;DR  Attack 315 (1510 display)  Affinity 84%  Crit x1.40  White sharpness  Dragon 58 (576 display)  ->  EFR 554.9 + EFE 13.9 + procs 112.8 = 681.6  (all conditions on: 712.4)
+=== Build 1  -  EFR 554.89 + EFE 13.95 + procs 112.75 = 681.59 ===
+TL;DR  Attack 315 (1510 display)  Affinity 84%  Crit x1.40  White sharpness  Dragon 58 (576 display)  ->  EFR 554.89 + EFE 13.95 + procs 112.75 = 681.59  (all conditions on: 712.37)
        Sets: Nu Udra's Mutiny I (Bad Blood I), Soul of the Dark Knight I (Dark Arts)   Groups: Lord's Soul (Guts (Tenacity))
        Skills: Critical Boost 5, Critical Eye 4, Focus 3, Agitator 5, Resentment 5, Counterstrike 3, Maximum Might 3, Speed Eating 3, Stun Resistance 3, Weakness Exploit 3, Defense Boost 2, Fire Resistance 2, Latent Power 1
        Why: 84% affinity with x1.40 crits from Critical Eye (+16%), Weakness Exploit (+15%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 315 via Agitator (+20), Counterstrike (+25), Resentment (+25), Guts (Lord's Soul) (x1.05); Dragon 48 -> 58 true via Dark Arts (x1.2); procs +112.8 per 100 MV from Dark Arts shockwave (+89.1), Bad Blood I (+23.7). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Guts not yet triggered, attack profile.
@@ -54,7 +54,7 @@ Stats with every conditional skill active
   Affinity   8% -> 100%   crit x1.40 (factor 1.4)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 57.6 true (576 display), cap 110.4, crit element x1.00
-  EFR 581.5   EFE 13.9   procs 116.9   Total 712.4
+  EFR 581.47   EFE 13.95   procs 116.95   Total 712.37
   Modifiers: Critical Eye: affinity +16%; Weakness Exploit: affinity +15%; Weakness Exploit (wound): affinity +10%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Latent Power: affinity +10%; Counterstrike: raw +25; Resentment: raw +25; Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +93.3 per 100 MV (177.2 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
 Stats under the requested conditions
@@ -62,11 +62,11 @@ Stats under the requested conditions
   Affinity   8% -> 84%   crit x1.40 (factor 1.336)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 57.6 true (576 display), cap 110.4, crit element x1.00
-  EFR 554.9   EFE 13.9   procs 112.8   Total 681.6
+  EFR 554.89   EFE 13.95   procs 112.75   Total 681.59
   Modifiers: Critical Eye: affinity +16%; Weakness Exploit: affinity +15%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +89.1 per 100 MV (169.2 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
-=== Build 2  -  EFR 554.9 + EFE 13.9 + procs 112.8 = 681.6 ===
-TL;DR  Attack 315 (1510 display)  Affinity 84%  Crit x1.40  White sharpness  Dragon 58 (576 display)  ->  EFR 554.9 + EFE 13.9 + procs 112.8 = 681.6  (all conditions on: 700.8)
+=== Build 2  -  EFR 554.89 + EFE 13.95 + procs 112.75 = 681.59 ===
+TL;DR  Attack 315 (1510 display)  Affinity 84%  Crit x1.40  White sharpness  Dragon 58 (576 display)  ->  EFR 554.89 + EFE 13.95 + procs 112.75 = 681.59  (all conditions on: 700.82)
        Sets: Nu Udra's Mutiny I (Bad Blood I), Soul of the Dark Knight I (Dark Arts)   Groups: Lord's Soul (Guts (Tenacity))
        Skills: Critical Boost 5, Critical Eye 4, Focus 3, Agitator 5, Resentment 5, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Weakness Exploit 3, Constitution 2, Defense Boost 2, Fire Resistance 2
        Why: 84% affinity with x1.40 crits from Critical Eye (+16%), Weakness Exploit (+15%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 315 via Agitator (+20), Counterstrike (+25), Resentment (+25), Guts (Lord's Soul) (x1.05); Dragon 48 -> 58 true via Dark Arts (x1.2); procs +112.8 per 100 MV from Dark Arts shockwave (+89.1), Bad Blood I (+23.7). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Guts not yet triggered, attack profile.
@@ -118,7 +118,7 @@ Stats with every conditional skill active
   Affinity   8% -> 94%   crit x1.40 (factor 1.376)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 57.6 true (576 display), cap 110.4, crit element x1.00
-  EFR 571.5   EFE 13.9   procs 115.4   Total 700.8
+  EFR 571.51   EFE 13.95   procs 115.37   Total 700.82
   Modifiers: Critical Eye: affinity +16%; Weakness Exploit: affinity +15%; Weakness Exploit (wound): affinity +10%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +91.7 per 100 MV (174.2 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
 Stats under the requested conditions
@@ -126,11 +126,11 @@ Stats under the requested conditions
   Affinity   8% -> 84%   crit x1.40 (factor 1.336)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 57.6 true (576 display), cap 110.4, crit element x1.00
-  EFR 554.9   EFE 13.9   procs 112.8   Total 681.6
+  EFR 554.89   EFE 13.95   procs 112.75   Total 681.59
   Modifiers: Critical Eye: affinity +16%; Weakness Exploit: affinity +15%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +89.1 per 100 MV (169.2 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
-=== Build 3  -  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6 ===
-TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6  (all conditions on: 713.3)
+=== Build 3  -  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63 ===
+TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63  (all conditions on: 713.34)
        Sets: Soul of the Dark Knight I (Dark Arts), Nu Udra's Mutiny I (Bad Blood I)   Groups: Lord's Soul (Guts (Tenacity))
        Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Resentment 5, Weakness Exploit 5, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Bind Resistance 2
        Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 315 via Agitator (+20), Counterstrike (+25), Resentment (+25), Guts (Lord's Soul) (x1.05); Dragon 48 -> 62 true via Dragon Attack 1 (+4), Dark Arts (x1.2); procs +112.5 per 100 MV from Dark Arts shockwave (+88.8), Bad Blood I (+23.7). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Guts not yet triggered, attack profile.
@@ -179,7 +179,7 @@ Stats with every conditional skill active
   Affinity   8% -> 100%   crit x1.40 (factor 1.4)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 581.5   EFE 14.9   procs 116.9   Total 713.3
+  EFR 581.47   EFE 14.91   procs 116.95   Total 713.34
   Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +93.3 per 100 MV (177.2 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
 Stats under the requested conditions
@@ -187,11 +187,11 @@ Stats under the requested conditions
   Affinity   8% -> 83%   crit x1.40 (factor 1.332)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 553.2   EFE 14.9   procs 112.5   Total 680.6
+  EFR 553.23   EFE 14.91   procs 112.49   Total 680.63
   Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +88.8 per 100 MV (168.7 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
-=== Build 4  -  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6 ===
-TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6  (all conditions on: 766.8)
+=== Build 4  -  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63 ===
+TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63  (all conditions on: 766.83)
        Sets: Soul of the Dark Knight I (Dark Arts), Nu Udra's Mutiny I (Bad Blood I), Jin Dahaad's Revolt I (Binding Counter I)   Groups: Lord's Soul (Guts (Tenacity))
        Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Resentment 5, Weakness Exploit 5, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Bind Resistance 2
        Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 315 via Agitator (+20), Counterstrike (+25), Resentment (+25), Guts (Lord's Soul) (x1.05); Dragon 48 -> 62 true via Dragon Attack 1 (+4), Dark Arts (x1.2); procs +112.5 per 100 MV from Dark Arts shockwave (+88.8), Bad Blood I (+23.7). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Guts not yet triggered, attack profile.
@@ -240,7 +240,7 @@ Stats with every conditional skill active
   Affinity   8% -> 100%   crit x1.40 (factor 1.4)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 627.7   EFE 14.9   procs 124.2   Total 766.8
+  EFR 627.67   EFE 14.91   procs 124.24   Total 766.83
   Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Binding Counter: raw +25; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +100.6 per 100 MV (191.1 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
 Stats under the requested conditions
@@ -248,11 +248,11 @@ Stats under the requested conditions
   Affinity   8% -> 83%   crit x1.40 (factor 1.332)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 553.2   EFE 14.9   procs 112.5   Total 680.6
+  EFR 553.23   EFE 14.91   procs 112.49   Total 680.63
   Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +88.8 per 100 MV (168.7 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
-=== Build 5  -  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6 ===
-TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.2 + EFE 14.9 + procs 112.5 = 680.6  (all conditions on: 779.7)
+=== Build 5  -  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63 ===
+TL;DR  Attack 315 (1510 display)  Affinity 83%  Crit x1.40  White sharpness  Dragon 62 (616 display)  ->  EFR 553.23 + EFE 14.91 + procs 112.49 = 680.63  (all conditions on: 779.67)
        Sets: Soul of the Dark Knight I (Dark Arts), Nu Udra's Mutiny I (Bad Blood I), Jin Dahaad's Revolt I (Binding Counter I)   Groups: Lord's Soul (Guts (Tenacity))
        Skills: Critical Boost 5, Focus 3, Dragon Attack 1, Agitator 5, Resentment 5, Weakness Exploit 5, Counterstrike 3, Maximum Might 3, Stun Resistance 3, Bind Resistance 2, Foray 1
        Why: 83% affinity with x1.40 crits from Weakness Exploit (+30%), Agitator (+15%), Maximum Might (+30%); raw 233 -> 315 via Agitator (+20), Counterstrike (+25), Resentment (+25), Guts (Lord's Soul) (x1.05); Dragon 48 -> 62 true via Dragon Attack 1 (+4), Dark Arts (x1.2); procs +112.5 per 100 MV from Dark Arts shockwave (+88.8), Bad Blood I (+23.7). Depends on: weak-point hits, enraged monster, full stamina, getting knocked back, red health, Guts not yet triggered, attack profile.
@@ -302,7 +302,7 @@ Stats with every conditional skill active
   Affinity   8% -> 100%   crit x1.40 (factor 1.4)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 638.8   EFE 14.9   procs 126.0   Total 779.7
+  EFR 638.76   EFE 14.91   procs 125.99   Total 779.67
   Modifiers: Weakness Exploit: affinity +30%; Weakness Exploit (wound): affinity +20%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Foray: raw +6; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Binding Counter: raw +25; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +102.3 per 100 MV (194.4 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 
 Stats under the requested conditions
@@ -310,6 +310,6 @@ Stats under the requested conditions
   Affinity   8% -> 83%   crit x1.40 (factor 1.332)
   Sharpness  White (raw x1.32, element x1.15)
   Element    Dragon 48 -> 61.6 true (616 display), cap 110.4, crit element x1.00
-  EFR 553.2   EFE 14.9   procs 112.5   Total 680.6
+  EFR 553.23   EFE 14.91   procs 112.49   Total 680.63
   Modifiers: Weakness Exploit: affinity +30%; Agitator: raw +20; Agitator: affinity +15%; Maximum Might: affinity +30%; Counterstrike: raw +25; Resentment: raw +25; Dragon Attack 1: element +4 (true); Dark Arts: element x1.2; Guts (Lord's Soul): raw x1.05; Dark Arts shockwave: proc +88.8 per 100 MV (168.7 damage on 100% of hits); Bad Blood I: proc +23.7 per 100 MV (45 damage every 2 s at most)
 

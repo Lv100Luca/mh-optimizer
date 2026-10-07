@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Talisman 1",
+    "rarity": 7,
+    "skills": {
+      "Attack Boost": 2,
+      "Maximum Might": 2
+    },
+    "slots": [
+      "armor1",
+      "armor1"
+    ]
+  },
+  {
+    "name": "Talisman 2",
+    "rarity": 7,
+    "skills": {
+      "Critical Eye": 3,
+      "Agitator": 1
+    },
+    "slots": [
+      "weapon1",
+      "armor1"
+    ]
+  },
+  {
+    "name": "Talisman 3",
+    "rarity": 7,
+    "skills": {
+      "Attack Boost": 3,
+      "Stun Resistance": 3
+    },
+    "slots": [
+      "armor1",
+      "armor1"
+    ]
+  }
+]

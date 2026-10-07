@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
@@ -96,7 +97,7 @@ public sealed class Optimizer
                 var r = Search(weapon, pair, label, _request.Options.TopN, parallel, null);
                 bag.Add(r);
                 var n = Interlocked.Increment(ref done);
-                progress?.Report($"[{n}/{classes.Count}] {label}: best {r.BestScore:0.0} ({cls.Count()} rollable pairs)");
+                progress?.Report($"[{n}/{classes.Count}] {label}: best {r.BestScore.ToString(BuildSummary.ScoreFormat, CultureInfo.InvariantCulture)} ({cls.Count()} rollable pairs)");
             });
             results = bag.OrderByDescending(r => r.BestScore).Take(_request.SkillPair.TopN).ToList();
         }

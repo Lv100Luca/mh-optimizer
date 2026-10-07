@@ -1,0 +1,111 @@
+[
+  {
+    "name": "In game",
+    "weapon_decorations": [
+      "Attack Jewel III [3]",
+      "Focus/Frost Jewel [3]",
+      "Critical Jewel III [3]"
+    ],
+    "head": {
+      "piece": "Bale Burgeonet \u03B1",
+      "transcended": false,
+      "decorations": [
+        "Protection Jewel [1]",
+        "Protection Jewel [1]"
+      ]
+    },
+    "chest": {
+      "piece": "Udra Miremail \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Challenger Jewel [3]",
+        "Challenger Jewel [3]"
+      ]
+    },
+    "arms": {
+      "piece": "G. Fulgur Vambraces \u03B2",
+      "transcended": true,
+      "decorations": [
+        "Chain Jewel [3]",
+        "Tenderizer Jewel [3]"
+      ]
+    },
+    "waist": {
+      "piece": "Dahaad Shardcoil \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Protection Jewel [1]"
+      ]
+    },
+    "legs": {
+      "piece": "Udra Miregreaves \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Furor Jewel [2]"
+      ]
+    },
+    "talisman": {
+      "name": "Secret Charm (Attack Boost 3, Stun Resistance 2, Survival Expert 1)",
+      "decorations": [
+        "Steadfast Jewel [1]"
+      ]
+    }
+  },
+  {
+    "name": "Optimizer build 1 (picked)",
+    "set_bonus": "Soul of the Dark Knight",
+    "group_skill": "Lord\u0027s Favor",
+    "weapon_decorations": [
+      "Critical Jewel III [3]",
+      "Critical Jewel III [3]",
+      "Expert Jewel III [3]"
+    ],
+    "head": {
+      "piece": "Arkvulcan Helm \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Mighty Jewel [2]",
+        "Steadfast Jewel [1]"
+      ]
+    },
+    "chest": {
+      "piece": "Udra Miremail \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Challenger Jewel [3]",
+        "Challenger Jewel [3]"
+      ]
+    },
+    "arms": {
+      "piece": "Bale Gauntlets \u03B1",
+      "transcended": false,
+      "decorations": [
+        "Challenger Jewel [3]"
+      ]
+    },
+    "waist": {
+      "piece": "Blango Coil \u03B2",
+      "transcended": true,
+      "decorations": [
+        "Furor Jewel [2]",
+        "Furor Jewel [2]"
+      ]
+    },
+    "legs": {
+      "piece": "Udra Miregreaves \u03B3",
+      "transcended": false,
+      "decorations": [
+        "Mighty Jewel [2]"
+      ]
+    },
+    "talisman": {
+      "name": "Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)",
+      "decorations": [
+        "Expert Jewel [1]",
+        "Steadfast Jewel [1]",
+        "Steadfast Jewel [1]"
+      ]
+    },
+    "picked": true
+  }
+]

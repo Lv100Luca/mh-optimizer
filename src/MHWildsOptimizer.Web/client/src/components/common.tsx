@@ -299,7 +299,7 @@ export function RarityBadge({ rarity, transcended }: { rarity: number; transcend
   return <span className={`rarity r${rarity}`} title={`rarity ${rarity}` + (transcended ? ', transcended slots' : '')}>R{rarity}{transcended ? 'T' : ''}</span>;
 }
 
-export function fmt(n: number, digits = 1) {
+export function fmt(n: number, digits = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
