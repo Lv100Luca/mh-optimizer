@@ -1,0 +1,17 @@
+@* A labelled form field with an optional hint underneath. *@
+<div class="field @(Inline ? "inline" : "")">
+    <span class="field-label">@if (LabelContent is not null) { @LabelContent } else { @Label }</span>
+    @ChildContent
+    @if (Hint is not null)
+    {
+        <span class="field-hint">@Hint</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public RenderFragment? LabelContent { get; set; }
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public bool Inline { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

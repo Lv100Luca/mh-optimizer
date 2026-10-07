@@ -1,0 +1,15 @@
+@typeparam T where T : struct, System.Numerics.INumber<T>
+@* A number field, clamped to Min / Max. *@
+<MudNumericField T="T" Value="Value" ValueChanged="OnChanged" Min="Min ?? T.CreateTruncating(-1_000_000)" Max="Max ?? T.CreateTruncating(1_000_000)"
+                 Step="Step ?? T.One" Variant="Variant.Outlined" Margin="Margin.Dense" Style="@($"width: {Width}px")" Class="number-field" HideSpinButtons="false" />
+
+@code {
+    [Parameter] public T Value { get; set; }
+    [Parameter] public EventCallback<T> ValueChanged { get; set; }
+    [Parameter] public T? Min { get; set; }
+    [Parameter] public T? Max { get; set; }
+    [Parameter] public T? Step { get; set; }
+    [Parameter] public int Width { get; set; } = 130;
+
+    private Task OnChanged(T value) => ValueChanged.InvokeAsync(T.Clamp(value, Min ?? value, Max ?? value));
+}

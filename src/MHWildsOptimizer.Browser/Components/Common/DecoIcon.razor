@@ -1,0 +1,23 @@
+@* A decoration's icon (from a result's DecoDto or the catalog's DecorationDto), or an empty slot of a level when neither is given. *@
+@{
+    var name = Deco?.Name ?? Decoration?.Name;
+}
+@if (name is null)
+{
+    <span class="deco-empty" style="width: @(Size)px; height: @(Size)px" title="@(SlotLevel is { } l ? $"empty level {l} slot" : "empty slot")">@SlotLevel</span>
+}
+else
+{
+    var slot = Deco?.Slot ?? Decoration!.Slot;
+    var kind = Deco?.Kind ?? Decoration!.Kind;
+    var skills = Deco?.Skills ?? Decoration!.Skills;
+    <img class="icon deco" width="@Size" height="@Size" src="@GameIcons.Decoration(slot, kind, Deco?.IconColor ?? Decoration?.IconColor)" alt="@name"
+         title="@($"{name}: {string.Join(", ", skills.Select(g => $"{g.Skill} {g.Level}"))}")" />
+}
+
+@code {
+    [Parameter] public DecoDto? Deco { get; set; }
+    [Parameter] public DecorationDto? Decoration { get; set; }
+    [Parameter] public int? SlotLevel { get; set; }
+    [Parameter] public int Size { get; set; } = 24;
+}

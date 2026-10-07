@@ -1,0 +1,17 @@
+@inject AppState App
+<img class="icon" width="@Size" height="@Size" src="@Src" alt="" />
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter] public SkillKind? Kind { get; set; }
+    [Parameter] public int Size { get; set; } = 20;
+
+    private string Src
+    {
+        get
+        {
+            var skill = App.Index.SkillsByName.GetValueOrDefault(Name) ?? App.Index.ResolveSkill(Name)?.Skill;
+            return GameIcons.Skill(skill?.Icon, skill?.Kind ?? Kind);
+        }
+    }
+}

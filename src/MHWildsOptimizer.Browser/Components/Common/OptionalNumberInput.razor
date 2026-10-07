@@ -1,0 +1,23 @@
+@* A number that may be left empty to fall back to a preset (shown as the placeholder). Not clamped: validation reports out-of-range values. *@
+<span class="optnum">
+    <MudNumericField T="double?" Value="Value" ValueChanged="ValueChanged" Placeholder="@Preset.ToString(CultureInfo.InvariantCulture)"
+                     Min="Min" Max="Max" Step="Step" Variant="Variant.Outlined" Margin="Margin.Dense" Style="@($"width: {Width}px")" Class="number-field" />
+    @if (Value is null)
+    {
+        <span class="muted small">preset</span>
+    }
+    else
+    {
+        <button type="button" class="iconbtn" title="back to the preset" @onclick="() => ValueChanged.InvokeAsync(null)">×</button>
+    }
+</span>
+
+@code {
+    [Parameter] public double? Value { get; set; }
+    [Parameter] public EventCallback<double?> ValueChanged { get; set; }
+    [Parameter] public double Preset { get; set; }
+    [Parameter] public double? Min { get; set; }
+    [Parameter] public double? Max { get; set; }
+    [Parameter] public double Step { get; set; } = 1;
+    [Parameter] public int Width { get; set; } = 130;
+}

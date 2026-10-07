@@ -1,0 +1,11 @@
+@* The skills a piece, charm or decoration grants, as chips. *@
+<span class="grants">
+    @foreach (var g in Grants)
+    {
+        <SkillChip Name="@g.Skill" Level="g.Level" />
+    }
+</span>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<SkillGrant> Grants { get; set; } = [];
+}

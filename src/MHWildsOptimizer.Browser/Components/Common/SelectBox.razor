@@ -1,0 +1,32 @@
+@* A dropdown of strings; null = the placeholder entry (when there is one). Grouped options get a heading per group. *@
+<MudSelect T="string" Value="@(Value ?? Empty)" ValueChanged="OnChanged" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
+           Class="@("selectbox " + Class)" Style="@Style" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft"
+           ToStringFunc="@(v => v == Empty ? Placeholder ?? "" : Options.FirstOrDefault(o => o.Value == v)?.Label ?? v)">
+    @if (Placeholder is not null)
+    {
+        <MudSelectItem Value="@Empty"><span class="muted">@Placeholder</span></MudSelectItem>
+    }
+    @{ string? group = null; }
+    @foreach (var o in Options)
+    {
+        if (o.Group is not null && o.Group != group)
+        {
+            group = o.Group;
+            <MudSelectItem Value="@("\u0001" + o.Group)" Disabled="true" Class="select-group">@o.Group</MudSelectItem>
+        }
+        <MudSelectItem Value="@o.Value">@o.Label</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+    private const string Empty = "\u0000";
+
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public IReadOnlyList<SelectOption> Options { get; set; } = [];
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    private Task OnChanged(string value) => ValueChanged.InvokeAsync(value == Empty ? null : value);
+}

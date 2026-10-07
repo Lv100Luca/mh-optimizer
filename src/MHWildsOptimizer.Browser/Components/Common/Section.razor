@@ -1,0 +1,31 @@
+@* A card with a title, an optional hint and header actions. *@
+<section class="card @Class">
+    <header class="card-head">
+        <div>
+            <h2>@if (TitleContent is not null) { @TitleContent } else { @Title }</h2>
+            @if (HintContent is not null)
+            {
+                <p class="hint">@HintContent</p>
+            }
+            else if (Hint is not null)
+            {
+                <p class="hint">@Hint</p>
+            }
+        </div>
+        @if (Actions is not null)
+        {
+            <div class="card-actions">@Actions</div>
+        }
+    </header>
+    <div class="card-body">@ChildContent</div>
+</section>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? TitleContent { get; set; }
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public RenderFragment? HintContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+}

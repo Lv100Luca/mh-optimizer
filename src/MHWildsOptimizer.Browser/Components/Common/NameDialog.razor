@@ -1,0 +1,54 @@
+@* Asks for a name (profile, weapon, ...); returns it, trimmed, or cancels. *@
+<MudDialog>
+    <DialogContent>
+        @if (Message is not null)
+        {
+            <p class="muted">@Message</p>
+        }
+        <MudTextField T="string" @bind-Value="_name" Label="@Label" Immediate="true" AutoFocus="true" Variant="Variant.Outlined"
+                      Error="@(Error is not null)" ErrorText="@Error" OnKeyDown="OnKey" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => Dialog.Cancel()">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(Error is not null || string.IsNullOrWhiteSpace(_name))" OnClick="Submit">@OkText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string Label { get; set; } = "Name";
+    [Parameter] public string Initial { get; set; } = "";
+    [Parameter] public string OkText { get; set; } = "OK";
+    /// <summary>Returns an error for an unusable name, or null.</summary>
+    [Parameter] public Func<string, string?>? Validate { get; set; }
+
+    private string _name = "";
+
+    protected override void OnInitialized() => _name = Initial;
+
+    private string? Error => string.IsNullOrWhiteSpace(_name) ? null : Validate?.Invoke(_name.Trim());
+
+    private void Submit()
+    {
+        if (Error is null && !string.IsNullOrWhiteSpace(_name)) Dialog.Close(DialogResult.Ok(_name.Trim()));
+    }
+
+    private void OnKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") Submit();
+    }
+
+    /// <summary>Shows the dialog; null when cancelled.</summary>
+    public static async Task<string?> AskAsync(IDialogService dialogs, string title, string label, string initial = "", string ok = "OK", string? message = null,
+        Func<string, string?>? validate = null)
+    {
+        var parameters = new DialogParameters<NameDialog>
+        {
+            { d => d.Label, label }, { d => d.Initial, initial }, { d => d.OkText, ok }, { d => d.Message, message }, { d => d.Validate, validate },
+        };
+        var dialog = await dialogs.ShowAsync<NameDialog>(title, parameters, new DialogOptions { MaxWidth = MaxWidth.ExtraSmall, FullWidth = true });
+        var result = await dialog.Result;
+        return result is { Canceled: false, Data: string name } ? name : null;
+    }
+}

@@ -1,0 +1,23 @@
+@inject AppState App
+@* Shows the skill card while hovering the content, e.g. a set bonus chip. Display names like "Lord's Soul (Guts)" or
+   "Gore Magala's Tyranny II" resolve to the catalog skill (a trailing tier becomes the level). *@
+@{ var resolved = App.Index.ResolveSkill(Name); }
+@if (resolved is { } r)
+{
+    <MudTooltip Placement="Placement.Bottom" Delay="250" Class="skilltip-pop" RootClass="@("skillhover " + Class)" RootStyle="display: inline-flex">
+        <ChildContent><span class="@Class" title="@Title">@ChildContent</span></ChildContent>
+        <TooltipContent><SkillCard Skill="r.Skill" Level="@(Level ?? r.Level)" /></TooltipContent>
+    </MudTooltip>
+}
+else
+{
+    <span class="@Class" title="@Title">@ChildContent</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter] public int? Level { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

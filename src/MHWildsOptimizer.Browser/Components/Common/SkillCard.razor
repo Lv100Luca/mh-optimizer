@@ -1,0 +1,59 @@
+@* The hover card of a skill: description and the ranks (the current one highlighted). *@
+@{
+    var bonus = Skill.Kind is SkillKind.Set or SkillKind.Group;
+    var current = Level is { } lv && !bonus ? Skill.Ranks.FirstOrDefault(r => r.Level == lv) : null;
+}
+<div class="skilltip @Slug(Skill.Kind)">
+    <div class="skilltip-head">
+        <SkillIcon Name="@Skill.Name" Size="22" />
+        <b>@Skill.Name</b>
+        <KindTag Kind="Skill.Kind" />
+        @if (!bonus)
+        {
+            <span class="muted small right">max @Skill.MaxLevel</span>
+        }
+    </div>
+    @if (Skill.Description is { } description)
+    {
+        <p>@description</p>
+    }
+    @if (bonus)
+    {
+        <ul>
+            @foreach (var r in Skill.Ranks)
+            {
+                <li class="@(r.Level == Level ? "current" : "")">
+                    <b>@(r.Name ?? $"Tier {r.Level}")</b>
+                    @if (r.PiecesRequired is { } pieces)
+                    {
+                        <span class="muted"> · @pieces pc</span>
+                    }
+                    @if (r.Description is { } d)
+                    {
+                        <span class="muted"> · @d</span>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else if (current is not null)
+    {
+        <p class="current"><b>Lv @current.Level:</b> @current.Description</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var r in Skill.Ranks)
+            {
+                <li><b>Lv @r.Level:</b> <span class="muted">@r.Description</span></li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public SkillDto Skill { get; set; } = default!;
+    [Parameter] public int? Level { get; set; }
+
+    private static string Slug(SkillKind kind) => kind.ToString().ToLowerInvariant();
+}

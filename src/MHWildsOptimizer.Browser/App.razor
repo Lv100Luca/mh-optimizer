@@ -1,0 +1,11 @@
+<MudThemeProvider Theme="Theme.Dark" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider CloseOnEscapeKey="true" />
+<MudSnackbarProvider />
+
+@* one page: AppState reads the URL (profile / weapon / tab) and keeps it in step *@
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" />
+    </Found>
+</Router>

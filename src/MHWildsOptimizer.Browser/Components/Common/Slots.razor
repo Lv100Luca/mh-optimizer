@@ -1,0 +1,26 @@
+@* Slot levels as small badges: numbers (with Kind) or talisman notation ("weapon2", "armor1"). *@
+@if (Levels.Count == 0)
+{
+    <span class="muted">no slots</span>
+}
+else
+{
+    <span class="slots">
+        @foreach (var (level, weapon) in Levels)
+        {
+            <span class="slot @(weapon ? "weapon" : "")" title="@((weapon ? "weapon" : "armor") + $" slot level {level}")">@level</span>
+        }
+    </span>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<int>? Numbers { get; set; }
+    [Parameter] public IReadOnlyList<string>? Named { get; set; }
+    /// <summary>"weapon" or "armor" for <see cref="Numbers"/>.</summary>
+    [Parameter] public string Kind { get; set; } = "armor";
+
+    private IReadOnlyList<(int Level, bool Weapon)> Levels =>
+        Named is not null
+            ? Named.Select(s => (BuildHelpers.ParseSlot(s).Level, s.StartsWith('w'))).ToList()
+            : (Numbers ?? []).Select(n => (n, Kind == "weapon")).ToList();
+}

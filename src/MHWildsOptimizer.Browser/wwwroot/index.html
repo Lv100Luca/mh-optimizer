@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MH Wilds Optimizer</title>
+    <base href="/" />
+    <link rel="preload" id="webassembly" />
+    <link rel="icon" type="image/png" href="icons/weapons/great-sword-r8.png" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="boot">Loading the optimizer…</div>
+    </div>
+
+    <div id="blazor-error-ui">
+        Something went wrong.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
+    <script>
+        // CP-SAT needs a cross-origin isolated page (WebAssembly threads). When the server does not send the headers,
+        // coi-sw.js adds them: register it and reload once so this page is served through it.
+        (async () => {
+            if (!window.crossOriginIsolated && window.isSecureContext && 'serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.register('coi-sw.js');
+                if (!navigator.serviceWorker.controller && !sessionStorage.getItem('mhwo.coi-reload')) {
+                    sessionStorage.setItem('mhwo.coi-reload', '1');
+                    await navigator.serviceWorker.ready;
+                    window.location.reload();
+                    return;
+                }
+                await registration.update().catch(() => { });
+            }
+            sessionStorage.removeItem('mhwo.coi-reload');
+            Blazor.start();
+        })();
+    </script>
+</body>
+
+</html>

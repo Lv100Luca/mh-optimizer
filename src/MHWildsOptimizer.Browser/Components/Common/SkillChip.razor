@@ -1,0 +1,40 @@
+@inject AppState App
+@* "Weakness Exploit 5" with its icon and the skill card on hover; weapon skills get the blue accent. *@
+@{
+    var kind = App.Index.SkillsByName.GetValueOrDefault(Name)?.Kind ?? SkillKind.Armor;
+    var css = $"chip skill {kind.ToString().ToLowerInvariant()}{(Muted ? " muted" : "")} {Class}";
+}
+<SkillHover Name="@Name" Level="Level">
+    @if (OnClick.HasDelegate)
+    {
+        <button type="button" class="@css" @onclick="OnClick">@Body(kind)</button>
+    }
+    else
+    {
+        <span class="@css">@Body(kind)</span>
+    }
+</SkillHover>
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter] public int? Level { get; set; }
+    /// <summary>The level the score values (skill limits); shown when lower than <see cref="Level"/>.</summary>
+    [Parameter] public int? Effective { get; set; }
+    [Parameter] public int? Max { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public bool Muted { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private RenderFragment Body(SkillKind kind) => @<text>
+        <SkillIcon Name="@Name" Kind="kind" Size="18" />
+        <span>@Name</span>
+        @if (Level is { } level)
+        {
+            <b>@level@if (Max is { } max) {<span class="of">/@max</span>}</b>
+            @if (Effective is { } eff && eff < level)
+            {
+                <span class="valued">valued at @eff</span>
+            }
+        }
+    </text>;
+}

@@ -1,0 +1,136 @@
+@page "/"
+@page "/{*Path}"
+@inherits AppComponent
+
+<PageTitle>@Title</PageTitle>
+
+@if (App.LoadError is { } error)
+{
+    <div class="boot boot-error">
+        <h1>MH Wilds Optimizer</h1>
+        <p>The app could not start: @error</p>
+    </div>
+}
+else if (!App.Ready || App.Request is null)
+{
+    <div class="boot">Loading…</div>
+}
+else
+{
+    var request = App.Request;
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <img src="@GameIcons.Weapon("great-sword")" alt="" />
+                <div>
+                    <div class="brand-title">MH Wilds Optimizer</div>
+                    <div class="brand-sub">Gogma set maker · Ver @Catalog.GameVersion</div>
+                </div>
+            </div>
+            <ConfigBar />
+        </header>
+
+        <nav class="sidenav" aria-label="Sections">
+            @foreach (var item in Nav())
+            {
+                <button class="navitem @(App.Tab == item.Tab ? "active" : "")" @onclick="() => App.SetTab(item.Tab)">
+                    <img src="@item.Icon" alt="" />
+                    <span class="navlabel">@item.Label</span>
+                    @if (item.Badge is { } badge)
+                    {
+                        <span class="navbadge @item.Tone">@badge</span>
+                    }
+                </button>
+            }
+        </nav>
+
+        <main class="content">
+            @switch (App.Tab)
+            {
+                case Tab.Inventory: <InventoryPanel /> break;
+                case Tab.Weapon: <WeaponPanel /> break;
+                case Tab.Pair: <SkillPairPanel /> break;
+                case Tab.Targets: <TargetsPanel /> break;
+                case Tab.Limits: <LimitsPanel /> break;
+                case Tab.Conditions: <ConditionsPanel /> break;
+                case Tab.Talismans: <TalismansPanel /> break;
+                case Tab.Options: <OptionsPanel /> break;
+                case Tab.Review: <ReviewPanel /> break;
+                case Tab.Results: <ResultsPanel /> break;
+                case Tab.Builds: <BuildsPanel /> break;
+            }
+        </main>
+
+        <footer class="statusbar">
+            @{ var resolved = App.Resolved; }
+            @if (resolved is null)
+            {
+                <span class="muted">Validating…</span>
+            }
+            else if (resolved.Errors.Count > 0)
+            {
+                <button class="linklike err" @onclick="() => App.SetTab(Tab.Review)">@Fmt.Plural(resolved.Errors.Count, "error") · @resolved.Errors[0]</button>
+            }
+            else if (resolved.Warnings.Count > 0)
+            {
+                <button class="linklike warn" @onclick="() => App.SetTab(Tab.Review)">@Fmt.Plural(resolved.Warnings.Count, "warning") · @resolved.Warnings[0]</button>
+            }
+            else
+            {
+                <span class="ok">Request is valid@(resolved.Baseline is { } b ? $" · weapon-only baseline {b.Total:0.0}" : "")</span>
+            }
+            @if (App.Solver is { CrossOriginIsolated: false })
+            {
+                <span class="err">The page is not cross-origin isolated, so CP-SAT cannot start (serve it with COOP/COEP headers or over HTTPS).</span>
+            }
+            <span class="muted right">
+                @Catalog.Skills.Count skills · @Catalog.Decorations.Count decorations · @Catalog.ArmorSets.Count armor sets · runs in your browser@(App.Solver is { } s ? $" ({s.Cores} cores)" : "") · data wilds.mhdb.io, icons monsterhunterwiki.org
+            </span>
+        </footer>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Path { get; set; }
+
+    private bool _started;
+
+    private sealed record NavItem(Tab Tab, string Label, string Icon, string? Badge = null, string? Tone = null);
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_started) return;
+        _started = true;
+        await App.InitializeAsync();
+    }
+
+    private string Title => App.Tab == Tab.Inventory || App.Request is null
+        ? "MH Wilds Optimizer"
+        : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds Optimizer";
+
+    private IEnumerable<NavItem> Nav()
+    {
+        var request = App.Request!;
+        var conditionsOn = Catalog.Conditions.Count(c => c.Group != ConditionCatalog.GroupProcs && ConditionAccess.Get(request.Conditions, c.Property));
+        var limits = request.Conditions.SkillLimits.Count;
+        var errors = App.Resolved?.Errors.Count ?? 0;
+        var warnings = App.Resolved?.Warnings.Count ?? 0;
+        var kind = App.WeaponKind;
+        var busy = App.Batch.Values.Count(b => b.Status is BatchStatus.Running or BatchStatus.Queued);
+        string? Count(int n) => n > 0 ? n.ToString() : null;
+
+        yield return new(Tab.Inventory, "Inventory", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
+        yield return new(Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
+        yield return new(Tab.Pair, "Skill pair", GameIcons.SkillGeneric("set"), request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed" : "optimize");
+        yield return new(Tab.Targets, "Target skills", GameIcons.SkillGeneric("offense"), Count(request.TargetSkills.Count));
+        yield return new(Tab.Limits, "Skill limits", GameIcons.SkillGeneric("utility"), Count(limits));
+        yield return new(Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
+        yield return new(Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
+        yield return new(Tab.Options, "Options", GameIcons.Defense);
+        yield return new(Tab.Review, "Review", GameIcons.SkillGeneric("item"),
+            errors > 0 ? $"{errors} err" : warnings > 0 ? $"{warnings} warn" : "ok", errors > 0 ? "err" : warnings > 0 ? "warn" : "ok");
+        yield return new(Tab.Results, "Results", GameIcons.Affinity,
+            App.Run.Status == RunStatus.Running ? "…" : App.Run.Result is { } r ? r.Pairs.Sum(p => p.Builds.Count).ToString() : null);
+        yield return new(Tab.Builds, "My builds", GameIcons.Armor(ArmorPieceKind.Chest, 8), Count(App.Builds.Count));
+    }
+}

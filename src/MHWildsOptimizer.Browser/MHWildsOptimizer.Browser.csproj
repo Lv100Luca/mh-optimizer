@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <!--
+    The optimizer as a static web app: everything runs in the browser. Game data and icons are served as static files,
+    profiles live in browser storage, and CP-SAT solves run in or-tools-wasm (bundled from solver/ into wwwroot/solver).
+    Hosting needs no server code, only the cross-origin isolation headers WebAssembly threads need (wwwroot/coi-sw.js
+    supplies them on hosts that cannot send them).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SolverDir>$(MSBuildProjectDirectory)/solver/</SolverDir>
+    <SolverBundle>$(MSBuildProjectDirectory)/wwwroot/solver/bridge.js</SolverBundle>
+    <RepoDir>$(MSBuildProjectDirectory)/../../</RepoDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.8" PrivateAssets="all" />
+    <PackageReference Include="MudBlazor" Version="9.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MHWildsOptimizer.Api\MHWildsOptimizer.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the request and result types are (de)serialized by reflection: keep them whole when publishing trims -->
+    <TrimmerRootAssembly Include="MHWildsOptimizer.Core" />
+    <TrimmerRootAssembly Include="MHWildsOptimizer.Api" />
+    <TrimmerRootAssembly Include="Google.OrTools" />
+    <TrimmerRootAssembly Include="Google.Protobuf" />
+  </ItemGroup>
+
+  <!-- the dataset and the wiki icons the server version serves, as static files -->
+  <ItemGroup>
+    <Content Include="$(RepoDir)data\*.json" Link="wwwroot\data\%(Filename)%(Extension)" />
+    <Content Include="$(RepoDir)src\MHWildsOptimizer.Web\client\public\icons\**\*" Link="wwwroot\icons\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the solver bundle is built by npm (vite), not by MSBuild -->
+    <Compile Remove="solver\**" />
+    <Content Remove="solver\**" />
+    <None Remove="solver\**" />
+    <SolverSource Include="solver\*.js;solver\package.json;solver\package-lock.json" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <SolverBuildStamp>$(SolverBundle)</SolverBuildStamp>
+    <SolverBuildStamp Condition="'$(BuildSolver)' == 'true' Or '$(_IsPublishing)' == 'true'">$(SolverDir)always-rebuild.stamp</SolverBuildStamp>
+  </PropertyGroup>
+
+  <!--
+    Bundles or-tools-wasm with solver/bridge.js into wwwroot/solver when a solver source is newer than the bundle, on publish,
+    or with -p:BuildSolver=true (-p:BuildSolver=false skips it). Needs node + npm. The files are added to the static web
+    assets here, since a first build creates them after the item globs were evaluated.
+  -->
+  <Target Name="BuildSolver" BeforeTargets="BeforeBuild" Inputs="@(SolverSource)" Outputs="$(SolverBuildStamp)"
+          Condition="'$(BuildSolver)' != 'false' And Exists('$(SolverDir)package.json')">
+    <Exec Command="npm install --no-audit --no-fund" WorkingDirectory="$(SolverDir)" Condition="!Exists('$(SolverDir)node_modules')" StandardOutputImportance="low" />
+    <Exec Command="npm run build" WorkingDirectory="$(SolverDir)" StandardOutputImportance="low" />
+  </Target>
+
+  <Target Name="IncludeSolverBundle" AfterTargets="BuildSolver" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <Content Include="wwwroot\solver\**\*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

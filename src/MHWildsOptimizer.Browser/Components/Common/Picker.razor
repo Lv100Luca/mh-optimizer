@@ -1,0 +1,108 @@
+@typeparam T
+@* A button that opens a searchable list (armor pieces, decorations, talismans). Arrow keys move, Enter picks, Escape closes. *@
+<div class="picker-anchor @Class">
+    <button type="button" class="picker-btn @(_open ? "open" : "")" title="@Title" @onclick="Toggle" aria-haspopup="listbox" aria-expanded="@_open">
+        @Trigger
+    </button>
+    <MudPopover Open="_open" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="picker-pop" MaxHeight="460" Fixed="false">
+        <div class="picker-pop-body" @onkeydown="OnKey">
+            <MudTextField T="string" @ref="_search" Value="_query" ValueChanged="OnQuery" Immediate="true" Placeholder="@(Placeholder ?? "Search…")"
+                          Variant="Variant.Outlined" Margin="Margin.Dense" AutoFocus="true" />
+            <div class="picker-list" role="listbox">
+                @if (OnClear.HasDelegate && _query.Length == 0)
+                {
+                    <button type="button" class="picker-opt clear" @onclick="Clear">@(ClearLabel ?? "— none —")</button>
+                }
+                @if (Filtered.Count == 0)
+                {
+                    <div class="muted picker-empty">Nothing matches “@_query”.</div>
+                }
+                @{ string? group = null; }
+                @for (var i = 0; i < Filtered.Count; i++)
+                {
+                    var o = Filtered[i];
+                    var index = i;
+                    if (o.Group is not null && o.Group != group)
+                    {
+                        group = o.Group;
+                        <div class="picker-group">@o.Group</div>
+                    }
+                    <button type="button" role="option" aria-selected="@(index == _active)" class="picker-opt @(index == _active ? "active" : "")"
+                            @onmouseenter="() => _active = index" @onclick="() => Pick(o)">
+                        @o.Render
+                    </button>
+                }
+            </div>
+        </div>
+    </MudPopover>
+    <MudOverlay Visible="_open" OnClick="Close" LockScroll="false" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RenderFragment Trigger { get; set; } = default!;
+    [Parameter, EditorRequired] public IReadOnlyList<PickerOption<T>> Options { get; set; } = [];
+    [Parameter] public EventCallback<T> OnPick { get; set; }
+    /// <summary>Offered as the first entry when given, e.g. to empty a slot.</summary>
+    [Parameter] public EventCallback OnClear { get; set; }
+    [Parameter] public string? ClearLabel { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Title { get; set; }
+
+    private bool _open;
+    private string _query = "";
+    private int _active;
+    private MudTextField<string>? _search;
+
+    private IReadOnlyList<PickerOption<T>> Filtered
+    {
+        get
+        {
+            var words = _query.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return words.Length == 0 ? Options : Options.Where(o => words.All(w => o.Search.Contains(w))).ToList();
+        }
+    }
+
+    private void Toggle()
+    {
+        if (_open) Close();
+        else _open = true;
+    }
+
+    private void Close()
+    {
+        _open = false;
+        _query = "";
+        _active = 0;
+    }
+
+    private void OnQuery(string value)
+    {
+        _query = value ?? "";
+        _active = 0;
+    }
+
+    private async Task Pick(PickerOption<T> o)
+    {
+        Close();
+        await OnPick.InvokeAsync(o.Value);
+    }
+
+    private async Task Clear()
+    {
+        Close();
+        await OnClear.InvokeAsync();
+    }
+
+    private async Task OnKey(KeyboardEventArgs e)
+    {
+        var list = Filtered;
+        switch (e.Key)
+        {
+            case "ArrowDown": _active = Math.Min(_active + 1, list.Count - 1); break;
+            case "ArrowUp": _active = Math.Max(_active - 1, 0); break;
+            case "Enter" when _active < list.Count: await Pick(list[_active]); break;
+            case "Escape": Close(); break;
+        }
+    }
+}

@@ -1,0 +1,98 @@
+@inject ProfileTransfer Transfer
+@inject AppState App
+
+@* Imports a profile: an exported bundle (*.mhwo-profile.json) or the files of a profile folder of the server version
+   (inputs/profiles/<profile>/profile.json, talismans.json and weapons/*.json with their .builds.json / .results.json). *@
+<MudDialog>
+    <DialogContent>
+        <p class="muted">
+            Pick an exported profile (<code>.mhwo-profile.json</code>) or the files of a profile folder of the desktop version:
+            <code>profile.json</code>, <code>talismans.json</code> and the <code>weapons</code> files (<code>.json</code>, <code>.builds.json</code>, <code>.results.json</code>).
+        </p>
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Read" Accept=".json" MaximumFileCount="500">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileOpen">Choose files</MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+
+        @if (_plan is { } plan)
+        {
+            <div class="import-summary">
+                <p>
+                    @Fmt.Plural(plan.Weapons.Count, "weapon")@(plan.Weapons.Count > 0 ? ": " + string.Join(", ", plan.Weapons.Keys.Order()) : "")
+                    @if (plan.Talismans is { } t) { <br />@Fmt.Plural(t.Count, "talisman") <span class="muted">(replace the profile's pool)</span> }
+                    @if (plan.Settings is { } s) { <br />@Fmt.Plural(s.ConditionPresets.Count, "condition preset") }
+                    @{ var results = plan.Weapons.Values.Count(w => w.Results is not null); }
+                    @if (results > 0) { <br />@Fmt.Plural(results, "saved run") }
+                </p>
+                @foreach (var problem in plan.Problems)
+                {
+                    <Alert Kind="warning">@problem</Alert>
+                }
+            </div>
+            @if (!plan.IsEmpty)
+            {
+                <MudTextField T="string" @bind-Value="_profile" Label="Into the profile" Immediate="true" Variant="Variant.Outlined"
+                              Error="@(ProfileError is not null)" ErrorText="@ProfileError"
+                              HelperText="@(Exists ? "This profile exists: weapons with the same names are replaced." : "A new profile is created.")" />
+            }
+        }
+        @if (_error is not null)
+        {
+            <Alert Kind="error">@_error</Alert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => Dialog.Cancel()">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(_plan is null || _plan.IsEmpty || ProfileError is not null)" OnClick="Apply">Import</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+
+    private ImportPlan? _plan;
+    private string _profile = "";
+    private string? _error;
+
+    private bool Exists => App.Profiles.Any(p => p.Name == _profile.Trim());
+
+    private string? ProfileError => _profile.Trim() is var p && !ProfileRules.IsValidName(p) ? ProfileRules.NameRules : null;
+
+    private async Task Read(IReadOnlyList<IBrowserFile>? files)
+    {
+        _error = null;
+        if (files is null || files.Count == 0) return;
+        try
+        {
+            var read = new List<(string, string)>();
+            foreach (var file in files)
+            {
+                using var reader = new StreamReader(file.OpenReadStream(maxAllowedSize: 20_000_000));
+                read.Add((file.Name, await reader.ReadToEndAsync()));
+            }
+            _plan = Transfer.Read(read);
+            _profile = _plan.ProfileName ?? (files.Any(f => f.Name == "profile.json") ? "Imported" : App.Profile ?? "Imported");
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
+    }
+
+    private void Apply()
+    {
+        if (_plan is null) return;
+        try
+        {
+            var profile = _profile.Trim();
+            Transfer.Apply(_plan, profile);
+            App.Toast($"Imported {Fmt.Plural(_plan.Weapons.Count, "weapon")} into {profile}");
+            Dialog.Close(DialogResult.Ok(profile));
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
+    }
+}

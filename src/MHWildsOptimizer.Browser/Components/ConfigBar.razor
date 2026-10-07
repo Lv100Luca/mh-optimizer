@@ -1,0 +1,139 @@
+@inherits AppComponent
+@inject IDialogService Dialogs
+@inject ProfileTransfer Transfer
+@inject BrowserProfileStore BrowserStore
+@inject IJSRuntime JS
+
+@* Profile and weapon pickers, save / revert / delete, and the run button. Switching weapons keeps unsaved edits (they stay
+   with their weapon, also across reloads), so there are no "discard?" questions here. *@
+<div class="configbar">
+    <div class="configpick">
+        <MudSelect T="string" Value="App.Profile" ValueChanged="PickProfile" Label="Profile" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
+                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            @foreach (var p in App.Profiles)
+            {
+                <MudSelectItem Value="p.Name">@p.Name <span class="muted small">· @Fmt.Plural(p.Weapons, "weapon"), @Fmt.Plural(p.Talismans, "talisman")</span></MudSelectItem>
+            }
+        </MudSelect>
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AriaLabel="Profile actions" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd" OnClick="NewProfile">New profile…</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="Import">Import…</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="Export">Export @App.Profile</MudMenuItem>
+            <MudDivider />
+            <MudMenuItem Icon="@Icons.Material.Filled.DeleteForever" OnClick="DeleteProfile">Delete @App.Profile…</MudMenuItem>
+        </MudMenu>
+    </div>
+
+    <div class="configpick">
+        <MudSelect T="string" Value="@(App.Name ?? NewKey)" ValueChanged="PickWeapon" Label="Weapon" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
+                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            <MudSelectItem Value="@NewKey">New weapon@(App.Unsaved.Contains(AppState.NewWeapon) ? " *" : "")</MudSelectItem>
+            @foreach (var w in App.Weapons)
+            {
+                <MudSelectItem Value="w.Name">@w.Name@(w.HasResults ? " ✓" : "")@(App.Unsaved.Contains(w.Name) ? " *" : "")</MudSelectItem>
+            }
+        </MudSelect>
+    </div>
+
+    <span class="configname @(App.Dirty ? "dirty" : "")" title="@(App.Dirty ? "unsaved changes" : "saved")">@(App.Name ?? "unsaved")@(App.Dirty ? " *" : "")</span>
+
+    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="@(App.Name is null || !App.Dirty)" OnClick="() => App.SaveAsync()"
+               title="@(App.Name is { } n ? $"Save {n}" : "Use Save as… first")">Save</MudButton>
+    @if (App.Dirty)
+    {
+        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">Revert</MudButton>
+    }
+    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="SaveAs">Save as…</MudButton>
+    @if (App.Name is { } name)
+    {
+        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(name)" title="Delete this weapon">Delete</MudButton>
+    }
+
+    @if (App.Run.Status == RunStatus.Running)
+    {
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun">Cancel run</MudButton>
+    }
+    else
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver is { CrossOriginIsolated: false })"
+                   OnClick="App.RunOptimizerAsync" StartIcon="@Icons.Material.Filled.PlayArrow"
+                   title="@(App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first")">Run optimizer</MudButton>
+    }
+</div>
+
+@code {
+    private const string NewKey = "\u0000new";
+
+    private static string? NameError(string name) => ProfileRules.IsValidName(name) ? null : ProfileRules.NameRules;
+
+    private async Task PickProfile(string profile)
+    {
+        if (profile != App.Profile) await App.OpenProfileAsync(profile);
+    }
+
+    private async Task PickWeapon(string value)
+    {
+        if (value == NewKey) { if (App.Name is not null) await App.NewWeaponAsync(); return; }
+        if (value != App.Name) App.OpenWeapon(value);
+    }
+
+    private async Task NewProfile()
+    {
+        var name = await NameDialog.AskAsync(Dialogs, "New profile", "Profile name", ok: "Create",
+            message: "A profile is an account with its own talismans, condition presets and weapons.",
+            validate: n => NameError(n) ?? (App.Profiles.Any(p => p.Name.Equals(n, StringComparison.OrdinalIgnoreCase)) ? "That profile exists already." : null));
+        if (name is not null) App.CreateProfile(name);
+    }
+
+    private async Task SaveAs()
+    {
+        var target = await NameDialog.AskAsync(Dialogs, "Save as", "Weapon name", App.Name ?? "my-weapon", "Save",
+            message: $"Saved in the profile {App.Profile}, in this browser.", validate: NameError);
+        if (target is null) return;
+        target = target.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ? target[..^5] : target;
+        if (App.Weapons.Any(w => w.Name == target) && target != App.Name && !await App.ConfirmAsync("Overwrite", $"Overwrite the existing weapon \"{target}\"?", "Overwrite"))
+            return;
+        await App.SaveAsync(target);
+    }
+
+    private async Task Revert()
+    {
+        if (await App.ConfirmAsync("Revert", App.Name is { } n ? $"Drop the unsaved changes of {n}?" : "Start the new weapon over?", "Revert")) App.Revert();
+    }
+
+    private async Task Delete(string name)
+    {
+        if (await App.ConfirmAsync("Delete weapon", $"Delete the weapon {name}, its builds and results?", "Delete")) App.Remove(name);
+    }
+
+    private async Task Import()
+    {
+        var parameters = new DialogParameters<ImportDialog>();
+        var dialog = await Dialogs.ShowAsync<ImportDialog>("Import profile", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true });
+        if (await dialog.Result is { Canceled: false, Data: string profile })
+        {
+            App.RefreshProfiles();
+            await App.OpenProfileAsync(profile);
+        }
+    }
+
+    private async Task Export()
+    {
+        if (App.Profile is not { } profile) return;
+        var json = Transfer.Export(profile);
+        await JS.InvokeVoidAsync("mhwo.download", $"{profile}.mhwo-profile.json", "application/json", json);
+        App.Toast($"Exported {profile}: {Fmt.Plural(App.Weapons.Count, "weapon")}, {Fmt.Plural(App.Talismans.Count, "talisman")}");
+    }
+
+    private async Task DeleteProfile()
+    {
+        if (App.Profile is not { } profile) return;
+        if (!await App.ConfirmAsync("Delete profile", $"Delete the profile {profile} with its {Fmt.Plural(App.Weapons.Count, "weapon")}, talismans and results from this browser? Export it first to keep a copy.", "Delete"))
+            return;
+        BrowserStore.DeleteProfile(profile);
+        if (App.Profiles.Count <= 1) BrowserStore.CreateProfile("Default");
+        App.RefreshProfiles();
+        await App.OpenProfileAsync(App.Profiles.First(p => p.Name != profile).Name);
+        App.Toast($"Deleted the profile {profile}");
+    }
+}

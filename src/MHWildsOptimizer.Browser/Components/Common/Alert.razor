@@ -1,0 +1,15 @@
+@* A coloured message box: Kind is "error", "warning", "info" or "ok". *@
+<MudAlert Severity="@Severity" Dense="true" Variant="Variant.Outlined" Class="alert-box">@ChildContent</MudAlert>
+
+@code {
+    [Parameter] public string Kind { get; set; } = "info";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private Severity Severity => Kind switch
+    {
+        "error" => Severity.Error,
+        "warning" => Severity.Warning,
+        "ok" => Severity.Success,
+        _ => Severity.Info,
+    };
+}

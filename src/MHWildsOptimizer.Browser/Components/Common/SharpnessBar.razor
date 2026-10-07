@@ -1,0 +1,26 @@
+@* The weapon's sharpness gauge; the reinforcement bonus is shown as text because the model only uses the top color. *@
+@{
+    var segments = new (SharpnessColor Color, int Value)[]
+    {
+        (SharpnessColor.Red, Bar.Red), (SharpnessColor.Orange, Bar.Orange), (SharpnessColor.Yellow, Bar.Yellow), (SharpnessColor.Green, Bar.Green),
+        (SharpnessColor.Blue, Bar.Blue), (SharpnessColor.White, Bar.White), (SharpnessColor.Purple, Bar.Purple),
+    };
+    var total = Math.Max(1, segments.Sum(s => s.Value));
+}
+<span class="sharpbar-wrap" title="@string.Join(", ", segments.Where(s => s.Value > 0).Select(s => $"{s.Color.ToString().ToLowerInvariant()} {s.Value}"))">
+    <span class="sharpbar">
+        @foreach (var s in segments.Where(s => s.Value > 0))
+        {
+            <span class="seg" style="width: @((100.0 * s.Value / total).ToString("0.##", CultureInfo.InvariantCulture))%; background: @GameIcons.SharpnessCss[s.Color]"></span>
+        }
+    </span>
+    @if (Bonus > 0)
+    {
+        <span class="muted small"> +@Bonus from reinforcements</span>
+    }
+</span>
+
+@code {
+    [Parameter, EditorRequired] public SharpnessBarDto Bar { get; set; } = default!;
+    [Parameter] public int Bonus { get; set; }
+}
