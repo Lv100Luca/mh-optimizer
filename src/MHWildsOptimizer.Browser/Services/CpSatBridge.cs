@@ -24,6 +24,13 @@ public sealed class CpSatBridge(IJSRuntime js) : ICpSatBackend
     /// <summary>Loads the WebAssembly runtime ahead of the first solve (a few seconds on the first visit).</summary>
     public async Task WarmUpAsync() => await (await Module()).InvokeVoidAsync("warmUp");
 
+    /// <summary>
+    /// Starts the lanes an optimize-mode run uses on this many threads (one per <see cref="CpSatParameters.MaxWorkersPerSolve"/>
+    /// workers), so their runtimes are loaded before the first run instead of during it.
+    /// </summary>
+    public async Task WarmUpLanesAsync(int threads) =>
+        await (await Module()).InvokeVoidAsync("warmUpLanes", Math.Max(1, threads / CpSatParameters.For(threads, 1).Workers));
+
     public async Task<CpSolverResponse> SolveAsync(CpModel model, CpSatParameters parameters, int lane, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();

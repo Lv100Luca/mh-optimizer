@@ -14,6 +14,12 @@ public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IRead
     /// <summary>More workers per solve do not help; spare threads solve skill pair classes side by side instead.</summary>
     public const int MaxWorkersPerSolve = 4;
 
+    /// <summary>
+    /// Random skill combinations every search checks its score model against the damage calculator before solving. The
+    /// browser app lowers it: its .NET runs interpreted, where 300 checks take about 0.4 s per skill pair class.
+    /// </summary>
+    public static int ScoreChecks { get; set; } = 300;
+
     public static CpSatParameters For(int threads, double timeLimitSeconds) => Math.Clamp(threads, 1, MaxWorkersPerSolve) switch
     {
         1 => new(1, timeLimitSeconds, [], 2),

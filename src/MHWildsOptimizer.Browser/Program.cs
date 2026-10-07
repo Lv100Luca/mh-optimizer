@@ -3,6 +3,7 @@ using MHWildsOptimizer.Browser;
 using MHWildsOptimizer.Browser.Services;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Inputs;
+using MHWildsOptimizer.Core.Optimize;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
@@ -45,4 +46,6 @@ builder.Services.AddScoped<ProfileTransfer>();
 var host = builder.Build();
 // CP-SAT's workers are web workers: the browser's core count is what a run can use (Environment.ProcessorCount is 1 here)
 OptimizerOptions.ProcessorCount = Math.Max(1, ((IJSInProcessRuntime)host.Services.GetRequiredService<IJSRuntime>()).Invoke<int>("mhwo.cores"));
+// .NET runs interpreted here: a lighter self-check of each score model keeps that part of a run short
+CpSatParameters.ScoreChecks = 20;
 await host.RunAsync();

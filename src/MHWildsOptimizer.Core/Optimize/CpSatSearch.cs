@@ -73,7 +73,7 @@ internal sealed class CpSatSearch
     {
         var sw = Stopwatch.StartNew();
         var score = ScoreDecomposition.Build(_weapon, _rel, _cond);
-        var mismatch = score.Verify(300);
+        var mismatch = score.Verify(CpSatParameters.ScoreChecks);
         if (mismatch > 1e-6) throw new InvalidOperationException($"CP-SAT score model differs from the damage calculator by {mismatch:0.######}.");
         _progress?.Report($"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.Sides.Count} health side(s), built in {sw.ElapsedMilliseconds} ms");
 

@@ -1,4 +1,5 @@
 using MHWildsOptimizer.Core.Data;
+using MHWildsOptimizer.Core.Inputs;
 using MHWildsOptimizer.Core.Optimize;
 
 namespace MHWildsOptimizer.Api;
@@ -21,10 +22,13 @@ public static class Optimization
     /// <paramref name="save"/> the result becomes that weapon's last run. Cancelling throws <see cref="OperationCanceledException"/>.
     /// </summary>
     /// <param name="cpSat">Where CP-SAT solves run (null = the native library).</param>
+    /// <param name="engine">Runs with this engine whatever the request says (the browser has only CP-SAT); the saved result's
+    /// inputs hash stays that of the request as saved, so the run does not look stale.</param>
     public static async Task<ResultDto?> RunAsync(ConfigPayload payload, string? profile, string? save, GameData data, IProfileStore store,
-        ICpSatBackend? cpSat, Action<OptimizeEvent> onEvent, CancellationToken ct)
+        ICpSatBackend? cpSat, Action<OptimizeEvent> onEvent, CancellationToken ct, OptimizerEngine? engine = null)
     {
-        var resolved = Resolving.Resolve(payload, data, store.Directory);
+        var request = engine is { } forced ? payload.Request with { Options = payload.Request.Options with { Engine = forced } } : payload.Request;
+        var resolved = Resolving.Resolve(payload with { Request = request }, data, store.Directory);
         onEvent(new ValidationEvent(resolved.Errors, resolved.Warnings));
         if (!resolved.IsValid)
         {

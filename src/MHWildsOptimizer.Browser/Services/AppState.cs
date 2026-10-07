@@ -158,7 +158,9 @@ public sealed class AppState : IDisposable
         {
             Solver = await _solver.EnvironmentAsync();
             Notify();
-            if (Solver.CrossOriginIsolated) await _solver.WarmUpAsync();
+            if (!Solver.CrossOriginIsolated) return;
+            await _solver.WarmUpAsync();
+            await _solver.WarmUpLanesAsync(OptimizerOptions.ProcessorCount);
         }
         catch (Exception e)
         {
@@ -660,7 +662,7 @@ public sealed class AppState : IDisposable
     // ---------------------------------------------------------------- runs
 
     /// <summary>The browser runs CP-SAT only: the beam search does not fit WebAssembly's memory and has no threads there.</summary>
-    private static OptimizationRequest ForBrowser(OptimizationRequest r) => r with { Options = r.Options with { Engine = OptimizerEngine.CpSat } };
+    private const OptimizerEngine Engine = OptimizerEngine.CpSat;
 
     public void CancelRun()
     {
@@ -683,7 +685,8 @@ public sealed class AppState : IDisposable
         SetRun(_ => RunState.Idle with { Status = RunStatus.Running, StartedAt = DateTimeOffset.Now });
         SetTab(Tab.Results);
         ScheduleDrafts();
-        var payload = new ConfigPayload(ForBrowser(s.Request), Talismans.ToList());
+        var payload = new ConfigPayload(s.Request, Talismans.ToList());
+        var clock = System.Diagnostics.Stopwatch.StartNew();
         try
         {
             await Optimization.RunAsync(payload, Profile, s.Name, Data, _store, _solver, e =>
@@ -695,7 +698,7 @@ public sealed class AppState : IDisposable
                         SetRun(r => r with { Log = [.. r.Log, .. v.Errors.Select(x => "error   " + x), .. v.Warnings.Select(x => "warning " + x)] });
                         break;
                     case ProgressEvent p:
-                        SetRun(r => r with { Log = [.. r.Log, p.Message] });
+                        SetRun(r => r with { Log = [.. r.Log, $"[{clock.Elapsed.TotalSeconds,5:0.0}s] {p.Message}"] });
                         break;
                     case ResultEvent result:
                         SetRun(r => r with { Status = RunStatus.Done, Result = result.Result, FinishedAt = DateTimeOffset.Now, FromDisk = false });
@@ -704,7 +707,7 @@ public sealed class AppState : IDisposable
                         SetRun(r => r with { Status = RunStatus.Error, Error = error.Message, FinishedAt = DateTimeOffset.Now });
                         break;
                 }
-            }, cts.Token);
+            }, cts.Token, Engine);
             SetRun(r => r.Status == RunStatus.Running ? r with { Status = RunStatus.Error, Error = "The run ended without a result.", FinishedAt = DateTimeOffset.Now } : r);
             if (s.Name is not null) { RefreshWeapons(); TouchSaved(); }
         }
@@ -743,7 +746,7 @@ public sealed class AppState : IDisposable
             {
                 var file = _store.LoadWeapon(profile, weapon) ?? throw new IOException($"There is no weapon {weapon}.");
                 var outcome = new BatchMark(BatchStatus.Error, "The run ended without a result.");
-                await Optimization.RunAsync(new ConfigPayload(ForBrowser(file.Request), Talismans.ToList()), profile, weapon, Data, _store, _solver, e =>
+                await Optimization.RunAsync(new ConfigPayload(file.Request, Talismans.ToList()), profile, weapon, Data, _store, _solver, e =>
                 {
                     switch (e)
                     {
@@ -751,7 +754,7 @@ public sealed class AppState : IDisposable
                         case ResultEvent: outcome = new BatchMark(BatchStatus.Done); break;
                         case ErrorEvent x: outcome = new BatchMark(BatchStatus.Error, x.Message); break;
                     }
-                }, cts.Token);
+                }, cts.Token, Engine);
                 if (outcome.Status == BatchStatus.Error) failed++;
                 Mark(weapon, outcome);
                 // an open weapon shows its new last run (unless it is running one of its own)

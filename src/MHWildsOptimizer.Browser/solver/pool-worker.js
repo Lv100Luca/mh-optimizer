@@ -11,6 +11,11 @@ self.onmessage = async ({ data }) => {
     controllers.get(data.cancel)?.abort();
     return;
   }
+  if (data.warm) {
+    try { await CpSat.validate(new Uint8Array(0), { executor: 'direct' }); } catch { /* the first solve reports problems */ }
+    self.postMessage({ id: data.id, bytes: null });
+    return;
+  }
   const { id, model, parameters } = data;
   const controller = new AbortController();
   controllers.set(id, controller);

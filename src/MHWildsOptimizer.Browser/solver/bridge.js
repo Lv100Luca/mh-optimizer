@@ -66,6 +66,15 @@ export async function warmUp() {
   await CpSat.validate(new Uint8Array(0));
 }
 
+/** Starts lanes 1..count-1 ahead of an optimize-mode run (each loads its own runtime, a few seconds). */
+export async function warmUpLanes(count) {
+  await Promise.all(Array.from({ length: Math.max(0, count - 1) }, (_, i) => new Promise((resolve) => {
+    const id = nextId++;
+    pending.set(id, { resolve, reject: resolve });
+    lane(i + 1).postMessage({ id, warm: true });
+  })));
+}
+
 export function environment() {
   return {
     crossOriginIsolated: !!globalThis.crossOriginIsolated,
