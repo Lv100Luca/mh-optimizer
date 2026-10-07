@@ -274,12 +274,14 @@ internal sealed class CpSatSearch
             var cef = NewVar(m, Micro, Micro + ceGain.Ub, $"cef{side}");
             m.Add(cef.Var == Micro + ceGain.Var);
 
-            // EFE in micro points = ele(1e-5) * CEF(1e-6) * sharpEle(1e-4) / 1e9
-            var sharpEle = (long)Math.Round(sc.SharpEle * S);
+            // EFE in micro points = ele(1e-5) * CEF(1e-6) / 1e5 (-> 1e-6) * sharpEle * element scale (1e-6) / 1e6
             var ec = NewVar(m, ele.Lb * cef.Lb, ele.Ub * cef.Ub, $"ec{side}");
             m.AddMultiplicationEquality(ec.Var, ele.Var, cef.Var);
-            var efe = NewVar(m, ec.Lb * sharpEle / 1_000_000_000, ec.Ub * sharpEle / 1_000_000_000 + 1, $"efe{side}");
-            m.AddDivisionEquality(efe.Var, LinearExpr.Term(ec.Var, sharpEle), 1_000_000_000);
+            var ecMicro = NewVar(m, ec.Lb / 100_000, ec.Ub / 100_000, $"ecMicro{side}");
+            m.AddDivisionEquality(ecMicro.Var, ec.Var, 100_000);
+            var eleFactor = (long)Math.Round(sc.SharpEle * score.ElementScale * Micro);
+            var efe = NewVar(m, ecMicro.Lb * eleFactor / Micro, ecMicro.Ub * eleFactor / Micro + 1, $"efe{side}");
+            m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
             terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
         }
 
