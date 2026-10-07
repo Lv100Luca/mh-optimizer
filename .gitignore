@@ -485,6 +485,8 @@ $RECYCLE.BIN/
 src/MHWildsOptimizer.Web/wwwroot/
 node_modules/
 
-# optimizer results in machine form (the web UI reloads them; the .results.txt reports stay tracked)
-inputs/**/*.results.json
+# personal configurations, profiles and results; only the examples the tests and the README use are tracked
+/inputs/*
+!/inputs/*.example.json
+!/inputs/*.example.results.txt
 src/MHWildsOptimizer.Web/client/tsconfig.tsbuildinfo

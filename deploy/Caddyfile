@@ -1,0 +1,28 @@
+# MH Wilds Optimizer - the Caddy block for the browser app.
+# Append it to the system Caddyfile (/etc/caddy/Caddyfile), then:
+#   sudo systemctl reload caddy
+# Caddy obtains and renews the certificate itself (the DNS A record must point at this host).
+#
+# The site is static: the published wwwroot, copied to /opt/mh-optimizer/site by CI (.github/workflows/deploy.yml).
+
+mh-optimizer.luca-diegel.de {
+	root * /opt/mh-optimizer/site
+
+	# CP-SAT runs on WebAssembly threads, which need a cross-origin isolated page.
+	# Without these the page falls back to coi-sw.js, which costs a reload on the first visit.
+	header {
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "require-corp"
+		X-Content-Type-Options "nosniff"
+		# revalidate everything (a 304 on an unchanged file): index.html, data/ and the solver bundle are not fingerprinted
+		Cache-Control "no-cache"
+	}
+
+	# page URLs such as /Luca/weapon/Current/results are client-side routes
+	try_files {path} /index.html
+
+	# the publish output has a .br and a .gz next to every file
+	file_server {
+		precompressed br gzip
+	}
+}

@@ -1,0 +1,102 @@
+name: Build and deploy
+
+# Tests and publishes the browser app on every PR and push; a push to main (or the Run workflow button on main) also
+# copies the site to the VPS, where Caddy serves it from disk. The site is static, so a deploy restarts nothing.
+# See DEPLOY.md for the one-time VPS setup and the repo variables and secret this needs.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # a newer PR push makes the running check moot; deploys queue instead of cancelling halfway
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      # node bundles or-tools-wasm into wwwroot/solver on publish
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/MHWildsOptimizer.Browser/solver/package-lock.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.nuget/packages
+          key: nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-
+
+      # relinks the .NET runtime on publish (smaller download), as on the dev machine
+      - run: dotnet workload install wasm-tools
+
+      # the tests need neither the solver bundle nor the server's React client
+      - run: dotnet test MHWildsOptimizer.slnx -c Release -p:BuildSolver=false -p:BuildClient=false
+
+      - run: dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: publish/browser/wwwroot
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-vps
+      cancel-in-progress: false
+    env:
+      VPS_HOST: ${{ vars.VPS_HOST }}
+      VPS_USER: ${{ vars.VPS_USER }}
+      VPS_PORT: ${{ vars.VPS_SSH_PORT || '22' }}
+      SITE_URL: https://mh-optimizer.luca-diegel.de
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: site
+
+      - name: Set up SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # The key is locked to rrsync on /opt/mh-optimizer/site (DEPLOY.md), so the target path is relative to that.
+      # --delay-updates swaps the new files in at the end, so a visitor mid-deploy never gets half a site.
+      - name: Copy the site to the VPS
+        run: |
+          rsync -rz --delete --delay-updates --chmod=D755,F644 \
+            -e "ssh -i ~/.ssh/id_deploy -p $VPS_PORT" \
+            site/ "$VPS_USER@$VPS_HOST:"
+
+      # WebAssembly threads only work when the page is cross-origin isolated, so check the headers, not just the 200
+      - name: Smoke test
+        run: |
+          headers=$(curl -sSI --fail "$SITE_URL/")
+          echo "$headers"
+          echo "$headers" | grep -qi '^cross-origin-opener-policy: same-origin' || { echo "::error::COOP header missing"; exit 1; }
+          echo "$headers" | grep -qi '^cross-origin-embedder-policy: require-corp' || { echo "::error::COEP header missing"; exit 1; }
+          curl -sSI --fail "$SITE_URL/solver/bridge.js" > /dev/null

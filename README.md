@@ -70,7 +70,7 @@ dotnet run --project src/MHWildsOptimizer.Browser          # development, http:/
 dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
 ```
 
-The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). With nginx:
+The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). It runs at <https://mh-optimizer.luca-diegel.de>, published by CI on every push to `main` and served by Caddy ([`DEPLOY.md`](DEPLOY.md), [`deploy/Caddyfile`](deploy/Caddyfile)). With nginx:
 
 ```nginx
 server {
