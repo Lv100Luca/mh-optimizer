@@ -9,11 +9,7 @@
             Pick an exported profile (<code>.mhwo-profile.json</code>) or the files of a profile folder of the desktop version:
             <code>profile.json</code>, <code>talismans.json</code> and the <code>weapons</code> files (<code>.json</code>, <code>.builds.json</code>, <code>.results.json</code>).
         </p>
-        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Read" Accept=".json" MaximumFileCount="500">
-            <ActivatorContent>
-                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileOpen">Choose files</MudButton>
-            </ActivatorContent>
-        </MudFileUpload>
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Read" Accept=".json" MaximumFileCount="500" />
 
         @if (_plan is { } plan)
         {
