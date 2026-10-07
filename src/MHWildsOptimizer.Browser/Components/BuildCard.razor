@@ -1,0 +1,310 @@
+@using System.Text.RegularExpressions
+@*
+    One scored build. Title replaces "Build <rank>"; Delta (e.g. the difference to your own build) sits next to the score;
+    Actions go to the right of the header; Compact leaves out the equipment table and decoration list (the build editor shows those).
+*@
+@{
+    var b = Build;
+    var s = b.Summary;
+    var w = b.Weapon;
+}
+<article class="build @(Best ? "best" : "")">
+    <header class="build-head">
+        <div class="build-rank">@(TitleContent ?? (r => r.AddContent(0, Title ?? $"Build {b.Rank}")))</div>
+        <div class="score">
+            <span class="efr">EFR @Fmt.N(b.Efr)</span>
+            <span class="plus">+</span>
+            <span class="efe">EFE @Fmt.N(b.Efe)</span>
+            @if (b.Procs > 0)
+            {
+                <span class="plus">+</span>
+                <span class="procs" title="@string.Join(", ", s.ProcSources)">procs @Fmt.N(b.Procs)</span>
+            }
+            <span class="eq">=</span>
+            <span class="total">@Fmt.N(b.Score)</span>
+            <span class="muted small">every condition on: @Fmt.N(s.TotalAllConditions)</span>
+            @Delta
+        </div>
+        <div class="statchips">
+            <span class="statchip atk" title="@($"base {s.BaseAttack} true")"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b> <small>@s.DisplayAttack display</small></span>
+            <span class="statchip aff" title="@($"base {s.BaseAffinity}%")"><img src="@GameIcons.Affinity" alt="" />AFF <b>@(s.Affinity)%</b></span>
+            <span class="statchip crit">CRIT <b>x@(Fmt.N(s.CritMultiplier, 2))</b></span>
+            @if (s.Sharpness is { } sharp)
+            {
+                <span class="statchip sharp" style="--tint: @GameIcons.SharpnessCss[sharp]"><img src="@GameIcons.Sharpness" alt="" />@Fmt.TitleCase(sharp)</span>
+            }
+            @if (s.Element != Element.None)
+            {
+                var icon = GameIcons.Element(s.Element);
+                <span class="statchip ele" style="--tint: @GameIcons.ElementCss[s.Element]">
+                    @if (icon is not null)
+                    {
+                        <img src="@icon" alt="" />
+                    }
+                    @Fmt.TitleCase(s.Element) <b>@Fmt.N(s.ElementTrue, 0)</b> <small>@s.ElementDisplay display</small>
+                </span>
+            }
+        </div>
+        @if (Actions is not null)
+        {
+            <div class="build-actions">@Actions</div>
+        }
+    </header>
+
+    <div class="build-body">
+        <div class="build-row">
+            <span class="label">Sets</span>
+            <span class="chip-row">
+                @if (s.ActiveSetBonuses.Count == 0)
+                {
+                    <span class="muted">-</span>
+                }
+                @foreach (var x in s.ActiveSetBonuses)
+                {
+                    <SkillHover @key="x" Name="@x" Class="chip skill set"><SkillIcon Name="@SetTier.Replace(x, "")" Kind="SkillKind.Set" Size="18" />@x</SkillHover>
+                }
+            </span>
+            <span class="label">Groups</span>
+            <span class="chip-row">
+                @if (s.ActiveGroupSkills.Count == 0)
+                {
+                    <span class="muted">-</span>
+                }
+                @foreach (var x in s.ActiveGroupSkills)
+                {
+                    var bare = Parenthesis.Replace(x, "");
+                    <SkillHover @key="x" Name="@bare" Class="chip skill group"><SkillIcon Name="@bare" Kind="SkillKind.Group" Size="18" />@x</SkillHover>
+                }
+            </span>
+        </div>
+        <div class="build-row">
+            <span class="label">Skills</span>
+            <span class="chip-row">
+                @foreach (var x in b.Skills)
+                {
+                    <SkillChip @key="x.Skill" Name="@x.Skill" Level="x.Level" Effective="x.Effective" />
+                }
+            </span>
+        </div>
+        <p class="why muted">@s.Description</p>
+
+        @if (!Compact)
+        {
+            <table class="table equip">
+                <tbody>
+                    <tr>
+                        <td class="icon-cell"><img class="icon" src="@GameIcons.Weapon(w.Type)" alt="" width="32" height="32" /></td>
+                        <td class="piece">Weapon</td>
+                        <td class="name">
+                            <b>@w.Label</b>
+                            <div class="muted small">@w.TrueRaw raw (@w.DisplayAttack display), @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @(w.Sharpness is { } ws ? Fmt.TitleCase(ws) : "-") sharpness</div>
+                        </td>
+                        <td class="skills"><span class="muted small">rolled: @(w.SetBonus ?? "-") / @(w.GroupSkill ?? "-")</span></td>
+                        <td class="decos">@SlotDecos(w.Decorations, numbers: w.Slots)</td>
+                    </tr>
+                    @foreach (var a in b.Armor)
+                    {
+                        <tr @key="a.Kind">
+                            <td class="icon-cell"><img class="icon" src="@GameIcons.Armor(a.Kind, a.Rarity)" alt="" width="32" height="32" /></td>
+                            <td class="piece">@BuildHelpers.PieceLabel(a.Kind)</td>
+                            <td class="name">
+                                <b>@a.Name</b> <RarityBadge Rarity="a.Rarity" Transcended="a.Transcended" />
+                                <div class="muted small">
+                                    @foreach (var x in a.SetBonus)
+                                    {
+                                        <SkillHover @key="x" Name="@x" Class="with-icon"><SkillIcon Name="@x" Kind="SkillKind.Set" Size="14" />@x</SkillHover>
+                                    }
+                                    @if (a.GroupSkill is { } g)
+                                    {
+                                        <SkillHover Name="@g" Class="with-icon"><SkillIcon Name="@g" Kind="SkillKind.Group" Size="14" />@g</SkillHover>
+                                    }
+                                </div>
+                            </td>
+                            <td class="skills">
+                                <span class="chip-row">
+                                    @foreach (var grant in a.Skills)
+                                    {
+                                        <SkillChip @key="grant.Skill" Name="@grant.Skill" Level="grant.Level" />
+                                    }
+                                </span>
+                            </td>
+                            <td class="decos">@SlotDecos(a.Decorations, numbers: a.Slots)</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td class="icon-cell">
+                            @if (b.Talisman is { } ti)
+                            {
+                                <img class="icon" src="@GameIcons.Talisman(ti.Rarity)" alt="" width="32" height="32" />
+                            }
+                        </td>
+                        <td class="piece">Talisman</td>
+                        @if (b.Talisman is { } t)
+                        {
+                            <td class="name">
+                                <b>@t.Name</b> <RarityBadge Rarity="t.Rarity" />
+                                <div class="muted small">@(t.Source == TalismanSource.Random ? "your random talisman" : "craftable charm")</div>
+                            </td>
+                            <td class="skills">
+                                <span class="chip-row">
+                                    @foreach (var grant in t.Skills)
+                                    {
+                                        <SkillChip @key="grant.Skill" Name="@grant.Skill" Level="grant.Level" />
+                                    }
+                                </span>
+                            </td>
+                            <td class="decos">@SlotDecos(t.Decorations, named: t.Slots)</td>
+                        }
+                        else
+                        {
+                            <td colspan="3" class="muted">-</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="build-row">
+                <span class="label">Decorations (@b.Decorations.Sum(d => d.Count))</span>
+                <span class="chip-row">
+                    @if (b.Decorations.Count == 0)
+                    {
+                        <span class="muted">none</span>
+                    }
+                    @foreach (var d in b.Decorations)
+                    {
+                        var skills = string.Join(", ", d.Skills.Select(g => $"{g.Skill} {g.Level}"));
+                        <span @key="d.Name" class="chip deco" title="@skills">
+                            <DecoIcon Deco="@(new DecoDto(d.Name, d.Slot, d.Kind, d.IconColor, d.Skills))" Size="20" />
+                            <b>@(d.Count)×</b> @d.Name
+                            <span class="muted small">@skills</span>
+                        </span>
+                    }
+                </span>
+            </div>
+        }
+
+        <button type="button" class="linklike details-toggle" @onclick="() => _open = !_open">@(_open ? "▾ Hide details" : "▸ Skill sources, stats and the text report")</button>
+
+        @if (_open)
+        {
+            <div class="details">
+                <h4>Skills with sources</h4>
+                <table class="table sources">
+                    <tbody>
+                        @foreach (var x in b.Skills)
+                        {
+                            <tr @key="x.Skill">
+                                <td><SkillChip Name="@x.Skill" Level="x.Level" Effective="x.Effective" /></td>
+                                <td class="muted small">@string.Join(", ", x.Sources)@if (x.Wasted > 0) {<span class="warn">@(" · ")@x.Wasted wasted</span>}</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="muted">Set bonuses</td>
+                            <td class="small">
+                                @if (b.SetBonuses.Count == 0)
+                                {
+                                    @("-")
+                                }
+                                @foreach (var x in b.SetBonuses)
+                                {
+                                    <span @key="x.Name" class="pc @(x.Active ? "active" : "")">@x.Name @(x.Pieces)pc@(x.Active ? $" → {Fmt.Roman(x.Tier)}{(x.TierName is { } tn ? $" ({tn})" : "")}" : "")</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="muted">Group skills</td>
+                            <td class="small">
+                                @if (b.GroupSkills.Count == 0)
+                                {
+                                    @("-")
+                                }
+                                @foreach (var x in b.GroupSkills)
+                                {
+                                    <span @key="x.Name" class="pc @(x.Active ? "active" : "")">@x.Name @(x.Pieces)pc@(x.Active ? $" ACTIVE{(x.RankName is { } rn ? $" ({rn})" : "")}" : "")</span>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="stats-compare">
+                    @StatsBlock("Under the requested conditions", b.StatsRequested)
+                    @StatsBlock("Every conditional skill active", b.StatsAllOn)
+                </div>
+
+                <details>
+                    <summary>Plain-text report</summary>
+                    <pre class="rawtext">@b.Text</pre>
+                </details>
+            </div>
+        }
+    </div>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public BuildDto Build { get; set; } = default!;
+    [Parameter] public bool Best { get; set; }
+    /// <summary>Replaces "Build &lt;rank&gt;"; <see cref="TitleContent"/> replaces it when given.</summary>
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? TitleContent { get; set; }
+    /// <summary>Shown next to the score, e.g. a <see cref="ScoreDelta"/>.</summary>
+    [Parameter] public RenderFragment? Delta { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public bool Compact { get; set; }
+
+    private bool _open;
+
+    /// <summary>The tier and rank name of a set bonus display name, so the icon is the set's: "Gore Magala's Tyranny II (Black Eclipse)".</summary>
+    private static readonly Regex SetTier = new(@" (I|II)( \(.*\))?$");
+
+    private static readonly Regex Parenthesis = new(@" \(.*\)$");
+
+    /// <summary>The decorations in their slots; slot levels are numbers, or talisman notation ("weapon2") for <paramref name="named"/>.</summary>
+    private static RenderFragment SlotDecos(IReadOnlyList<DecoDto?> decos, IReadOnlyList<int>? numbers = null, IReadOnlyList<string>? named = null) => __builder =>
+    {
+        var levels = numbers ?? (named ?? []).Select(x => int.TryParse(new string(x.Where(char.IsDigit).ToArray()), out var n) ? n : 0).ToList();
+        if (levels.Count == 0)
+        {
+            <span class="muted small">no slots</span>
+            return;
+        }
+        <span class="slotdecos">
+            @for (var i = 0; i < levels.Count; i++)
+            {
+                var deco = i < decos.Count ? decos[i] : null;
+                <span class="slotdeco">
+                    <DecoIcon Deco="deco" SlotLevel="levels[i]" Size="28" />
+                    <span class="muted tiny">@(deco?.Name ?? "")</span>
+                </span>
+            }
+            <span class="muted small"><Slots Numbers="numbers" Named="named" /></span>
+        </span>
+    };
+
+    private static RenderFragment StatsBlock(string title, StatsDto r) => __builder =>
+    {
+        <div class="statsblock">
+            <h4>@title</h4>
+            <dl>
+                <dt>Attack</dt><dd>@Fmt.N(r.TrueRaw, 1) true <span class="muted">(@r.DisplayAttack display)</span></dd>
+                <dt>Affinity</dt><dd>@(r.Affinity)% <span class="muted">crit x@(Fmt.N(r.CritMultiplier, 2)), factor @Fmt.N(r.CritFactor, 3)</span></dd>
+                <dt>Sharpness</dt><dd>@(r.Sharpness is { } sh ? Fmt.TitleCase(sh) : "-") <span class="muted">raw x@(Fmt.N(r.SharpnessRaw, 3)), element x@(Fmt.N(r.SharpnessElement, 4))</span></dd>
+                @if (r.ElementTrue > 0)
+                {
+                    <dt>Element</dt><dd>@Fmt.N(r.ElementTrue, 1) true <span class="muted">(@r.ElementDisplay display, cap @Fmt.N(r.ElementCap, 1), crit element x@(Fmt.N(r.CritElement, 2)))</span></dd>
+                }
+                <dt>Score</dt>
+                <dd><b>EFR @Fmt.N(r.Efr)</b> + <b>EFE @Fmt.N(r.Efe)</b>@if (r.Procs > 0) {@(" + ")<b>procs @Fmt.N(r.Procs)</b>}@(" = ")<b class="total">@Fmt.N(r.Total)</b></dd>
+            </dl>
+            @if (r.Modifiers.Count > 0)
+            {
+                <ul class="mods">
+                    @foreach (var m in r.Modifiers)
+                    {
+                        <li>@m</li>
+                    }
+                </ul>
+            }
+        </div>
+    };
+}

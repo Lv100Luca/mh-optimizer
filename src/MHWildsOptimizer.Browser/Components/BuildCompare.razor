@@ -1,0 +1,191 @@
+@using System.Text.RegularExpressions
+@* Side-by-side comparison of two scored builds; differences are "a − b" (positive = a is better). *@
+@{
+    var sa = A.Summary;
+    var sb = B.Summary;
+    var metrics = new List<Metric>
+    {
+        new("Score", A.Score, B.Score, 1),
+        new("EFR", A.Efr, B.Efr, 1),
+        new("EFE", A.Efe, B.Efe, 1),
+    };
+    if (A.Procs > 0 || B.Procs > 0) metrics.Add(new("Procs", A.Procs, B.Procs, 1));
+    metrics.Add(new("Every condition on", sa.TotalAllConditions, sb.TotalAllConditions, 1));
+    metrics.Add(new("Attack (true)", sa.Attack, sb.Attack, 1));
+    metrics.Add(new("Affinity", sa.Affinity, sb.Affinity, 0, "%"));
+    metrics.Add(new("Crit multiplier", sa.CritMultiplier, sb.CritMultiplier, 2));
+    if (sa.Element != Element.None || sb.Element != Element.None)
+        metrics.Add(new($"Element (true{(sa.Element != Element.None ? ", " + Fmt.TitleCase(sa.Element) : "")})", sa.ElementTrue, sb.ElementTrue, 1));
+
+    var levelsA = A.Skills.ToDictionary(x => x.Skill, x => x.Level);
+    var levelsB = B.Skills.ToDictionary(x => x.Skill, x => x.Level);
+    var skills = levelsA.Keys.Union(levelsB.Keys)
+        .Select(skill => (Skill: skill, La: levelsA.GetValueOrDefault(skill), Lb: levelsB.GetValueOrDefault(skill)))
+        .OrderByDescending(x => Math.Abs(x.La - x.Lb)).ThenByDescending(x => x.La + x.Lb).ThenBy(x => x.Skill, StringComparer.InvariantCulture)
+        .ToList();
+    var changed = skills.Where(x => x.La != x.Lb).ToList();
+    var same = skills.Where(x => x.La == x.Lb).ToList();
+
+    var bonusesA = sa.ActiveSetBonuses.Concat(sa.ActiveGroupSkills).ToList();
+    var bonusesB = sb.ActiveSetBonuses.Concat(sb.ActiveGroupSkills).ToList();
+    var groups = sa.ActiveGroupSkills.Concat(sb.ActiveGroupSkills).ToHashSet();
+
+    var rows = new List<(string Label, EquipCell A, EquipCell B)> { ("Weapon", WeaponCell(A), WeaponCell(B)) };
+    rows.AddRange(BuildHelpers.ArmorKinds.Select(k => (BuildHelpers.PieceLabel(k), ArmorCell(A, k), ArmorCell(B, k))));
+    rows.Add(("Talisman", TalismanCell(A), TalismanCell(B)));
+}
+<div class="compare">
+    <table class="table compare-metrics">
+        <thead><tr><th></th><th class="num">@ALabel</th><th class="num">@BLabel</th><th class="num">Difference</th></tr></thead>
+        <tbody>
+            @foreach (var m in metrics)
+            {
+                <tr @key="m.Label" class="@(m.Label == "Score" ? "headline" : "")">
+                    <td class="muted">@m.Label</td>
+                    <td class="num">@Fmt.N(m.A, m.Digits)@m.Suffix</td>
+                    <td class="num">@Fmt.N(m.B, m.Digits)@m.Suffix</td>
+                    <td class="num"><Delta Value="@(m.A - m.B)" Digits="m.Digits" Suffix="@m.Suffix" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="compare-cols">
+        <div>
+            <h4>Skills that differ</h4>
+            @if (changed.Count == 0)
+            {
+                <p class="muted small">Same skill levels.</p>
+            }
+            else
+            {
+                <table class="table compare-skills">
+                    <thead><tr><th>Skill</th><th class="num">@ALabel</th><th class="num">@BLabel</th><th class="num"></th></tr></thead>
+                    <tbody>
+                        @foreach (var x in changed)
+                        {
+                            <tr @key="x.Skill">
+                                <td><SkillChip Name="@x.Skill" /></td>
+                                <td class="num">@Level(x.La)</td>
+                                <td class="num">@Level(x.Lb)</td>
+                                <td class="num"><Delta Value="@(x.La - x.Lb)" Digits="0" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            @if (same.Count > 0)
+            {
+                <details class="small">
+                    <summary>@same.Count skill@(same.Count == 1 ? "" : "s") at the same level</summary>
+                    <div class="chip-row">
+                        @foreach (var x in same)
+                        {
+                            <SkillChip @key="x.Skill" Name="@x.Skill" Level="x.La" />
+                        }
+                    </div>
+                </details>
+            }
+        </div>
+        <div>
+            <h4>Set bonuses and group skills</h4>
+            @BonusList($"Only {ALabel}", bonusesA.Where(x => !bonusesB.Contains(x)).ToList(), groups)
+            @BonusList($"Only {BLabel}", bonusesB.Where(x => !bonusesA.Contains(x)).ToList(), groups)
+            @BonusList("Both", bonusesA.Where(bonusesB.Contains).ToList(), groups)
+        </div>
+    </div>
+
+    <h4>Equipment</h4>
+    <table class="table compare-equip">
+        <thead><tr><th></th><th>@ALabel</th><th>@BLabel</th></tr></thead>
+        <tbody>
+            @foreach (var r in rows)
+            {
+                <tr @key="r.Label" class="@(r.A.Key != r.B.Key ? "differs" : "")">
+                    <td class="muted piece">@r.Label</td>
+                    <td>@EquipView(r.A)</td>
+                    <td>@EquipView(r.B)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public BuildDto A { get; set; } = default!;
+    [Parameter, EditorRequired] public string ALabel { get; set; } = "";
+    [Parameter, EditorRequired] public BuildDto B { get; set; } = default!;
+    [Parameter, EditorRequired] public string BLabel { get; set; } = "";
+
+    private sealed record Metric(string Label, double A, double B, int Digits, string? Suffix = null);
+
+    private sealed record EquipCell(string Key, string? Name, IReadOnlyList<DecoDto?> Decos);
+
+    private static readonly EquipCell NoCell = new("-", null, []);
+
+    private static readonly Regex Parenthesis = new(@" \(.*\)$");
+
+    private static readonly Regex Tier = new(@" (I|II)$");
+
+    private static RenderFragment Level(int level) => __builder =>
+    {
+        if (level != 0)
+        {
+            @level
+        }
+        else
+        {
+            <span class="muted">–</span>
+        }
+    };
+
+    private static RenderFragment BonusList(string title, IReadOnlyList<string> items, HashSet<string> groups) => __builder =>
+    {
+        if (items.Count == 0) return;
+        <div class="bonuslist">
+            <span class="muted small">@title</span>
+            <span class="chip-row">
+                @foreach (var x in items)
+                {
+                    var bare = Tier.Replace(Parenthesis.Replace(x, ""), "");
+                    var kind = groups.Contains(x) ? SkillKind.Group : SkillKind.Set;
+                    <SkillHover @key="x" Name="@x" Class="@("chip skill " + (kind == SkillKind.Group ? "group" : "set"))"><SkillIcon Name="@bare" Kind="kind" Size="18" />@x</SkillHover>
+                }
+            </span>
+        </div>
+    };
+
+    private static string DecoKey(IReadOnlyList<DecoDto?> decos) => string.Join(",", decos.Select(d => d?.Name ?? "-"));
+
+    private static EquipCell WeaponCell(BuildDto b)
+    {
+        var pair = $"{b.Weapon.SetBonus ?? "-"} / {b.Weapon.GroupSkill ?? "-"}";
+        return new EquipCell(pair + "|" + DecoKey(b.Weapon.Decorations), pair, b.Weapon.Decorations);
+    }
+
+    private static EquipCell ArmorCell(BuildDto b, ArmorPieceKind kind) =>
+        b.Armor.FirstOrDefault(x => x.Kind == kind) is { } a
+            ? new EquipCell(a.Name + (a.Transcended ? "T" : "") + "|" + DecoKey(a.Decorations), a.Name + (a.Transcended ? " (transcended)" : ""), a.Decorations)
+            : NoCell;
+
+    private static EquipCell TalismanCell(BuildDto b) =>
+        b.Talisman is { } t ? new EquipCell(t.Name + "|" + DecoKey(t.Decorations), t.Name, t.Decorations) : NoCell;
+
+    private static RenderFragment EquipView(EquipCell cell) => __builder =>
+    {
+        if (cell.Name is null)
+        {
+            <span class="muted">–</span>
+            return;
+        }
+        <span class="equipview">
+            <span>@cell.Name</span>
+            <span class="equipview-decos">
+                @foreach (var d in cell.Decos)
+                {
+                    <DecoIcon Deco="d" Size="20" />
+                }
+            </span>
+        </span>
+    };
+}

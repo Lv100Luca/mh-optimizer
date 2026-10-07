@@ -1,0 +1,14 @@
+@* "+12.3" / "−4.0" / "±0" with the up / down tone (up = the first build is better). *@
+@{
+    var rounded = Math.Round(Value, Digits, MidpointRounding.AwayFromZero);
+    var tone = rounded > 0 ? "up" : rounded < 0 ? "down" : "same";
+    var text = rounded == 0 ? "±0" : (rounded > 0 ? "+" : "−") + Fmt.N(Math.Abs(rounded), Digits);
+}
+<span class="delta @tone">@text@Suffix@ChildContent</span>
+
+@code {
+    [Parameter] public double Value { get; set; }
+    [Parameter] public int Digits { get; set; } = 1;
+    [Parameter] public string? Suffix { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

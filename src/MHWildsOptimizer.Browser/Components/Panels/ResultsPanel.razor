@@ -1,5 +1,245 @@
 @inherits AppComponent
+@inject IJSRuntime JS
+@{
+    var run = App.Run;
+    var result = run.Result;
+    double? elapsed = run.StartedAt is { } started ? ((run.FinishedAt ?? DateTimeOffset.Now) - started).TotalSeconds : null;
+    var builds = App.Builds;
+    var valid = App.Resolved?.IsValid == true;
+
+    // the selected hand-entered build every result is compared with
+    var mineIndex = Math.Max(0, Math.Min(App.BuildIndex, builds.Count - 1));
+    var mineName = mineIndex < builds.Count ? builds[mineIndex].Name : "";
+    var mine = App.Evaluated is { } ev && mineIndex < ev.Count ? ev[mineIndex].Build : null;
+}
+@if (run.Status == RunStatus.Idle && result is null)
+{
+    <div class="panel">
+        <Section Title="Results" Hint="Run the optimizer to search for the best builds that reach your targets.">
+            <div class="empty">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="App.RunOptimizerAsync" Disabled="@(!valid)">▶ Run optimizer</MudButton>
+                @if (!valid)
+                {
+                    <p class="muted">Fix the validation errors in Review first.</p>
+                }
+            </div>
+        </Section>
+    </div>
+    return;
+}
 
 <div class="panel">
-    <Section Title="ResultsPanel" Hint="Not ported yet." />
+    <Section Title="@(run.Status == RunStatus.Running ? "Searching…" : "Results")" Hint="@Hint(run, result, elapsed)">
+        <Actions>
+            <div class="btn-row">
+                @if (run.Status == RunStatus.Running)
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun">Cancel</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="App.RunOptimizerAsync" Disabled="@(!valid)">▶ Run again</MudButton>
+                }
+                @if (result is not null)
+                {
+                    <MudButton Variant="Variant.Outlined" OnClick="Download" title="Download the plain-text report">Download .txt</MudButton>
+                    <MudButton Variant="Variant.Text" OnClick="Copy" title="Copy the plain-text report">Copy</MudButton>
+                }
+            </div>
+        </Actions>
+        <ChildContent>
+            @if (run.Status == RunStatus.Running)
+            {
+                <div class="progress"><span class="spinner"></span> @(run.Log.Count > 0 ? run.Log[^1] : "starting…")</div>
+            }
+            @if (run.Status == RunStatus.Error)
+            {
+                <Alert Kind="error">@run.Error</Alert>
+            }
+            @if (run.Status == RunStatus.Cancelled)
+            {
+                <Alert Kind="warning">Run cancelled after @(elapsed?.ToString("F1", CultureInfo.InvariantCulture)) s.</Alert>
+            }
+            @if (run.Log.Count > 0)
+            {
+                <div class="runlog-wrap">
+                    <button type="button" class="linklike" @onclick="() => _showLog = !_showLog">@(_showLog ? "Hide" : "Show") search log (@run.Log.Count lines)</button>
+                    @if (_showLog || run.Status == RunStatus.Running)
+                    {
+                        <pre class="runlog" id="@LogId">@string.Join("\n", run.Log)</pre>
+                    }
+                </div>
+            }
+            @if (result is not null && builds.Count > 0)
+            {
+                <div class="mine-strip">
+                    <span class="muted">Differences against</span>
+                    <Segmented T="int" Small="true" Value="mineIndex" ValueChanged="App.SetBuildIndex" Options="@MineOptions(builds)" />
+                    <span class="muted small">your builds are scored under the current conditions; rerun after changing them</span>
+                </div>
+            }
+        </ChildContent>
+    </Section>
+
+    @if (result is not null && result.SkillPairMode == SkillPairMode.Optimize && result.Pairs.Count > 1)
+    {
+        <Section Title="Skill pair ranking" Hint="Best score each rollable pair class can reach. '(any other)' means the set bonus or group skill does not matter for the score.">
+            <table class="table pairs">
+                <thead><tr><th>#</th><th>Set bonus</th><th>Group skill</th><th class="num">Best</th><th class="num">vs #1</th><th class="num">Builds</th><th class="num">Work</th></tr></thead>
+                <tbody>
+                    @foreach (var p in result.Pairs)
+                    {
+                        <tr @key="p.Rank" @onclick="() => ScrollToPair(p.Rank)">
+                            <td>@p.Rank</td>
+                            <td><SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="18" />@p.SetBonus</SkillHover></td>
+                            <td><SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="18" />@p.GroupSkill</SkillHover></td>
+                            <td class="num"><b>@Fmt.N(p.BestScore)</b></td>
+                            <td class="num muted">@(p.Rank == 1 ? "—" : Fmt.N(p.BestScore - result.Pairs[0].BestScore))</td>
+                            <td class="num">@p.Builds.Count</td>
+                            <td class="num muted" title="@(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel)">@p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </Section>
+    }
+
+    @if (result is not null)
+    {
+        foreach (var p in result.Pairs)
+        {
+            <div @key="p.Rank" id="@($"pair-{p.Rank}")" class="pair-block">
+                <div class="pairhead">
+                    <span class="rank">#@p.Rank</span>
+                    <SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="20" /><b>@p.SetBonus</b></SkillHover>
+                    <span class="muted">+</span>
+                    <SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="20" /><b>@p.GroupSkill</b></SkillHover>
+                    <span class="muted">best @Fmt.N(p.BestScore) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
+                </div>
+                @if (p.Builds.Count == 0)
+                {
+                    <Alert Kind="warning">No build satisfies the targets for this pair.</Alert>
+                }
+                @foreach (var b in p.Builds)
+                {
+                    var key = $"opt:{p.Rank}:{b.Rank}";
+                    var label = result.Pairs.Count > 1 ? $"Pair #{p.Rank} build {b.Rank}" : $"Optimizer build {b.Rank}";
+                    <BuildCard @key="b.Rank" Build="b" Best="@(p.Rank == 1 && b.Rank == 1)" Delta="@(mine is null ? null : DeltaTo(b.Score, mine.Score, mineName))">
+                        <Actions>
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => EditCopy(b, label, key)"
+                                       title="Copy this build into My builds to change pieces or decorations">
+                                Edit a copy
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Pick(b, label, key)"
+                                       title="Keep this build as the weapon's pick: it is copied into My builds and the inventory compares weapons by it (save the weapon to keep it)">
+                                ★ Pick
+                            </MudButton>
+                            @if (mine is not null)
+                            {
+                                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Compare(key)" title="@($"Compare side by side with {mineName}")">Compare</MudButton>
+                            }
+                        </Actions>
+                    </BuildCard>
+                }
+            </div>
+        }
+    }
 </div>
+
+@code {
+    private const string LogId = "results-runlog";
+
+    private bool _showLog;
+    private int _scrolledLog;
+    private Timer? _clock;
+
+    private string? Hint(RunState run, ResultDto? result, double? elapsed)
+    {
+        if (run.Status == RunStatus.Running)
+            return $"{elapsed?.ToString("F1", CultureInfo.InvariantCulture)} s elapsed · CP-SAT proves the best build for each skill pair (one solve per reported build).";
+        if (result is null) return null;
+        var buildCount = result.Pairs.Sum(p => p.Builds.Count);
+        var completed = result.CompletedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        return $"{result.Pairs.Count} skill pair{(result.Pairs.Count == 1 ? "" : "s")}, {buildCount} builds · search took {result.ElapsedSeconds.ToString("F1", CultureInfo.InvariantCulture)} s · {completed}"
+            + (run.FromDisk && App.Name is { } name ? $" · last run of {name}" : "");
+    }
+
+    private IReadOnlyList<SegmentOption<int>> MineOptions(IReadOnlyList<BuildInput> builds) =>
+        builds.Select((b, i) =>
+        {
+            var score = App.Evaluated is { } ev && i < ev.Count ? ev[i].Build?.Score : null;
+            var name = string.IsNullOrEmpty(b.Name) ? "(unnamed)" : b.Name;
+            RenderFragment content = @<span>@name@if (score is { } s) {<small>@(" ")@Fmt.N(s)</small>}</span>;
+            return new SegmentOption<int>(i, name, content);
+        }).ToList();
+
+    private static RenderFragment DeltaTo(double score, double reference, string label) =>
+        @<ScoreDelta Score="score" Reference="reference" Label="@label" />;
+
+    private IEnumerable<string> BuildNames => App.Builds.Select(x => x.Name);
+
+    private void EditCopy(BuildDto b, string label, string key) =>
+        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (copy)", BuildNames)), key);
+
+    private void Pick(BuildDto b, string label, string key) =>
+        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (picked)", BuildNames)) with { Picked = true }, key);
+
+    private void Compare(string key)
+    {
+        App.SetCompareKey(key);
+        App.SetTab(Tab.Builds);
+    }
+
+    private async Task Download()
+    {
+        if (App.Run.Result is not { } result) return;
+        await JS.InvokeVoidAsync("mhwo.download", $"{App.Name ?? "request"}.results.txt", "text/plain;charset=utf-8", result.Text);
+    }
+
+    private async Task Copy()
+    {
+        if (App.Run.Result is { } result) await JS.InvokeAsync<bool>("mhwo.copyText", result.Text);
+    }
+
+    private async Task ScrollToPair(int rank)
+    {
+        try
+        {
+            await using var el = await JS.InvokeAsync<IJSObjectReference?>("document.getElementById", $"pair-{rank}");
+            if (el is not null) await el.InvokeVoidAsync("scrollIntoView", new { behavior = "smooth" });
+        }
+        catch (JSException)
+        {
+            // the block is gone (another run replaced the result)
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var run = App.Run;
+        // the clock runs while the shown run does; switching to another weapon's run catches it up at once
+        if (run.Status == RunStatus.Running) _clock ??= new Timer(_ => InvokeAsync(StateHasChanged), null, 500, 500);
+        else if (_clock is not null) { await _clock.DisposeAsync(); _clock = null; }
+
+        // keep the newest log line in view
+        if (run.Log.Count != _scrolledLog && (_showLog || run.Status == RunStatus.Running))
+        {
+            _scrolledLog = run.Log.Count;
+            try
+            {
+                await using var el = await JS.InvokeAsync<IJSObjectReference?>("document.getElementById", LogId);
+                if (el is not null) await el.InvokeVoidAsync("scrollTo", new { top = int.MaxValue });
+            }
+            catch (JSException)
+            {
+                // the log is not shown
+            }
+        }
+    }
+
+    public override void Dispose()
+    {
+        _clock?.Dispose();
+        base.Dispose();
+    }
+}

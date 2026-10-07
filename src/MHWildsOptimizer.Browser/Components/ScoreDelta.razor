@@ -1,0 +1,15 @@
+@* Score difference of a build against a reference: "+12.3 (+1.7%) vs Optimizer build 1". *@
+@{
+    var pct = Reference != 0 ? (Score - Reference) / Reference * 100 : 0;
+}
+<span class="score-delta">
+    <Delta Value="@(Score - Reference)" /> <span class="muted">(@(pct >= 0 ? "+" : "−")@Fmt.N(Math.Abs(pct), 1)%) vs @(LabelContent ?? (b => b.AddContent(0, Label)))</span>
+</span>
+
+@code {
+    [Parameter] public double Score { get; set; }
+    [Parameter] public double Reference { get; set; }
+    /// <summary>What the score is compared with; <see cref="LabelContent"/> replaces it when given.</summary>
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public RenderFragment? LabelContent { get; set; }
+}
