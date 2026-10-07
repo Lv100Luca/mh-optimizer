@@ -10,4 +10,9 @@
     <PackageReference Include="Google.OrTools" Version="9.15.6755" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- cross-checks run the CP-SAT search on restricted candidate sets -->
+    <InternalsVisibleTo Include="MHWildsOptimizer.Tests" />
+  </ItemGroup>
+
 </Project>
