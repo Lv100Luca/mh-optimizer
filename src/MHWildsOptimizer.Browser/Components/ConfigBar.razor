@@ -55,9 +55,9 @@
     }
     else
     {
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver is { CrossOriginIsolated: false })"
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver?.Problem is not null)"
                    OnClick="App.RunOptimizerAsync" StartIcon="@Icons.Material.Filled.PlayArrow"
-                   title="@(App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first")">Run optimizer</MudButton>
+                   title="@(App.Solver?.Problem ?? (App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first"))">Run optimizer</MudButton>
     }
 </div>
 

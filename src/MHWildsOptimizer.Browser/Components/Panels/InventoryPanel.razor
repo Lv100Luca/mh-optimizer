@@ -23,7 +23,7 @@
                     }
                     else
                     {
-                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => App.RunWeaponsAsync(stale.Select(e => e.Name).ToList())" Disabled="@(stale.Count == 0)"
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => App.RunWeaponsAsync(stale.Select(e => e.Name).ToList())" Disabled="@(stale.Count == 0 || App.Solver?.Problem is not null)"
                                    title="Run the optimizer again for every weapon whose last run no longer matches its request or the talismans (one after another, saved setups only)">
                             ▶ Run stale (@stale.Count)
                         </MudButton>
@@ -177,7 +177,7 @@
                                                     {
                                                         <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Open(e.Name, Tab.Results)">Results</MudButton>
                                                     }
-                                                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.RunWeaponsAsync([e.Name])" Disabled="@(running || e.Errors.Count > 0)"
+                                                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.RunWeaponsAsync([e.Name])" Disabled="@(running || e.Errors.Count > 0 || App.Solver?.Problem is not null)"
                                                                title="Run the optimizer for this weapon (saved setup)">▶</MudButton>
                                                     <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(e.Name)"
                                                                Disabled="@(mark?.Status is BatchStatus.Running or BatchStatus.Queued)" title="@($"Delete {e.Name} with its builds and last run")">✕</MudButton>

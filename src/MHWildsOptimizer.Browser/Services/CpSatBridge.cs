@@ -5,8 +5,18 @@ using Microsoft.JSInterop;
 
 namespace MHWildsOptimizer.Browser.Services;
 
-/// <summary>What the browser offers the solver: whether threads work, how many cores, and JSPI (else the slower asyncify build runs).</summary>
-public sealed record SolverEnvironment(bool CrossOriginIsolated, int Cores, bool Jspi);
+/// <summary>
+/// What the browser offers the solver: whether threads work (cross-origin isolation, workers that start workers), how many
+/// cores, and JSPI (else the slower asyncify build runs).
+/// </summary>
+public sealed record SolverEnvironment(bool CrossOriginIsolated, int Cores, bool Jspi, bool NestedWorkers)
+{
+    /// <summary>Why CP-SAT cannot run in this browser, or null.</summary>
+    public string? Problem =>
+        !CrossOriginIsolated ? "The page is not cross-origin isolated, so CP-SAT cannot start (serve it with COOP/COEP headers or over HTTPS)."
+        : !NestedWorkers ? "This browser cannot start workers from a worker, which CP-SAT's threads need. Try a current Chrome, Edge or Firefox."
+        : null;
+}
 
 /// <summary>
 /// CP-SAT solves in or-tools-wasm (wwwroot/solver/bridge.js, bundled from solver/): the model is built with the managed

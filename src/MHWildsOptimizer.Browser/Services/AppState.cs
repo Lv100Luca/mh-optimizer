@@ -158,7 +158,7 @@ public sealed class AppState : IDisposable
         {
             Solver = await _solver.EnvironmentAsync();
             Notify();
-            if (!Solver.CrossOriginIsolated) return;
+            if (Solver.Problem is not null) return;
             await _solver.WarmUpAsync();
             await _solver.WarmUpLanesAsync(OptimizerOptions.ProcessorCount);
         }

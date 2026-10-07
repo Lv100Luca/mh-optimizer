@@ -44,10 +44,14 @@ internal sealed class CpSatSearch
     public bool ProvedOptimal { get; private set; } = true;
     public string Summary { get; private set; } = "";
 
+    /// <summary>Time spent building and checking the model, and waiting for the backend's solves.</summary>
+    public TimeSpan ModelTime { get; private set; }
+    public TimeSpan SolveTime { get; private set; }
+
     public ICpSatBackend Backend { get; init; } = NativeCpSatBackend.Instance;
 
     /// <summary>The backend lane this search solves on (see <see cref="ICpSatBackend.SolveAsync"/>).</summary>
-    public int Lane { get; init; }
+    public int Lane { get; set; }
 
     /// <summary>
     /// Score (micro points) every build must reach, e.g. the weakest skill pair class that is shown so far: a class that
@@ -66,35 +70,52 @@ internal sealed class CpSatSearch
         _talismans = talismans; _topN = topN; _parameters = CpSatParameters.For(threads, timeLimitSeconds); _progress = progress; _ct = ct;
     }
 
+    /// <summary>Score models shared with other searches of the same weapon and conditions; null builds one for this search.</summary>
+    public ScoreDecompositionCache? Scores { get; init; }
+
+    private CpModel? _model;
+    private Vars? _vars;
+    private Constraint? _cutoff;
+    private readonly List<RankedBuild> _builds = [];
+    private readonly HashSet<string> _seen = [];
+    private readonly List<string> _statuses = [];
+
     /// <summary>Runs the search on a backend that completes without the caller's thread (the native one).</summary>
     public IReadOnlyList<RankedBuild> Run() => RunAsync().GetAwaiter().GetResult();
 
-    public async Task<IReadOnlyList<RankedBuild>> RunAsync()
+    /// <summary>Finds the top N builds (at least <see cref="Cutoff"/>, if set).</summary>
+    public Task<IReadOnlyList<RankedBuild>> RunAsync() => SolveUntilAsync(_topN);
+
+    /// <summary>
+    /// Continues a finished search up to <paramref name="topN"/> builds without its <see cref="Cutoff"/>: the builds found
+    /// so far stay excluded from the next solves, so this returns what a new search for the top N would, without building
+    /// the model again or repeating its solves.
+    /// </summary>
+    public Task<IReadOnlyList<RankedBuild>> ExtendAsync(int topN)
     {
-        var sw = Stopwatch.StartNew();
-        var score = ScoreDecomposition.Build(_weapon, _rel, _cond);
-        var mismatch = score.Verify(CpSatParameters.ScoreChecks);
-        if (mismatch > 1e-6) throw new InvalidOperationException($"CP-SAT score model differs from the damage calculator by {mismatch:0.######}.");
-        _progress?.Report($"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.Sides.Count} health side(s), built in {sw.ElapsedMilliseconds} ms");
+        // an empty constraint is no constraint: the model keeps its constraint indices
+        _cutoff?.Proto.ClearConstraint();
+        _cutoff = null;
+        return SolveUntilAsync(topN);
+    }
 
-        var model = new CpModel();
-        var vars = BuildModel(model, score);
-        if (Cutoff is { } cutoff) model.Add(vars.Score >= cutoff);
-        var builds = new List<RankedBuild>();
-        var seen = new HashSet<string>();
-        var statuses = new List<string>();
-        var maxSolves = _topN + 3;
+    private async Task<IReadOnlyList<RankedBuild>> SolveUntilAsync(int topN)
+    {
+        if (_model is null) Build();
+        var (model, vars) = (_model!, _vars!);
+        var maxSolves = Solves + topN - _builds.Count + 3;
 
-        while (builds.Count < _topN && Solves < maxSolves)
+        while (_builds.Count < topN && Solves < maxSolves)
         {
             var solveSw = Stopwatch.StartNew();
             var response = await Backend.SolveAsync(model, _parameters, Lane, _ct);
+            SolveTime += solveSw.Elapsed;
             var status = response.Status;
             Solves++;
             _ct.ThrowIfCancellationRequested();
-            if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) { statuses.Add(status.ToString().ToLowerInvariant()); break; }
+            if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) { _statuses.Add(status.ToString().ToLowerInvariant()); break; }
             if (status != CpSolverStatus.Optimal) ProvedOptimal = false;
-            statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : "time limit");
+            _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : "time limit");
 
             var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
             var talisman = vars.Talismans.FindIndex(t => response.BooleanValue(t));
@@ -114,11 +135,34 @@ internal sealed class CpSatSearch
             var loadout = BuildLoadout(chosen, talisman, decos);
             if (loadout is null) continue;
             var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
-            if (!seen.Add(key)) continue;
-            builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, ""));
+            if (!_seen.Add(key)) continue;
+            _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, ""));
         }
-        Summary = $"cp-sat {Solves} solve(s): {string.Join(", ", statuses.GroupBy(s => s).Select(g => $"{g.Count()} {g.Key}"))}";
-        return builds.OrderByDescending(b => b.Score).Take(_topN).ToList();
+        Summary = $"cp-sat {Solves} solve(s): {string.Join(", ", _statuses.GroupBy(s => s).Select(g => $"{g.Count()} {g.Key}"))}";
+        return _builds.OrderByDescending(b => b.Score).Take(topN).ToList();
+    }
+
+    private void Build()
+    {
+        var sw = Stopwatch.StartNew();
+        var built = true;
+        var score = Scores is null ? CheckedScore() : Scores.GetOrBuild(_weapon, _rel, _cond, CheckedScore, out built);
+        _progress?.Report(built
+            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.Sides.Count} health side(s), built in {sw.ElapsedMilliseconds} ms"
+            : $"  score model: {score.Units.Count} units, shared with an earlier search");
+
+        _model = new CpModel();
+        _vars = BuildModel(_model, score);
+        if (Cutoff is { } cutoff) _cutoff = _model.Add(_vars.Score >= cutoff);
+        ModelTime = sw.Elapsed;
+    }
+
+    private ScoreDecomposition CheckedScore()
+    {
+        var score = ScoreDecomposition.Build(_weapon, _rel, _cond);
+        var mismatch = score.Verify(CpSatParameters.ScoreChecks);
+        if (mismatch > 1e-6) throw new InvalidOperationException($"CP-SAT score model differs from the damage calculator by {mismatch:0.######}.");
+        return score;
     }
 
     private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, List<IntVar> Decos, IntVar Score);

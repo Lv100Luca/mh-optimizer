@@ -250,6 +250,35 @@ public class OptimizerTests(ITestOutputHelper output)
         Assert.True(score.Verify(3000) < 1e-6);
     }
 
+    /// <summary>Skill pair classes differ only in the weapon's set bonus and group skill: they share one score model.</summary>
+    [Fact]
+    public void ScoreModelIsSharedByWeaponsThatDifferOnlyInTheirSkillPair()
+    {
+        var data = TestData.Data;
+        var weapon = new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity }.Resolve(data);
+        var cond = Conditions.AllOn;
+        var targets = new Dictionary<string, int> { ["Weakness Exploit"] = 3 };
+        var cache = new ScoreDecompositionCache();
+        var builds = 0;
+        ScoreDecomposition Get(GogmaWeaponStats w, Relevance rel) =>
+            cache.GetOrBuild(w, rel, cond, () => { builds++; return ScoreDecomposition.Build(w, rel, cond); }, out _);
+
+        var withPair = weapon with { SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" };
+        var relPair = Relevance.Build(withPair, targets, cond, data);
+        var plain = Relevance.Build(weapon, targets, cond, data);
+        Assert.Equal(ScoreDecomposition.FeaturesOf(plain), ScoreDecomposition.FeaturesOf(relPair));
+
+        var first = Get(withPair, relPair);
+        Assert.Same(first, Get(weapon, plain));
+        Assert.Equal(1, builds);
+        Assert.True(first.Verify(500) < 1e-6);
+
+        // other features, other model
+        var other = Relevance.Build(weapon, new Dictionary<string, int> { ["Weakness Exploit"] = 3, ["Maximum Might"] = 3 }, cond, data);
+        Assert.NotSame(first, Get(weapon, other));
+        Assert.Equal(2, builds);
+    }
+
     [Fact]
     public void CpSatFindsBuildsAtLeastAsGoodAsTheBeam()
     {

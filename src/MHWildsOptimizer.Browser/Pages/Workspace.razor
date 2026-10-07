@@ -79,9 +79,9 @@ else
             {
                 <span class="ok">Request is valid@(resolved.Baseline is { } b ? $" · weapon-only baseline {b.Total:0.0}" : "")</span>
             }
-            @if (App.Solver is { CrossOriginIsolated: false })
+            @if (App.Solver?.Problem is { } problem)
             {
-                <span class="err">The page is not cross-origin isolated, so CP-SAT cannot start (serve it with COOP/COEP headers or over HTTPS).</span>
+                <span class="err">@problem</span>
             }
             <span class="muted right">
                 @Catalog.Skills.Count skills · @Catalog.Decorations.Count decorations · @Catalog.ArmorSets.Count armor sets · runs in your browser@(App.Solver is { } s ? $" ({s.Cores} cores)" : "") · data wilds.mhdb.io, icons monsterhunterwiki.org

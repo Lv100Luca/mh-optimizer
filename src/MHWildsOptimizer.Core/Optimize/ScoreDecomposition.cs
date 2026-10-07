@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Domain;
@@ -55,6 +56,7 @@ public sealed class ScoreDecomposition
     public IReadOnlyList<ScoreUnit> Units { get; }
     public IReadOnlyList<ScoreSide> Sides { get; }
     public bool HasElement => _weapon.ElementTrue > 0;
+    /// <summary>The weapon the score is for, without its set bonus and group skill (they count as pieces instead).</summary>
     public GogmaWeaponStats Weapon => _weapon;
     /// <summary>Shockwave damage per 100 MV = <see cref="ShockwaveRawShare"/> * EFR + <see cref="ShockwaveConstant"/>[side].</summary>
     public double ShockwaveRawShare { get; }
@@ -69,12 +71,23 @@ public sealed class ScoreDecomposition
         ShockwaveRawShare = shockShare; ShockwaveConstant = shockConst; ElementScale = elementScale;
     }
 
-    public static ScoreDecomposition Build(GogmaWeaponStats weapon, Relevance rel, Conditions cond)
+    /// <summary>
+    /// The features <see cref="Build"/> decomposes the score into. The weapon's own set bonus and group skill only count as
+    /// pieces (see <see cref="CpSatSearch"/>), so weapons that differ in nothing else get the same decomposition from the
+    /// same features (see <see cref="ScoreDecompositionCache"/>).
+    /// </summary>
+    public static List<Feature> FeaturesOf(Relevance rel)
     {
         var features = new List<Feature>();
         for (var s = 0; s < rel.Skills.Count; s++) features.Add(new Feature(FeatureKind.Skill, s, rel.Skills[s], rel.Caps[s]));
         for (var i = 0; i < rel.SetBonuses.Count; i++) features.Add(new Feature(FeatureKind.SetBonus, i, rel.SetBonuses[i], 2));
         for (var i = 0; i < rel.GroupSkills.Count; i++) features.Add(new Feature(FeatureKind.GroupSkill, i, rel.GroupSkills[i], 1));
+        return features;
+    }
+
+    public static ScoreDecomposition Build(GogmaWeaponStats weapon, Relevance rel, Conditions cond)
+    {
+        var features = FeaturesOf(rel);
 
         // with full health and red/low health both on, the calculator scores the better side; the model takes the max
         var sideConditions = cond.FullHealth && (cond.RedHealth || cond.LowHealth)
@@ -114,7 +127,7 @@ public sealed class ScoreDecomposition
 
         // units that never change the score (target-only skills such as Focus, sets whose condition is off) are left out
         units = units.Where(u => u.Tables.Select((t, side) => t.Any(c => !Same(c, Base(sides[side])))).Any(x => x)).ToList();
-        return new ScoreDecomposition(weapon, cond, features, units, sides, shockShare, shockConst, profile.ElementHitzoneRatio * profile.PerHundredMv);
+        return new ScoreDecomposition(bare, cond, features, units, sides, shockShare, shockConst, profile.ElementHitzoneRatio * profile.PerHundredMv);
     }
 
     /// <summary>Dark Arts shockwave per 100 MV at the given EFR, as <see cref="DamageCalculator"/> counts it.</summary>
@@ -165,7 +178,7 @@ public sealed class ScoreDecomposition
         for (var n = 0; n < samples; n++)
         {
             var values = Features.Select(f => rng.Next(f.Max + 1)).ToArray();
-            var expected = DamageCalculator.Calculate(_weapon with { SetBonus = null, GroupSkill = null }, Skills(Features, values), _cond, trace: false).Total;
+            var expected = DamageCalculator.Calculate(_weapon, Skills(Features, values), _cond, trace: false).Total;
             worst = Math.Max(worst, Math.Abs(expected - Evaluate(values)));
         }
         return worst;
@@ -270,5 +283,27 @@ public sealed class ScoreDecomposition
             _cache[key] = ch;
             return ch;
         }
+    }
+}
+
+/// <summary>
+/// Score models of one weapon and conditions by their features, built (and checked) once: the skill pair classes of an
+/// optimize-mode run differ only in the weapon's set bonus and group skill and usually share one model. Thread-safe.
+/// </summary>
+public sealed class ScoreDecompositionCache
+{
+    private readonly ConcurrentDictionary<(GogmaWeaponStats Weapon, Conditions Conditions, string Features), Lazy<ScoreDecomposition>> _models = new();
+
+    /// <param name="build">Builds the model when there is none for these features yet (e.g. <see cref="ScoreDecomposition.Build"/> and a check).</param>
+    /// <param name="built">Whether this call built it.</param>
+    public ScoreDecomposition GetOrBuild(GogmaWeaponStats weapon, Relevance rel, Conditions cond, Func<ScoreDecomposition> build, out bool built)
+    {
+        var key = (weapon with { SetBonus = null, GroupSkill = null }, cond,
+                   string.Join("|", ScoreDecomposition.FeaturesOf(rel).Select(f => $"{f.Kind}:{f.Name}:{f.Max}")));
+        var created = new Lazy<ScoreDecomposition>(build);
+        var model = _models.GetOrAdd(key, created);
+        var value = model.Value;
+        built = ReferenceEquals(model, created);
+        return value;
     }
 }

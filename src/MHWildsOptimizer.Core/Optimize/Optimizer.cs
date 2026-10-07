@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
@@ -145,12 +146,14 @@ public sealed class Optimizer
         var workers = CpSatParameters.For(threads, _request.Options.CpSatTimeLimitSeconds).Workers;
         var topN = _request.Options.TopN;
 
+        var scores = new ScoreDecompositionCache();
+
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
             var cls = FixedClass();
             progress?.Report($"Searching builds for {cls.Label} with {Plural(workers, "CP-SAT worker")}");
-            var result = await CpSatSearchAsync(cls, topN, null, 0, progress, ct);
-            return new OptimizationResult([result], DateTime.UtcNow - started);
+            var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct);
+            return new OptimizationResult([fixedSearch.Result], DateTime.UtcNow - started);
         }
 
         // classes with a named set bonus and group skill tend to score highest: solving them first makes the cutoff bite sooner
@@ -160,32 +163,34 @@ public sealed class Optimizer
         progress?.Report($"{classes.Count} score-equivalent skill pair classes, {Plural(Math.Min(lanes, classes.Count), "class", "classes")} at a time " +
                          $"with {Plural(workers, "CP-SAT worker")} each: the best build of every class, then the top {topN} of the best {shown}");
 
-        var bests = new List<(SkillPairClass Class, SkillPairResult Result)>();
+        var bests = new List<ClassSearch>();
         var done = 0;
         await ForEachOnLanesAsync(classes, lanes, async (cls, lane) =>
         {
             long? cutoff = null;
             lock (bests)
                 if (bests.Count >= shown) cutoff = CpSatSearch.CutoffFor(bests.Select(b => b.Result.BestScore).OrderByDescending(x => x).ElementAt(shown - 1));
-            var r = await CpSatSearchAsync(cls, 1, cutoff, lane, null, ct);
+            var search = await CpSatSearchAsync(cls, 1, cutoff, lane, scores, null, ct);
+            var r = search.Result;
             lock (bests)
-                if (r.Builds.Count > 0) bests.Add((cls, r));
+                if (r.Builds.Count > 0) bests.Add(search);
             var n = Interlocked.Increment(ref done);
             progress?.Report(r.Builds.Count > 0
-                ? $"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} ({cls.RollablePairs} rollable pairs)"
-                : $"[{n}/{classes.Count}] {cls.Label}: {(cutoff is null ? "no build reaches the targets" : $"cannot reach the best {shown}")} ({cls.RollablePairs} rollable pairs)");
+                ? $"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} ({cls.RollablePairs} rollable pairs; {search.Timing()})"
+                : $"[{n}/{classes.Count}] {cls.Label}: {(cutoff is null ? "no build reaches the targets" : $"cannot reach the best {shown}")} ({cls.RollablePairs} rollable pairs; {search.Timing()})");
         }, ct);
 
         var top = bests.OrderByDescending(b => b.Result.BestScore).Take(shown).ToList();
         if (topN == 1) return new OptimizationResult(top.Select(b => b.Result).ToList(), DateTime.UtcNow - started);
 
-        var full = new SkillPairResult[top.Count];
-        await ForEachOnLanesAsync(Enumerable.Range(0, top.Count).ToList(), lanes, async (i, lane) =>
+        // the shown classes go on from their best build, without the cutoff
+        await ForEachOnLanesAsync(top, lanes, async (search, lane) =>
         {
-            full[i] = await CpSatSearchAsync(top[i].Class, topN, null, lane, null, ct);
-            progress?.Report($"{top[i].Class.Label}: top {full[i].Builds.Count} builds");
+            search.Search.Lane = lane;
+            search.Finish(await search.Search.ExtendAsync(topN));
+            progress?.Report($"{search.Class.Label}: top {search.Result.Builds.Count} builds ({search.Timing()})");
         }, ct);
-        return new OptimizationResult(full.OrderByDescending(r => r.BestScore).ToList(), DateTime.UtcNow - started);
+        return new OptimizationResult(top.Select(b => b.Result).OrderByDescending(r => r.BestScore).ToList(), DateTime.UtcNow - started);
     }
 
     /// <summary>Runs <paramref name="body"/> for every item, at most <paramref name="lanes"/> at a time, each run knowing its lane.</summary>
@@ -216,16 +221,35 @@ public sealed class Optimizer
         return new ClassCandidates(rel, armor, talismans, new DecorationFiller(_data, rel), kinds, summary);
     }
 
-    private async Task<SkillPairResult> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, IProgress<string>? progress, CancellationToken ct)
+    /// <summary>One skill pair class's CP-SAT search and its result so far.</summary>
+    private sealed class ClassSearch(SkillPairClass cls, ClassCandidates candidates, CpSatSearch search, TimeSpan candidatesTime)
     {
+        public SkillPairClass Class => cls;
+        public CpSatSearch Search => search;
+        public SkillPairResult Result { get; private set; } = null!;
+
+        public void Finish(IReadOnlyList<RankedBuild> builds) =>
+            Result = new SkillPairResult(cls.Label, cls.Pair, builds.Select(b => b with { SkillPair = cls.Pair, SkillPairLabel = cls.Label }).ToList(),
+                search.Solves, $"{candidates.Summary}; {search.Summary}", OptimizerEngine.CpSat);
+
+        /// <summary>Where the time went: candidates, model, solves.</summary>
+        public string Timing() => $"candidates {Ms(candidatesTime)}, model {Ms(search.ModelTime)}, {Plural(search.Solves, "solve")} {Ms(search.SolveTime)}";
+    }
+
+    private async Task<ClassSearch> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, ScoreDecompositionCache scores,
+        IProgress<string>? progress, CancellationToken ct)
+    {
+        var sw = Stopwatch.StartNew();
         var c = CandidatesFor(cls.Weapon);
+        var candidatesTime = sw.Elapsed;
         progress?.Report("  " + c.Summary);
         var cp = new CpSatSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN,
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
-        { Backend = _cpSat, Lane = lane, Cutoff = cutoff };
-        var builds = (await cp.RunAsync()).Select(b => b with { SkillPair = cls.Pair, SkillPairLabel = cls.Label }).ToList();
-        progress?.Report($"  {cp.Summary}, {builds.Count} builds kept");
-        return new SkillPairResult(cls.Label, cls.Pair, builds, cp.Solves, $"{c.Summary}; {cp.Summary}", OptimizerEngine.CpSat);
+        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores };
+        var search = new ClassSearch(cls, c, cp, candidatesTime);
+        search.Finish(await cp.RunAsync());
+        progress?.Report($"  {cp.Summary}, {search.Result.Builds.Count} builds kept");
+        return search;
     }
 
     private SkillPairResult BeamSearch(SkillPairClass cls, int topN, ParallelOptions parallel, IProgress<string>? progress)
@@ -239,6 +263,8 @@ public sealed class Optimizer
     }
 
     private static string Plural(int n, string one, string? many = null) => $"{n} {(n == 1 ? one : many ?? one + "s")}";
+
+    private static string Ms(TimeSpan t) => $"{t.TotalMilliseconds:0} ms";
 
     private static string Score(double score) => score.ToString(BuildSummary.ScoreFormat, CultureInfo.InvariantCulture);
 

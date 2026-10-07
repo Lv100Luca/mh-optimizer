@@ -14,9 +14,7 @@ Chrome; it needed a reconnect once).
   is in `.git/info/exclude`). Nothing pushed or merged into `main`.
 - Commits on the branch, oldest first: spike (`9823eb8`), Core CP-SAT changes (`1116199`), MHWildsOptimizer.Api
   extraction (`29ba526`), browser app foundation (`b05baa1`…), three merged panel ports from subagents, fixes (`668ad55`).
-- The merged subagent branches `worktree-agent-a552ca9f8ca28d1ff`, `worktree-agent-a25b54d7909d05995`,
-  `worktree-agent-a8cd5b624c1d4bb36` and their worktrees under `.claude/worktrees/agent-*` can be removed
-  (`git worktree remove …` + `git branch -d …`).
+- The merged subagent branches and their worktrees are removed.
 
 ## What is done
 
@@ -44,16 +42,29 @@ Chrome; it needed a reconnect once).
   correctly; "the best" gives 700.82 / 700.82 / 683.05 like native. Release publish works (`dotnet publish
   src/MHWildsOptimizer.Browser -c Release -o publish/browser`, ~4.5 MB first load). README has a "Browser app" section
   with nginx config.
-- Dev server: launch config `browser` (worktree `.claude/launch.json`) = `dotnet run` on http://localhost:5240.
+- Dev server: launch config `browser` (worktree `.claude/launch.json`) = `dotnet run` on http://localhost:5240. The
+  desktop app's preview tools read the **main** checkout's launch.json (`preview_start {name: "browser"}` started `web`),
+  so run it with `dotnet run --project src/MHWildsOptimizer.Browser --launch-profile http` in the background instead.
+- **Optimize mode is fast now** (second session): "the best" in Chrome 13.3 s (was 27 s; native 8.2 s, was 9.1 s), same
+  results. The per-class C# work was the score model (`ScoreDecomposition.Build`, ~20k damage-calculator probes, ~18 ms
+  native, ~0.4 s interpreted) built again for each of the 17 searches on the single .NET thread. Now
+  `ScoreDecompositionCache` builds it once per run (the classes differ only in the weapon's set bonus / group skill, which
+  the model counts as pieces), and phase 2 continues the shown classes' phase-1 searches (`CpSatSearch.ExtendAsync`: the
+  cutoff constraint is cleared, the found build stays excluded) instead of rebuilding and re-solving. The run log shows
+  per class `candidates / model / solves` times. What is left is phase 2's five sequential solves per shown class.
+- **Solver lanes queue their jobs** (`bridge.js` `enqueue`): a run started while the lanes were still warming up failed
+  with `SolverExecutorBusyError` (seen in Chrome). Cancelling a solve that waits for its lane works too.
+- **Browsers that cannot nest workers** (the Claude desktop browser pane, at least now) hung forever in "loading-workers";
+  `environment()` probes it (`solver/probe-worker.js`), the footer explains it and the run buttons are disabled.
+- **Testing without Claude in Chrome**: `spikes/WasmSpeedTest/edge-bench.mjs` drives headless Edge over CDP (imports a
+  profile folder, runs a weapon, prints the run log); serve the publish with `spikes/WasmSpeedTest/serve.py 5241
+  publish/browser/wwwroot`. The desktop pane cannot run the solver and does not register service workers.
 
 ## Next steps
 
-1. **Optimize mode is 27 s in the browser vs 10 s native.** The timed run log (`[ 4.0s] [1/14] …`) shows classes
-   finishing one at a time ~1 s apart instead of 4 lanes at once, so the per-class C# work (Relevance, Candidates,
-   ScoreDecomposition.Build, BuildModel, loadout scoring; interpreted .NET on the UI thread) serializes the lanes.
-   Neither pre-started lanes nor `ScoreChecks = 20` changed it. Profile it (e.g. Stopwatch around model building in
-   `CpSatSearch.RunAsync`, or browser devtools); options: AOT (`RunAOTCompilation`, bigger download), caching per class
-   between phase 1 and 2, reusing phase 1's first solve, or yielding (`Task.Yield`) so lanes submit solves earlier.
+1. Optional speed-ups left: AOT (`RunAOTCompilation`; mostly helps C# work, which is small now, and costs download
+   size), more workers per solve in phase 2 when lanes outnumber the shown classes (`MaxWorkersPerSolve` says more than 4
+   does not help a single solve, so measure first).
 2. Small UI issues seen: the profile MudMenu stays open behind the import dialog; segmented labels run together
    ("Attack200 raw"); the excluded-sets list in Options is cramped; the run log is not visible after a run finishes
    (check what the React ResultsPanel did).
