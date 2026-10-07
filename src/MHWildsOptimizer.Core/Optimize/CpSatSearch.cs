@@ -14,7 +14,8 @@ namespace MHWildsOptimizer.Core.Optimize;
 /// higher), targets as linear constraints, set-bonus tiers and group skills reified on piece counts, and the damage formula
 /// of <see cref="ScoreDecomposition"/> as table lookups, products and divisions in fixed point. The solver proves the
 /// optimum (up to the fixed-point rounding, ~1e-4); the next builds come from re-solving with the previous armor + talisman
-/// combinations excluded. Every build is re-scored with <see cref="DamageCalculator"/>.
+/// combinations excluded. Every build is re-scored with <see cref="DamageCalculator"/>. Solves run on an
+/// <see cref="ICpSatBackend"/>: the native library, or or-tools-wasm in the browser.
 /// </summary>
 internal sealed class CpSatSearch
 {
@@ -22,6 +23,9 @@ internal sealed class CpSatSearch
     private const long Micro = 1_000_000;   // score terms in 1e-6
     private const long DecoPenalty = 1;     // per decoration, in 1/ObjectiveScale of a micro point: keeps useless jewels out
     private const long ObjectiveScale = 32;
+
+    /// <summary>Slack under a <see cref="Cutoff"/> for the fixed-point rounding of the score model, in micro points.</summary>
+    public const long CutoffSlack = 50_000;
 
     private readonly GameData _data;
     private readonly Relevance _rel;
@@ -32,8 +36,7 @@ internal sealed class CpSatSearch
     private readonly ArmorPieceKind[] _kinds;
     private readonly List<TalismanCandidate> _talismans;
     private readonly int _topN;
-    private readonly int _threads;
-    private readonly double _timeLimit;
+    private readonly CpSatParameters _parameters;
     private readonly IProgress<string>? _progress;
     private readonly CancellationToken _ct;
 
@@ -41,15 +44,32 @@ internal sealed class CpSatSearch
     public bool ProvedOptimal { get; private set; } = true;
     public string Summary { get; private set; } = "";
 
+    public ICpSatBackend Backend { get; init; } = NativeCpSatBackend.Instance;
+
+    /// <summary>The backend lane this search solves on (see <see cref="ICpSatBackend.SolveAsync"/>).</summary>
+    public int Lane { get; init; }
+
+    /// <summary>
+    /// Score (micro points) every build must reach, e.g. the weakest skill pair class that is shown so far: a class that
+    /// cannot reach it is proved infeasible, usually much faster than it can be solved.
+    /// </summary>
+    public long? Cutoff { get; init; }
+
+    /// <summary>The cutoff a build scoring <paramref name="score"/> (points) sets, less <see cref="CutoffSlack"/>.</summary>
+    public static long CutoffFor(double score) => (long)Math.Floor(score * Micro) - CutoffSlack;
+
     public CpSatSearch(GameData data, Relevance rel, GogmaWeaponStats weapon, Conditions cond, DecorationFiller filler,
         Dictionary<ArmorPieceKind, List<ArmorCandidate>> armor, ArmorPieceKind[] kinds, List<TalismanCandidate> talismans,
         int topN, int threads, double timeLimitSeconds, IProgress<string>? progress, CancellationToken ct)
     {
         _data = data; _rel = rel; _weapon = weapon; _cond = cond; _filler = filler; _armor = armor; _kinds = kinds;
-        _talismans = talismans; _topN = topN; _threads = Math.Max(1, threads); _timeLimit = timeLimitSeconds; _progress = progress; _ct = ct;
+        _talismans = talismans; _topN = topN; _parameters = CpSatParameters.For(threads, timeLimitSeconds); _progress = progress; _ct = ct;
     }
 
-    public IReadOnlyList<RankedBuild> Run()
+    /// <summary>Runs the search on a backend that completes without the caller's thread (the native one).</summary>
+    public IReadOnlyList<RankedBuild> Run() => RunAsync().GetAwaiter().GetResult();
+
+    public async Task<IReadOnlyList<RankedBuild>> RunAsync()
     {
         var sw = Stopwatch.StartNew();
         var score = ScoreDecomposition.Build(_weapon, _rel, _cond);
@@ -59,32 +79,31 @@ internal sealed class CpSatSearch
 
         var model = new CpModel();
         var vars = BuildModel(model, score);
+        if (Cutoff is { } cutoff) model.Add(vars.Score >= cutoff);
         var builds = new List<RankedBuild>();
         var seen = new HashSet<string>();
         var statuses = new List<string>();
         var maxSolves = _topN + 3;
 
-        using var solver = new CpSolver();
-        solver.StringParameters = $"num_workers:{_threads}, max_time_in_seconds:{_timeLimit.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
-        using var registration = _ct.Register(solver.StopSearch);
         while (builds.Count < _topN && Solves < maxSolves)
         {
             var solveSw = Stopwatch.StartNew();
-            var status = solver.Solve(model);
+            var response = await Backend.SolveAsync(model, _parameters, Lane, _ct);
+            var status = response.Status;
             Solves++;
             _ct.ThrowIfCancellationRequested();
             if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) { statuses.Add(status.ToString().ToLowerInvariant()); break; }
             if (status != CpSolverStatus.Optimal) ProvedOptimal = false;
             statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : "time limit");
 
-            var chosen = vars.Pieces.Select(list => list.FindIndex(x => solver.BooleanValue(x.Var))).ToArray();
-            var talisman = vars.Talismans.FindIndex(solver.BooleanValue);
+            var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
+            var talisman = vars.Talismans.FindIndex(t => response.BooleanValue(t));
             var decos = new List<DecoCandidate>();
             for (var i = 0; i < vars.Decos.Count; i++)
-                for (var n = solver.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
+                for (var n = response.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
 
-            var objective = solver.ObjectiveValue / ObjectiveScale / Micro;
-            _progress?.Report($"  solve {Solves}: {status.ToString().ToLowerInvariant()} {objective:0.00} (bound {solver.BestObjectiveBound / ObjectiveScale / Micro:0.00}) in {solveSw.ElapsedMilliseconds} ms");
+            var objective = response.ObjectiveValue / ObjectiveScale / Micro;
+            _progress?.Report($"  solve {Solves}: {status.ToString().ToLowerInvariant()} {objective:0.00} (bound {response.BestObjectiveBound / ObjectiveScale / Micro:0.00}) in {solveSw.ElapsedMilliseconds} ms");
 
             // exclude this armor + talisman combination for the next solve (hints and an objective cap from this solve made it slower)
             var used = new List<ILiteral>();

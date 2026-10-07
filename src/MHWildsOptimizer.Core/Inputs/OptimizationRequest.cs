@@ -59,7 +59,13 @@ public sealed record OptimizerOptions
     public double CpSatTimeLimitSeconds { get; init; } = 120;
 
     /// <summary>The thread count actually used: <see cref="MaxThreads"/> resolved against this machine.</summary>
-    public int EffectiveThreads => MaxThreads <= 0 ? Environment.ProcessorCount : Math.Min(MaxThreads, Environment.ProcessorCount);
+    public int EffectiveThreads => MaxThreads <= 0 ? ProcessorCount : Math.Min(MaxThreads, ProcessorCount);
+
+    /// <summary>
+    /// Logical processors of this machine. The browser app sets it from <c>navigator.hardwareConcurrency</c>: in WebAssembly
+    /// <see cref="Environment.ProcessorCount"/> is 1, but CP-SAT's workers run as their own web workers there.
+    /// </summary>
+    public static int ProcessorCount { get; set; } = Environment.ProcessorCount;
 }
 
 /// <summary>Everything the optimizer needs, loadable from inputs/request.json (snake_case keys).</summary>

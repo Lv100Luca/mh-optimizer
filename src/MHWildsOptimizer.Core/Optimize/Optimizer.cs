@@ -35,20 +35,65 @@ public sealed record OptimizationResult(IReadOnlyList<SkillPairResult> PairResul
 /// builds with identical relevant skill levels / slot counts / set and group counts are merged, dominated states are dropped,
 /// states that can no longer reach the targets are dropped, and every surviving final state is decorated and scored once.
 /// In "optimize" mode the rollable skill pairs are grouped into classes that behave identically for the score.
+/// The CP-SAT engine (<see cref="CpSatSearch"/>) replaces the state search when <see cref="OptimizerOptions.Engine"/> asks for it.
 /// </summary>
 public sealed class Optimizer
 {
     public const string OtherLabel = "(any other)";
     private readonly GameData _data;
     private readonly ResolvedRequest _request;
+    private readonly ICpSatBackend _cpSat;
 
-    public Optimizer(GameData data, ResolvedRequest request)
+    /// <param name="cpSat">Where CP-SAT solves run; the native library by default.</param>
+    public Optimizer(GameData data, ResolvedRequest request, ICpSatBackend? cpSat = null)
     {
         _data = data;
         _request = request;
+        _cpSat = cpSat ?? NativeCpSatBackend.Instance;
     }
 
-    public OptimizationResult Run(IProgress<string>? progress = null, CancellationToken ct = default)
+    /// <summary>Runs the search; with the CP-SAT engine the backend must complete without the caller's thread (the native one does).</summary>
+    public OptimizationResult Run(IProgress<string>? progress = null, CancellationToken ct = default) =>
+        _request.Options.Engine == OptimizerEngine.CpSat ? RunCpSatAsync(progress, ct).GetAwaiter().GetResult() : RunBeam(progress, ct);
+
+    /// <summary>Runs the search; the beam engine runs synchronously, CP-SAT awaits its backend (e.g. or-tools-wasm in the browser).</summary>
+    public Task<OptimizationResult> RunAsync(IProgress<string>? progress = null, CancellationToken ct = default) =>
+        _request.Options.Engine == OptimizerEngine.CpSat ? RunCpSatAsync(progress, ct) : Task.FromResult(RunBeam(progress, ct));
+
+    /// <summary>One score-equivalent group of rollable skill pairs; <paramref name="Weapon"/> carries its set bonus / group skill.</summary>
+    /// <param name="Specific">How many of set bonus and group skill are named rather than <see cref="OtherLabel"/> (0-2).</param>
+    private sealed record SkillPairClass(string Label, GogmaWeaponStats Weapon, GogmaSkillPair? Pair, int RollablePairs, int Specific);
+
+    private SkillPairClass FixedClass()
+    {
+        var pair = _request.SkillPairCandidates.FirstOrDefault();
+        var weapon = _request.Weapon with { SetBonus = pair?.SetBonus ?? _request.Weapon.SetBonus, GroupSkill = pair?.GroupSkill ?? _request.Weapon.GroupSkill };
+        return new SkillPairClass($"{weapon.SetBonus ?? "-"} + {weapon.GroupSkill ?? "-"}", weapon, pair, 1, 2);
+    }
+
+    /// <summary>The rollable pairs grouped by the set bonus / group skill that matter for the score (others become <see cref="OtherLabel"/>).</summary>
+    private List<SkillPairClass> Classes()
+    {
+        var baseRel = Relevance.Build(_request.Weapon, _request, _data);
+        return _request.SkillPairCandidates.Where(p => p is not null).Select(p => p!)
+            .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
+                           Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
+            .Select(cls =>
+            {
+                var representative = cls.First();
+                var weapon = _request.Weapon with
+                {
+                    SetBonus = cls.Key.Set == OtherLabel ? null : representative.SetBonus,
+                    GroupSkill = cls.Key.Group == OtherLabel ? null : representative.GroupSkill,
+                };
+                var pair = cls.Key.Set == OtherLabel && cls.Key.Group == OtherLabel ? null : representative;
+                return new SkillPairClass($"{cls.Key.Set} + {cls.Key.Group}", weapon, pair, cls.Count(),
+                    (cls.Key.Set == OtherLabel ? 0 : 1) + (cls.Key.Group == OtherLabel ? 0 : 1));
+            })
+            .ToList();
+    }
+
+    private OptimizationResult RunBeam(IProgress<string>? progress, CancellationToken ct)
     {
         var started = DateTime.UtcNow;
         var results = new List<SkillPairResult>();
@@ -64,40 +109,22 @@ public sealed class Optimizer
 
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
-            var pair = _request.SkillPairCandidates.FirstOrDefault();
-            var weapon = _request.Weapon with { SetBonus = pair?.SetBonus ?? _request.Weapon.SetBonus, GroupSkill = pair?.GroupSkill ?? _request.Weapon.GroupSkill };
-            var label = $"{weapon.SetBonus ?? "-"} + {weapon.GroupSkill ?? "-"}";
-            progress?.Report($"Searching builds for {label} on {threads} thread{(threads == 1 ? "" : "s")}");
-            results.Add(Search(weapon, pair, label, _request.Options.TopN, parallel, progress));
+            var cls = FixedClass();
+            progress?.Report($"Searching builds for {cls.Label} on {Plural(threads, "thread")}");
+            results.Add(BeamSearch(cls, _request.Options.TopN, parallel, progress));
         }
         else
         {
-            var baseRel = Relevance.Build(_request.Weapon, _request, _data);
-            var classes = _request.SkillPairCandidates.Where(p => p is not null).Select(p => p!)
-                .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
-                               Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
-                .ToList();
-            progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel on {threads} thread{(threads == 1 ? "" : "s")}");
+            var classes = Classes();
+            progress?.Report($"{classes.Count} score-equivalent skill pair classes, searching in parallel on {Plural(threads, "thread")}");
             var done = 0;
             var bag = new ConcurrentBag<SkillPairResult>();
-            // CP-SAT spreads each solve over all threads itself, so its classes run one after another
-            var classLoop = _request.Options.Engine == OptimizerEngine.CpSat
-                ? new ParallelOptions { MaxDegreeOfParallelism = 1, CancellationToken = ct }
-                : parallel;
-            Parallel.ForEach(classes, classLoop, cls =>
+            Parallel.ForEach(classes, parallel, cls =>
             {
-                var representative = cls.First();
-                var label = $"{cls.Key.Set} + {cls.Key.Group}";
-                var weapon = _request.Weapon with
-                {
-                    SetBonus = cls.Key.Set == OtherLabel ? null : representative.SetBonus,
-                    GroupSkill = cls.Key.Group == OtherLabel ? null : representative.GroupSkill,
-                };
-                var pair = cls.Key.Set == OtherLabel && cls.Key.Group == OtherLabel ? null : representative;
-                var r = Search(weapon, pair, label, _request.Options.TopN, parallel, null);
+                var r = BeamSearch(cls, _request.Options.TopN, parallel, null);
                 bag.Add(r);
                 var n = Interlocked.Increment(ref done);
-                progress?.Report($"[{n}/{classes.Count}] {label}: best {r.BestScore.ToString(BuildSummary.ScoreFormat, CultureInfo.InvariantCulture)} ({cls.Count()} rollable pairs)");
+                progress?.Report($"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} ({cls.RollablePairs} rollable pairs)");
             });
             results = bag.OrderByDescending(r => r.BestScore).Take(_request.SkillPair.TopN).ToList();
         }
@@ -105,30 +132,115 @@ public sealed class Optimizer
         return new OptimizationResult(results, DateTime.UtcNow - started);
     }
 
-    private SkillPairResult Search(GogmaWeaponStats weapon, GogmaSkillPair? pair, string label, int topN, ParallelOptions parallel, IProgress<string>? progress)
+    /// <summary>
+    /// CP-SAT: a fixed pair is one search. In optimize mode the classes run in two phases, as many at a time as the threads
+    /// allow (<see cref="CpSatParameters.MaxWorkersPerSolve"/> workers each): first each class's best build, where once enough
+    /// classes are known a class must beat the weakest shown one or is proved unable to (fast); then the full top N only for
+    /// the classes that are shown. Same results as searching every class in full.
+    /// </summary>
+    private async Task<OptimizationResult> RunCpSatAsync(IProgress<string>? progress, CancellationToken ct)
+    {
+        var started = DateTime.UtcNow;
+        var threads = _request.Options.EffectiveThreads;
+        var workers = CpSatParameters.For(threads, _request.Options.CpSatTimeLimitSeconds).Workers;
+        var topN = _request.Options.TopN;
+
+        if (_request.SkillPair.Mode == SkillPairMode.Fixed)
+        {
+            var cls = FixedClass();
+            progress?.Report($"Searching builds for {cls.Label} with {Plural(workers, "CP-SAT worker")}");
+            var result = await CpSatSearchAsync(cls, topN, null, 0, progress, ct);
+            return new OptimizationResult([result], DateTime.UtcNow - started);
+        }
+
+        // classes with a named set bonus and group skill tend to score highest: solving them first makes the cutoff bite sooner
+        var classes = Classes().OrderByDescending(c => c.Specific).ToList();
+        var shown = _request.SkillPair.TopN;
+        var lanes = Math.Max(1, threads / workers);
+        progress?.Report($"{classes.Count} score-equivalent skill pair classes, {Plural(Math.Min(lanes, classes.Count), "class", "classes")} at a time " +
+                         $"with {Plural(workers, "CP-SAT worker")} each: the best build of every class, then the top {topN} of the best {shown}");
+
+        var bests = new List<(SkillPairClass Class, SkillPairResult Result)>();
+        var done = 0;
+        await ForEachOnLanesAsync(classes, lanes, async (cls, lane) =>
+        {
+            long? cutoff = null;
+            lock (bests)
+                if (bests.Count >= shown) cutoff = CpSatSearch.CutoffFor(bests.Select(b => b.Result.BestScore).OrderByDescending(x => x).ElementAt(shown - 1));
+            var r = await CpSatSearchAsync(cls, 1, cutoff, lane, null, ct);
+            lock (bests)
+                if (r.Builds.Count > 0) bests.Add((cls, r));
+            var n = Interlocked.Increment(ref done);
+            progress?.Report(r.Builds.Count > 0
+                ? $"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} ({cls.RollablePairs} rollable pairs)"
+                : $"[{n}/{classes.Count}] {cls.Label}: {(cutoff is null ? "no build reaches the targets" : $"cannot reach the best {shown}")} ({cls.RollablePairs} rollable pairs)");
+        }, ct);
+
+        var top = bests.OrderByDescending(b => b.Result.BestScore).Take(shown).ToList();
+        if (topN == 1) return new OptimizationResult(top.Select(b => b.Result).ToList(), DateTime.UtcNow - started);
+
+        var full = new SkillPairResult[top.Count];
+        await ForEachOnLanesAsync(Enumerable.Range(0, top.Count).ToList(), lanes, async (i, lane) =>
+        {
+            full[i] = await CpSatSearchAsync(top[i].Class, topN, null, lane, null, ct);
+            progress?.Report($"{top[i].Class.Label}: top {full[i].Builds.Count} builds");
+        }, ct);
+        return new OptimizationResult(full.OrderByDescending(r => r.BestScore).ToList(), DateTime.UtcNow - started);
+    }
+
+    /// <summary>Runs <paramref name="body"/> for every item, at most <paramref name="lanes"/> at a time, each run knowing its lane.</summary>
+    private static async Task ForEachOnLanesAsync<T>(IReadOnlyList<T> items, int lanes, Func<T, int, Task> body, CancellationToken ct)
+    {
+        var next = -1;
+        await Task.WhenAll(Enumerable.Range(0, Math.Min(lanes, items.Count)).Select(async lane =>
+        {
+            int i;
+            while ((i = Interlocked.Increment(ref next)) < items.Count)
+            {
+                ct.ThrowIfCancellationRequested();
+                await body(items[i], lane);
+            }
+        }));
+    }
+
+    private sealed record ClassCandidates(Relevance Rel, Dictionary<ArmorPieceKind, List<ArmorCandidate>> Armor, List<TalismanCandidate> Talismans,
+        DecorationFiller Filler, ArmorPieceKind[] Kinds, string Summary);
+
+    private ClassCandidates CandidatesFor(GogmaWeaponStats weapon)
     {
         var rel = Relevance.Build(weapon, _request, _data);
         var armor = Candidates.Armor(_data, rel, _request.Options);
         var talismans = Candidates.Talismans(_request.Talismans, rel);
-        var filler = new DecorationFiller(_data, rel);
         var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
         var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}";
-        progress?.Report("  " + summary);
-
-        if (_request.Options.Engine == OptimizerEngine.CpSat)
-        {
-            var cp = new CpSatSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN,
-                parallel.MaxDegreeOfParallelism, _request.Options.CpSatTimeLimitSeconds, progress, parallel.CancellationToken);
-            var cpBuilds = cp.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
-            progress?.Report($"  {cp.Summary}, {cpBuilds.Count} builds kept");
-            return new SkillPairResult(label, pair, cpBuilds, cp.Solves, $"{summary}; {cp.Summary}", OptimizerEngine.CpSat);
-        }
-
-        var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);
-        var builds = search.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
-        progress?.Report($"  {search.StatesEvaluated} final states scored, {builds.Count} builds kept");
-        return new SkillPairResult(label, pair, builds, search.StatesEvaluated, summary);
+        return new ClassCandidates(rel, armor, talismans, new DecorationFiller(_data, rel), kinds, summary);
     }
+
+    private async Task<SkillPairResult> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, IProgress<string>? progress, CancellationToken ct)
+    {
+        var c = CandidatesFor(cls.Weapon);
+        progress?.Report("  " + c.Summary);
+        var cp = new CpSatSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN,
+            _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
+        { Backend = _cpSat, Lane = lane, Cutoff = cutoff };
+        var builds = (await cp.RunAsync()).Select(b => b with { SkillPair = cls.Pair, SkillPairLabel = cls.Label }).ToList();
+        progress?.Report($"  {cp.Summary}, {builds.Count} builds kept");
+        return new SkillPairResult(cls.Label, cls.Pair, builds, cp.Solves, $"{c.Summary}; {cp.Summary}", OptimizerEngine.CpSat);
+    }
+
+    private SkillPairResult BeamSearch(SkillPairClass cls, int topN, ParallelOptions parallel, IProgress<string>? progress)
+    {
+        var c = CandidatesFor(cls.Weapon);
+        progress?.Report("  " + c.Summary);
+        var search = new StateSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);
+        var builds = search.Run().Select(b => b with { SkillPair = cls.Pair, SkillPairLabel = cls.Label }).ToList();
+        progress?.Report($"  {search.StatesEvaluated} final states scored, {builds.Count} builds kept");
+        return new SkillPairResult(cls.Label, cls.Pair, builds, search.StatesEvaluated, c.Summary);
+    }
+
+    private static string Plural(int n, string one, string? many = null) => $"{n} {(n == 1 ? one : many ?? one + "s")}";
+
+    private static string Score(double score) => score.ToString(BuildSummary.ScoreFormat, CultureInfo.InvariantCulture);
 
     // ------------------------------------------------------------------------------------------------
 
