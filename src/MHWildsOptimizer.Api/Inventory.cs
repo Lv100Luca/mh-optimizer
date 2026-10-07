@@ -2,7 +2,7 @@ using System.Text.Json;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Inputs;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 /// <summary>The best build of a weapon's last optimizer run, as it was scored then.</summary>
 public sealed record LastRunDto(DateTimeOffset CompletedAt, string PairLabel, BuildDto Build);
@@ -26,7 +26,7 @@ public sealed record InventoryEntryDto(
 
 public static class Inventory
 {
-    public static IReadOnlyList<InventoryEntryDto> Build(ProfileStore store, string profile, GameData data)
+    public static IReadOnlyList<InventoryEntryDto> Build(IProfileStore store, string profile, GameData data)
     {
         var talismans = store.LoadTalismans(profile);
         return store.ListWeapons(profile).Select(summary =>
@@ -51,7 +51,7 @@ public static class Inventory
             {
                 var best = results.Pairs.SelectMany(p => p.Builds.Select(b => (Pair: p, Build: b))).MaxBy(x => x.Build.Score);
                 if (best.Build is not null) lastRun = new LastRunDto(results.CompletedAt, best.Pair.Label, best.Build);
-                stale = results.InputsHash != ProfileStore.InputsHash(weapon.Request, talismans);
+                stale = results.InputsHash != ProfileRules.InputsHash(weapon.Request, talismans);
             }
 
             return new InventoryEntryDto(summary.Name, summary.Type, summary.Modified, summary.Summary ?? "", described.Weapon, described.Errors,

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    What the web UIs show, independent of where it runs: the catalog, validation, build scoring, the inventory, result
+    mapping and the profile store contract. The server (MHWildsOptimizer.Web) serves it as a JSON API with profiles on disk;
+    the browser app (MHWildsOptimizer.Browser) calls it directly with profiles in browser storage.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MHWildsOptimizer.Core\MHWildsOptimizer.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using MHWildsOptimizer.Core.Damage;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 /// <summary>One toggle of <see cref="Conditions"/>, with the text the UI shows for it.</summary>
 public sealed record ConditionDto(string Key, string Property, string Label, string Group, string Description, IReadOnlyList<string> Skills, bool Default);

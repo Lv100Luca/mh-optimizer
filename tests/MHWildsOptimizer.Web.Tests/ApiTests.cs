@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Inputs;
-using MHWildsOptimizer.Web.Api;
+using MHWildsOptimizer.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

@@ -6,7 +6,7 @@ using MHWildsOptimizer.Core.Gogma;
 using MHWildsOptimizer.Core.Inputs;
 using MHWildsOptimizer.Core.Optimize;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 public sealed record DecoDto(string Name, int Slot, SkillKind Kind, string? IconColor, IReadOnlyList<SkillGrant> Skills);
 
@@ -47,7 +47,7 @@ public sealed record BuildDto(
 
 public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string WorkLabel, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
 
-/// <param name="InputsHash">Fingerprint of the request and talismans the run used (<see cref="ProfileStore.InputsHash"/>); null in results saved before profiles.</param>
+/// <param name="InputsHash">Fingerprint of the request and talismans the run used (<see cref="ProfileRules.InputsHash"/>); null in results saved before profiles.</param>
 public sealed record ResultDto(DateTimeOffset CompletedAt, double ElapsedSeconds, SkillPairMode SkillPairMode, IReadOnlyList<PairResultDto> Pairs, string Text, string? InputsHash = null);
 
 /// <summary>Turns optimizer output into the JSON the client renders (equipment, decorations, skills with sources, stats).</summary>

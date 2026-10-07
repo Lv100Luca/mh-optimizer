@@ -15,14 +15,31 @@ public static class GameDataLoader
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    /// <summary>The dataset files <see cref="Load(string)"/> reads; the last two are optional.</summary>
+    public static readonly string[] FileNames =
+        ["skills.json", "armor_hr.json", "decorations.json", "charms.json", "gogma_weapons_base.json", "gogma_skill_pool.json", "random_talisman_pool.json"];
+
     /// <summary>Loads the normalized dataset from a directory containing armor_hr.json, skills.json, decorations.json, charms.json and gogma_weapons_base.json.</summary>
-    public static GameData Load(string dataDirectory)
+    public static GameData Load(string dataDirectory) =>
+        Load(name => Path.Combine(dataDirectory, name) is var path && File.Exists(path) ? File.OpenRead(path) : null, dataDirectory);
+
+    /// <summary>Loads the dataset from streams, e.g. files the browser fetched; <paramref name="open"/> returns null for a missing file.</summary>
+    /// <param name="source">Where the files come from, for error messages.</param>
+    public static GameData Load(Func<string, Stream?> open, string source = "the dataset")
     {
-        var skills = ReadFile<List<Skill>>(dataDirectory, "skills.json");
-        var armor = ReadFile<List<ArmorPiece>>(dataDirectory, "armor_hr.json");
-        var decorations = ReadFile<List<Decoration>>(dataDirectory, "decorations.json");
-        var charms = ReadFile<List<Charm>>(dataDirectory, "charms.json");
-        var gogmaRaw = ReadFile<Dictionary<string, Dictionary<string, GogmaWeaponVariant>>>(dataDirectory, "gogma_weapons_base.json");
+        T Read<T>(string name) => TryRead<T>(name) ?? throw new FileNotFoundException($"'{name}' is missing from {source}.", name);
+        T? TryRead<T>(string name)
+        {
+            using var stream = open(name);
+            if (stream is null) return default;
+            return JsonSerializer.Deserialize<T>(stream, JsonOptions) ?? throw new InvalidDataException($"'{name}' in {source} deserialized to null.");
+        }
+
+        var skills = Read<List<Skill>>("skills.json");
+        var armor = Read<List<ArmorPiece>>("armor_hr.json");
+        var decorations = Read<List<Decoration>>("decorations.json");
+        var charms = Read<List<Charm>>("charms.json");
+        var gogmaRaw = Read<Dictionary<string, Dictionary<string, GogmaWeaponVariant>>>("gogma_weapons_base.json");
 
         var gogma = gogmaRaw.ToDictionary(
             kv => WeaponTypeInfo.FromApiKind(kv.Key),
@@ -30,10 +47,10 @@ public static class GameDataLoader
                 f => Enum.Parse<GogmaFocus>(f.Key, ignoreCase: true),
                 f => f.Value));
 
-        var pairs = TryReadFile<SkillPoolFile>(dataDirectory, "gogma_skill_pool.json")?.Pairs
+        var pairs = TryRead<SkillPoolFile>("gogma_skill_pool.json")?.Pairs
                         .Select(p => new GogmaSkillPair(p.SetBonus, p.GroupSkill)).ToList();
 
-        var pool = TryReadFile<TalismanPoolFile>(dataDirectory, "random_talisman_pool.json") is { } tp
+        var pool = TryRead<TalismanPoolFile>("random_talisman_pool.json") is { } tp
             ? new RandomTalismanPool { Skills = tp.Skills, SlotPatterns = tp.SlotPatterns, RarityByType = tp.RarityByType }
             : null;
 
@@ -60,14 +77,6 @@ public static class GameDataLoader
         using var stream = File.OpenRead(path);
         return JsonSerializer.Deserialize<T>(stream, JsonOptions)
                ?? throw new InvalidDataException($"'{path}' deserialized to null.");
-    }
-
-    private static T ReadFile<T>(string directory, string fileName) => ReadJson<T>(Path.Combine(directory, fileName));
-
-    private static T? TryReadFile<T>(string directory, string fileName) where T : class
-    {
-        var path = Path.Combine(directory, fileName);
-        return File.Exists(path) ? ReadJson<T>(path) : null;
     }
 
     private sealed record SkillPoolFile(List<SkillPoolPair> Pairs);

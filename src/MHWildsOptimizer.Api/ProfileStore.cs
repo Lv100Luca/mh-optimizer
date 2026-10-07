@@ -1,48 +1,18 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Inputs;
 
-namespace MHWildsOptimizer.Web.Api;
-
-public sealed record ProfileSummaryDto(string Name, int Weapons, int Talismans, DateTimeOffset Modified);
-
-/// <summary>Account-wide data: the talisman pool every weapon draws from and the condition preset of each weapon type.</summary>
-public sealed record ProfileDto(string Name, IReadOnlyList<TalismanInput> Talismans, IReadOnlyDictionary<string, Conditions> ConditionPresets);
-
-public sealed record WeaponSummaryDto(string Name, string Type, DateTimeOffset Modified, bool HasResults, string? Summary);
-
-public sealed record WeaponDto(string Profile, string Name, OptimizationRequest Request, IReadOnlyList<BuildInput> Builds, bool HasResults);
-
-/// <summary>A weapon as the client saves it: the request plus its hand-entered builds (the talismans are the profile's).</summary>
-public sealed record WeaponPayload(OptimizationRequest Request, List<BuildInput>? Builds = null);
-
-/// <summary>
-/// What the client sends to validate, run or evaluate: the request plus the profile's random talismans and the weapon's
-/// hand-entered builds (possibly unsaved edits).
-/// </summary>
-public sealed record ConfigPayload(OptimizationRequest Request, List<TalismanInput>? Talismans, List<BuildInput>? Builds = null);
-
-/// <summary>The profile's talisman pool as the client saves it; <paramref name="Renames"/> maps old to new names of renamed talismans.</summary>
-public sealed record TalismansPayload(List<TalismanInput> Talismans, Dictionary<string, string>? Renames = null);
-
-/// <summary>Result of saving a weapon-type preset: the profile and the weapons whose conditions followed the preset.</summary>
-public sealed record PresetSavedDto(ProfileDto Profile, IReadOnlyList<string> UpdatedWeapons);
+namespace MHWildsOptimizer.Api;
 
 /// <summary>
 /// Profiles under inputs/profiles (layout in <see cref="ProfileFiles"/>). Each weapon is a request file the CLI can open
 /// directly; its talismans.file points at the profile's shared pool.
 /// </summary>
-public sealed partial class ProfileStore(AppPaths paths)
+/// <param name="inputs">The inputs directory (profiles live in its profiles/ folder).</param>
+public sealed class ProfileStore(string inputs) : IProfileStore
 {
-    public string Directory => paths.Inputs;
-    private string Root => ProfileFiles.ProfilesDirectory(paths.Inputs);
-
-    public static bool IsValidName(string name) =>
-        NamePattern().IsMatch(name) && !new[] { ".talismans", ".results", ".builds" }.Any(s => name.EndsWith(s, StringComparison.OrdinalIgnoreCase));
+    public string Directory => inputs;
+    private string Root => ProfileFiles.ProfilesDirectory(inputs);
 
     // ---------------------------------------------------------------- profiles
 
@@ -68,7 +38,6 @@ public sealed partial class ProfileStore(AppPaths paths)
         return new ProfileDto(profile, LoadTalismans(profile), ProfileFiles.ReadSettings(ProfileDir(profile)).ConditionPresets);
     }
 
-    /// <summary>Creates an empty profile; an existing one is returned unchanged.</summary>
     public ProfileDto CreateProfile(string profile)
     {
         if (!ProfileExists(profile))
@@ -80,19 +49,14 @@ public sealed partial class ProfileStore(AppPaths paths)
         return LoadProfile(profile)!;
     }
 
-    /// <param name="renames">Old name to new name of renamed talismans: hand-entered builds of every weapon refer to talismans by name and follow.</param>
     public ProfileDto SaveTalismans(string profile, IReadOnlyList<TalismanInput> talismans, IReadOnlyDictionary<string, string>? renames = null)
     {
         RequestFiles.SaveTalismans(talismans, TalismansPath(profile));
         if (renames is { Count: > 0 })
         {
             foreach (var file in RequestFiles.ListRequests(WeaponsDir(profile)))
-            {
-                var builds = RequestFiles.LoadBuildsFor(file);
-                if (!builds.Any(b => b.Talisman is { } t && renames.ContainsKey(t.Name))) continue;
-                RequestFiles.SaveBuildsFor(builds.Select(b => b.Talisman is { } t && renames.TryGetValue(t.Name, out var name)
-                    ? b with { Talisman = t with { Name = name } } : b).ToList(), file);
-            }
+                if (ProfileRules.RenameTalismans(RequestFiles.LoadBuildsFor(file), renames) is { } renamed)
+                    RequestFiles.SaveBuildsFor(renamed, file);
         }
         return LoadProfile(profile)!;
     }
@@ -103,10 +67,6 @@ public sealed partial class ProfileStore(AppPaths paths)
         return File.Exists(path) ? TalismanInputLoader.Read(path).ToList() : [];
     }
 
-    /// <summary>
-    /// Saves a weapon type's preset and moves every saved weapon of that type along (<see cref="ConditionPresets.Follow"/>):
-    /// values that matched the old preset take the new one, the weapons' own overrides stay.
-    /// </summary>
     public PresetSavedDto SavePreset(string profile, string weaponKind, Conditions preset)
     {
         var dir = ProfileDir(profile);
@@ -119,7 +79,7 @@ public sealed partial class ProfileStore(AppPaths paths)
         foreach (var file in RequestFiles.ListRequests(WeaponsDir(profile)))
         {
             var request = RequestLoader.Read(file);
-            if (WeaponKind(request) != weaponKind) continue;
+            if (ProfileRules.WeaponKind(request) != weaponKind) continue;
             var conditions = ConditionPresets.Follow(request.Conditions, old, preset);
             if (ConditionPresets.Same(conditions, request.Conditions)) continue;
             RequestFiles.SaveRequest(request with { Conditions = conditions }, file);
@@ -141,8 +101,8 @@ public sealed partial class ProfileStore(AppPaths paths)
             try
             {
                 var r = RequestLoader.Read(file);
-                type = WeaponKind(r);
-                summary = Summary(r);
+                type = ProfileRules.WeaponKind(r);
+                summary = ProfileRules.Summary(r);
             }
             catch (Exception e) when (e is JsonException or IOException or InvalidDataException)
             {
@@ -160,7 +120,6 @@ public sealed partial class ProfileStore(AppPaths paths)
         return new WeaponDto(profile, name, RequestLoader.Read(path), RequestFiles.LoadBuildsFor(path), File.Exists(ResultsJsonPath(profile, name)));
     }
 
-    /// <summary>Saves request + builds; the request's talisman file is pointed at the profile's pool.</summary>
     public WeaponDto SaveWeapon(string profile, string name, OptimizationRequest request, IReadOnlyList<BuildInput> builds)
     {
         var path = WeaponPath(profile, name);
@@ -206,50 +165,13 @@ public sealed partial class ProfileStore(AppPaths paths)
 
     // ---------------------------------------------------------------- helpers
 
-    public static string WeaponKind(OptimizationRequest r) => r.Weapon.Spec?.Type ?? r.Weapon.Type ?? "?";
-
-    public static string Summary(OptimizationRequest r)
-    {
-        var w = r.Weapon;
-        var targets = r.TargetSkills.Count == 0 ? "no targets" : string.Join(", ", r.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}"));
-        var element = w.Spec is { } spec && spec.Element != Core.Domain.Element.None ? spec.Element.ToString().ToLowerInvariant() + " " : "";
-        return $"{element}{WeaponKind(r)}, {(r.SkillPair.Mode == SkillPairMode.Fixed ? $"{w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}" : "optimize pair")}; {targets}";
-    }
-
-    /// <summary>
-    /// Fingerprint of what a run depends on: the request (minus where its talismans live) and the random talismans. A saved
-    /// result whose hash differs from the weapon's current one is stale.
-    /// </summary>
-    public static string InputsHash(OptimizationRequest request, IReadOnlyList<TalismanInput> talismans)
-    {
-        var node = new JsonObject
-        {
-            ["request"] = JsonSerializer.SerializeToNode(request with { Talismans = request.Talismans with { File = null } }, ApiJson.Options),
-            ["talismans"] = JsonSerializer.SerializeToNode(talismans, ApiJson.Options),
-        };
-        var canonical = Canonical(node)!.ToJsonString();
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonical)))[..16].ToLowerInvariant();
-    }
-
-    /// <summary>Object properties sorted by name, so the hash does not depend on the order skills were entered in.</summary>
-    private static JsonNode? Canonical(JsonNode? node) => node switch
-    {
-        JsonObject o => new JsonObject(o.OrderBy(kv => kv.Key, StringComparer.Ordinal).Select(kv => KeyValuePair.Create(kv.Key, Canonical(kv.Value)))),
-        JsonArray a => new JsonArray(a.Select(Canonical).ToArray()),
-        null => null,
-        _ => node.DeepClone(),
-    };
-
     private static DateTimeOffset LastWrite(string directory) =>
         System.IO.Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories).Select(File.GetLastWriteTimeUtc).DefaultIfEmpty(System.IO.Directory.GetLastWriteTimeUtc(directory)).Max();
 
-    private string ProfileDir(string profile) => ProfileFiles.ProfileDirectory(paths.Inputs, profile);
+    private string ProfileDir(string profile) => ProfileFiles.ProfileDirectory(inputs, profile);
     private string WeaponsDir(string profile) => ProfileFiles.WeaponsDirectory(ProfileDir(profile));
     private string TalismansPath(string profile) => Path.Combine(ProfileDir(profile), ProfileFiles.TalismansFileName);
     private string WeaponPath(string profile, string name) => Path.Combine(WeaponsDir(profile), name + ".json");
     private string ResultsJsonPath(string profile, string name) => Path.Combine(WeaponsDir(profile), name + RequestFiles.ResultsFileSuffix);
     private string ResultsTextPath(string profile, string name) => Path.Combine(WeaponsDir(profile), name + ".results.txt");
-
-    [GeneratedRegex(@"^[A-Za-z0-9][A-Za-z0-9 _.\-]{0,79}$")]
-    private static partial Regex NamePattern();
 }

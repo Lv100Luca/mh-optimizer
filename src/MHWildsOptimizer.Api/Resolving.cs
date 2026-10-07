@@ -6,7 +6,7 @@ using MHWildsOptimizer.Core.Gogma;
 using MHWildsOptimizer.Core.Inputs;
 using MHWildsOptimizer.Core.Optimize;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 public sealed record WeaponStatsDto(
     string Type,

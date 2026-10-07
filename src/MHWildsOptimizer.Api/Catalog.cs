@@ -4,7 +4,7 @@ using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
 using MHWildsOptimizer.Core.Inputs;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 public sealed record SkillDto(int Id, string Name, SkillKind Kind, int MaxLevel, string? Description, string? Icon, IReadOnlyList<SkillRank> Ranks);
 
@@ -154,7 +154,7 @@ public sealed record Catalog(
             Core.Damage.Conditions.Default,
             Core.Damage.Conditions.AllOn,
             Core.Damage.Conditions.AllOff,
-            Environment.ProcessorCount);
+            OptimizerOptions.ProcessorCount);
     }
 
     /// <summary>The same starting point as the CLI editor: a raw attack-focus Great Sword with no rolled pair.</summary>

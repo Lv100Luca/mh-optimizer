@@ -1,3 +1,4 @@
+using MHWildsOptimizer.Api;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Web.Api;
 
@@ -14,7 +15,7 @@ builder.Services.ConfigureHttpJsonOptions(o => ApiJson.Configure(o.SerializerOpt
 builder.Services.AddSingleton(sp => AppPaths.Resolve(sp.GetRequiredService<IConfiguration>()));
 builder.Services.AddSingleton(sp => GameDataLoader.Load(sp.GetRequiredService<AppPaths>().Data));
 builder.Services.AddSingleton(sp => Catalog.Build(sp.GetRequiredService<GameData>()));
-builder.Services.AddSingleton<ProfileStore>();
+builder.Services.AddSingleton<IProfileStore>(sp => new ProfileStore(sp.GetRequiredService<AppPaths>().Inputs));
 
 var app = builder.Build();
 

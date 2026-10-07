@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Inputs;
 using MHWildsOptimizer.Core.Optimize;
 
-namespace MHWildsOptimizer.Web.Api;
+namespace MHWildsOptimizer.Api;
 
 /// <summary>
 /// One requirement of the request checked against a build: <paramref name="Required"/> / <paramref name="Actual"/> are skill

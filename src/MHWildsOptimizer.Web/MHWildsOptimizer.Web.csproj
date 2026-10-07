@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MHWildsOptimizer.Core\MHWildsOptimizer.Core.csproj" />
+    <ProjectReference Include="..\MHWildsOptimizer.Api\MHWildsOptimizer.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
