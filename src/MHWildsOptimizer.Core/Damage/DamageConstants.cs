@@ -111,6 +111,13 @@ public static class DamageConstants
         _ => (1.20, 6),
     };
 
+    /// <summary>
+    /// Switch Axe phials on sword-mode slashes: Power phial raw x1.17, Element phial element x1.45 (wiggler.pet Wilds Switch Axe guide).
+    /// VERIFY: single source; whether they also boost the phial explosions is untested (the model assumes not).
+    /// </summary>
+    public const double PowerPhialRaw = 1.17;
+    public const double ElementPhialElement = 1.45;
+
     // ---------------- proc damage (extra damage instances), see notes/skill_values_set_group.md ----------------
 
     // Azure Bolt bursts (Leviathan's Fury) and Scorcher (Rathalos's Flare) are deliberately not scored; their values are in the notes.

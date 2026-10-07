@@ -21,8 +21,17 @@ public sealed record SharpnessBarDto(int Red, int Orange, int Yellow, int Green,
 
 public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, int Affinity, SharpnessBarDto? Sharpness, IReadOnlyList<int> Slots);
 
-/// <summary>The attack profile preset of a weapon type (what an unset <c>conditions.attack_profile</c> value falls back to).</summary>
-public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share, double ElementHitzoneRatio);
+/// <summary>One hit of an attack; <paramref name="PowerMv"/> is the power True Charged Slash finisher that replaces it on a weak spot.</summary>
+public sealed record AttackHitDto(string Name, double Mv, double Element, int Count, double? ElementPhialElement, bool SwordMode, SharpnessColor? FixedSharpness, double? PowerMv);
+
+public sealed record AttackDto(string Id, string Name, string Description, double Seconds, IReadOnlyList<AttackHitDto> Hits);
+
+/// <summary>
+/// The attack profile defaults of a weapon type: what an unset <c>conditions.attack_profile</c> value falls back to. Types with
+/// <paramref name="Attacks"/> are scored with <paramref name="DefaultAttack"/>; the others (and the "average" attack) with the
+/// average-hit numbers.
+/// </summary>
+public sealed record AttackProfileDto(double HitsPerMinute, double AverageMv, double ChargedLv3Share, string? DefaultAttack, IReadOnlyList<AttackDto> Attacks);
 
 public sealed record WeaponTypeDto(
     string Kind,
@@ -66,6 +75,8 @@ public sealed record Catalog(
     Conditions ConditionsDefault,
     Conditions ConditionsAllOn,
     Conditions ConditionsAllOff,
+    IReadOnlyList<MonsterHitzones> Monsters,
+    IReadOnlyList<Target> DummyTargets,
     int ProcessorCount)
 {
     public static Catalog Build(GameData data)
@@ -103,7 +114,7 @@ public sealed record Catalog(
                 WeaponCoreSkills.For(t).Select(c => new SkillGrantDto(c.Skill, c.Level)).ToList(),
                 GogmaConstants.ElementBaseDisplay(t),
                 GogmaConstants.InfusionBonusDisplay(t),
-                Profile(AttackProfile.Preset(t)),
+                Profile(t),
                 data.GogmaWeapons.TryGetValue(t, out var byFocus)
                     ? byFocus.ToDictionary(
                         kv => kv.Key.ToString().ToLowerInvariant(),
@@ -154,6 +165,8 @@ public sealed record Catalog(
             Core.Damage.Conditions.Default,
             Core.Damage.Conditions.AllOn,
             Core.Damage.Conditions.AllOff,
+            data.Monsters,
+            Target.DummyParts,
             OptimizerOptions.ProcessorCount);
     }
 
@@ -167,7 +180,15 @@ public sealed record Catalog(
         Talismans = new TalismanSettings { IncludeCraftable = true },
     };
 
-    private static AttackProfileDto Profile(ResolvedAttackProfile p) => new(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, p.ElementHitzoneRatio);
+    private static AttackProfileDto Profile(WeaponType type)
+    {
+        var p = AttackProfile.Preset(type);
+        var attacks = Attacks.For(type)
+            .Select(a => new AttackDto(a.Id, a.Name, a.Description, a.Seconds,
+                a.Hits.Select(h => new AttackHitDto(h.Name, h.Mv, h.Element, h.Count, h.ElementPhialElement, h.SwordMode, h.FixedSharpness, h.Power?.Mv)).ToList()))
+            .ToList();
+        return new AttackProfileDto(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, Attacks.DefaultFor(type), attacks);
+    }
 
     public static string WeaponLabel(WeaponType type) => type switch
     {

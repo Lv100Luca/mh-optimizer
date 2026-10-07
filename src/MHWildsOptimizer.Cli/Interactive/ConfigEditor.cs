@@ -74,7 +74,7 @@ public sealed class ConfigEditor
                 choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                     .Title($"[bold]{Markup.Escape(_path is null ? "unsaved configuration" : Path.GetFileName(_path))}{(_dirty ? " *" : "")}[/] - what do you want to do?")
                     .PageSize(16)
-                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Skill limits", "Conditions", "Attack profile", "Talismans", "Options",
+                    .AddChoices("Run optimizer", "Weapon", "Rolled pair (set bonus / group skill)", "Skill pair", "Target skills", "Skill limits", "Conditions", "Attack and target", "Talismans", "Options",
                         "Show resolved request", "Save", "Save as...", "Quit"));
             }
             catch (PromptCancelledException) { choice = "Quit"; }
@@ -90,7 +90,7 @@ public sealed class ConfigEditor
                     case "Target skills": EditTargets(); break;
                     case "Skill limits": EditSkillLimits(); break;
                     case "Conditions": EditConditions(); break;
-                    case "Attack profile": EditAttackProfile(); break;
+                    case "Attack and target": EditAttackProfile(); break;
                     case "Talismans": EditTalismans(); break;
                     case "Options": EditOptions(); break;
                     case "Show resolved request": AnsiConsole.Clear(); ShowResolved(); Pause(); break;
@@ -371,29 +371,80 @@ public sealed class ConfigEditor
     private void EditAttackProfile()
     {
         var current = _request.Conditions.AttackProfile;
-        var preset = AttackProfile.Preset(_request.Weapon.Validate(_data).Count == 0 ? _request.Weapon.ToStats(_data).Type : WeaponType.GreatSword);
-        AnsiConsole.MarkupLine("[grey]Puts element and proc damage (Dark Arts shockwave, Bad Blood), which land once per hit, on the per-100-MV score. Leave a value empty to use the weapon preset.[/]");
+        var weapon = _request.Weapon.Validate(_data).Count == 0 ? _request.Weapon.ToStats(_data) : null;
+        var type = weapon?.Type ?? WeaponType.GreatSword;
+        var preset = AttackProfile.Preset(type);
+        AnsiConsole.MarkupLine("[grey]The score is damage per 100 MV of the chosen attack against the target: element and proc damage (Dark Arts shockwave, Bad Blood) land per hit. Leave a value empty to use the default.[/]");
         double? Ask(string label, double? value, double fallback, double min, double max, bool exclusiveMin)
         {
-            var text = AnsiConsole.Prompt(new TextPrompt<string>($"{label} [grey](preset {fallback.ToString(CultureInfo.InvariantCulture)})[/]:")
+            var text = AnsiConsole.Prompt(new TextPrompt<string>($"{label} [grey](default {fallback.ToString("0.##", CultureInfo.InvariantCulture)})[/]:")
                 .AllowEmpty()
                 .DefaultValue(value?.ToString(CultureInfo.InvariantCulture) ?? "")
                 .ShowDefaultValue(value is not null)
                 .Validate(t => t.Length == 0
                                || double.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) && (exclusiveMin ? v > min : v >= min) && v <= max
                     ? ValidationResult.Success()
-                    : ValidationResult.Error($"a number in {(exclusiveMin ? "(" : "[")}{min}..{max}], or empty for the preset")));
+                    : ValidationResult.Error($"a number in {(exclusiveMin ? "(" : "[")}{min}..{max}], or empty for the default")));
             return text.Length == 0 ? null : double.Parse(text, CultureInfo.InvariantCulture);
         }
+
+        var attack = current.Attack;
+        var attacks = Attacks.For(type);
+        if (attacks.Count > 0)
+        {
+            var fallback = Attacks.DefaultFor(type);
+            var choices = attacks.Select(a => (a.Id, Label: a.Name + (a.Id == fallback ? " (default)" : "")))
+                .Append((Id: Attacks.Average, Label: "Average hit (motion value per hit)"))
+                .ToList();
+            var picked = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Attack to score").AddChoices(choices.Select(c => Markup.Escape(c.Label))));
+            attack = choices.First(c => Markup.Escape(c.Label) == picked).Id;
+            if (attack == fallback) attack = null;
+            if (Attacks.Find(type, attack ?? fallback) is { } def)
+                AnsiConsole.MarkupLine($"[grey]{Markup.Escape(def.Description)}[/]");
+        }
+        var average = (current with { Attack = attack }).AttackFor(type) is null;
+        var resolvedHpm = weapon is not null ? (current with { Attack = attack, HitsPerMinute = null }).Resolve(weapon, _request.Conditions.Target).HitsPerMinute : preset.HitsPerMinute;
         var profile = new AttackProfile
         {
-            HitsPerMinute = Ask("Landed hits per minute", current.HitsPerMinute, preset.HitsPerMinute, 0, 600, exclusiveMin: true),
-            AverageMv = Ask("Average motion value per hit", current.AverageMv, preset.AverageMv, 0, 1000, exclusiveMin: true),
-            ChargedLv3Share = Ask("Share of hits that are Lv3 charged slashes (Great Sword)", current.ChargedLv3Share, preset.ChargedLv3Share, 0, 1, exclusiveMin: false),
-            ElementHitzoneRatio = Ask("Element hitzone / raw hitzone where you hit", current.ElementHitzoneRatio, preset.ElementHitzoneRatio, 0, 1, exclusiveMin: false),
+            Attack = attack,
+            HitsPerMinute = Ask("Landed hits per minute", current.HitsPerMinute, resolvedHpm, 0, 600, exclusiveMin: true),
+            AverageMv = average ? Ask("Average motion value per hit", current.AverageMv, preset.AverageMv, 0, 1000, exclusiveMin: true) : null,
+            ChargedLv3Share = average ? Ask("Share of hits that are Lv3 charged slashes (Great Sword)", current.ChargedLv3Share, preset.ChargedLv3Share, 0, 1, exclusiveMin: false) : null,
         };
-        _request = _request with { Conditions = _request.Conditions with { AttackProfile = profile } };
+        var target = EditTarget(type, _request.Conditions.Target, Ask);
+        _request = _request with { Conditions = _request.Conditions with { AttackProfile = profile, Target = target } };
         _dirty = true;
+    }
+
+    private Target EditTarget(WeaponType type, Target current, Func<string, double?, double, double, double, bool, double?> ask)
+    {
+        const string custom = "Custom hitzones", dummy = "Training dummy", monster = "Monster part";
+        var kind = AnsiConsole.Prompt(new SelectionPrompt<string>()
+            .Title($"Target [grey](now: {Markup.Escape(current.Name)}, raw {current.RawHitzone.ToString(CultureInfo.InvariantCulture)})[/]")
+            .AddChoices(monster, dummy, custom));
+        switch (kind)
+        {
+            case dummy:
+                var part = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Dummy part")
+                    .AddChoices(Target.DummyParts.Select(d => $"{d.Part} (raw {d.RawHitzone}, element {d.ElementHitzone})")));
+                return Target.DummyParts.First(d => part.StartsWith(d.Part!, StringComparison.Ordinal));
+            case monster when _data.Monsters.Count > 0:
+                var name = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Monster").PageSize(15).EnableSearch()
+                    .AddChoices(_data.Monsters.Select(m => Markup.Escape(m.Name))));
+                var m = _data.Monsters.First(x => Markup.Escape(x.Name) == name);
+                string Row(PartHitzones p) => $"{p.Name}: raw {Target.RawHitzoneFor(p, type)}, fire {p.Fire} water {p.Water} thunder {p.Thunder} ice {p.Ice} dragon {p.Dragon}";
+                var row = AnsiConsole.Prompt(new SelectionPrompt<string>().Title($"{Markup.Escape(m.Name)} part").PageSize(15)
+                    .AddChoices(m.Parts.Select(p => Markup.Escape(Row(p)))));
+                return Target.ForMonster(m, m.Parts.First(p => Markup.Escape(Row(p)) == row), type);
+            case monster:
+                AnsiConsole.MarkupLine("[yellow]No monster data (data/monster_hitzones.json); enter the hitzones instead.[/]");
+                break;
+        }
+        return new Target
+        {
+            RawHitzone = ask("Raw hitzone", current.Kind == TargetKind.Custom ? current.RawHitzone : null, Target.DefaultRawHitzone, 0, 200, true) ?? Target.DefaultRawHitzone,
+            ElementHitzone = ask("Element hitzone", current.Kind == TargetKind.Custom ? current.ElementHitzone : null, Target.DefaultElementHitzone, 0, 200, false) ?? Target.DefaultElementHitzone,
+        };
     }
 
     private void EditSkillLimits()

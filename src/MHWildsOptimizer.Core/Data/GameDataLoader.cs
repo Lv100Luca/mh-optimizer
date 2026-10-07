@@ -15,9 +15,10 @@ public static class GameDataLoader
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
-    /// <summary>The dataset files <see cref="Load(string)"/> reads; the last two are optional.</summary>
+    /// <summary>The dataset files <see cref="Load(string)"/> reads; the last three are optional.</summary>
     public static readonly string[] FileNames =
-        ["skills.json", "armor_hr.json", "decorations.json", "charms.json", "gogma_weapons_base.json", "gogma_skill_pool.json", "random_talisman_pool.json"];
+        ["skills.json", "armor_hr.json", "decorations.json", "charms.json", "gogma_weapons_base.json", "gogma_skill_pool.json", "random_talisman_pool.json",
+         "monster_hitzones.json"];
 
     /// <summary>Loads the normalized dataset from a directory containing armor_hr.json, skills.json, decorations.json, charms.json and gogma_weapons_base.json.</summary>
     public static GameData Load(string dataDirectory) =>
@@ -54,7 +55,9 @@ public static class GameDataLoader
             ? new RandomTalismanPool { Skills = tp.Skills, SlotPatterns = tp.SlotPatterns, RarityByType = tp.RarityByType }
             : null;
 
-        return new GameData(skills, armor, decorations, charms, gogma, pairs, pool);
+        var monsters = TryRead<List<MonsterHitzones>>("monster_hitzones.json");
+
+        return new GameData(skills, armor, decorations, charms, gogma, pairs, pool, monsters);
     }
 
     /// <summary>Walks up from <paramref name="start"/> (default: the executable's directory) until a <c>data/armor_hr.json</c> is found.</summary>

@@ -112,7 +112,7 @@ public static class ResultMapper
             .ToList();
 
         var requested = Stats(w, DamageCalculator.Calculate(w, skills, cond));
-        var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOn));
+        var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(cond)));
 
         var summary = new BuildSummaryDto(s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness, s.Element, s.ElementTrue, s.ElementDisplay,
             s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
@@ -127,10 +127,9 @@ public static class ResultMapper
 
     private static StatsDto Stats(GogmaWeaponStats w, DamageResult r)
     {
-        var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ")).ToList();
-        var denominator = r.TrueRaw * r.SharpnessRawModifier;
+        var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ") && !l.StartsWith("Attack: ")).ToList();
         return new StatsDto(
-            r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()), r.Affinity, r.CriticalMultiplier, denominator > 0 ? r.EffectiveRaw / denominator : 1,
+            r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()), r.Affinity, r.CriticalMultiplier, r.CriticalFactor,
             r.Sharpness, r.SharpnessRawModifier, r.SharpnessElementModifier, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10), r.ElementCap, r.CriticalElementMultiplier,
             r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods);
     }

@@ -33,7 +33,7 @@ public static class LoadoutReport
 
         // ---------------- stats ----------------
         var skills = SkillAggregator.Aggregate(loadout, data);
-        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOn);
+        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(cond));
         AppendStats(sb, "Stats with every conditional skill active", w, allOn, inv);
         var chosen = DamageCalculator.Calculate(w, skills, cond);
         if (Math.Abs(chosen.Total - allOn.Total) > 0.05 || chosen.Affinity != allOn.Affinity)
@@ -109,13 +109,14 @@ public static class LoadoutReport
         sb.AppendLine();
         sb.AppendLine(header);
         sb.AppendLine(string.Format(inv, "  Attack     {0} -> {1:0.#} true ({2:0} display)", w.TrueRaw, r.TrueRaw, r.TrueRaw * w.Type.Bloat()));
-        sb.AppendLine(string.Format(inv, "  Affinity   {0}% -> {1}%   crit x{2:0.00} (factor {3:0.###})", w.Affinity, r.Affinity, r.CriticalMultiplier, r.EffectiveRaw / (r.TrueRaw * r.SharpnessRawModifier)));
+        sb.AppendLine(string.Format(inv, "  Affinity   {0}% -> {1}%   crit x{2:0.00} (factor {3:0.###})", w.Affinity, r.Affinity, r.CriticalMultiplier, r.CriticalFactor));
         sb.AppendLine(string.Format(inv, "  Sharpness  {0} (raw x{1:0.###}, element x{2:0.####})", r.Sharpness?.ToString() ?? "-", r.SharpnessRawModifier, r.SharpnessElementModifier));
         if (w.Element != Element.None)
             sb.AppendLine(string.Format(inv, "  Element    {0} {1:0.#} -> {2:0.#} true ({3:0} display), cap {4:0.#}, crit element x{5:0.00}", w.Element, r.BaseElementTrue, r.ElementTrue, r.ElementTrue * 10, r.ElementCap, r.CriticalElementMultiplier));
+        sb.AppendLine(string.Format(inv, "  Scored on  {0} ({1:0.#} MV), per 100 MV", r.Attack.Name, r.Attack.TotalMv));
         sb.AppendLine(string.Format(inv, "  EFR {0:0.00}   EFE {1:0.00}{2}   Total {3:0.00}", r.EffectiveRaw, r.EffectiveElement,
             r.ProcDamage > 0 ? string.Format(inv, "   procs {0:0.00}", r.ProcDamage) : "", r.Total));
-        var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ")).ToList();
+        var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ") && !l.StartsWith("Attack: ")).ToList();
         if (mods.Count > 0) sb.AppendLine("  Modifiers: " + string.Join("; ", mods));
     }
 

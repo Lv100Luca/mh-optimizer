@@ -77,18 +77,21 @@ public sealed record DamageResult(
     double SharpnessElementModifier,
     double EffectiveElement,
     double ProcDamage,
+    double CriticalFactor,
+    ResolvedAttackProfile Attack,
     IReadOnlyList<string> Breakdown)
 {
-    /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value at raw hitzone 100.</summary>
+    /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value of the attack, on the raw-hitzone-100 scale.</summary>
     public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
 }
 
 /// <summary>
-/// Effective Raw / Effective Element calculator for a Gogma weapon loadout.
-/// raw = (baseRaw * prod(percent) + sum(flat)) * sharpness * critFactor ;
-/// element = min(ele, cap) * sharpness * critElementFactor * elementHitzoneRatio * 100 / averageMv.
-/// Element and proc damage (extra damage instances) land once per hit whatever the MV, so the attack profile of the conditions
-/// converts them to per 100 MV. The raw hitzone is fixed at 100 (project assumption); the element hitzone is a share of it.
+/// Effective Raw / Effective Element calculator for a Gogma weapon loadout, per 100 MV of the chosen attack:
+/// raw = (baseRaw * prod(percent) + sum(flat)) * critFactor * rawFactor (the hits' MV-weighted sharpness and phial);
+/// element = min(ele, cap) * critElementFactor * elementFactor (sum of the hits' element modifiers x sharpness x phial,
+/// x element hitzone / raw hitzone, x 100 / total MV). Damage is divided by the target's raw hitzone / 100, so EFR keeps its
+/// usual raw-hitzone-100 scale and element counts at the target's element hitzone share of it. Proc damage (extra damage
+/// instances) is converted to per 100 MV of the attack the same way.
 /// </summary>
 public static class DamageCalculator
 {
@@ -161,7 +164,7 @@ public static class DamageCalculator
             Flat("Punishing Draw", L(SkillNames.PunishingDraw) switch { 1 => 3, 2 => 5, _ => 7 });
 
         // ---------------- armor skills ----------------
-        if (cond.HittingWeakPoint && L(SkillNames.WeaknessExploit) > 0)
+        if (cond.HittingWeakPoint && cond.Target.WeakPoint && L(SkillNames.WeaknessExploit) > 0)
         {
             var lv = L(SkillNames.WeaknessExploit);
             Aff("Weakness Exploit", lv switch { 1 => 5, 2 => 10, 3 => 15, 4 => 20, _ => 30 });
@@ -289,7 +292,8 @@ public static class DamageCalculator
 
         var sharpRaw = weapon.TopSharpness is { } s ? DamageConstants.SharpnessRaw(s) : 1.0;
         var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
-        var efr = trueRaw * sharpRaw * critFactor;
+        var profile = cond.Attack(weapon);
+        var efr = trueRaw * critFactor * profile.RawFactor;
 
         var baseEle = weapon.ElementTrue;
         double ele = 0, cap = 0, critEleMult = 1.0, critEleFactor = 1.0;
@@ -301,40 +305,45 @@ public static class DamageCalculator
             critEleMult = DamageConstants.CriticalElement(type, L(SkillNames.CriticalElement));
             critEleFactor = aff > 0 ? 1.0 + aff / 100.0 * (critEleMult - 1.0) : 1.0;
         }
-        // element lands once per hit at the element hitzone, whatever the MV: put it on the per-100-MV, raw-hitzone-100 scale of EFR
-        var profile = cond.AttackProfile.Resolve(type);
-        var efe = ele * sharpEle * critEleFactor * profile.ElementHitzoneRatio * profile.PerHundredMv;
+        // element lands per hit with the hit's element modifier at the element hitzone: put it on the per-100-MV, raw-hitzone-100 scale of EFR
+        var efe = ele * critEleFactor * profile.ElementFactor;
 
         // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
         double procs = 0;
         if (cond.ProcDamage)
         {
-            void Proc(string label, double damage, double perHit, string how)
+            void Proc(string label, double damage, double perExecution, string how)
             {
-                if (damage <= 0 || perHit <= 0) return;
-                var v = damage * perHit * profile.PerHundredMv;
+                if (damage <= 0 || perExecution <= 0) return;
+                var v = damage * perExecution * profile.PerHundredMv;
                 procs += v;
                 if (trace) notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
             }
 
             // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
             if (type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
-                Proc("Dark Arts shockwave", efr * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle * profile.ElementHitzoneRatio,
-                    profile.ChargedLv3Share, Inv($"on {profile.ChargedLv3Share:0%} of hits"));
+                Proc("Dark Arts shockwave", Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
+                    profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
             var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
             if (badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
                 Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
-                    profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds), Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
+                    profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds) * profile.Hits, Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
         }
 
-        if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}; EFR {efr:0.#}"));
+        if (trace) notes.Add(Inv($"Attack: {profile.Name}, {profile.Hits:0.##} hits, {profile.TotalMv:0.#} MV; target {cond.Target.Name}, raw hitzone {cond.Target.RawHitzone:0.#}, element hitzone {cond.Target.ElementHitzoneFor(weapon.Element):0.#}"));
+        if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}, over the attack x{profile.RawFactor:0.###}; EFR {efr:0.#}"));
         if (trace && baseEle > 0)
-            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; sharpness x{sharpEle:0.###}; element hitzone x{profile.ElementHitzoneRatio:0.##} of raw, once per {profile.AverageMv:0.#} MV hit; EFE {efe:0.#}"));
+            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; per 100 MV of the attack at element hitzone x{profile.ElementHitzoneRatio:0.##} of raw x{profile.ElementFactor:0.###}; EFE {efe:0.#}"));
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
-            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, notes);
+            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes);
     }
+
+    /// <summary>Damage of one Dark Arts shockwave (30 MV, crits, uses sharpness, plus its dragon element) at raw hitzone 100.</summary>
+    /// <param name="effectiveRawPerMv">True raw x sharpness x crit factor.</param>
+    public static double Shockwave(double effectiveRawPerMv, double sharpEle, ResolvedAttackProfile profile) =>
+        effectiveRawPerMv * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle * profile.ElementHitzoneRatio;
 
     private static string Inv(FormattableString s) => FormattableString.Invariant(s);
 }

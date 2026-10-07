@@ -47,7 +47,7 @@ public sealed record BuildSummary(
         var skills = SkillAggregator.Aggregate(loadout, data);
         var w = loadout.Weapon.Stats;
         var r = DamageCalculator.Calculate(w, skills, conditions);
-        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOn, trace: false);
+        var allOn = DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(conditions), trace: false);
 
         var sets = skills.ActiveSetBonuses
             .Select(x => $"{x.Name} {x.Tier}{RankName(data, x.Name, (int)x.Tier)}")
@@ -79,7 +79,7 @@ public sealed record BuildSummary(
 
         return new BuildSummary(
             w.TrueRaw, r.TrueRaw, (int)Math.Round(r.TrueRaw * w.Type.Bloat()),
-            w.Affinity, r.Affinity, r.CriticalMultiplier, r.EffectiveRaw / (r.TrueRaw * r.SharpnessRawModifier),
+            w.Affinity, r.Affinity, r.CriticalMultiplier, r.CriticalFactor,
             r.Sharpness, w.Element, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10),
             r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, allOn.Total,
             sets, groups, skillList, aff, raw, ele, procs, depends!, description);

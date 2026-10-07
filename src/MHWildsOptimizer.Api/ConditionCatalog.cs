@@ -22,7 +22,7 @@ public static class ConditionCatalog
     private static readonly Dictionary<string, Meta> Table = new()
     {
         [nameof(Conditions.MonsterEnraged)] = new("Monster enraged", GroupMonster, "The monster is enraged.", ["Agitator", "Gogmapocalypse (Mutual Hostility)"]),
-        [nameof(Conditions.HittingWeakPoint)] = new("Hitting weak points", GroupMonster, "Hits land on a weak point (hitzone 45+). With the hitzone-100 assumption every hit qualifies.", ["Weakness Exploit"]),
+        [nameof(Conditions.HittingWeakPoint)] = new("Hitting weak points", GroupMonster, "Hits land on a weak point (hitzone 45+). Only counts when the target's raw hitzone is 45 or more.", ["Weakness Exploit"]),
         [nameof(Conditions.HittingWound)] = new("Hitting wounds", GroupMonster, "Hits land on a wound, which adds the Weakness Exploit wound bonus.", ["Weakness Exploit"]),
         [nameof(Conditions.MonsterStatused)] = new("Monster poisoned or paralyzed", GroupMonster, "The monster suffers from poison or paralysis.", ["Foray"]),
 

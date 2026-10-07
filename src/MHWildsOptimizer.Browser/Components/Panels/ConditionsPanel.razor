@@ -6,13 +6,20 @@
     var profile = c.AttackProfile ?? new AttackProfile();
     var preset = AttackProfilePreset(request, Cat);
     var kind = Kind(request);
+    var type = TypeOf(request);
+    var weapon = WeaponOf(request);
+    var attackId = profile.Attack ?? preset.DefaultAttack ?? Attacks.Average;
+    var attack = preset.Attacks.FirstOrDefault(a => a.Id == attackId);
+    var resolved = weapon is not null ? c.Attack(weapon) : (ResolvedAttackProfile?)null;
+    var element = weapon?.Element ?? request.Weapon.Spec?.Element ?? Element.None;
     var weaponLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
     var hunt = Catalog.Conditions.Where(x => x.Group != ProcGroup).ToList();
     var procToggle = Catalog.Conditions.FirstOrDefault(x => x.Group == ProcGroup);
     var groups = hunt.Select(x => x.Group).Distinct().ToList();
     var onCount = hunt.Count(x => ConditionAccess.Get(c, x.Property));
-    var profileErrors = App.Resolved?.Errors.Where(e => e.Contains("attack_profile")).ToList() ?? [];
+    var profileErrors = App.Resolved?.Errors.Where(e => e.Contains("attack_profile") || e.Contains("conditions.target")).ToList() ?? [];
     var customProfile = IsCustom(profile);
+    var target = c.Target ?? new Target();
 
     // the weapon type's preset: the conditions every weapon of this type starts from and follows, except where it overrides them
     var typePreset = App.PresetFor(kind);
@@ -90,12 +97,12 @@
             </ChildContent>
         </Section>
 
-        <Section Title="Proc damage and attack profile"
-                 Hint="Element and proc damage land once per hit, whatever the motion value. The attack profile turns them into damage per 100 MV of landed attacks so they compare with EFR: EFE = element × element hitzone ratio ÷ (average MV ÷ 100); procs per hit = chance × min(1, seconds per hit ÷ cooldown); procs per 100 MV = damage × procs per hit ÷ (average MV ÷ 100).">
+        <Section Title="Attack and target"
+                 Hint="The score is damage per 100 MV of the attack against the target, on the raw-hitzone-100 scale of EFR: every hit deals its MV of raw and its element modifier × element, and element counts at the target's element hitzone ÷ raw hitzone. Proc damage (Dark Arts shockwave, Bad Blood) is spread over the attack the same way.">
             <Actions>
                 @if (customProfile)
                 {
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => SetProfile(_ => new AttackProfile())">Back to the @weaponLabel preset</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => SetProfile(_ => new AttackProfile())">Back to the @weaponLabel default attack</MudButton>
                 }
             </Actions>
             <ChildContent>
@@ -103,36 +110,99 @@
                 {
                     <Alert Kind="error">@e</Alert>
                 }
+                <div class="attack-target">
+                    <div class="attack-col">
+                        <h3>Attack</h3>
+                        @if (preset.Attacks.Count > 0)
+                        {
+                            <SelectBox Value="@attackId" Options="AttackOptions(preset)" ValueChanged="id => SetAttack(id, preset)" Style="max-width: 360px" />
+                        }
+                        @if (attack is not null)
+                        {
+                            <p class="muted small">@attack.Description</p>
+                            @HitTable(attack, weapon)
+                        }
+                        else
+                        {
+                            <p class="muted small">
+                                Every hit counts as one element hit of the average motion value.
+                                @(preset.Attacks.Count == 0 ? $"There is no attack data for the {weaponLabel} yet." : "")
+                            </p>
+                        }
+                        <div class="form-grid profile">
+                            <Field Label="Landed hits per minute" Hint="Cooldown-limited procs (Bad Blood every 2 s) fire at most once per cooldown. The default follows from the attack's rough duration.">
+                                <OptionalNumberInput Value="profile.HitsPerMinute" Preset="Math.Round(resolved?.HitsPerMinute ?? preset.HitsPerMinute, 1)" Min="1" Max="600"
+                                                     ValueChanged="n => SetProfile(p => p with { HitsPerMinute = n })" />
+                            </Field>
+                            @if (attack is null)
+                            {
+                                <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV.">
+                                    <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
+                                                         ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
+                                </Field>
+                                <Field Label="Share of hits that are Lv3 charged slashes" Hint="Great Sword only: the Dark Arts shockwave (Soul of the Dark Knight) rides on them. 0 to 1.">
+                                    <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
+                                                         ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
+                                </Field>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="target-col">
+                        <h3>Target</h3>
+                        <Segmented T="TargetKind" Small="true" Value="target.Kind" ValueChanged="k => SetTargetKind(k, type)" Options="TargetKindOptions" />
+                        @switch (target.Kind)
+                        {
+                            case TargetKind.Monster:
+                                var monster = Catalog.Monsters.FirstOrDefault(m => m.Name == target.Monster);
+                                <div class="target-pickers">
+                                    <SelectBox Value="@target.Monster" Placeholder="Pick a monster" Options="MonsterOptions" ValueChanged="m => SetMonster(m, type)" />
+                                    @if (monster is not null)
+                                    {
+                                        <SelectBox Value="@target.Part" Options="PartOptions(monster, type, element)" ValueChanged="part => SetPart(monster, part, type)" />
+                                    }
+                                </div>
+                                break;
+                            case TargetKind.Dummy:
+                                <Segmented T="string" Small="true" Value="@(target.Part ?? "")" ValueChanged="part => SetTarget(_ => Target.Dummy(part))"
+                                           Options="@(Catalog.DummyTargets.Select(d => new SegmentOption<string>(d.Part!, d.Part!)).ToList())" />
+                                <p class="muted small">Soft hide, no wounds. Hitzones read off community dummy tests; element assumed the same for every element.</p>
+                                break;
+                            default:
+                                <div class="form-grid profile">
+                                    <Field Label="Raw hitzone">
+                                        <NumberInput T="double" Value="target.RawHitzone" Min="1" Max="200" ValueChanged="n => SetTarget(t => t with { RawHitzone = n })" />
+                                    </Field>
+                                    <Field Label="Element hitzone">
+                                        <NumberInput T="double" Value="target.ElementHitzone" Min="0" Max="200" ValueChanged="n => SetTarget(t => t with { ElementHitzone = n })" />
+                                    </Field>
+                                </div>
+                                break;
+                        }
+                        <p class="small target-line">
+                            Raw hitzone <b>@Num(target.RawHitzone)</b>
+                            · @(element == Element.None ? "element hitzone" : $"{Fmt.Slug(element)} hitzone") <b>@Num(target.ElementHitzoneFor(element))</b>
+                            @if (element != Element.None)
+                            {
+                                <span> → element at <b>@Percent(target.ElementRatio(element))%</b> of raw</span>
+                            }
+                            · @(target.WeakPoint ? "weak point (45+): Weakness Exploit counts" : "not a weak point: Weakness Exploit does not count")
+                        </p>
+                    </div>
+                </div>
+                @if (resolved is { } rp)
+                {
+                    <p class="small attack-summary">
+                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
+                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (sharpness@(type == WeaponType.SwitchAxe ? ", phial" : "")),
+                        element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
+                        (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
+                    </p>
+                }
                 @if (procToggle is not null)
                 {
                     <div class="cond-grid">@Condition(procToggle, v)</div>
                 }
-                <div class="form-grid profile">
-                    <Field Label="Landed hits per minute" Hint="Cooldown-limited procs (Azure Bolt every 30 s, Bad Blood every 2 s) fire at most once per cooldown, so slow weapons get more out of them per hit.">
-                        <OptionalNumberInput Value="profile.HitsPerMinute" Preset="preset.HitsPerMinute" Min="1" Max="600"
-                                             ValueChanged="n => SetProfile(p => p with { HitsPerMinute = n })" />
-                    </Field>
-                    <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV. Big hits (Great Sword charged slashes) get less out of element per 100 MV than fast weapons.">
-                        <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
-                                             ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
-                    </Field>
-                    <Field Label="Share of hits that are Lv3 charged slashes" Hint="Great Sword only: the Dark Arts shockwave (Soul of the Dark Knight) rides on them. 0 to 1.">
-                        <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
-                                             ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
-                    </Field>
-                    <Field Label="Element hitzone ÷ raw hitzone" Hint="Where you hit: a weak point with raw hitzone 70 and element hitzone 25 is 0.36. EFR is at raw hitzone 100, so element is scored at this share of it. 0 to 1.">
-                        <OptionalNumberInput Value="profile.ElementHitzoneRatio" Preset="preset.ElementHitzoneRatio" Min="0" Max="1" Step="0.05"
-                                             ValueChanged="n => SetProfile(p => p with { ElementHitzoneRatio = n })" />
-                    </Field>
-                </div>
-                <p class="muted small">
-                    Empty fields use the @weaponLabel preset: @Num(preset.HitsPerMinute) hits/min, @Num(preset.AverageMv) MV per hit, @Percent(preset.ChargedLv3Share)% Lv3 charged slashes, element hitzone @Percent(preset.ElementHitzoneRatio)% of raw.
-                    Presets are rough starting points, not measurements.
-                    @if (!c.ProcDamage)
-                    {
-                        @(" With proc damage off only the average MV and the element hitzone ratio are used.")
-                    }
-                </p>
             </ChildContent>
         </Section>
     </div>
@@ -142,12 +212,13 @@
     /// <summary>The condition group that holds the proc damage toggle; it is rendered with the attack profile, not as a hunt condition.</summary>
     public const string ProcGroup = ConditionCatalog.GroupProcs;
 
-    private static readonly AttackProfileDto FallbackProfile = new(40, 50, 0, 0.4);
+    private static readonly AttackProfileDto FallbackProfile = new(40, 50, 0, null, []);
 
     private static readonly Dictionary<string, string> OtherLabels = new()
     {
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
-        [nameof(Conditions.AttackProfile)] = "Attack profile",
+        [nameof(Conditions.AttackProfile)] = "Attack",
+        [nameof(Conditions.Target)] = "Target",
         [nameof(Conditions.SkillLimits)] = "Skill limits",
     };
 
@@ -158,7 +229,91 @@
 
     private static string Kind(OptimizationRequest r) => r.Weapon.Spec?.Type ?? r.Weapon.Type ?? "great-sword";
 
-    private static bool IsCustom(AttackProfile p) => p.HitsPerMinute is not null || p.AverageMv is not null || p.ChargedLv3Share is not null || p.ElementHitzoneRatio is not null;
+    private static bool IsCustom(AttackProfile p) => p.Attack is not null || p.HitsPerMinute is not null || p.AverageMv is not null || p.ChargedLv3Share is not null;
+
+    private static WeaponType TypeOf(OptimizationRequest r)
+    {
+        try { return WeaponTypeInfo.FromApiKind(Kind(r)); }
+        catch (ArgumentException) { return WeaponType.GreatSword; }
+    }
+
+    private Core.Gogma.GogmaWeaponStats? WeaponOf(OptimizationRequest r)
+    {
+        try { return r.Weapon.Validate(App.Data).Count == 0 ? r.Weapon.ToStats(App.Data) : null; }
+        catch (Exception) { return null; }
+    }
+
+    private static IReadOnlyList<SelectOption> AttackOptions(AttackProfileDto preset) =>
+        preset.Attacks.Select(a => new SelectOption(a.Id, a.Id == preset.DefaultAttack ? $"{a.Name} (default)" : a.Name))
+            .Append(new SelectOption(Attacks.Average, "Average hit (motion value per hit)"))
+            .ToList();
+
+    private static readonly IReadOnlyList<SegmentOption<TargetKind>> TargetKindOptions =
+    [
+        new(TargetKind.Monster, "Monster"),
+        new(TargetKind.Dummy, "Training dummy"),
+        new(TargetKind.Custom, "Custom"),
+    ];
+
+    private IReadOnlyList<SelectOption> MonsterOptions => Catalog.Monsters.Select(m => new SelectOption(m.Name, m.Name)).ToList();
+
+    private static IReadOnlyList<SelectOption> PartOptions(MonsterHitzones monster, WeaponType type, Element element) =>
+        monster.Parts.Select(p =>
+        {
+            var t = Target.ForMonster(monster, p, type);
+            var ele = element == Element.None ? "" : $" · {Fmt.Slug(element)} {Num(t.ElementHitzoneFor(element))}";
+            return new SelectOption(p.Name, $"{p.Name} — raw {Num(t.RawHitzone)}{ele}");
+        }).ToList();
+
+    private void SetAttack(string? id, AttackProfileDto preset) =>
+        SetProfile(p => p with { Attack = id is null || id == (preset.DefaultAttack ?? Attacks.Average) ? null : id });
+
+    private void SetTarget(Func<Target, Target> fn) => App.PatchConditions(c => c with { Target = fn(c.Target ?? new Target()) });
+
+    private void SetTargetKind(TargetKind kind, WeaponType type) => SetTarget(t => t.Kind == kind ? t : kind switch
+    {
+        TargetKind.Dummy => Target.DummyParts[0],
+        TargetKind.Monster when Catalog.Monsters.Count > 0 => Target.ForMonster(Catalog.Monsters[0], Catalog.Monsters[0].Parts[0], type),
+        // a custom target starts from the numbers of the current one
+        _ => new Target { RawHitzone = t.RawHitzone, ElementHitzone = t.Elements is null ? t.ElementHitzone : Target.DefaultElementHitzone },
+    });
+
+    private void SetMonster(string? name, WeaponType type)
+    {
+        if (Catalog.Monsters.FirstOrDefault(m => m.Name == name) is { } m && m.Parts.Count > 0)
+            SetTarget(_ => Target.ForMonster(m, m.Parts[0], type));
+    }
+
+    private void SetPart(MonsterHitzones monster, string? part, WeaponType type)
+    {
+        if (monster.Parts.FirstOrDefault(p => p.Name == part) is { } p)
+            SetTarget(_ => Target.ForMonster(monster, p, type));
+    }
+
+    private static RenderFragment HitTable(AttackDto attack, Core.Gogma.GogmaWeaponStats? weapon) => __builder =>
+    {
+        var phial = weapon?.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : (SwitchAxePhial?)null;
+        <table class="table hits">
+            <thead><tr><th>Hit</th><th class="num">MV</th><th class="num">Element</th><th>Notes</th></tr></thead>
+            <tbody>
+                @foreach (var h in attack.Hits)
+                {
+                    var ele = phial == SwitchAxePhial.Element && h.ElementPhialElement is { } ep ? ep : h.Element;
+                    var notes = new List<string>();
+                    if (h.PowerMv is { } pmv) notes.Add($"{Num(pmv)} MV on a weak spot");
+                    if (h.FixedSharpness is { } fs) notes.Add($"{Fmt.Slug(fs)} sharpness");
+                    if (h.SwordMode && phial is { } ph) notes.Add(ph == SwitchAxePhial.Power ? $"raw ×{Num(DamageConstants.PowerPhialRaw)} (Power phial)" : $"element ×{Num(DamageConstants.ElementPhialElement)} (Element phial)");
+                    if (h.ElementPhialElement is { } epx && phial is null) notes.Add($"element ×{Num(epx)} with an Element phial");
+                    <tr>
+                        <td>@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")</td>
+                        <td class="num">@Num(h.Mv)</td>
+                        <td class="num">×@Num(ele)</td>
+                        <td class="muted small">@string.Join("; ", notes)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    };
 
     private static string Num(double n) => n.ToString(CultureInfo.InvariantCulture);
 
@@ -168,14 +323,16 @@
     public static AttackProfileDto AttackProfilePreset(OptimizationRequest request, CatalogIndex index) =>
         index.WeaponTypes.GetValueOrDefault(Kind(request))?.AttackProfile ?? FallbackProfile;
 
-    /// <summary>"24 hits/min · 190 MV per hit · 100% Lv3 charged · element hitzone 40% of raw (preset)": the profile the calculator will use.</summary>
+    /// <summary>"True Charged Slash Lv3 · Rey Dau, Head (raw 60, element 20)": the attack and target the calculator will use.</summary>
     public static string AttackProfileText(OptimizationRequest request, CatalogIndex index)
     {
         var p = request.Conditions.AttackProfile ?? new AttackProfile();
         var preset = AttackProfilePreset(request, index);
-        return $"{Num(p.HitsPerMinute ?? preset.HitsPerMinute)} hits/min · {Num(p.AverageMv ?? preset.AverageMv)} MV per hit · "
-            + $"{Percent(p.ChargedLv3Share ?? preset.ChargedLv3Share)}% Lv3 charged · "
-            + $"element hitzone {Percent(p.ElementHitzoneRatio ?? preset.ElementHitzoneRatio)}% of raw{(IsCustom(p) ? "" : " (preset)")}";
+        var id = p.Attack ?? preset.DefaultAttack ?? Attacks.Average;
+        var attack = preset.Attacks.FirstOrDefault(a => a.Id == id)?.Name ?? $"average hit of {Num(p.AverageMv ?? preset.AverageMv)} MV";
+        var t = request.Conditions.Target ?? new Target();
+        var element = request.Weapon.Spec?.Element ?? Element.None;
+        return $"{attack} · {t.Name} (raw {Num(t.RawHitzone)}, element {Num(t.ElementHitzoneFor(element))})";
     }
 
     /// <summary>What a condition card needs from the current render.</summary>

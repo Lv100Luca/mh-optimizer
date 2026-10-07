@@ -223,7 +223,11 @@ public class OptimizerTests(ITestOutputHelper output)
         Assert.DoesNotContain("Soul of the Dark Knight", off.SetBonuses);
     }
 
-    public static TheoryData<string> ScoreModelCases => new() { "default", "all on", "all off", "red health", "long sword raw" };
+    public static TheoryData<string> ScoreModelCases => new()
+    {
+        "default", "all on", "all off", "red health", "long sword raw",
+        "gs charge combo, hard part", "sa element phial, monster", "sa power phial, amped combo",
+    };
 
     [Theory]
     [MemberData(nameof(ScoreModelCases))]
@@ -235,8 +239,14 @@ public class OptimizerTests(ITestOutputHelper output)
             Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack, Element = Element.Dragon, Infused = true, AttackParts = 3,
         }.Resolve(data);
         var rawLs = new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Affinity }.Resolve(data);
+        var thunderSa = new GogmaWeaponSpec { Type = WeaponType.SwitchAxe, Focus = GogmaFocus.Element, Element = Element.Thunder }.Resolve(data);
+        var powerSa = new GogmaWeaponSpec { Type = WeaponType.SwitchAxe, Focus = GogmaFocus.Attack, Element = Element.Ice }.Resolve(data);
+        var reyDau = data.Monsters.First(m => m.Name == "Rey Dau");
         var (weapon, cond) = name switch
         {
+            "gs charge combo, hard part" => (dragonGs, Conditions.AllOn with { AttackProfile = new AttackProfile { Attack = "charge-combo" }, Target = Target.Dummy("Hard part") }),
+            "sa element phial, monster" => (thunderSa, Conditions.AllOn with { Target = Target.ForMonster(reyDau, reyDau.Parts[0], WeaponType.SwitchAxe) }),
+            "sa power phial, amped combo" => (powerSa, Conditions.Default with { AttackProfile = new AttackProfile { Attack = "amped-sword-combo" } }),
             "default" => (dragonGs, Conditions.Default),
             "all on" => (dragonGs, Conditions.AllOn),
             "all off" => (dragonGs, Conditions.AllOff),

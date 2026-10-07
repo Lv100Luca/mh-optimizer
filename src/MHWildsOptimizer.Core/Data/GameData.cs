@@ -17,6 +17,8 @@ public sealed class GameData
     public IReadOnlyList<GogmaSkillPair> GogmaSkillPairs { get; }
     /// <summary>What random talismans can roll; null when data/random_talisman_pool.json is absent.</summary>
     public RandomTalismanPool? TalismanPool { get; }
+    /// <summary>Large monsters with their part hitzones (target picker); empty when data/monster_hitzones.json is absent.</summary>
+    public IReadOnlyList<MonsterHitzones> Monsters { get; }
 
     public IReadOnlyDictionary<string, Skill> SkillsByName { get; }
     public IReadOnlyDictionary<int, Skill> SkillsById { get; }
@@ -36,7 +38,8 @@ public sealed class GameData
         IReadOnlyList<Charm> charms,
         IReadOnlyDictionary<WeaponType, IReadOnlyDictionary<GogmaFocus, GogmaWeaponVariant>> gogmaWeapons,
         IReadOnlyList<GogmaSkillPair>? gogmaSkillPairs = null,
-        RandomTalismanPool? talismanPool = null)
+        RandomTalismanPool? talismanPool = null,
+        IReadOnlyList<MonsterHitzones>? monsters = null)
     {
         Skills = skills;
         Armor = armor;
@@ -45,6 +48,7 @@ public sealed class GameData
         GogmaWeapons = gogmaWeapons;
         GogmaSkillPairs = gogmaSkillPairs ?? [];
         TalismanPool = talismanPool;
+        Monsters = monsters ?? [];
 
         SkillsByName = FirstByKey(skills, s => s.Name);
         SkillsById = FirstByKey(skills, s => s.Id);

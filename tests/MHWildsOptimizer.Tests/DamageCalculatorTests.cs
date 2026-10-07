@@ -112,8 +112,11 @@ public class DamageCalculatorTests
         Assert.Equal((53 * 1.2 + 2) * 1.15 * GreatSwordElementScale, enraged.EffectiveElement, Tol);
     }
 
-    /// <summary>Great Sword preset: element hitzone 0.4 of raw, applied once per 190 MV hit.</summary>
-    private const double GreatSwordElementScale = 0.4 * 100 / 190;
+    /// <summary>
+    /// Great Sword default: the True Charged Slash Lv3 against the default target (raw 70, element 28: element at 0.4 of raw).
+    /// White sharpness puts 70 x 1.32 above 45, so the finisher is the power one: 16 + 267 MV with element x1 + x2.5.
+    /// </summary>
+    private const double GreatSwordElementScale = 0.4 * 3.5 * 100 / 283;
 
     [Fact]
     public void ElementIsScoredPerHundredMvAtTheElementHitzone()
@@ -121,8 +124,9 @@ public class DamageCalculatorTests
         var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Element, Element = Element.Dragon }, TestData.Data).Stats;
         var none = new Dictionary<string, int>();
         var skills = new ActiveSkills(none, none, none, none);
-        var big = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { AverageMv = 200, ElementHitzoneRatio = 0.5 } });
-        var small = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { AverageMv = 50, ElementHitzoneRatio = 0.5 } });
+        var target = new Target { RawHitzone = 60, ElementHitzone = 30 };
+        var big = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { Attack = Attacks.Average, AverageMv = 200 }, Target = target });
+        var small = DamageCalculator.Calculate(weapon, skills, Conditions.AllOff with { AttackProfile = new AttackProfile { Attack = Attacks.Average, AverageMv = 50 }, Target = target });
         var perHit = big.ElementTrue * big.SharpnessElementModifier;
         Assert.Equal(perHit * 0.5 * 100 / 200, big.EffectiveElement, Tol);  // one element hit per 200 MV
         Assert.Equal(4 * big.EffectiveElement, small.EffectiveElement, Tol); // four 50 MV hits per 200 MV
@@ -185,7 +189,7 @@ public class DamageCalculatorTests
     private static readonly Conditions ProcsOnly = Conditions.AllOff with
     {
         ProcDamage = true,
-        AttackProfile = new AttackProfile { HitsPerMinute = 20, AverageMv = 100, ChargedLv3Share = 0.5 }, // 3 s per hit
+        AttackProfile = new AttackProfile { Attack = Attacks.Average, HitsPerMinute = 20, AverageMv = 100, ChargedLv3Share = 0.5 }, // 3 s per hit
     };
 
     [Theory]
@@ -227,13 +231,15 @@ public class DamageCalculatorTests
     [Fact]
     public void ProcsPerHitRespectTheCooldown()
     {
-        var gs = new ResolvedAttackProfile(20, 100, 0, 0.4); // 3 s per hit
+        var gs = new ResolvedAttackProfile("", 20, 1, 100, 1, 1, 0, 0.4); // 3 s per hit
         Assert.Equal(0.1, gs.ProcsPerHit(30), Tol);
         Assert.Equal(1.0, gs.ProcsPerHit(2), Tol);       // Bad Blood is ready on every hit
-        var ls = new ResolvedAttackProfile(50, 35, 0, 0.4);   // 1.2 s per hit: a 2.4 s cooldown is ready every other hit
+        var ls = new ResolvedAttackProfile("", 50, 1, 35, 1, 1, 0, 0.4);   // 1.2 s per hit: a 2.4 s cooldown is ready every other hit
         Assert.Equal(0.5, ls.ProcsPerHit(2.4), Tol);
-        // every Great Sword hit is a full charge
-        Assert.Equal(new ResolvedAttackProfile(30, 190, 1.0, AttackProfile.DefaultElementHitzoneRatio), new AttackProfile { HitsPerMinute = 30 }.Resolve(WeaponType.GreatSword));
+        // the average-hit model: every Great Sword hit is a full charge
+        var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data).Stats;
+        var average = new AttackProfile { Attack = Attacks.Average, HitsPerMinute = 30 }.Resolve(weapon, new Target());
+        Assert.Equal((30.0, 1.0, 209.0, 1.0), (average.HitsPerMinute, average.Hits, average.TotalMv, average.Shockwaves));
     }
 
     [Fact]

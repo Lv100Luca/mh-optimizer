@@ -186,7 +186,10 @@ public static class RequestLoader
         if (profile.HitsPerMinute is <= 0) errors.Add("conditions.attack_profile.hits_per_minute must be above 0.");
         if (profile.AverageMv is <= 0) errors.Add("conditions.attack_profile.average_mv must be above 0.");
         if (profile.ChargedLv3Share is < 0 or > 1) errors.Add("conditions.attack_profile.charged_lv3_share must be between 0 and 1.");
-        if (profile.ElementHitzoneRatio is < 0 or > 1) errors.Add("conditions.attack_profile.element_hitzone_ratio must be between 0 and 1.");
+        if (profile.Attack is { } attackId && weaponErrors.Count == 0
+            && !string.Equals(attackId, Attacks.Average, StringComparison.OrdinalIgnoreCase) && Attacks.Find(weapon.Type, attackId) is null)
+            errors.Add($"conditions.attack_profile.attack '{attackId}' is not a {weapon.Type} attack (known: {string.Join(", ", Attacks.For(weapon.Type).Select(x => x.Id).Append(Attacks.Average))}).");
+        errors.AddRange(request.Conditions.Target.Validate());
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();

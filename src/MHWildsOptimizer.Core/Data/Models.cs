@@ -67,3 +67,9 @@ public sealed record GogmaWeaponVariant(
     int Affinity,
     SharpnessBar? Sharpness,
     IReadOnlyList<int> Slots);
+
+/// <summary>A large monster and the hitzones of its parts (data/monster_hitzones.json, from wilds.mhdb.io), weakest point first.</summary>
+public sealed record MonsterHitzones(string Name, IReadOnlyList<PartHitzones> Parts);
+
+/// <summary>Hitzone values of one monster part in percent (base state: not broken, not wounded).</summary>
+public sealed record PartHitzones(string Name, int Slash, int Blunt, int Pierce, int Fire, int Water, int Thunder, int Ice, int Dragon);

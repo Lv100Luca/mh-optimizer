@@ -1,3 +1,5 @@
+using MHWildsOptimizer.Core.Gogma;
+
 namespace MHWildsOptimizer.Core.Damage;
 
 public enum ResonanceMode { None, Local, Remote }
@@ -12,7 +14,7 @@ public sealed record Conditions
     // ----- shared hunter / monster state -----
     /// <summary>Agitator, Mutual Hostility (Gogmapocalypse).</summary>
     public bool MonsterEnraged { get; init; } = true;
-    /// <summary>Weakness Exploit base bonus. With the hitzone-100 assumption every hit is a weak-point hit.</summary>
+    /// <summary>Weakness Exploit base bonus; only counts when the <see cref="Target"/> is a weak point (raw hitzone 45 or more).</summary>
     public bool HittingWeakPoint { get; init; } = true;
     /// <summary>Weakness Exploit wound bonus.</summary>
     public bool HittingWound { get; init; } = false;
@@ -71,7 +73,13 @@ public sealed record Conditions
     // ----- proc damage -----
     /// <summary>Count extra damage instances (Dark Arts shockwave, Bad Blood; Azure Bolt bursts and Scorcher are never counted), converted to per 100 MV with <see cref="AttackProfile"/>.</summary>
     public bool ProcDamage { get; init; } = true;
+    /// <summary>The attack the score is computed for.</summary>
     public AttackProfile AttackProfile { get; init; } = new();
+    /// <summary>Where the hits land: raw and element hitzone.</summary>
+    public Target Target { get; init; } = new();
+
+    /// <summary>The attack profile resolved for <paramref name="weapon"/> against the <see cref="Target"/>.</summary>
+    public ResolvedAttackProfile Attack(GogmaWeaponStats weapon) => AttackProfile.Resolve(weapon, Target);
 
     /// <summary>
     /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
@@ -119,6 +127,9 @@ public sealed record Conditions
         GutsNotYetTriggered = true,
         ProcDamage = true,
     };
+
+    /// <summary><see cref="AllOn"/> with the attack and target of <paramref name="basis"/>, so the two compare on the same attack.</summary>
+    public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target };
 
     /// <summary>Everything off: unconditional skills only.</summary>
     public static Conditions AllOff => new()

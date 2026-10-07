@@ -30,12 +30,14 @@ public sealed class ScoreUnit
 }
 
 /// <summary>One health side the loadout is scored at (full health, or red/low health) with its weapon constants.</summary>
-public sealed record ScoreSide(Conditions Conditions, double SharpRaw, double SharpEle, double BaseCritMult, double BaseCritEleMult, double ElementCap);
+/// <param name="RawFactor">EFR per true raw and crit factor: the attack's MV-weighted sharpness (and phial), <see cref="ResolvedAttackProfile.RawFactor"/>.</param>
+/// <param name="SharpEle">The weapon's element sharpness modifier (the Dark Arts shockwave's element).</param>
+public sealed record ScoreSide(Conditions Conditions, double RawFactor, double SharpEle, double BaseCritMult, double BaseCritEleMult, double ElementCap);
 
 /// <summary>
 /// The damage formula as seen by an exact solver:
-/// raw = (B * prod rawPct + sum rawFlat) * sharp * critFactor(clamp(affinity), critMult),
-/// element = min(E * prod elePct + sum eleFlat, cap) * sharpEle * critElementFactor * <see cref="ElementScale"/>, plus procs;
+/// raw = (B * prod rawPct + sum rawFlat) * rawFactor * critFactor(clamp(affinity), critMult),
+/// element = min(E * prod elePct + sum eleFlat, cap) * critElementFactor * <see cref="ElementScale"/>, plus procs;
 /// the best health side wins.
 /// The per-feature contributions are not re-implemented: they are probed from <see cref="DamageCalculator"/> with two
 /// synthetic weapons (so multipliers and flat bonuses can be told apart), and features whose contributions do not compose
@@ -61,7 +63,7 @@ public sealed class ScoreDecomposition
     /// <summary>Shockwave damage per 100 MV = <see cref="ShockwaveRawShare"/> * EFR + <see cref="ShockwaveConstant"/>[side].</summary>
     public double ShockwaveRawShare { get; }
     public double[] ShockwaveConstant { get; }
-    /// <summary>Element lands once per hit at the element hitzone: element hitzone ratio * 100 / average MV of the attack profile.</summary>
+    /// <summary>Element per true element point per 100 MV of the attack, sharpness included: <see cref="ResolvedAttackProfile.ElementFactor"/>.</summary>
     public double ElementScale { get; }
 
     private ScoreDecomposition(GogmaWeaponStats weapon, Conditions cond, List<Feature> features, List<ScoreUnit> units, List<ScoreSide> sides,
@@ -98,11 +100,13 @@ public sealed class ScoreDecomposition
         var sides = sideConditions.Select(c =>
         {
             var r = DamageCalculator.Calculate(bare, none, c, trace: false);
-            return new ScoreSide(c, r.SharpnessRawModifier, r.SharpnessElementModifier, r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap);
+            return new ScoreSide(c, r.Attack.RawFactor, r.SharpnessElementModifier, r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap);
         }).ToList();
 
-        var profile = cond.AttackProfile.Resolve(weapon.Type);
-        var shockShare = DamageConstants.DarkArtsShockwaveMv / 100.0 * profile.ChargedLv3Share * profile.PerHundredMv;
+        var profile = cond.Attack(bare);
+        // the shockwave scales with true raw x weapon sharpness x crit factor = EFR x sharpness / the attack's raw factor
+        var sharpRaw = weapon.TopSharpness is { } top ? DamageConstants.SharpnessRaw(top) : 1.0;
+        var shockShare = DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / profile.RawFactor * profile.Shockwaves * profile.PerHundredMv;
         var shockConst = sides.Select(s => Shockwave(0, s.SharpEle, profile)).ToArray();
 
         var prober = new Prober(weapon, features, sides, profile);
@@ -127,13 +131,13 @@ public sealed class ScoreDecomposition
 
         // units that never change the score (target-only skills such as Focus, sets whose condition is off) are left out
         units = units.Where(u => u.Tables.Select((t, side) => t.Any(c => !Same(c, Base(sides[side])))).Any(x => x)).ToList();
-        return new ScoreDecomposition(bare, cond, features, units, sides, shockShare, shockConst, profile.ElementHitzoneRatio * profile.PerHundredMv);
+        return new ScoreDecomposition(bare, cond, features, units, sides, shockShare, shockConst, profile.ElementFactor);
     }
 
-    /// <summary>Dark Arts shockwave per 100 MV at the given EFR, as <see cref="DamageCalculator"/> counts it.</summary>
-    private static double Shockwave(double efr, double sharpEle, ResolvedAttackProfile profile) =>
-        (efr * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle * profile.ElementHitzoneRatio)
-        * profile.ChargedLv3Share * profile.PerHundredMv;
+    /// <summary>Dark Arts shockwave per 100 MV, as <see cref="DamageCalculator"/> counts it.</summary>
+    /// <param name="effectiveRawPerMv">True raw x weapon sharpness x crit factor.</param>
+    private static double Shockwave(double effectiveRawPerMv, double sharpEle, ResolvedAttackProfile profile) =>
+        DamageCalculator.Shockwave(effectiveRawPerMv, sharpEle, profile) * profile.Shockwaves * profile.PerHundredMv;
 
     /// <summary>The score for the given feature values, composed from the unit tables (same formula the CP model encodes).</summary>
     public double Evaluate(int[] values)
@@ -158,13 +162,13 @@ public sealed class ScoreDecomposition
         var trueRaw = _weapon.TrueRaw * ch.RawPct + ch.RawFlat;
         var aff = Math.Clamp(_weapon.Affinity + ch.Affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);
         var critFactor = aff >= 0 ? 1.0 + aff / 100.0 * (ch.CritMult - 1.0) : 1.0 + -aff / 100.0 * (DamageConstants.NegativeCriticalMultiplier - 1.0);
-        var efr = trueRaw * side.SharpRaw * critFactor;
+        var efr = trueRaw * side.RawFactor * critFactor;
         double efe = 0;
         if (HasElement)
         {
             var ele = Math.Min(_weapon.ElementTrue * ch.ElePct + ch.EleFlat, side.ElementCap);
             var critEle = aff > 0 ? 1.0 + aff / 100.0 * (ch.CritEleMult - 1.0) : 1.0;
-            efe = ele * side.SharpEle * critEle * ElementScale;
+            efe = ele * critEle * ElementScale;
         }
         var procs = ch.Procs + (ch.Shockwave ? ShockwaveRawShare * efr + ShockwaveConstant[sideIndex] : 0);
         return efr + efe + procs;
@@ -275,9 +279,9 @@ public sealed class ScoreDecomposition
             var r2 = DamageCalculator.Calculate(_w2, skills, cond, trace: false);
             var rawPct = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
             var elePct = _hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
-            var shockwave = cond.ProcDamage && weapon.Type == WeaponType.GreatSword && profile.ChargedLv3Share > 0
+            var shockwave = cond.ProcDamage && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
-            var shock = shockwave ? Shockwave(r1.EffectiveRaw, r1.SharpnessElementModifier, profile) : 0;
+            var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
             var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct, r1.Affinity - ProbeAffinity, elePct,
                 _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock, shockwave);
             _cache[key] = ch;

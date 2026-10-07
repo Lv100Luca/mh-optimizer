@@ -24,7 +24,7 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
 {
     private static string RepoRoot => Directory.GetParent(GameDataLoader.FindDataDirectory())!.FullName;
 
-    /// <param name="MinBestScore">Baseline best score; a change may raise it but never lower it.</param>
+    /// <param name="MinBestScore">Baseline best score; a change may raise it but never lower it (reset 2026-10-07 for the attack/target score model: GS scores the True Charged Slash).</param>
     private sealed record Scenario(string Name, OptimizationRequest Request, double MinBestScore);
 
     private static readonly List<TalismanInput> Talismans =
@@ -74,7 +74,7 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
             Conditions = RedHealthConditions,
             Talismans = new TalismanSettings { IncludeCraftable = true },
             Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
-        }, MinBestScore: 676.30),
+        }, MinBestScore: 667.61), // the beam's; CP-SAT finds 674.68
 
         // many skill targets: feasibility pruning does most of the work
         new Scenario("GS dragon, heavy skill targets", new OptimizationRequest
@@ -84,7 +84,7 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
             Conditions = RedHealthConditions,
             Talismans = new TalismanSettings { IncludeCraftable = true },
             Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
-        }, MinBestScore: 680.63),
+        }, MinBestScore: 671.75),
 
         // loose targets with many conditions on: the beam fills at every depth (1M beam: ~100 s, ~11 GB) and still misses the optimum
         new Scenario("GS dragon, loose targets, many conditions", new OptimizationRequest
@@ -115,7 +115,7 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
             Conditions = RedHealthConditions,
             Talismans = new TalismanSettings { IncludeCraftable = true },
             Options = new OptimizerOptions { TopN = 3, MinRarity = 5, MaxStatesPerDepth = 20_000 },
-        }, MinBestScore: 696.22),
+        }, MinBestScore: 686.63), // the beam's; CP-SAT finds 689.15
     ];
 
     public static TheoryData<string, OptimizerEngine> Scenarios

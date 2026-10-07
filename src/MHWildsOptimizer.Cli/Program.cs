@@ -91,6 +91,7 @@ int ShowRequest(string path)
     foreach (var t in r.Talismans.Where(t => t.Source == TalismanSource.Random)) Console.WriteLine("  " + t);
     Console.WriteLine($"Options: transcendence={r.Options.AllowTranscendence}, top {r.Options.TopN}, min rarity {r.Options.MinRarity}, excluded sets [{string.Join(", ", r.Options.ExcludeSets)}]");
     Console.WriteLine($"Conditions: enraged={r.Conditions.MonsterEnraged} weakpoint={r.Conditions.HittingWeakPoint} wound={r.Conditions.HittingWound} fullHP={r.Conditions.FullHealth} redHP={r.Conditions.RedHealth} stamina={r.Conditions.StaminaFull} burst={r.Conditions.BurstActive} frenzy={r.Conditions.FrenzyOvercome} resonance={r.Conditions.Resonance}");
+    Console.WriteLine($"Attack: {r.Conditions.Attack(s).Name}; target: {r.Conditions.Target.Name} (raw hitzone {r.Conditions.Target.RawHitzone}, element hitzone {r.Conditions.Target.ElementHitzoneFor(s.Element)})");
     Console.WriteLine();
 
     var bare = new Loadout { Weapon = new EquippedWeapon(s) };

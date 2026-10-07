@@ -52,7 +52,7 @@ Game state covered: Monster Hunter Wilds up to the final base-game update, Ver 1
 
 `tools/build_dataset.py` regenerates the normalized files from `data/raw`. `tools/html_tables*.py` are the wiki-table scrapers.
 
-## 4. Damage model (hitzone 100, no resistances)
+## 4. Damage model (chosen attack against a target hitzone)
 
 Per hit:
 
@@ -68,28 +68,35 @@ element = min(TrueEle, Cap) * SharpEle * CritEle
 * Element attack skills: ×1.00 +4, ×1.10 +5, ×1.20 +6 true. Coalescence ×1.10/1.20/1.30, Charge Master ×1.15/1.20/1.25 (charged attacks), Gogmapocalypse ×1.2 +2 / ×1.3 +4 when enraged.
 * Burst is per weapon type: GS Lv1..5 = +10/+12/+14/+16/+18 attack and +80/+100/+120/+160/+200 display element (5 s window), LS = +8/+10/+12/+15/+18 and +60/+80/+100/+120/+140 (5 s); first hit +5/+50 (GS) or +4/+50 (LS).
 
-Recommended optimizer metric: **Effective Raw + Effective Element per 100 MV**, independent of the attack combo, **plus proc damage per 100 MV** (below). Motion values are available in the game data (`Wp??_Attack.rcol` `_Attack` field, 126 entries for Great Sword) for a later combo-DPS mode; the attack-name mapping still has to be built.
+Optimizer metric: **Effective Raw + Effective Element per 100 MV of the chosen attack, plus proc damage per 100 MV** (below), on the raw-hitzone-100 scale (damage / (raw hitzone / 100)), so EFR keeps its usual meaning and element counts at element hitzone / raw hitzone.
+
+**Attack and target** (decided 2026-10-07, after a Switch Axe player found element undervalued): the score is computed for one attack (`conditions.attack_profile.attack`, see `Damage/Attacks.cs`) against one target (`conditions.target`, see `Damage/Target.cs`):
+
+```
+EFR = TrueRaw * CritFactor * sum(MV_i * SharpRaw_i * phialRaw_i) / sum(MV_i)
+EFE = min(TrueEle, Cap) * CritEleFactor * sum(EleMod_i * SharpEle_i * phialEle_i) * (eleHitzone / rawHitzone) * 100 / sum(MV_i)
+```
+
+* Attacks (motion values and element modifiers from the 1.040 sheet, `notes/motion_values.md`): Great Sword True Charged Slash Lv3 (default: 16 + 209 MV, element x1 + x2.5; the power finisher 267 MV when raw hitzone x sharpness >= 45), charge combo (CS3, tackle at green with no element, SCS3, TCS3), SCS3, CS3. Switch Axe Full Release Slash (default: 50 + 82 MV slashes and 3x20 + 5x35 MV explosions at element x0.8 with an Element phial, x0.35 otherwise), amped sword combo (every slash adds a 12 MV amped explosion, element x1 / x0.35), Unbridled Slash, Zero Sum Discharge, Heavy Slam into Follow-up Morph Slash. Other weapon types (and the "average" attack) keep the average-hit model below.
+* Switch Axe phial follows the Gogma focus (attack: Power, affinity / element: Element). Power phial raw x1.17 and Element phial element x1.45 on sword-mode slashes (wiggler.pet guide; VERIFY, single source; explosions assumed unboosted).
+* Targets: a monster part (`data/monster_hitzones.json`, built by `tools/build_monster_hitzones.py` from the wilds.mhdb.io dump; slash / blunt / shot raw hitzone by weapon type, element hitzone by the weapon's element; base state, no wounds or breaks), the training dummy (weak point raw 80 / element 30, hard part 20 / 5, read off the Bad Blood and Scorcher dummy tests; VERIFY other elements), or custom numbers (default raw 70 / element 28).
+* Weakness Exploit only counts when the target's raw hitzone is 45 or more.
+* Every hit is assumed to crit; per-hit "can't crit" flags are not modelled.
 
 Conditional skills (Agitator, Peak Performance, Maximum Might, Weakness Exploit, Burst, Adrenaline Rush, Latent Power, most set bonuses) need an *uptime* weight; the dataset keeps the condition text so the optimizer can expose sliders.
 
-**Proc damage** (extra damage instances that do not scale the hit) is converted to damage per 100 MV of landed attacks with an attack profile (`conditions.attack_profile`: hits per minute, average MV per hit, share of Lv3 charged slashes; presets GS 24 / 120 / 0.3, LS 50 / 35 / 0, rough starting points):
+**Proc damage** (extra damage instances that do not scale the hit) is converted to damage per 100 MV of the attack. Hits per minute default to the attack's hits over its rough duration (`AttackDefinition.Seconds`); the average-hit model uses the presets GS 24 / 209 MV / 1.0, LS 50 / 35 / 0, others 40 / 50 / 0:
 
 ```
-proc per 100 MV = damage * procsPerHit / (averageMv / 100)      procsPerHit = chance * min(1, secondsPerHit / cooldown)
+proc per 100 MV = damage * procsPerExecution * 100 / attackMv      Bad Blood: procsPerExecution = hits * min(1, secondsPerHit / cooldown)
 ```
 
 * Not counted (decided 2026-10-07): Azure Bolt bursts (Leviathan's Fury: 30 + 70 / 60 + 200 thunder, scaled by Thunder Attack, 30 s cooldown) and Scorcher (Rathalos's Flare: 20 + 60 / 40 + 120 fire, 33 % per 2.4 s check). Too rare and unreliable to build around; Leviathan's Fury still scores through its affinity window (`azure_bolt_active`).
-* Dark Arts shockwave (Soul of the Dark Knight, Great Sword only): on each Lv3 charged slash 30 MV raw (crits, sharpness) + 6 true dragon. The Great Sword preset counts every hit as a Lv3 charged slash (`charged_lv3_share` 1.0): uncharged Great Sword play does no meaningful damage. Its MV per hit is the Lv3 TCS finisher, 190 MV (decided 2026-10-07: TCS is the damage target; datamine 1.0.11, full tables in `notes/motion_values.md`). Earlier calibration from in-game numbers (same build and monster, hitzones may differ): shockwaves of 80-104 next to CS / SCS / TCS hits of 379-612, about 19 % of the hit (16-21 %). The shockwave barely changes with the slash, which fits a fixed 30 MV hit; 30 / 0.19 gives about 155-160 MV for an average Lv3 slash mix. The crit SCS shockwave crit too. Training dummy (2026-10-07, 274 attack, Critical Boost 3, white, no red health): CS3 758c with a 149c shockwave (19.7 %), TCS 912c with a 149c shockwave (16.3 %), i.e. about 152 / 184 MV slashes; 274 x 0.30 x 1.34 x 1.32 = 145 plus a little element matches the 149. 30 x 912 / 149 = 184 MV for the TCS, matching the datamined 190 (the dummy hit was the normal finisher, not Power TCS at 241). Counted without red health (confirmed on the training dummy 2026-10-07: it fires with full health). VERIFY: the element part (6 true dragon) comes from a single source.
+* Dark Arts shockwave (Soul of the Dark Knight, Great Sword only): on each Lv3 charged slash 30 MV raw (crits, sharpness) + 6 true dragon. It fires once per Lv3 charged slash of the attack (once per True Charged Slash). Before the attack picker the Great Sword preset counted every hit as a 190 MV Lv3 charged slash (datamine 1.0.11). Earlier calibration from in-game numbers (same build and monster, hitzones may differ): shockwaves of 80-104 next to CS / SCS / TCS hits of 379-612, about 19 % of the hit (16-21 %). The shockwave barely changes with the slash, which fits a fixed 30 MV hit; 30 / 0.19 gives about 155-160 MV for an average Lv3 slash mix. The crit SCS shockwave crit too. Training dummy (2026-10-07, 274 attack, Critical Boost 3, white, no red health): CS3 758c with a 149c shockwave (19.7 %), TCS 912c with a 149c shockwave (16.3 %), i.e. about 152 / 184 MV slashes; 274 x 0.30 x 1.34 x 1.32 = 145 plus a little element matches the 149. 30 x 912 / 149 = 184 MV for the TCS, matching the datamined 190 (the dummy hit was the normal finisher, not Power TCS at 241). Counted without red health (confirmed on the training dummy 2026-10-07: it fires with full health). VERIFY: the element part (6 true dragon) comes from a single source.
 * Bad Blood (Nu Udra's Mutiny): 45 / 85 per hit, 2 s cooldown, needs Resentment and red health.
 * `conditions.proc_damage: false` turns all of it off.
 
-**Element per 100 MV** (decided 2026-10-07): element lands once per hit whatever the MV and against the element hitzone, so EFE goes through the attack profile too. Before, EFE was per hit at hitzone 100 while EFR was per 100 MV, which overvalued element on Great Sword about 5x (190 MV hits, element hitzone 25-30 vs raw 70) and pushed Dragon Attack / Critical Element / Coalescence into raw builds:
-
-```
-EFE = element * sharpness * critElementFactor * elementHitzoneRatio * 100 / averageMv
-```
-
-`element_hitzone_ratio` (element hitzone / raw hitzone where you hit, default 0.4 for every weapon) also scales the element part of the Dark Arts shockwave. EFR stays at raw hitzone 100.
+**Element per 100 MV** (decided 2026-10-07): element lands per hit with that hit's element modifier, whatever the MV, and against the element hitzone, so EFE goes through the attack. History: first EFE was per hit at hitzone 100 (overvalued element on Great Sword about 5x); then one element hit per average-MV hit (`element_hitzone_ratio`, `average_mv`), which ignored the element modifiers of big attacks (TCS x2.5, Switch Axe explosions) and undervalued element on Great Sword about 2.3x and on an Element-phial Switch Axe about 1.7x. The element hitzone share also scales the element part of the Dark Arts shockwave.
 
 **Coalescence** only counts with the Gore Magala set bonus, Frenzy overcome and `coalescence_active` (decided 2026-10-07): it needs a natural status recovery, which in practice is the Frenzy cure; Antivirus already needed the Gore set.
 
@@ -100,13 +107,13 @@ Decided (2026-10-06):
 * Scope for now: Great Sword and Long Sword only.
 * Conditional skills (Weakness Exploit, Agitator, Maximum Might, Peak Performance, Burst, set bonuses, ...) are user-toggleable in the optimizer; a toggle can only take effect when the evaluated loadout actually contains the skill.
 * Stack: C# / .NET 10 (solution `MHWildsOptimizer.sln`: Core library, CLI, xunit tests).
-* Ranking metric: EFR + EFE combined (effective raw plus effective element per 100 MV; element at `element_hitzone_ratio` of the raw hitzone, see section 4).
+* Ranking metric: EFR + EFE combined (effective raw plus effective element per 100 MV of the chosen attack; element at the target's element hitzone / raw hitzone, see section 4).
 
 Still open:
 1. Transcendence slot rule for rarity-5 pieces with fewer than 3 slots (assumed: new level-1 slots appear).
 2. Resolved: Burst arrays decoded (GS Lv5 = +18 attack / +200 display element, LS Lv5 = +18 / +140), Critical Element GS 1.07/1.14/1.21 vs LS 1.05/1.10/1.15, Coalescence GS x1.10-1.30 vs LS x1.05-1.15. Still fuzzy: Elemental Absorption flat values, Flayer burst size, Charge Master grouping.
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
-4. Combo-DPS mode with motion values is a later option (needs the attack-name mapping for the rcol data).
+4. Attacks exist for Great Sword and Switch Axe only; other weapon types still use the average-hit model.
 
 ## 6. Optimizer inputs (implemented in `src/MHWildsOptimizer.Core/Inputs`)
 
@@ -116,7 +123,7 @@ A request file (`inputs/request.example.json`, snake_case) carries everything:
 * `skill_pair`: `"fixed"` (use the rolled pair) or `"optimize"` (search all 294 rollable pairs and report the best `top_n`).
 * `target_skills`: required minimum levels. The weapon's core skills are merged in by default (`options.require_weapon_core_skills`): Great Sword Focus 3, Long Sword Quick Sheathe 3. Set bonuses and group skills go in the same map, with the tier the game shows as the level: `"Gore Magala's Tyranny": 2` requires four pieces (`1` = two pieces), `"Lord's Soul": 1` requires three pieces. The Gogma weapon counts as a piece when it rolled that bonus. A requirement that the allowed armor (rarity, excluded sets) plus the weapon cannot reach is rejected.
 * `conditions`: the toggles of `Damage/Conditions.cs` (enraged, weak point, wound, full/red/low health, stamina, Burst, Frenzy, Resonance mode, …). A toggle only acts when the loadout carries the skill.
-* `conditions.proc_damage` / `conditions.attack_profile`: count proc damage (Dark Arts shockwave, Bad Blood) and how to convert element and procs to per 100 MV (`hits_per_minute`, `average_mv`, `charged_lv3_share`, `element_hitzone_ratio`; unset values use the weapon preset). `average_mv` and `element_hitzone_ratio` also apply with proc damage off. See section 4.
+* `conditions.attack_profile`: the attack the score is computed for (`attack`: an id from `Damage/Attacks.cs` or `"average"`; unset: the weapon type's default), `hits_per_minute` for cooldown-limited procs, and for the average-hit model `average_mv` / `charged_lv3_share`. `conditions.target`: `kind` (`monster`, `dummy`, `custom`), `monster` / `part`, `raw_hitzone`, `element_hitzone` (any element) or `elements` (per element). `conditions.proc_damage` counts proc damage (Dark Arts shockwave, Bad Blood). See section 4.
 * `conditions.skill_limits`: per-skill caps for the score. `0` removes the skill from the optimization, `n` values it only up to level n (e.g. `{ "Burst": 1 }` on Great Sword, which rarely lands five consecutive hits). Levels above the cap are still shown, marked "valued at n". A target above its limit is rejected.
 * `talismans`: a file with the random talismans you own (`inputs/talismans.example.json`: name, rarity, skills with levels, decoration slots as `armor1` / `weapon1`) and whether the craftable charm lines (max rank) are also considered. Entries are validated against the random-talisman pool from the game data (`data/random_talisman_pool.json`): skill slot 1 is a weapon-kind skill worth 1-4 points (Attack Boost max 3, Critical Eye 3, Critical Boost 1, element attack 3), skill slots 2-3 are armor-kind skills worth 5-10 points (Weakness Exploit / Agitator / Burst / Latent Power / Adrenaline Rush max 1, Maximum Might / Peak Performance 2); decoration slots are up to three armor slots or, on rarity 7, one weapon Lv1 slot plus armor slots.
 * `options`: transcendence on/off, number of results, minimum rarity, excluded sets.

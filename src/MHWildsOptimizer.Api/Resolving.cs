@@ -75,7 +75,7 @@ public static class Resolving
         {
             var bare = new Loadout { Weapon = new EquippedWeapon(r.Weapon) };
             var res = DamageCalculator.Calculate(bare, data, r.Conditions);
-            var allOn = DamageCalculator.Calculate(bare, data, Conditions.AllOn);
+            var allOn = DamageCalculator.Calculate(bare, data, Conditions.AllOnLike(r.Conditions));
             baseline = new BaselineDto(res.TrueRaw, res.Affinity, res.CriticalMultiplier, res.EffectiveRaw, res.EffectiveElement, res.ProcDamage, res.Total, allOn.Total);
 
             var rel = Core.Optimize.Relevance.Build(r.Weapon, r, data);

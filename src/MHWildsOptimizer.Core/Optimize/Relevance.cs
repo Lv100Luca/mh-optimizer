@@ -83,7 +83,7 @@ public sealed class Relevance
         Add(SkillNames.CriticalBoost);
         Add(SkillNames.CriticalElement, hasElement);
         if (hasElement && SkillNames.ElementAttackSkill(weapon.Element) is { } ele) Add(ele);
-        Add(SkillNames.WeaknessExploit, c.HittingWeakPoint);
+        Add(SkillNames.WeaknessExploit, c.HittingWeakPoint && c.Target.WeakPoint);
         Add(SkillNames.Agitator, c.MonsterEnraged);
         Add(SkillNames.PeakPerformance, c.FullHealth);
         Add(SkillNames.MaximumMight, c.StaminaFull);
@@ -108,7 +108,7 @@ public sealed class Relevance
         Set(SkillNames.SeregiossTenacity, c.AdrenalineRushActive && c.AdrenalineRushRetriggered);
         Set(SkillNames.OmegaResonance, c.Resonance != ResonanceMode.None);
         Set(SkillNames.Gogmapocalypse, hasElement && c.MonsterEnraged);
-        var shockwave = c.ProcDamage && weapon.Type == WeaponType.GreatSword && c.AttackProfile.Resolve(weapon.Type).ChargedLv3Share > 0;
+        var shockwave = c.ProcDamage && weapon.Type == WeaponType.GreatSword && c.Attack(weapon).Shockwaves > 0;
         Set(SkillNames.SoulOfTheDarkKnight, (hasElement && c.RedHealth) || shockwave);
         Set(SkillNames.NuUdrasMutiny, c.ProcDamage && c.RedHealth);
         Set(SkillNames.EbonyOdogaronsPower, c.BurstActive);
