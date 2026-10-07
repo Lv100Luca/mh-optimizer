@@ -45,7 +45,7 @@ public sealed record BuildDto(
     IReadOnlyList<DecoCountDto> Decorations, IReadOnlyList<BuildSkillDto> Skills, IReadOnlyList<SetBonusStateDto> SetBonuses, IReadOnlyList<GroupSkillStateDto> GroupSkills,
     StatsDto StatsRequested, StatsDto StatsAllOn, string Text);
 
-public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
+public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string WorkLabel, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
 
 public sealed record ResultDto(DateTimeOffset CompletedAt, double ElapsedSeconds, SkillPairMode SkillPairMode, IReadOnlyList<PairResultDto> Pairs, string Text);
 
@@ -57,7 +57,7 @@ public static class ResultMapper
         var pairs = result.PairResults.Select((pr, i) =>
         {
             var parts = pr.Label.Split(" + ", 2);
-            return new PairResultDto(i + 1, pr.Label, parts[0], parts.Length > 1 ? parts[1] : "-", pr.BestScore, pr.StatesEvaluated, pr.CandidateSummary,
+            return new PairResultDto(i + 1, pr.Label, parts[0], parts.Length > 1 ? parts[1] : "-", pr.BestScore, pr.StatesEvaluated, pr.WorkLabel, pr.CandidateSummary,
                 pr.Builds.Select((b, j) => MapBuild(j + 1, b, resolved.Conditions, data)).ToList());
         }).ToList();
         return new ResultDto(DateTimeOffset.UtcNow, result.Elapsed.TotalSeconds, resolved.SkillPair.Mode, pairs, ResultsText.Render(result, resolved, data));

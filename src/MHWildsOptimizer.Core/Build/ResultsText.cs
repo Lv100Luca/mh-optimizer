@@ -16,7 +16,7 @@ public static class ResultsText
         foreach (var pr in result.PairResults)
         {
             rank++;
-            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} final states scored; {pr.CandidateSummary})");
+            sb.AppendLine($"##### #{rank} skill pair: {pr.Label}   best {pr.BestScore:0.0}   ({pr.StatesEvaluated} {pr.WorkLabel}; {pr.CandidateSummary})");
             if (pr.Builds.Count == 0) sb.AppendLine("  no build satisfies the targets");
             var i = 0;
             foreach (var b in pr.Builds)

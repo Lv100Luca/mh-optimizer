@@ -14,9 +14,13 @@ public sealed record RankedBuild(Loadout Loadout, DamageResult Result, GogmaSkil
 }
 
 /// <summary>Results for one (set bonus, group skill) class; in fixed mode there is exactly one.</summary>
-public sealed record SkillPairResult(string Label, GogmaSkillPair? Pair, IReadOnlyList<RankedBuild> Builds, long StatesEvaluated, string CandidateSummary)
+/// <param name="StatesEvaluated">Search work: final states scored (beam) or solves (CP-SAT), see <see cref="WorkLabel"/>.</param>
+public sealed record SkillPairResult(string Label, GogmaSkillPair? Pair, IReadOnlyList<RankedBuild> Builds, long StatesEvaluated, string CandidateSummary,
+    OptimizerEngine Engine = OptimizerEngine.Beam)
 {
     public double BestScore => Builds.Count > 0 ? Builds[0].Score : 0;
+    /// <summary>What <see cref="StatesEvaluated"/> counts, for display after the number.</summary>
+    public string WorkLabel => Engine == OptimizerEngine.CpSat ? "CP-SAT solves" : "final states scored";
 }
 
 public sealed record OptimizationResult(IReadOnlyList<SkillPairResult> PairResults, TimeSpan Elapsed)
@@ -116,7 +120,7 @@ public sealed class Optimizer
                 parallel.MaxDegreeOfParallelism, _request.Options.CpSatTimeLimitSeconds, progress, parallel.CancellationToken);
             var cpBuilds = cp.Run().Select(b => b with { SkillPair = pair, SkillPairLabel = label }).ToList();
             progress?.Report($"  {cp.Summary}, {cpBuilds.Count} builds kept");
-            return new SkillPairResult(label, pair, cpBuilds, cp.Solves, $"{summary}; {cp.Summary}");
+            return new SkillPairResult(label, pair, cpBuilds, cp.Solves, $"{summary}; {cp.Summary}", OptimizerEngine.CpSat);
         }
 
         var search = new StateSearch(_data, rel, weapon, _request.Conditions, filler, armor, kinds, talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);

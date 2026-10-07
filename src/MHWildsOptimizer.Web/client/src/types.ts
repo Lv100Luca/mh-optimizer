@@ -107,6 +107,8 @@ export interface Conditions {
   attack_profile: AttackProfile;
 }
 
+export type OptimizerEngine = 'beam' | 'cp_sat';
+
 export interface OptimizationRequest {
   weapon: WeaponInput;
   skill_pair: { mode: SkillPairMode; top_n: number };
@@ -119,6 +121,10 @@ export interface OptimizationRequest {
     require_weapon_core_skills: boolean; max_states_per_depth: number;
     /** worker threads for the search; 0 = all processors */
     max_threads: number;
+    /** beam state search (fast, approximate) or the exact CP-SAT model; missing in configurations saved before the option existed */
+    engine?: OptimizerEngine;
+    /** CP-SAT only: time limit per solve (one solve per reported build) */
+    cp_sat_time_limit_seconds?: number;
   };
 }
 
@@ -226,7 +232,9 @@ export interface Build {
 }
 
 export interface PairResult {
-  rank: number; label: string; set_bonus: string; group_skill: string; best_score: number; states_evaluated: number; candidate_summary: string; builds: Build[];
+  rank: number; label: string; set_bonus: string; group_skill: string; best_score: number; states_evaluated: number;
+  /** what states_evaluated counts ("final states scored" or "CP-SAT solves"); missing in results saved before the CP-SAT engine */
+  work_label?: string; candidate_summary: string; builds: Build[];
 }
 
 export interface OptimizationResult { completed_at: string; elapsed_seconds: number; skill_pair_mode: SkillPairMode; pairs: PairResult[]; text: string }
