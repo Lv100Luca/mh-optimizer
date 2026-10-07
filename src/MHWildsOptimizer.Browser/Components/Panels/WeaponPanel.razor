@@ -1,5 +1,344 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="WeaponPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var w = request.Weapon;
+    var spec = w.Spec;
+    var mode = spec is not null ? SpecMode : StatsMode;
+    var kind = spec?.Type ?? w.Type ?? "great-sword";
+    var wt = Cat.WeaponTypes.GetValueOrDefault(kind);
+    var resolved = App.Resolved;
+    var weaponErrors = resolved?.Errors.Where(e => e.StartsWith("Weapon", StringComparison.Ordinal)).ToList() ?? [];
+    var rw = resolved?.Weapon;
+
+    <div class="panel two-col">
+        <div class="col">
+            <Section Title="Weapon type" Hint="Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills; gunner weapons are out of scope.">
+                <div class="type-grid">
+                    @foreach (var t in Catalog.WeaponTypes)
+                    {
+                        <button type="button" disabled="@(!t.Supported)" class="type-card @(t.Kind == kind ? "active" : "")" @onclick="() => SetType(t.Kind)"
+                                title="@(t.Supported ? $"{t.Label}: base {(t.Variants.GetValueOrDefault("attack")?.Raw.ToString(CultureInfo.InvariantCulture) ?? "?")} raw (attack focus), bloat x{t.Bloat.ToString(CultureInfo.InvariantCulture)}" : $"{t.Label}: out of scope")">
+                            <img src="@(t.Supported ? GameIcons.Weapon(t.Kind) : GameIcons.WeaponBase(t.Kind))" alt="" />
+                            <span>@t.Label</span>
+                            @if (t.CoreSkills.Count > 0)
+                            {
+                                <small>@string.Join(", ", t.CoreSkills.Select(c => $"{c.Skill} {c.Level}"))</small>
+                            }
+                        </button>
+                    }
+                </div>
+            </Section>
+
+            <Section Title="Stats"
+                     Hint="@(mode == SpecMode
+                         ? "Describe the weapon the way the game shows it on the Production Bonus and Reinforcement Bonus screens; the true stats are computed."
+                         : "Enter the final numbers from the equipment screen.")">
+                <Actions>
+                    <Segmented T="string" Small="true" Value="mode" ValueChanged="SetMode" Options="ModeOptions" />
+                </Actions>
+                <ChildContent>
+                    @if (mode == SpecMode && spec is not null)
+                    {
+                        <div class="form-grid">
+                            <Field Label="Focus" Hint="The Artian focus decides the base raw / affinity variant.">
+                                <Segmented T="GogmaFocus" Value="spec.Focus" ValueChanged="focus => PatchSpec(s => s with { Focus = focus })" Options="FocusOptions(wt)" />
+                            </Field>
+
+                            <Field Label="Element">
+                                <div class="chip-row">
+                                    @foreach (var e in Elements)
+                                    {
+                                        <button type="button" class="chip pick @(spec.Element == e ? "active" : "")" style="--tint: @GameIcons.ElementCss[e]" @onclick="() => SetSpecElement(e)">
+                                            @if (GameIcons.Element(e) is { } icon)
+                                            {
+                                                <img src="@icon" alt="" />
+                                            }
+                                            @Fmt.TitleCase(e)
+                                        </button>
+                                    }
+                                </div>
+                            </Field>
+
+                            <Field Label="Element infusion" Hint="@(wt is not null ? $"All three parts share the element: +{wt.InfusionBonusDisplay} display element on top of the base {wt.ElementBaseDisplay}." : null)">
+                                <Toggle Checked="@(spec.Infused && spec.Element != Element.None)" Disabled="@(spec.Element == Element.None)"
+                                        CheckedChanged="infused => PatchSpec(s => s with { Infused = infused })" Label="Element Infusion line present" />
+                            </Field>
+
+                            <Field Label="Attack Infusion lines" Hint="Each Artian part gives +5 true attack or +5% affinity; count the 'Attack Infusion +5' lines.">
+                                <Segmented T="int" Value="spec.AttackParts" ValueChanged="n => PatchSpec(s => s with { AttackParts = n })" Options="AttackPartOptions" />
+                            </Field>
+
+                            <Field Label="Reinforcement bonuses" Hint="Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.">
+                                @{
+                                    var slots = ReinforcementSlots(spec);
+                                    var options = Catalog.Reinforcements
+                                        .Where(r => !r.GunnerOnly && (!r.NeedsElement || spec.Element != Element.None))
+                                        .Select(r => new SelectOption(r.Value, r.Label, Fmt.TitleCase(r.Type)))
+                                        .ToList();
+                                }
+                                <div class="reinforcements">
+                                    @for (var i = 0; i < slots.Length; i++)
+                                    {
+                                        var index = i;
+                                        <SelectBox Value="@(slots[index] == "" ? null : slots[index])" Placeholder="— empty —" Options="options"
+                                                   ValueChanged="v => SetReinforcement(index, v)" />
+                                    }
+                                </div>
+                                @if (slots.Where(r => r != "").GroupBy(r => r).Any(g => g.Count() > 2))
+                                {
+                                    <Alert Kind="error">More than two identical reinforcements.</Alert>
+                                }
+                            </Field>
+                        </div>
+                    }
+
+                    @if (mode == StatsMode)
+                    {
+                        <div class="form-grid">
+                            <Field Label="Attack (display value)">
+                                <NumberInput T="int" Value="@(w.Attack ?? 0)" Min="1" Max="9999" ValueChanged="attack => App.PatchWeapon(x => x with { Attack = attack, AttackIsDisplay = true })" />
+                            </Field>
+                            <Field Label="Affinity %">
+                                <NumberInput T="int" Value="w.Affinity" Min="-100" Max="100" ValueChanged="affinity => App.PatchWeapon(x => x with { Affinity = affinity })" />
+                            </Field>
+                            <Field Label="Element">
+                                <div class="chip-row">
+                                    @foreach (var e in Elements)
+                                    {
+                                        <button type="button" class="chip pick @(w.Element == e ? "active" : "")" style="--tint: @GameIcons.ElementCss[e]"
+                                                @onclick="() => App.PatchWeapon(x => x with { Element = e, ElementDisplay = e == Element.None ? 0 : x.ElementDisplay != 0 ? x.ElementDisplay : 300 })">
+                                            @if (GameIcons.Element(e) is { } icon)
+                                            {
+                                                <img src="@icon" alt="" />
+                                            }
+                                            @Fmt.TitleCase(e)
+                                        </button>
+                                    }
+                                </div>
+                            </Field>
+                            @if (w.Element != Element.None)
+                            {
+                                <Field Label="Element value (display)">
+                                    <NumberInput T="int" Value="w.ElementDisplay" Min="10" Max="9999" Step="10" ValueChanged="v => App.PatchWeapon(x => x with { ElementDisplay = v })" />
+                                </Field>
+                            }
+                            <Field Label="Sharpness the weapon attacks at">
+                                <Segmented T="SharpnessColor" Value="w.Sharpness" ValueChanged="c => App.PatchWeapon(x => x with { Sharpness = c })" Options="SharpnessOptions" />
+                            </Field>
+                            <Field Label="Decoration slots" Hint="Gogma weapons have three level-3 slots.">
+                                <div class="chip-row">
+                                    @for (var i = 0; i < 3; i++)
+                                    {
+                                        var index = i;
+                                        <Segmented T="int" Small="true" Value="@(index < w.Slots.Count ? w.Slots[index] : 0)" ValueChanged="lv => SetSlot(index, lv)" Options="SlotOptions" />
+                                    }
+                                </div>
+                            </Field>
+                        </div>
+                    }
+                </ChildContent>
+            </Section>
+
+            <Section Title="Rolled skill pair" Hint="The two lines under 'Active Skills' on the weapon: one set bonus and one group skill. The weapon counts as one armor piece for each. Ignored when the skill pair mode is 'optimize'.">
+                <div class="form-grid">
+                    <Field>
+                        <LabelContent><span class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonus</span></LabelContent>
+                        <ChildContent>
+                            <SelectBox Value="@w.SetBonus" Placeholder="(none)" Options="@(Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList())"
+                                       ValueChanged="v => App.PatchWeapon(x => x with { SetBonus = v })" />
+                        </ChildContent>
+                    </Field>
+                    <Field>
+                        <LabelContent><span class="with-icon"><SkillIcon Name="group" Kind="SkillKind.Group" /> Group skill</span></LabelContent>
+                        <ChildContent>
+                            <SelectBox Value="@w.GroupSkill" Placeholder="(none)" Options="@(Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList())"
+                                       ValueChanged="v => App.PatchWeapon(x => x with { GroupSkill = v })" />
+                        </ChildContent>
+                    </Field>
+                </div>
+                @if (request.SkillPair.Mode == SkillPairMode.Optimize)
+                {
+                    <Alert Kind="info">
+                        Skill pair mode is <b>optimize</b>: every rollable pair is searched, so the rolled pair above is not used.
+                        <button class="linklike" @onclick="() => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { Mode = SkillPairMode.Fixed } })">Switch to fixed</button>
+                    </Alert>
+                }
+            </Section>
+        </div>
+
+        <aside class="col side">
+            <Section Title="Resolved weapon" Hint="What the optimizer will use (before any skills).">
+                @foreach (var e in weaponErrors)
+                {
+                    <Alert Kind="error">@e</Alert>
+                }
+                @if (rw is not null)
+                {
+                    <div class="weapon-preview">
+                        <div class="weapon-head">
+                            <img src="@GameIcons.Weapon(rw.Type)" alt="" />
+                            <div>
+                                <div class="big">@rw.Label</div>
+                                <div class="muted">@(rw.Focus is { } f ? $"{Fmt.TitleCase(f)} focus · " : "")rarity 8 Gogma Artian</div>
+                            </div>
+                        </div>
+                        <dl class="stats">
+                            <dt><img src="@GameIcons.Attack" alt="" /> Attack</dt>
+                            <dd><b>@rw.DisplayAttack</b> display <span class="muted">(@rw.TrueRaw true)</span></dd>
+                            <dt><img src="@GameIcons.Affinity" alt="" /> Affinity</dt>
+                            <dd><b>@(Fmt.Signed(rw.Affinity))%</b></dd>
+                            <dt>
+                                @if (GameIcons.Element(rw.Element) is { } elementIcon)
+                                {
+                                    <img src="@elementIcon" alt="" />
+                                }
+                                Element
+                            </dt>
+                            <dd>
+                                @if (rw.Element == Element.None)
+                                {
+                                    <span class="muted">none</span>
+                                }
+                                else
+                                {
+                                    <b style="color: @GameIcons.ElementCss[rw.Element]">@rw.ElementDisplay @Fmt.TitleCase(rw.Element)</b>
+                                    <span class="muted"> (@Fmt.N(rw.ElementTrue, 0) true)</span>
+                                }
+                            </dd>
+                            <dt><img src="@GameIcons.Sharpness" alt="" /> Sharpness</dt>
+                            <dd>
+                                <b>@(rw.Sharpness is { } sharp ? Fmt.TitleCase(sharp) : "-")</b>
+                                @if (rw.SharpnessBar is { } bar)
+                                {
+                                    <SharpnessBar Bar="bar" Bonus="rw.SharpnessBonus" />
+                                }
+                            </dd>
+                            <dt>Slots</dt>
+                            <dd><Slots Numbers="rw.Slots" Kind="weapon" /></dd>
+                            <dt>Rolled pair</dt>
+                            <dd>
+                                @if (rw.SetBonus is not null) { @rw.SetBonus } else { <span class="muted">no set bonus</span> }
+                                /
+                                @if (rw.GroupSkill is not null) { @rw.GroupSkill } else { <span class="muted">no group skill</span> }
+                            </dd>
+                        </dl>
+                        @if (resolved?.Baseline is { } baseline)
+                        {
+                            <div class="baseline">
+                                <span class="muted">Weapon-only baseline</span>
+                                <b>EFR @Fmt.N(baseline.Efr)</b> + <b>EFE @Fmt.N(baseline.Efe)</b> = <b class="total">@Fmt.N(baseline.Total)</b>
+                                <span class="muted"> under your conditions</span>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (rw is null && weaponErrors.Count == 0)
+                {
+                    <p class="muted">Validating…</p>
+                }
+            </Section>
+        </aside>
+    </div>
+}
+
+@code {
+    private const string SpecMode = "spec";
+    private const string StatsMode = "stats";
+
+    private static readonly Element[] Elements = Enum.GetValues<Element>();
+
+    private static readonly IReadOnlyList<SegmentOption<string>> ModeOptions =
+        [new(SpecMode, "Describe"), new(StatsMode, "Enter stats")];
+
+    private static readonly IReadOnlyList<SegmentOption<int>> AttackPartOptions = [.. Enumerable.Range(0, 4).Select(n =>
+        new SegmentOption<int>(n, n.ToString(CultureInfo.InvariantCulture), @<span>@n<small> +@(n * 5) atk · +@((3 - n) * 5)% aff</small></span>))];
+
+    private static readonly IReadOnlyList<SegmentOption<int>> SlotOptions = [.. Enumerable.Range(0, 4).Select(n =>
+        new SegmentOption<int>(n, n == 0 ? "—" : n.ToString(CultureInfo.InvariantCulture)))];
+
+    private IReadOnlyList<SegmentOption<SharpnessColor>> SharpnessOptions => [.. Catalog.SharpnessColors.Select(name =>
+    {
+        var c = Enum.Parse<SharpnessColor>(name, ignoreCase: true);
+        return new SegmentOption<SharpnessColor>(c, Fmt.TitleCase(c), @<span class="sharp-dot @name">@Fmt.TitleCase(c)</span>);
+    })];
+
+    private static IReadOnlyList<SegmentOption<GogmaFocus>> FocusOptions(WeaponTypeDto? wt) => [.. Enum.GetValues<GogmaFocus>().Select(f =>
+    {
+        var v = wt?.Variants.GetValueOrDefault(Fmt.Slug(f));
+        return new SegmentOption<GogmaFocus>(f, Fmt.TitleCase(f), @<span>@Fmt.TitleCase(f)@if (v is not null) {<small> @v.Raw raw · @(Fmt.Signed(v.Affinity))%</small>}</span>);
+    })];
+
+    private void SetMode(string m)
+    {
+        var request = App.Request;
+        if (request is null) return;
+        var w = request.Weapon;
+        var current = w.Spec is not null ? SpecMode : StatsMode;
+        if (m == current) return;
+        var kind = w.Spec?.Type ?? w.Type ?? "great-sword";
+        if (m == SpecMode)
+        {
+            App.PatchWeapon(x => x with
+            {
+                Spec = new GogmaWeaponSpecInput
+                {
+                    Type = kind, Focus = GogmaFocus.Attack, Element = x.Element, Infused = x.Element != Element.None, AttackParts = 3, Reinforcements = [],
+                },
+                Type = null,
+                Attack = null,
+            });
+        }
+        else
+        {
+            var rw = App.Resolved?.Weapon;
+            var variant = Cat.WeaponTypes.GetValueOrDefault(kind)?.Variants.GetValueOrDefault(Fmt.Slug(w.Spec?.Focus ?? GogmaFocus.Attack));
+            App.PatchWeapon(x => x with
+            {
+                Spec = null,
+                Type = kind,
+                Attack = rw?.DisplayAttack ?? variant?.DisplayAttack ?? 1000,
+                AttackIsDisplay = true,
+                Affinity = rw?.Affinity ?? variant?.Affinity ?? 0,
+                Element = x.Spec?.Element ?? Element.None,
+                ElementDisplay = rw?.ElementDisplay ?? 0,
+                Sharpness = SharpnessColor.White,
+            });
+        }
+    }
+
+    private void PatchSpec(Func<GogmaWeaponSpecInput, GogmaWeaponSpecInput> fn) =>
+        App.PatchWeapon(w => w.Spec is { } spec ? w with { Spec = fn(spec) } : w);
+
+    private void SetType(string kind)
+    {
+        if (App.Request?.Weapon.Spec is not null) PatchSpec(s => s with { Type = kind });
+        else App.PatchWeapon(w => w with { Type = kind });
+    }
+
+    /// <summary>Element "none" drops the infusion and the element reinforcements.</summary>
+    private void SetSpecElement(Element e) => PatchSpec(s => s with
+    {
+        Element = e,
+        Infused = e != Element.None && s.Infused,
+        Reinforcements = e == Element.None ? s.Reinforcements.Where(r => !r.StartsWith("element", StringComparison.OrdinalIgnoreCase)).ToList() : s.Reinforcements,
+    });
+
+    /// <summary>Five reinforcement slots; "" = empty.</summary>
+    private static string[] ReinforcementSlots(GogmaWeaponSpecInput spec) =>
+        [.. Enumerable.Range(0, 5).Select(i => i < spec.Reinforcements.Count ? spec.Reinforcements[i] : "")];
+
+    private void SetReinforcement(int index, string? value) => PatchSpec(s =>
+    {
+        var next = ReinforcementSlots(s);
+        next[index] = value ?? "";
+        return s with { Reinforcements = next.Where(r => r != "").ToList() };
+    });
+
+    private void SetSlot(int index, int level) => App.PatchWeapon(w =>
+    {
+        var slots = Enumerable.Range(0, Math.Max(3, w.Slots.Count)).Select(i => i < w.Slots.Count ? w.Slots[i] : 0).ToArray();
+        slots[index] = level;
+        return w with { Slots = slots.Where(x => x > 0).ToList() };
+    });
+}

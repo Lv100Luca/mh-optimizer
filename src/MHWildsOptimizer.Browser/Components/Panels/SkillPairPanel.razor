@@ -1,5 +1,77 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="SkillPairPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var sp = request.SkillPair;
+    var w = request.Weapon;
+    var pool = Catalog.SkillPool;
+    var pairs = pool.Pairs.Count;
+    var candidates = App.Resolved?.SkillPairCandidates;
+    var setShare = (Math.Round(1000.0 / pool.SetBonuses.Count) / 10).ToString(CultureInfo.InvariantCulture);
+
+    <div class="panel">
+        <Section Title="Skill pair mode" Hint="A Gogma weapon rolls one set bonus and one group skill. Either keep the pair your weapon has, or let the optimizer tell you which pair to roll for.">
+            <div class="choice-grid">
+                <button type="button" class="choice @(sp.Mode == SkillPairMode.Fixed ? "active" : "")" @onclick="() => SetMode(SkillPairMode.Fixed)">
+                    <h3>Fixed</h3>
+                    <p>Use the rolled pair from the Weapon tab.</p>
+                    <p class="pair">
+                        <span class="with-icon">
+                            <SkillIcon Name="set" Kind="SkillKind.Set" />
+                            @if (w.SetBonus is not null) { @w.SetBonus } else { <span class="muted">no set bonus</span> }
+                        </span>
+                        <span class="with-icon">
+                            <SkillIcon Name="group" Kind="SkillKind.Group" />
+                            @if (w.GroupSkill is not null) { @w.GroupSkill } else { <span class="muted">no group skill</span> }
+                        </span>
+                    </p>
+                </button>
+                <button type="button" class="choice @(sp.Mode == SkillPairMode.Optimize ? "active" : "")" @onclick="() => SetMode(SkillPairMode.Optimize)">
+                    <h3>Optimize</h3>
+                    <p>Search all @pairs rollable pairs (@pool.SetBonuses.Count set bonuses × @pool.GroupSkills.Count group skills) and report the best ones.</p>
+                    <p class="muted">Pairs that score identically under your conditions are grouped into classes and searched in parallel; the report lists the best classes.</p>
+                </button>
+            </div>
+
+            @if (sp.Mode == SkillPairMode.Optimize)
+            {
+                <Field Label="How many of the best pairs to report" Inline="true">
+                    <NumberInput T="int" Value="sp.TopN" Min="1" Max="50" Width="90"
+                                 ValueChanged="n => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { TopN = n } })" />
+                </Field>
+            }
+
+            <p class="muted">
+                @(candidates is { } c ? $"{c} candidate pair{(c == 1 ? "" : "s")} will be searched." : "")
+                Every pair has the same roll chance (1/@pairs); a specific set bonus comes up in @setShare% of rolls.
+            </p>
+        </Section>
+
+        <Section Title="What is in the pool" Hint="Set bonuses and group skills a Gogma weapon can roll (from the game's ArtianSkillGroupData table).">
+            <div class="two-col">
+                <div>
+                    <h4 class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonuses (@pool.SetBonuses.Count)</h4>
+                    <ul class="plain">
+                        @foreach (var s in pool.SetBonuses)
+                        {
+                            <li>@s</li>
+                        }
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="with-icon"><SkillIcon Name="group" Kind="SkillKind.Group" /> Group skills (@pool.GroupSkills.Count)</h4>
+                    <ul class="plain">
+                        @foreach (var s in pool.GroupSkills)
+                        {
+                            <li>@s</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </Section>
+    </div>
+}
+
+@code {
+    private void SetMode(SkillPairMode mode) => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { Mode = mode } });
+}
