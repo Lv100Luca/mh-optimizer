@@ -1,5 +1,201 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="ReviewPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var r = App.Resolved;
+    var w = r?.Weapon;
+    var conditionsOn = Catalog.Conditions.Where(c => c.Group != ConditionsPanel.ProcGroup && ConditionAccess.Get(request.Conditions, c.Property)).ToList();
+    var limits = request.Conditions.SkillLimits ?? new Dictionary<string, int>();
+    // before the first validation answer, show the request's own targets
+    var targets = r?.Targets ?? request.TargetSkills
+        .Select(t => new TargetDto(t.Key, t.Value, Cat.SkillsByName.GetValueOrDefault(t.Key)?.Kind ?? SkillKind.Armor, null, $"{t.Key} {t.Value}", false))
+        .ToList();
+    var options = request.Options;
+
+    <div class="panel">
+        <Section Title="Review" Hint="The resolved request, exactly as the optimizer will see it.">
+            <Actions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="App.RunOptimizerAsync"
+                           Disabled="@(r?.IsValid != true || App.Run.Status == RunStatus.Running)">▶ Run optimizer</MudButton>
+            </Actions>
+            <ChildContent>
+                @if (App.Resolving && r is null)
+                {
+                    <p class="muted">Validating…</p>
+                }
+                @foreach (var e in r?.Errors ?? [])
+                {
+                    <Alert Kind="error">@e</Alert>
+                }
+                @foreach (var e in r?.Warnings ?? [])
+                {
+                    <Alert Kind="warning">@e</Alert>
+                }
+                @if (r is { IsValid: true, Warnings.Count: 0 })
+                {
+                    <Alert Kind="ok">Everything checks out.</Alert>
+                }
+                @if (App.Name is { } name && App.Dirty)
+                {
+                    <Alert Kind="info">Unsaved changes: a run is saved as the last run of @name, the weapon itself only when you save (until then the inventory shows that run as stale).</Alert>
+                }
+
+                <div class="review-grid">
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Weapon)">Weapon</button></h4>
+                        @if (w is not null)
+                        {
+                            <div class="weapon-head">
+                                <img src="@GameIcons.Weapon(w.Type)" alt="" />
+                                <div>
+                                    <div>
+                                        <b>@w.Label</b>
+                                        @if (w.Focus is { } focus)
+                                        {
+                                            <span class="muted"> · @Fmt.TitleCase(focus) focus</span>
+                                        }
+                                    </div>
+                                    <div class="small">
+                                        <b>@w.DisplayAttack</b> attack <span class="muted">(@w.TrueRaw true)</span> · <b>@Fmt.Signed(w.Affinity)%</b> affinity
+                                        @if (w.Element != Element.None)
+                                        {
+                                            @(" · ")<b style="color: @GameIcons.ElementCss[w.Element]">@w.ElementDisplay @Fmt.TitleCase(w.Element)</b>
+                                        }
+                                        · @(w.Sharpness is { } sharp ? Fmt.TitleCase(sharp) : "-") sharpness · <Slots Numbers="w.Slots" Kind="weapon" />
+                                    </div>
+                                    @if (w.SharpnessBar is { } bar)
+                                    {
+                                        <SharpnessBar Bar="bar" Bonus="w.SharpnessBonus" />
+                                    }
+                                    <div class="small muted">rolled: @(w.SetBonus ?? "-") / @(w.GroupSkill ?? "-")</div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="muted">invalid</span>
+                        }
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Pair)">Skill pair</button></h4>
+                        <div>@(request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed: use the rolled pair" : $"optimize over all rollable pairs, report the best {request.SkillPair.TopN}")</div>
+                        @if (r is not null)
+                        {
+                            <div class="muted small">@Fmt.Plural(r.SkillPairCandidates, "candidate pair")</div>
+                        }
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Targets)">Targets</button></h4>
+                        <div class="chip-row">
+                            @foreach (var t in targets)
+                            {
+                                if (t.Kind is SkillKind.Set or SkillKind.Group)
+                                {
+                                    <SkillHover @key="t.Skill" Name="@t.Skill" Level="t.Level" Class="@($"chip skill {t.Kind.ToString().ToLowerInvariant()}")">
+                                        <SkillIcon Name="@t.Skill" Kind="t.Kind" Size="18" />
+                                        <span>@t.Skill</span>
+                                        @if (t.Kind == SkillKind.Set)
+                                        {
+                                            <b>@Fmt.Roman(t.Level)</b>
+                                        }
+                                        @if (t.Pieces is { } pieces)
+                                        {
+                                            <span class="muted small">@pieces pieces</span>
+                                        }
+                                    </SkillHover>
+                                }
+                                else
+                                {
+                                    <SkillChip @key="t.Skill" Name="@t.Skill" Level="t.Level" Muted="t.FromCore" />
+                                }
+                            }
+                            @if (targets.Count == 0)
+                            {
+                                <span class="muted">none: pure damage optimization</span>
+                            }
+                        </div>
+                        @if (targets.Any(t => t.FromCore))
+                        {
+                            <div class="muted small">greyed = weapon core skill added by the options</div>
+                        }
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Limits)">Skill limits</button></h4>
+                        <div class="chip-row">
+                            @if (limits.Count == 0)
+                            {
+                                <span class="muted">none</span>
+                            }
+                            @foreach (var (s, n) in limits)
+                            {
+                                <SkillHover @key="s" Name="@s" Class="chip skill armor"><SkillIcon Name="@s" Size="18" />@s <b>@(n == 0 ? "excluded" : $"≤ {n}")</b></SkillHover>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Conditions)">Conditions</button></h4>
+                        <div class="small">@(conditionsOn.Count > 0 ? string.Join(", ", conditionsOn.Select(c => c.Label)) : "nothing conditional"); Resonance @Fmt.Slug(request.Conditions.Resonance)</div>
+                        <div class="small muted">proc damage @(request.Conditions.ProcDamage ? $"on · {ConditionsPanel.AttackProfileText(request, Cat)}" : "off")</div>
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Talismans)">Talismans</button></h4>
+                        <div>@App.Talismans.Count random@(request.Talismans.IncludeCraftable ? $" + {Catalog.CraftableTalismanCount} craftable charm lines" : "")</div>
+                        @if (r is not null)
+                        {
+                            <div class="muted small">@r.Talismans.Total usable after validation</div>
+                        }
+                    </div>
+
+                    <div class="kv">
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Options)">Options</button></h4>
+                        <div class="small">
+                            transcendence @(options.AllowTranscendence ? "on" : "off") · core skills @(options.RequireWeaponCoreSkills ? "on" : "off") · top @options.TopN · rarity @(options.MinRarity)+ ·
+                            CP-SAT (exact, @options.CpSatTimeLimitSeconds.ToString(CultureInfo.InvariantCulture) s per solve) · @(options.MaxThreads > 0 ? $"{options.MaxThreads} threads" : "all threads") · @options.ExcludeSets.Count sets excluded
+                        </div>
+                    </div>
+
+                    @if (r?.Baseline is { } b)
+                    {
+                        <div class="kv">
+                            <h4>Weapon-only baseline</h4>
+                            <div>
+                                <b>EFR @Fmt.N(b.Efr)</b> + <b>EFE @Fmt.N(b.Efe)</b>
+                                @if (b.Procs > 0)
+                                {
+                                    @(" + ")<b>procs @Fmt.N(b.Procs)</b>
+                                }
+                                = <b class="total">@Fmt.N(b.Total)</b> <span class="muted small">(every condition on: @Fmt.N(b.TotalAllOn))</span>
+                            </div>
+                            <div class="muted small">@Fmt.N(b.Attack, 0) attack, @b.Affinity% affinity, crit x@(Fmt.N(b.CritMultiplier, 2))</div>
+                        </div>
+                    }
+                </div>
+            </ChildContent>
+        </Section>
+
+        @if (r?.Relevance is { } relevance)
+        {
+            <Section Title="Skills in play" Hint="Everything the search tracks: targets plus the skills, set bonuses and group skills that change the score under your conditions.">
+                <div class="chip-row">
+                    @foreach (var s in relevance.Skills)
+                    {
+                        <SkillChip Name="@s" Muted="!request.TargetSkills.ContainsKey(s)" />
+                    }
+                    @foreach (var s in relevance.SetBonuses)
+                    {
+                        <SkillHover Name="@s" Class="chip skill set"><SkillIcon Name="@s" Kind="SkillKind.Set" Size="18" />@s</SkillHover>
+                    }
+                    @foreach (var s in relevance.GroupSkills)
+                    {
+                        <SkillHover Name="@s" Class="chip skill group"><SkillIcon Name="@s" Kind="SkillKind.Group" Size="18" />@s</SkillHover>
+                    }
+                </div>
+            </Section>
+        }
+    </div>
+}

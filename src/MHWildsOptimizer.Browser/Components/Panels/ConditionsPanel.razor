@@ -1,5 +1,238 @@
 @inherits AppComponent
 
-<div class="panel">
-    <Section Title="ConditionsPanel" Hint="Not ported yet." />
-</div>
+@if (App.Request is { } request)
+{
+    var c = request.Conditions;
+    var profile = c.AttackProfile ?? new AttackProfile();
+    var preset = AttackProfilePreset(request, Cat);
+    var kind = Kind(request);
+    var weaponLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
+    var hunt = Catalog.Conditions.Where(x => x.Group != ProcGroup).ToList();
+    var procToggle = Catalog.Conditions.FirstOrDefault(x => x.Group == ProcGroup);
+    var groups = hunt.Select(x => x.Group).Distinct().ToList();
+    var onCount = hunt.Count(x => ConditionAccess.Get(c, x.Property));
+    var profileErrors = App.Resolved?.Errors.Where(e => e.Contains("attack_profile")).ToList() ?? [];
+    var customProfile = IsCustom(profile);
+
+    // the weapon type's preset: the conditions every weapon of this type starts from and follows, except where it overrides them
+    var typePreset = App.PresetFor(kind);
+    var hasPreset = App.Presets.ContainsKey(kind);
+    var overridden = ConditionPresets.Overrides(c, typePreset);
+    var weaponName = App.Name ?? "This weapon";
+    var v = new View(c, typePreset, overridden, weaponLabel);
+
+    <div class="panel">
+        <Section Title="@($"{weaponLabel} preset")"
+                 Hint="@($"Conditions are set per weapon type: every {weaponLabel} of the profile starts from this preset (hunt conditions, skill limits and attack profile). A weapon can override single values; the rest follows the preset when it changes.")">
+            <Actions>
+                <div class="btn-row">
+                    <MudButton Variant="Variant.Text" Size="Size.Small" Disabled="overridden.Count == 0" OnClick="() => ResetToPreset(typePreset)"
+                               title="@($"Drop this weapon's overrides and use the {weaponLabel} preset")">Reset to preset</MudButton>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="hasPreset && overridden.Count == 0" OnClick="() => ConfirmSavePreset(weaponLabel)"
+                               title="@($"Make this weapon's conditions the {weaponLabel} preset")">Save as @weaponLabel preset</MudButton>
+                </div>
+            </Actions>
+            <ChildContent>
+                @if (!hasPreset)
+                {
+                    <p class="muted small">The profile has no @weaponLabel preset yet, so the defaults stand in. Set the conditions you usually play with and save them as the preset.</p>
+                }
+                @if (overridden.Count == 0)
+                {
+                    <p class="small"><span class="ok">✓</span> @weaponName follows the @weaponLabel preset.</p>
+                }
+                else
+                {
+                    <div class="chip-row">
+                        <span class="muted small">@weaponName overrides:</span>
+                        @foreach (var k in overridden)
+                        {
+                            <span @key="k" class="chip ovr-chip">@KeyLabel(k)</span>
+                        }
+                    </div>
+                }
+            </ChildContent>
+        </Section>
+
+        <Section Title="Hunt conditions"
+                 Hint="A toggle only matters when a build actually carries the skill behind it: the calculator never invents a skill. Off means the skill scores nothing, so the optimizer will not chase it.">
+            <Actions>
+                <div class="btn-row">
+                    <span class="muted small">@onCount of @hunt.Count on</span>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsDefault)">Defaults</MudButton>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOn)">All on</MudButton>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOff)">All off</MudButton>
+                </div>
+            </Actions>
+            <ChildContent>
+                @foreach (var group in groups)
+                {
+                    <div @key="group" class="cond-group">
+                        <h3>@group</h3>
+                        <div class="cond-grid">
+                            @foreach (var x in hunt.Where(x => x.Group == group))
+                            {
+                                @Condition(x, v)
+                            }
+                            @if (group == ConditionCatalog.GroupBonuses)
+                            {
+                                <div class="cond resonance">
+                                    <span class="cond-text">
+                                        <b>Omega Resonance phase</b>
+                                        <span class="muted small">Omega Resonance alternates a Local (affinity) and a Remote (attack) phase every 90 s.</span>
+                                        <Segmented T="ResonanceMode" Small="true" Value="c.Resonance" ValueChanged="SetResonance" Options="ResonanceOptions" />
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </ChildContent>
+        </Section>
+
+        <Section Title="Proc damage and attack profile"
+                 Hint="Element and proc damage land once per hit, whatever the motion value. The attack profile turns them into damage per 100 MV of landed attacks so they compare with EFR: EFE = element × element hitzone ratio ÷ (average MV ÷ 100); procs per hit = chance × min(1, seconds per hit ÷ cooldown); procs per 100 MV = damage × procs per hit ÷ (average MV ÷ 100).">
+            <Actions>
+                @if (customProfile)
+                {
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => SetProfile(_ => new AttackProfile())">Back to the @weaponLabel preset</MudButton>
+                }
+            </Actions>
+            <ChildContent>
+                @foreach (var e in profileErrors)
+                {
+                    <Alert Kind="error">@e</Alert>
+                }
+                @if (procToggle is not null)
+                {
+                    <div class="cond-grid">@Condition(procToggle, v)</div>
+                }
+                <div class="form-grid profile">
+                    <Field Label="Landed hits per minute" Hint="Cooldown-limited procs (Azure Bolt every 30 s, Bad Blood every 2 s) fire at most once per cooldown, so slow weapons get more out of them per hit.">
+                        <OptionalNumberInput Value="profile.HitsPerMinute" Preset="preset.HitsPerMinute" Min="1" Max="600"
+                                             ValueChanged="n => SetProfile(p => p with { HitsPerMinute = n })" />
+                    </Field>
+                    <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV. Big hits (Great Sword charged slashes) get less out of element per 100 MV than fast weapons.">
+                        <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
+                                             ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
+                    </Field>
+                    <Field Label="Share of hits that are Lv3 charged slashes" Hint="Great Sword only: the Dark Arts shockwave (Soul of the Dark Knight) rides on them. 0 to 1.">
+                        <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
+                                             ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
+                    </Field>
+                    <Field Label="Element hitzone ÷ raw hitzone" Hint="Where you hit: a weak point with raw hitzone 70 and element hitzone 25 is 0.36. EFR is at raw hitzone 100, so element is scored at this share of it. 0 to 1.">
+                        <OptionalNumberInput Value="profile.ElementHitzoneRatio" Preset="preset.ElementHitzoneRatio" Min="0" Max="1" Step="0.05"
+                                             ValueChanged="n => SetProfile(p => p with { ElementHitzoneRatio = n })" />
+                    </Field>
+                </div>
+                <p class="muted small">
+                    Empty fields use the @weaponLabel preset: @Num(preset.HitsPerMinute) hits/min, @Num(preset.AverageMv) MV per hit, @Percent(preset.ChargedLv3Share)% Lv3 charged slashes, element hitzone @Percent(preset.ElementHitzoneRatio)% of raw.
+                    Presets are rough starting points, not measurements.
+                    @if (!c.ProcDamage)
+                    {
+                        @(" With proc damage off only the average MV and the element hitzone ratio are used.")
+                    }
+                </p>
+            </ChildContent>
+        </Section>
+    </div>
+}
+
+@code {
+    /// <summary>The condition group that holds the proc damage toggle; it is rendered with the attack profile, not as a hunt condition.</summary>
+    public const string ProcGroup = ConditionCatalog.GroupProcs;
+
+    private static readonly AttackProfileDto FallbackProfile = new(40, 50, 0, 0.4);
+
+    private static readonly Dictionary<string, string> OtherLabels = new()
+    {
+        [nameof(Conditions.Resonance)] = "Omega Resonance phase",
+        [nameof(Conditions.AttackProfile)] = "Attack profile",
+        [nameof(Conditions.SkillLimits)] = "Skill limits",
+    };
+
+    private IReadOnlyList<SegmentOption<ResonanceMode>> ResonanceOptions => Catalog.ResonanceModes
+        .Select(m => Enum.Parse<ResonanceMode>(m, ignoreCase: true))
+        .Select(m => new SegmentOption<ResonanceMode>(m, m switch { ResonanceMode.None => "Off", ResonanceMode.Local => "Local (affinity)", _ => "Remote (attack)" }))
+        .ToList();
+
+    private static string Kind(OptimizationRequest r) => r.Weapon.Spec?.Type ?? r.Weapon.Type ?? "great-sword";
+
+    private static bool IsCustom(AttackProfile p) => p.HitsPerMinute is not null || p.AverageMv is not null || p.ChargedLv3Share is not null || p.ElementHitzoneRatio is not null;
+
+    private static string Num(double n) => n.ToString(CultureInfo.InvariantCulture);
+
+    private static string Percent(double share) => Math.Round(share * 100, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>The attack profile preset of the request's weapon type.</summary>
+    public static AttackProfileDto AttackProfilePreset(OptimizationRequest request, CatalogIndex index) =>
+        index.WeaponTypes.GetValueOrDefault(Kind(request))?.AttackProfile ?? FallbackProfile;
+
+    /// <summary>"24 hits/min · 190 MV per hit · 100% Lv3 charged · element hitzone 40% of raw (preset)": the profile the calculator will use.</summary>
+    public static string AttackProfileText(OptimizationRequest request, CatalogIndex index)
+    {
+        var p = request.Conditions.AttackProfile ?? new AttackProfile();
+        var preset = AttackProfilePreset(request, index);
+        return $"{Num(p.HitsPerMinute ?? preset.HitsPerMinute)} hits/min · {Num(p.AverageMv ?? preset.AverageMv)} MV per hit · "
+            + $"{Percent(p.ChargedLv3Share ?? preset.ChargedLv3Share)}% Lv3 charged · "
+            + $"element hitzone {Percent(p.ElementHitzoneRatio ?? preset.ElementHitzoneRatio)}% of raw{(IsCustom(p) ? "" : " (preset)")}";
+    }
+
+    /// <summary>What a condition card needs from the current render.</summary>
+    private sealed record View(Conditions Current, Conditions TypePreset, IReadOnlyList<string> Overridden, string WeaponLabel);
+
+    private RenderFragment Condition(ConditionDto x, View v) => __builder =>
+    {
+        var on = ConditionAccess.Get(v.Current, x.Property);
+        var own = v.Overridden.Contains(x.Property);
+        <label @key="x.Key" class="cond @(on ? "on" : "") @(own ? "overridden" : "")">
+            <input type="checkbox" checked="@on" @onchange="e => Set(x.Property, e.Value is true)" />
+            <span class="cond-text">
+                <b>
+                    @x.Label
+                    @if (own)
+                    {
+                        <span class="ovr" title="@($"The {v.WeaponLabel} preset has this {(ConditionAccess.Get(v.TypePreset, x.Property) ? "on" : "off")}; this weapon overrides it.")">override</span>
+                    }
+                </b>
+                <span class="muted small">@x.Description</span>
+                <span class="cond-skills">
+                    @foreach (var s in x.Skills)
+                    {
+                        var bare = SkillSuffix.Replace(s, "");
+                        var skill = Cat.SkillsByName.GetValueOrDefault(bare);
+                        <SkillHover @key="s" Name="@bare" Class="@($"chip skill {(skill?.Kind ?? SkillKind.Armor).ToString().ToLowerInvariant()} tiny")">
+                            <SkillIcon Name="@bare" Kind="skill?.Kind" Size="14" />@s
+                        </SkillHover>
+                    }
+                </span>
+            </span>
+        </label>
+    };
+
+    private string KeyLabel(string property) =>
+        Catalog.Conditions.FirstOrDefault(x => x.Property == property)?.Label ?? OtherLabels.GetValueOrDefault(property) ?? property;
+
+    private void Set(string property, bool value) => App.PatchConditions(c => ConditionAccess.With(c, property, value));
+
+    private void SetResonance(ResonanceMode resonance) => App.PatchConditions(c => c with { Resonance = resonance });
+
+    private void SetProfile(Func<AttackProfile, AttackProfile> fn) => App.PatchConditions(c => c with { AttackProfile = fn(c.AttackProfile ?? new AttackProfile()) });
+
+    // presets only cover the hunt conditions: skill limits and the attack profile stay as they are
+    private void ApplyPreset(Conditions preset) =>
+        App.PatchConditions(c => AppState.Clone(preset) with { SkillLimits = c.SkillLimits, AttackProfile = c.AttackProfile });
+
+    private void ResetToPreset(Conditions typePreset) => App.PatchConditions(_ => AppState.Clone(typePreset));
+
+    private async Task ConfirmSavePreset(string weaponLabel)
+    {
+        if (await App.ConfirmAsync($"Save the {weaponLabel} preset",
+                $"Save these conditions, skill limits and attack profile as the {weaponLabel} preset of {App.Profile}? New {weaponLabel} weapons start from it, and saved ones follow it except where they override it.",
+                "Save"))
+            App.SavePreset();
+    }
+
+    /// <summary>"Lord's Soul (Guts)" -> "Lord's Soul".</summary>
+    private static readonly System.Text.RegularExpressions.Regex SkillSuffix = new(@"\s*\(.*\)$");
+}
