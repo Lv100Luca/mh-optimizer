@@ -346,6 +346,37 @@ dl.stats dd { margin: 0; }
 .score .total { font-size: 22px; font-weight: 800; color: var(--ok); }
 .score .plus, .score .eq { color: var(--muted); }
 .score .procs { font-weight: 600; color: var(--accent); }
+.dmg-toggle { display: inline-flex; align-items: baseline; gap: 8px; padding: 0; border: none; background: none; color: inherit; text-align: left; cursor: pointer; }
+.dmg-toggle:hover .muted { color: var(--text); }
+.dmg-toggle .caret { font-size: 11px; }
+.dmg-breakdown { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 12px 10px; }
+.dmg-breakdown p { margin: 6px 0 0; }
+.dmg-scroll { overflow-x: auto; }
+.table.dmg { font-size: 13px; }
+.table.dmg th, .table.dmg td { padding: 4px 8px; }
+.table.dmg td { border-bottom: none; }
+.table.dmg .num { width: 1%; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.table.dmg .avg { font-weight: 700; color: var(--ok); }
+.table.dmg th.vs { white-space: normal; min-width: 70px; }
+.dmg-attack td { border-top: 1px solid var(--border); }
+.dmg-name { display: inline-flex; align-items: baseline; gap: 0 6px; flex-wrap: wrap; }
+.table.dmg .dmg-hit td { padding-top: 1px; padding-bottom: 1px; font-size: 12px; color: var(--muted); }
+.table.dmg .dmg-hit td:first-child { padding-left: 34px; }
+.table.dmg tfoot td { font-weight: 700; border-top: 1px solid var(--border-2); border-bottom: none; }
+/* narrow screens: the step or hit name on its own line above its numbers */
+@media (max-width: 600px), (pointer: fine) and (max-width: 900px) {
+  .dmg-breakdown { padding: 4px 8px 8px; }
+  .table.dmg tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .table.dmg tr > :first-child { grid-column: 1 / -1; }
+  .table.dmg.with-delta tr { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .table.dmg th, .table.dmg td { padding-left: 4px; padding-right: 4px; }
+  .table.dmg th.vs { min-width: 0; }
+  .table.dmg thead th:first-child { display: none; }
+  .table.dmg .num { width: auto; }
+  .table.dmg .dmg-attack, .table.dmg tfoot tr { border-top: 1px solid var(--border); }
+  .table.dmg .dmg-attack td, .table.dmg tfoot td { border-top: none; }
+  .table.dmg .dmg-hit td:first-child { padding-left: 20px; }
+}
 .optnum { display: inline-flex; align-items: center; gap: 6px; }
 .form-grid.profile { margin-top: 12px; }
 .form-grid.profile.off { opacity: 0.55; }

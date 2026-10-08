@@ -1,0 +1,148 @@
+@*
+    The damage of each attack of the scored attack or sequence (sequence steps in order) and of its hits: without a crit, with one
+    and on average at the affinity; attack rows add up to the total. With a Reference scored on the same attack or sequence, a last
+    column shows how much more (or less) this build deals on average. Renders nothing for results saved before the breakdown.
+*@
+@{
+    var r = Build.StatsRequested;
+    var attacks = r.Attacks ?? [];
+    var refs = Comparable(attacks, Reference?.StatsRequested.Attacks);
+    var crit = attacks.All(a => a.Affinity >= 0) ? "Crit" : attacks.All(a => a.Affinity < 0) ? "Feeble" : "Crit / feeble";
+}
+@if (attacks.Count > 0)
+{
+    <section class="dmg-breakdown">
+        <div class="dmg-scroll">
+            <table class="table dmg @(refs is null ? "" : "with-delta")">
+                <thead>
+                    <tr>
+                        <th>@(attacks.Count > 1 ? "Step" : "Attack")</th>
+                        <th class="num" title="Every hit without a crit">No crit</th>
+                        <th class="num" title="@(crit == "Crit" ? "Every hit a critical hit" : "Every hit a feeble hit (negative affinity)")">@crit</th>
+                        <th class="num" title="Expected damage at the affinity">Average</th>
+                        @if (refs is not null)
+                        {
+                            <th class="num vs" title="@($"Average of this build minus {ReferenceLabel}")">vs @ReferenceLabel</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < attacks.Count; i++)
+                    {
+                        var a = attacks[i];
+                        var ra = refs?[i];
+                        // one hit and no procs on either side: the attack row says it all
+                        var single = a.Hits.Count == 1 && a.Hits[0].Count == 1 && a.Procs.Count == 0 && ra is not { Procs.Count: > 0 };
+                        <tr class="dmg-attack" title="@(a.Repeat > 1 ? $"{Fmt.N(a.Average, 0)} per execution on average" : null)">
+                            <td>
+                                <span class="dmg-name">
+                                    @if (attacks.Count > 1)
+                                    {
+                                        <span class="step-no">@(i + 1)</span>
+                                    }
+                                    <b>@a.Name</b>
+                                    @if (a.Repeat > 1)
+                                    {
+                                        <span class="muted">×@a.Repeat</span>
+                                    }
+                                    @if (single)
+                                    {
+                                        <span class="muted small">@Fmt.N(a.Hits[0].Mv, 0) MV</span>
+                                    }
+                                    @foreach (var c in a.Changes)
+                                    {
+                                        <span @key="c" class="chip tiny step-cond">@c</span>
+                                    }
+                                    @if (a.Changes.Count > 0)
+                                    {
+                                        <span class="muted small">@(a.Affinity)% affinity</span>
+                                    }
+                                </span>
+                            </td>
+                            <td class="num">@Fmt.N(a.Normal * a.Repeat, 0)</td>
+                            <td class="num">@Fmt.N(a.Crit * a.Repeat, 0)</td>
+                            <td class="num avg">@Fmt.N(a.Average * a.Repeat, 0)</td>
+                            @if (ra is not null)
+                            {
+                                <td class="num"><Delta Value="@((a.Average - ra.Average) * a.Repeat)" Digits="0" /></td>
+                            }
+                        </tr>
+                        @if (!single)
+                        {
+                            // hits pair up by position: the reference may land the normal finisher where this build lands the power one
+                            var refHits = ra is not null && ra.Hits.Count == a.Hits.Count ? ra.Hits : null;
+                            for (var j = 0; j < a.Hits.Count; j++)
+                            {
+                                var h = a.Hits[j];
+                                <tr class="dmg-hit">
+                                    <td>
+                                        <span class="dmg-name">
+                                            @h.Name
+                                            @if (h.Count > 1)
+                                            {
+                                                <span>×@h.Count</span>
+                                            }
+                                            <span class="small">@Fmt.N(h.Mv, 0) MV</span>
+                                        </span>
+                                    </td>
+                                    <td class="num">@Fmt.N(h.Normal, 0)</td>
+                                    <td class="num">@Fmt.N(h.Crit, 0)</td>
+                                    <td class="num">@Fmt.N(h.Average, 0)</td>
+                                    @if (ra is not null)
+                                    {
+                                        <td class="num">@if (refHits is not null) {<Delta Value="@(h.Average - refHits[j].Average)" Digits="0" />}</td>
+                                    }
+                                </tr>
+                            }
+                            // procs by source, with the ones only the reference gets as zero rows
+                            var procs = a.Procs.Concat((ra?.Procs ?? []).Where(rp => a.Procs.All(p => p.Name != rp.Name)).Select(rp => rp with { Value = 0 })).ToList();
+                            foreach (var p in procs)
+                            {
+                                <tr class="dmg-hit" title="Extra damage per execution on average, in all three columns">
+                                    <td><span class="dmg-name">@p.Name <span class="small">proc, on average</span></span></td>
+                                    <td class="num">@Fmt.N(p.Value, 0)</td>
+                                    <td class="num">@Fmt.N(p.Value, 0)</td>
+                                    <td class="num">@Fmt.N(p.Value, 0)</td>
+                                    @if (ra is not null)
+                                    {
+                                        <td class="num"><Delta Value="@(p.Value - (ra.Procs.FirstOrDefault(rp => rp.Name == p.Name)?.Value ?? 0))" Digits="0" /></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+                @if (attacks.Count > 1 || attacks[0].Repeat > 1)
+                {
+                    <tfoot>
+                        <tr>
+                            <td>Per @(r.Execution ?? "attack")</td>
+                            <td class="num">@Fmt.N(attacks.Sum(a => a.Normal * a.Repeat), 0)</td>
+                            <td class="num">@Fmt.N(attacks.Sum(a => a.Crit * a.Repeat), 0)</td>
+                            <td class="num avg">@Fmt.N(r.DamagePerExecution, 0)</td>
+                            @if (refs is not null)
+                            {
+                                <td class="num"><Delta Value="@(r.DamagePerExecution - Reference!.StatsRequested.DamagePerExecution)" Digits="0" /></td>
+                            }
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+        <p class="muted small">
+            @(r.ScoredOn is { } on ? $"{on}. " : "")Hit rows are one hit; @(attacks.Count > 1 ? "a step row counts all its hits and repeats" : "the attack row all of them").
+            Before the monster's defense rate and per-hit rounding; the average counts crits at the affinity's chance.
+        </p>
+    </section>
+}
+
+@code {
+    [Parameter, EditorRequired] public BuildDto Build { get; set; } = default!;
+    /// <summary>A build to compare with; its column shows only when it was scored on the same attacks.</summary>
+    [Parameter] public BuildDto? Reference { get; set; }
+    [Parameter] public string? ReferenceLabel { get; set; }
+
+    /// <summary>The reference's attacks when they line up with <paramref name="attacks"/> (same steps and repeats), else null.</summary>
+    private static IReadOnlyList<AttackDamageDto>? Comparable(IReadOnlyList<AttackDamageDto> attacks, IReadOnlyList<AttackDamageDto>? refs) =>
+        refs is not null && refs.Count == attacks.Count && refs.Zip(attacks).All(x => x.First.Name == x.Second.Name && x.First.Repeat == x.Second.Repeat) ? refs : null;
+}

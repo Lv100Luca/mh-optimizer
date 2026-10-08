@@ -23,7 +23,7 @@ public sealed record EvaluatedBuildDto(string Name, IReadOnlyList<string> Errors
 /// (its numbers equal the build's score). Per minute uses the attack's own duration, except for the current one, which keeps the
 /// profile's landed hits per minute.
 /// </summary>
-public sealed record AttackDamageDto(string Id, string Name, string Group, bool Current, double Hits, double Mv, double DamagePerExecution, double DamagePerMinute,
+public sealed record AttackRowDto(string Id, string Name, string Group, bool Current, double Hits, double Mv, double DamagePerExecution, double DamagePerMinute,
     double Score, string Execution);
 
 /// <summary>
@@ -33,7 +33,7 @@ public sealed record AttackDamageDto(string Id, string Name, string Group, bool 
 /// </summary>
 /// <param name="Shockwave">The Dark Arts shockwave the hit before it sets off (a proc, listed under its Lv3 charged slash).</param>
 /// <param name="RawAverage">Raw averaged over the affinity; with <paramref name="ElementAverage"/> it makes <paramref name="Expected"/>.</param>
-public sealed record HitDamageDto(string Name, int Count, double Mv, double Raw, double RawCrit, double Element, double ElementCrit, double Expected,
+public sealed record HitDetailDto(string Name, int Count, double Mv, double Raw, double RawCrit, double Element, double ElementCrit, double Expected,
     IReadOnlyList<string> Notes, bool Shockwave = false, double RawAverage = 0, double ElementAverage = 0);
 
 /// <summary>
@@ -42,7 +42,7 @@ public sealed record HitDamageDto(string Name, int Count, double Mv, double Raw,
 /// shockwaves (those are rows of <paramref name="Hits"/>). <paramref name="Total"/> is the step's damage over all its <paramref name="Repeat"/>s.
 /// </summary>
 public sealed record AttackStepDamageDto(string Name, int Repeat, IReadOnlyDictionary<string, bool> Conditions, double TrueRaw, int Affinity, double CritMultiplier,
-    double ElementTrue, double CritElementMultiplier, IReadOnlyList<HitDamageDto> Hits, double Procs, IReadOnlyList<string> ProcSources, double Total);
+    double ElementTrue, double CritElementMultiplier, IReadOnlyList<HitDetailDto> Hits, double Procs, IReadOnlyList<string> ProcSources, double Total);
 
 /// <summary>
 /// What one row of <see cref="BuildEvaluation.AttackBreakdown"/> is made of. The steps' totals add up to the row's damage per
@@ -94,7 +94,7 @@ public static class BuildEvaluation
     /// The damage of <paramref name="input"/> on every move, combo and example sequence of the weapon type, plus the custom
     /// sequence when the attack profile uses one. Empty for weapon types without attack data (the average-hit model).
     /// </summary>
-    public static IReadOnlyList<AttackDamageDto> AttackBreakdown(ResolvedRequest r, BuildInput input, GameData data)
+    public static IReadOnlyList<AttackRowDto> AttackBreakdown(ResolvedRequest r, BuildInput input, GameData data)
     {
         var rows = AttackRows(r);
         if (rows.Count == 0) return [];
@@ -103,7 +103,7 @@ public static class BuildEvaluation
         {
             var result = DamageCalculator.Calculate(weapon, skills, r.Conditions with { AttackProfile = row.Profile }, trace: false);
             var a = result.Attack;
-            return new AttackDamageDto(row.Id, row.Name, row.Group, row.Current, a.Hits, a.TotalMv, result.DamagePerExecution, result.DamagePerMinute, result.Total, a.Execution);
+            return new AttackRowDto(row.Id, row.Name, row.Group, row.Current, a.Hits, a.TotalMv, result.DamagePerExecution, result.DamagePerMinute, result.Total, a.Execution);
         }).ToList();
     }
 
@@ -151,15 +151,15 @@ public static class BuildEvaluation
             var (waveRaw, waveEle) = DamageCalculator.ShockwaveParts(d.TrueRaw, d.SharpnessRawModifier, d.SharpnessElementModifier, target.ElementRatio(weapon.Element));
             waveRaw *= target.RawHitzone / 100.0;
             waveEle *= target.RawHitzone / 100.0;
-            var hits = new List<HitDamageDto>();
+            var hits = new List<HitDetailDto>();
             foreach (var h in AttackProfile.ResolveHits(weapon, target, attack.Hits))
             {
                 var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * target.RawHitzone / 100.0;
                 var ele = d.ElementTrue * h.ElementModifier * eleHitzone / 100.0;
-                hits.Add(new HitDamageDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
+                hits.Add(new HitDetailDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
                     raw * critFactor + ele * critEleFactor, h.Notes, RawAverage: raw * critFactor, ElementAverage: ele * critEleFactor));
                 if (shockwave && h.ChargedLv3)
-                    hits.Add(new HitDamageDto(DamageCalculator.ShockwaveLabel, h.Count, DamageConstants.DarkArtsShockwaveMv, waveRaw, waveRaw * d.CriticalMultiplier,
+                    hits.Add(new HitDetailDto(DamageCalculator.ShockwaveLabel, h.Count, DamageConstants.DarkArtsShockwaveMv, waveRaw, waveRaw * d.CriticalMultiplier,
                         waveEle, waveEle, waveRaw * critFactor + waveEle,
                         [FormattableString.Invariant($"{DamageConstants.DarkArtsShockwaveMv:0} MV raw + {DamageConstants.DarkArtsShockwaveElement:0} fixed element (no crit), Soul of the Dark Knight")],
                         Shockwave: true, RawAverage: waveRaw * critFactor, ElementAverage: waveEle));

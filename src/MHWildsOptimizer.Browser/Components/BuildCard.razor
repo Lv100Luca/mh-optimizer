@@ -15,8 +15,19 @@
             @if (BuildDamage.Of(b) is { } damage)
             {
                 var r = b.StatsRequested;
-                <span class="total" title="@ScoreTitle(b)">@Fmt.N(damage, 0)</span>
-                <span class="muted">@BuildDamage.Label(b) · @Fmt.N(r.DamagePerMinute, 0) per minute</span>
+                @if (r.Attacks is { Count: > 0 })
+                {
+                    <button type="button" class="dmg-toggle" title="@ScoreTitle(b)" aria-expanded="@(_breakdown ? "true" : "false")" @onclick="() => _breakdown = !_breakdown">
+                        <span class="total">@Fmt.N(damage, 0)</span>
+                        <span class="muted">@BuildDamage.Label(b) <span class="caret">@(_breakdown ? "▾" : "▸")</span></span>
+                    </button>
+                    <span class="muted">· @Fmt.N(r.DamagePerMinute, 0) per minute</span>
+                }
+                else
+                {
+                    <span class="total" title="@ScoreTitle(b)">@Fmt.N(damage, 0)</span>
+                    <span class="muted">@BuildDamage.Label(b) · @Fmt.N(r.DamagePerMinute, 0) per minute</span>
+                }
                 <span class="muted small" title="The same attack with every hunt condition on">every condition on: @Fmt.N(b.StatsAllOn.DamagePerExecution, 0)</span>
             }
             else
@@ -62,6 +73,10 @@
     </header>
 
     <div class="build-body">
+        @if (_breakdown)
+        {
+            <DamageBreakdown Build="b" />
+        }
         <div class="build-row">
             <span class="label">Sets</span>
             <span class="chip-row">
@@ -263,6 +278,7 @@
     [Parameter] public bool Compact { get; set; }
 
     private bool _open;
+    private bool _breakdown;
 
     /// <summary>The tier and rank name of a set bonus display name, so the icon is the set's: "Gore Magala's Tyranny II (Black Eclipse)".</summary>
     private static readonly Regex SetTier = new(@" (I|II)( \(.*\))?$");

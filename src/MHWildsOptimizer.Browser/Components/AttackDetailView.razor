@@ -103,9 +103,9 @@
     [Parameter] public Element Element { get; set; }
     [Parameter] public DamageMode Mode { get; set; } = DamageMode.Average;
 
-    private double Raw(HitDamageDto h) => Mode switch { DamageMode.NonCrit => h.Raw, DamageMode.Crit => h.RawCrit, _ => h.RawAverage };
+    private double Raw(HitDetailDto h) => Mode switch { DamageMode.NonCrit => h.Raw, DamageMode.Crit => h.RawCrit, _ => h.RawAverage };
 
-    private double Ele(HitDamageDto h) => Mode switch { DamageMode.NonCrit => h.Element, DamageMode.Crit => h.ElementCrit, _ => h.ElementAverage };
+    private double Ele(HitDetailDto h) => Mode switch { DamageMode.NonCrit => h.Element, DamageMode.Crit => h.ElementCrit, _ => h.ElementAverage };
 
     /// <summary>A step over all its repeats in the chosen mode (procs do not crit).</summary>
     private double StepTotal(AttackStepDamageDto s) => (s.Hits.Sum(h => (Raw(h) + Ele(h)) * h.Count) + s.Procs) * s.Repeat;

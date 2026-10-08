@@ -329,7 +329,7 @@
     }
 
     // per-attack damage of a build, cached until the request, talismans or build change
-    private readonly Dictionary<string, IReadOnlyList<AttackDamageDto>> _breakdowns = new();
+    private readonly Dictionary<string, IReadOnlyList<AttackRowDto>> _breakdowns = new();
     private (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans) _breakdownBasis;
 
     // rows of the damage-per-attack table that are open, and their details (cached like the rows)
@@ -364,7 +364,7 @@
         return detail;
     }
 
-    private IReadOnlyList<AttackDamageDto>? Breakdown(BuildInput input)
+    private IReadOnlyList<AttackRowDto>? Breakdown(BuildInput input)
     {
         if (!ReferenceEquals(_breakdownBasis.Request, App.Request) || !ReferenceEquals(_breakdownBasis.Talismans, App.Talismans))
         {
@@ -374,7 +374,7 @@
         }
         var key = System.Text.Json.JsonSerializer.Serialize(input, BrowserProfileStore.Json);
         if (_breakdowns.TryGetValue(key, out var cached)) return cached;
-        IReadOnlyList<AttackDamageDto> rows;
+        IReadOnlyList<AttackRowDto> rows;
         try
         {
             var payload = new ConfigPayload(App.Request!, App.Talismans.ToList(), [input]);

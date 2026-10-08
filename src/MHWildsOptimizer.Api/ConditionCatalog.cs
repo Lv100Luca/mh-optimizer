@@ -78,6 +78,11 @@ public static class ConditionCatalog
             .ToList();
     }
 
+    private static readonly Lazy<Dictionary<string, string>> Labels = new(() => Build().ToDictionary(c => c.Key, c => c.Label));
+
+    /// <summary>The label of a condition by its snake_case key ("stamina_full": "Stamina full").</summary>
+    public static string LabelOf(string key) => Labels.Value.GetValueOrDefault(key) ?? key;
+
     private static string GeneratedLabel(string propertyName) =>
         string.Concat(propertyName.Select((ch, i) => i > 0 && char.IsUpper(ch) ? " " + char.ToLowerInvariant(ch) : ch.ToString()));
 }

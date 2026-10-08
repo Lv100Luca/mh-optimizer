@@ -89,6 +89,38 @@ public sealed record DamageResult(
 
     /// <summary>Damage per minute of attacking at the attack profile's hits per minute.</summary>
     public double DamagePerMinute => Attack.DamagePerMinute(Total);
+
+    /// <summary>The conditions the result was scored at: with full and red/low health both on, the side that won; a sequence's before its step overrides.</summary>
+    public Conditions? ScoredAt { get; init; }
+
+    /// <summary>The sources of <see cref="ProcDamage"/>, per 100 MV; traced results of one attack or segment only (a sequence's steps carry their own).</summary>
+    public IReadOnlyList<ProcPart> ProcParts { get; init; } = [];
+}
+
+/// <summary>Damage of one proc source (Dark Arts shockwave, Bad Blood): per 100 MV in <see cref="DamageResult.ProcParts"/>, per execution in <see cref="AttackDamage.Procs"/>.</summary>
+public sealed record ProcPart(string Name, double Value);
+
+/// <summary>One hit of an attack against the target (<see cref="Count"/> alike), before the monster's defense rate and per-hit rounding.</summary>
+/// <param name="Normal">Damage of the hit when it does not crit.</param>
+/// <param name="Crit">Damage of the hit when it crits; at negative affinity, of a feeble hit.</param>
+/// <param name="Average">Expected damage of the hit at the affinity.</param>
+public sealed record HitDamage(string Name, int Count, double Mv, double Normal, double Crit, double Average);
+
+/// <summary>
+/// One attack of the scored attack or sequence (a sequence step, <see cref="Repeat"/> times in a row) with its hits, under the
+/// step's conditions: <see cref="Affinity"/> and <see cref="Changes"/> show what its overrides change.
+/// </summary>
+/// <param name="Changes">The step's condition overrides that change something, by condition key: <c>{ "stamina_full": false }</c>.</param>
+/// <param name="Procs">Proc damage (Dark Arts shockwave, Bad Blood) per execution of the attack by source, on average; part of all three sums.</param>
+public sealed record AttackDamage(string Name, int Repeat, int Affinity, IReadOnlyDictionary<string, bool> Changes, IReadOnlyList<HitDamage> Hits, IReadOnlyList<ProcPart> Procs)
+{
+    private double ProcTotal => Procs.Sum(p => p.Value);
+    /// <summary>One execution when no hit crits.</summary>
+    public double Normal => Hits.Sum(h => h.Normal * h.Count) + ProcTotal;
+    /// <summary>One execution when every hit crits.</summary>
+    public double Crit => Hits.Sum(h => h.Crit * h.Count) + ProcTotal;
+    /// <summary>Expected damage of one execution.</summary>
+    public double Average => Hits.Sum(h => h.Average * h.Count) + ProcTotal;
 }
 
 /// <summary>
@@ -190,6 +222,8 @@ public static class DamageCalculator
             ProcDamage = Weighted(r => r.ProcDamage),
             Attack = cond.Attack(weapon),
             Breakdown = notes,
+            ScoredAt = cond,
+            ProcParts = [],
         };
     }
 
@@ -373,6 +407,7 @@ public static class DamageCalculator
 
         // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
         double procs = 0;
+        var procParts = trace ? new List<ProcPart>() : null;
         if (cond.ProcDamage)
         {
             void Proc(string label, double damage, double perExecution, string how)
@@ -380,7 +415,9 @@ public static class DamageCalculator
                 if (damage <= 0 || perExecution <= 0) return;
                 var v = damage * perExecution * profile.PerHundredMv;
                 procs += v;
-                if (trace) notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
+                if (!trace) return;
+                procParts!.Add(new ProcPart(label, v));
+                notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
             }
 
             // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
@@ -400,7 +437,57 @@ public static class DamageCalculator
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
-            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes);
+            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes) { ScoredAt = cond, ProcParts = procParts ?? [] };
+    }
+
+    /// <summary>
+    /// The damage of each attack of the scored attack or sequence and of each of its hits: without a crit, with one, and on average
+    /// at the affinity. Sequence steps come in order, each under its own condition overrides; the average-hit model is one hit.
+    /// The attacks' <see cref="AttackDamage.Average"/> x <see cref="AttackDamage.Repeat"/> add up to <see cref="DamageResult.DamagePerExecution"/>.
+    /// </summary>
+    public static IReadOnlyList<AttackDamage> Breakdown(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond)
+    {
+        var at = Calculate(weapon, skills, cond, trace: false).ScoredAt ?? cond;
+        var profile = at.AttackProfile;
+        if (profile.IsSequence)
+        {
+            // every step at the hits per minute of the whole sequence, like its segments (cooldown-limited procs)
+            var hitsPerMinute = profile.HitsPerMinute ?? at.Attack(weapon).HitsPerMinute;
+            return (profile.Sequence ?? [])
+                .Select(st => (Step: st, Def: Attacks.Find(weapon.Type, st.Attack)))
+                .Where(x => x.Def is not null && x.Step.Repeat > 0)
+                .Select(x =>
+                {
+                    var stepCond = ConditionToggles.With(at, x.Step.Conditions) with { AttackProfile = new AttackProfile { Attack = x.Def!.Id, HitsPerMinute = hitsPerMinute } };
+                    var changes = ConditionToggles.StepKeys.Where(k => ConditionToggles.Get(stepCond, k) != ConditionToggles.Get(at, k))
+                        .ToDictionary(k => k, k => ConditionToggles.Get(stepCond, k));
+                    var r = CalculateAt(weapon, skills, stepCond, trace: true);
+                    return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits));
+                })
+                .ToList();
+        }
+
+        var single = CalculateAt(weapon, skills, at, trace: true);
+        IEnumerable<ResolvedHit> hits = profile.AttackFor(weapon.Type) is { } attack
+            ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits)
+            : [new ResolvedHit(single.Attack.Name, 1, single.Attack.TotalMv, single.SharpnessRawModifier, single.SharpnessElementModifier, false, [])];
+        return [AttackDamageOf(single.Attack.Name, 1, new Dictionary<string, bool>(), single, hits)];
+    }
+
+    private static AttackDamage AttackDamageOf(string name, int repeat, IReadOnlyDictionary<string, bool> changes, DamageResult r, IEnumerable<ResolvedHit> hits)
+    {
+        var rawHitzone = r.Attack.RawHitzone / 100.0;
+        var elementHitzone = r.Attack.ElementHitzoneRatio * rawHitzone;
+        // a crit multiplies raw and element; a feeble hit (negative affinity) only raw
+        var (critRaw, critEle) = r.Affinity >= 0 ? (r.CriticalMultiplier, r.CriticalElementMultiplier) : (DamageConstants.NegativeCriticalMultiplier, 1.0);
+        var critEleFactor = r.Affinity > 0 ? 1.0 + r.Affinity / 100.0 * (r.CriticalElementMultiplier - 1.0) : 1.0;
+        var list = hits.Select(h =>
+        {
+            var raw = r.TrueRaw * h.Mv / 100.0 * h.RawModifier * rawHitzone;
+            var ele = r.ElementTrue * h.ElementModifier * elementHitzone;
+            return new HitDamage(h.Name, h.Count, h.Mv, raw + ele, raw * critRaw + ele * critEle, raw * r.CriticalFactor + ele * critEleFactor);
+        }).ToList();
+        return new AttackDamage(name, repeat, r.Affinity, changes, list, r.ProcParts.Select(p => p with { Value = r.Attack.DamagePerExecution(p.Value) }).ToList());
     }
 
     /// <summary>Damage of one Dark Arts shockwave (30 MV, crits, uses sharpness, plus its dragon element) at raw hitzone 100.</summary>

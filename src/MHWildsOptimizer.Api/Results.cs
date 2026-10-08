@@ -28,13 +28,26 @@ public sealed record SetBonusStateDto(string Name, int Pieces, int Tier, string?
 
 public sealed record GroupSkillStateDto(string Name, int Pieces, string? RankName, bool Active);
 
+/// <summary>One hit of an attack (<paramref name="Count"/> alike): damage without a crit, with a crit (a feeble hit at negative affinity) and on average.</summary>
+public sealed record HitDamageDto(string Name, int Count, double Mv, double Normal, double Crit, double Average);
+
+/// <summary>
+/// One attack of the scored attack or sequence (a step, <paramref name="Repeat"/> times in a row): one execution when no hit crits, when every
+/// hit crits and on average, procs included, and its hits.
+/// </summary>
+/// <param name="Changes">The step's condition overrides that change something: "Stamina full: off".</param>
+/// <param name="Procs">Proc damage per execution by source, on average; part of all three sums.</param>
+public sealed record AttackDamageDto(
+    string Name, int Repeat, int Affinity, IReadOnlyList<string> Changes, double Normal, double Crit, double Average, IReadOnlyList<HitDamageDto> Hits, IReadOnlyList<ProcPart> Procs);
+
 /// <param name="DamagePerExecution">Damage of one execution of the attack or sequence against the target (<see cref="DamageResult.DamagePerExecution"/>); 0 in results saved before it.</param>
 /// <param name="Execution">What one execution is: "attack", "sequence" or "hit".</param>
 /// <param name="ScoredOn">The attack or sequence and the target the build was scored on ("Sequence: ... against Rey Dau, Head"); null in results saved before it.</param>
+/// <param name="Attacks">Damage per attack and hit (<see cref="DamageCalculator.Breakdown"/>); the requested conditions only, null in results saved before it.</param>
 public sealed record StatsDto(
     double TrueRaw, int DisplayAttack, int Affinity, double CritMultiplier, double CritFactor, SharpnessColor? Sharpness, double SharpnessRaw, double SharpnessElement,
     double ElementTrue, int ElementDisplay, double ElementCap, double CritElement, double Efr, double Efe, double Procs, double Total, IReadOnlyList<string> Modifiers,
-    double DamagePerExecution = 0, double DamagePerMinute = 0, string? Execution = null, string? ScoredOn = null);
+    double DamagePerExecution = 0, double DamagePerMinute = 0, string? Execution = null, string? ScoredOn = null, IReadOnlyList<AttackDamageDto>? Attacks = null);
 
 /// <param name="Procs">Proc damage per 100 MV (Dark Arts shockwave, Bad Blood); 0 when off or absent.</param>
 public sealed record BuildSummaryDto(
@@ -115,7 +128,7 @@ public static class ResultMapper
             .Select(kv => new GroupSkillStateDto(kv.Key, kv.Value, RankName(data, kv.Key, 1), skills.GroupActive(kv.Key)))
             .ToList();
 
-        var requested = Stats(w, DamageCalculator.Calculate(w, skills, cond), cond.Target);
+        var requested = Stats(w, DamageCalculator.Calculate(w, skills, cond), cond.Target) with { Attacks = DamageCalculator.Breakdown(w, skills, cond).Select(Attack).ToList() };
         var allOn = Stats(w, DamageCalculator.Calculate(w, skills, Conditions.AllOnLike(cond)), cond.Target);
 
         var summary = new BuildSummaryDto(s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness, s.Element, s.ElementTrue, s.ElementDisplay,
@@ -138,6 +151,15 @@ public static class ResultMapper
             r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, mods, r.DamagePerExecution, r.DamagePerMinute, r.Attack.Execution,
             $"{r.Attack.Name} against {target.Name} (raw hitzone {target.RawHitzone.ToString(System.Globalization.CultureInfo.InvariantCulture)})");
     }
+
+    private static AttackDamageDto Attack(AttackDamage a) => new(
+        a.Name, a.Repeat, a.Affinity, a.Changes.Select(kv => $"{ConditionCatalog.LabelOf(kv.Key)}: {(kv.Value ? "on" : "off")}").ToList(),
+        Round(a.Normal), Round(a.Crit), Round(a.Average),
+        a.Hits.Select(h => new HitDamageDto(h.Name, h.Count, h.Mv, Round(h.Normal), Round(h.Crit), Round(h.Average))).ToList(),
+        a.Procs.Select(p => p with { Value = Round(p.Value) }).ToList());
+
+    /// <summary>Two decimals keep saved results small; the breakdown shows whole numbers.</summary>
+    private static double Round(double x) => Math.Round(x, 2);
 
     private static string? RankName(GameData data, string skill, int level) =>
         data.SkillsByName.TryGetValue(skill, out var s) ? s.Ranks.FirstOrDefault(x => x.Level == level)?.Name : null;
