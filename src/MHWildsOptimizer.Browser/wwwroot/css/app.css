@@ -462,8 +462,32 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .permin-bar { display: block; height: 100%; border-radius: 3px; background: rgba(95, 191, 122, 0.55); }
 .permin-value { min-width: 52px; }
 @media (max-width: 700px), (pointer: fine) and (max-width: 1050px) {
-  .table.attack-damage .narrow-hide, .permin-track { display: none; }
+  .table.attack-damage .narrow-hide, .table.attack-hits .narrow-hide, .permin-track { display: none; }
+  .table.attack-damage tr.attack-detail-row > td { padding-left: 8px; }
+  .attack-trace ul { columns: 1; }
 }
+.table.attack-damage tr.attack-row { cursor: pointer; }
+.table.attack-damage tr.attack-row:hover td { background: var(--panel-2); }
+.table.attack-damage tr.attack-row.open td { border-bottom-color: transparent; }
+.row-toggle { display: inline-block; width: 14px; color: var(--muted); font-size: 11px; }
+.table.attack-damage tr.attack-detail-row > td { padding: 0 8px 12px 30px; background: var(--bg-2); }
+.attack-detail { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
+.attack-detail p { margin: 0; }
+.table.attack-hits td, .table.attack-hits th { padding: 4px 8px; font-size: 13px; }
+.table.attack-hits tbody + tbody tr.step-head td { border-top: 1px solid var(--border-2); }
+.table.attack-hits tr.step-head td { padding-top: 10px; }
+.table.attack-hits .step-title { font-weight: 600; margin-right: 6px; }
+.table.attack-hits .step-stats { margin-left: 6px; }
+.table.attack-hits tr.procs td { color: var(--muted); }
+.table.attack-hits tr.shockwave-row td { color: var(--set); border-top-color: transparent; }
+.table.attack-hits tr.shockwave-row td:first-child { padding-left: 22px; }
+.table.attack-hits tr.shockwave-row .muted { color: var(--muted); }
+.table.attack-hits tfoot td { border-top: 1px solid var(--border-2); border-bottom: none; }
+.table.attack-hits .total-cell { font-weight: 700; color: var(--ok); }
+.attack-trace summary { font-size: 12.5px; }
+.nowrap { white-space: nowrap; }
+.attack-trace ul { margin: 6px 0 0; padding-left: 18px; columns: 2; column-gap: 28px; font-size: 12px; color: var(--muted); }
+.attack-trace li { break-inside: avoid; }
 .scored-badge { margin-left: 8px; padding: 0 6px; border-radius: 4px; font-size: 10.5px; color: var(--accent); border: 1px solid rgba(227, 182, 78, 0.5); white-space: nowrap; }
 .mine-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .scored-on { margin: 0 0 8px; }

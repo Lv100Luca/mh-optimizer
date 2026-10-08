@@ -101,6 +101,9 @@ public sealed record DamageResult(
 /// </summary>
 public static class DamageCalculator
 {
+    /// <summary>The trace label of the Dark Arts shockwave proc.</summary>
+    public const string ShockwaveLabel = "Dark Arts shockwave";
+
     public static DamageResult Calculate(Loadout loadout, GameData data, Conditions? conditions = null)
     {
         var skills = SkillAggregator.Aggregate(loadout, data);
@@ -134,6 +137,23 @@ public static class DamageCalculator
         if (!trace) return best;
         var (side, otherSide) = fullWins ? ("full health", "red/low health") : ("red/low health", "full health");
         return best with { Breakdown = [.. best.Breakdown, Inv($"Full health excludes red/low health, scored at {side} ({best.Total:0.#} vs {other.Total:0.#} at {otherSide})")] };
+    }
+
+    /// <summary>
+    /// The conditions <see cref="Calculate(GogmaWeaponStats, ActiveSkills, Conditions, bool)"/> scores the loadout at: with both
+    /// full and red/low health on, the side that is better for it (the other side switched off); otherwise <paramref name="cond"/>.
+    /// </summary>
+    public static Conditions HealthSide(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond)
+    {
+        if (!cond.FullHealth || !(cond.RedHealth || cond.LowHealth)) return cond;
+        var hurt = cond with { FullHealth = false };
+        var full = cond with { RedHealth = false, LowHealth = false };
+        if (cond.Effective(SkillNames.PeakPerformance, skills.Level(SkillNames.PeakPerformance)) == 0) return hurt;
+        var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
+                         || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
+                         || skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+        if (!hurtSkills) return full;
+        return CalculateSequence(weapon, skills, full, false).Total >= CalculateSequence(weapon, skills, hurt, false).Total ? full : hurt;
     }
 
     /// <summary>
@@ -364,8 +384,8 @@ public static class DamageCalculator
             }
 
             // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
-            if (type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
-                Proc("Dark Arts shockwave", Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
+            if (CountsShockwave(type, skills, cond))
+                Proc(ShockwaveLabel, Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
                     profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
             var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
             if (badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
@@ -387,6 +407,17 @@ public static class DamageCalculator
     /// <param name="effectiveRawPerMv">True raw x sharpness x crit factor.</param>
     public static double Shockwave(double effectiveRawPerMv, double sharpEle, ResolvedAttackProfile profile) =>
         effectiveRawPerMv * DamageConstants.DarkArtsShockwaveMv / 100.0 + DamageConstants.DarkArtsShockwaveElement * sharpEle * profile.ElementHitzoneRatio;
+
+    /// <summary>
+    /// One Dark Arts shockwave without a crit, at raw hitzone 100: its raw (30 MV of <paramref name="trueRaw"/> at the weapon's
+    /// sharpness; crits like a hit) and its element (fixed, does not crit). <see cref="Shockwave"/> is raw x crit factor + element.
+    /// </summary>
+    public static (double Raw, double Element) ShockwaveParts(double trueRaw, double sharpRaw, double sharpEle, double elementHitzoneRatio) =>
+        (trueRaw * sharpRaw * DamageConstants.DarkArtsShockwaveMv / 100.0, DamageConstants.DarkArtsShockwaveElement * sharpEle * elementHitzoneRatio);
+
+    /// <summary>Whether a Lv3 charged slash of this loadout sets off a Dark Arts shockwave that the score counts.</summary>
+    public static bool CountsShockwave(WeaponType type, ActiveSkills skills, Conditions cond) =>
+        cond.ProcDamage && type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
 
     private static string Inv(FormattableString s) => FormattableString.Invariant(s);
 }

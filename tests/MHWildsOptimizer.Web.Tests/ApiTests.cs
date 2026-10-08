@@ -333,6 +333,67 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.All(rows, r => Assert.Equal(r.Score * r.Mv / 100 * hitzone / 100, r.DamagePerExecution, 6));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Attack_detail_adds_up_to_the_row_for_every_attack(bool bothHealthSides)
+    {
+        var data = TestGameData();
+        var payload = ExamplePayload();
+        if (bothHealthSides)
+            payload = payload with { Request = payload.Request with { Conditions = payload.Request.Conditions with { FullHealth = true, RedHealth = true } } };
+        var resolved = Resolving.Resolve(payload, data, RepoInputs);
+        var rows = BuildEvaluation.AttackBreakdown(resolved, WornBuild(), data);
+        Assert.NotEmpty(rows);
+        foreach (var row in rows)
+        {
+            var detail = BuildEvaluation.AttackDetail(resolved, WornBuild(), data, row.Id);
+            Assert.NotNull(detail);
+            Assert.Equal(row.DamagePerExecution, detail.Total, 6);
+            Assert.All(detail.Steps.SelectMany(s => s.Hits), h =>
+            {
+                Assert.True(h.RawCrit >= h.Raw && h.ElementCrit >= h.Element, h.Name);
+                Assert.InRange(h.Expected, h.Raw + h.Element - 1e-9, h.RawCrit + h.ElementCrit + 1e-9);
+            });
+            Assert.NotEmpty(detail.Breakdown);
+        }
+        // the example sequence loses Maximum Might after the tackle: that step says so and has less affinity
+        var offset = BuildEvaluation.AttackDetail(resolved, WornBuild(), data, "preset:offset-into-tcs")!;
+        var afterTackle = Assert.Single(offset.Steps, s => s.Conditions.Count > 0);
+        Assert.False(afterTackle.Conditions["stamina_full"]);
+        Assert.True(afterTackle.Affinity < offset.Steps[0].Affinity);
+        Assert.Null(BuildEvaluation.AttackDetail(resolved, WornBuild(), data, "no-such-attack"));
+    }
+
+    [Fact]
+    public void Attack_detail_lists_the_dark_arts_shockwave_under_each_lv3_charged_slash()
+    {
+        var data = TestGameData();
+        var payload = ExamplePayload();
+        // the weapon's rolled Soul of the Dark Knight plus the Bale helm: two pieces, Dark Arts
+        payload = payload with
+        {
+            Request = payload.Request with
+            {
+                Weapon = payload.Request.Weapon with { SetBonus = "Soul of the Dark Knight" },
+                Conditions = payload.Request.Conditions with { ProcDamage = true },
+            },
+        };
+        var resolved = Resolving.Resolve(payload, data, RepoInputs);
+        var detail = BuildEvaluation.AttackDetail(resolved, WornBuild(), data, "charge-combo")!;
+        var hits = detail.Steps.Single().Hits;
+        // Charged Slash, Strong Charged Slash and the True Charged Slash finisher are Lv3 charged slashes; the tackle and TCS 1 are not
+        Assert.Equal(3, hits.Count(h => h.Shockwave));
+        for (var i = 0; i < hits.Count; i++)
+            if (hits[i].Shockwave) Assert.Contains("Lv3 charged slash", hits[i - 1].Notes);
+        Assert.All(hits.Where(h => h.Shockwave), h => Assert.True(h.RawCrit > h.Raw && h.ElementCrit == h.Element));
+        var row = BuildEvaluation.AttackBreakdown(resolved, WornBuild(), data).Single(r => r.Id == "charge-combo");
+        Assert.Equal(row.DamagePerExecution, detail.Total, 6);
+
+        var off = resolved with { Conditions = resolved.Conditions with { ProcDamage = false } };
+        Assert.DoesNotContain(BuildEvaluation.AttackDetail(off, WornBuild(), data, "charge-combo")!.Steps.Single().Hits, h => h.Shockwave);
+    }
+
     [Fact]
     public async Task Builds_round_trip_with_the_weapon()
     {

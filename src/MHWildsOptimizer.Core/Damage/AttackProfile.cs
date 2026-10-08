@@ -62,27 +62,56 @@ public sealed record AttackProfile
         }
 
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
-        // the power True Charged Slash needs a weak spot: raw hitzone x sharpness of 45 or more
-        var weakSpot = target.RawHitzone * sharpRaw >= DamageConstants.WeakPointHitzone;
         double hits = 0, totalMv = 0, raw = 0, ele = 0, shockwaves = 0;
-        foreach (var hit in attack.Hits)
+        foreach (var h in ResolveHits(weapon, target, attack.Hits))
         {
-            var h = weakSpot && hit.Power is { } power ? power : hit;
-            var sr = h.FixedSharpness is { } fr ? DamageConstants.SharpnessRaw(fr) : sharpRaw;
-            var se = h.FixedSharpness is { } fe ? DamageConstants.SharpnessElement(fe) : sharpEle;
-            var rawMult = phial == SwitchAxePhial.Power && h.SwordMode ? DamageConstants.PowerPhialRaw : 1.0;
-            var eleMult = phial == SwitchAxePhial.Element && h.SwordMode ? DamageConstants.ElementPhialElement : 1.0;
-            var eleMod = phial == SwitchAxePhial.Element && h.ElementPhialElement is { } ep ? ep : h.Element;
             hits += h.Count;
             totalMv += h.Mv * h.Count;
-            raw += h.Mv * h.Count * sr * rawMult;
-            ele += eleMod * h.Count * se * eleMult;
+            raw += h.Mv * h.Count * h.RawModifier;
+            ele += h.Count * h.ElementModifier;
             if (h.ChargedLv3) shockwaves += h.Count;
         }
 
         var name = phial is { } ph ? $"{attack.Name} ({ph} phial)" : attack.Name;
         return new ResolvedAttackProfile(name, HitsPerMinute ?? hits * 60.0 / attack.Seconds, hits, totalMv, raw / totalMv, ele * ratio * 100.0 / totalMv,
             shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack");
+    }
+
+    /// <summary>
+    /// The hits as they land on <paramref name="target"/> with <paramref name="weapon"/>: the power True Charged Slash finisher on a
+    /// weak spot (raw hitzone x sharpness of 45 or more), fixed sharpness (the tackle) and the Switch Axe phial. Raw damage of a hit
+    /// is true raw x MV / 100 x <see cref="ResolvedHit.RawModifier"/>, element damage true element x <see cref="ResolvedHit.ElementModifier"/>,
+    /// both before hitzones and crits.
+    /// </summary>
+    public static IReadOnlyList<ResolvedHit> ResolveHits(GogmaWeaponStats weapon, Target target, IEnumerable<AttackHit> hits)
+    {
+        var sharpRaw = weapon.TopSharpness is { } s ? DamageConstants.SharpnessRaw(s) : 1.0;
+        var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
+        SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
+        var weakSpot = target.RawHitzone * sharpRaw >= DamageConstants.WeakPointHitzone;
+        var result = new List<ResolvedHit>();
+        foreach (var hit in hits)
+        {
+            var notes = new List<string>();
+            var h = hit;
+            if (weakSpot && hit.Power is { } power) { h = power; notes.Add("power version on a weak spot"); }
+            var sr = sharpRaw;
+            var se = sharpEle;
+            if (h.FixedSharpness is { } fixedSharpness)
+            {
+                sr = DamageConstants.SharpnessRaw(fixedSharpness);
+                se = DamageConstants.SharpnessElement(fixedSharpness);
+                notes.Add($"{fixedSharpness.ToString().ToLowerInvariant()} sharpness");
+            }
+            var rawMult = phial == SwitchAxePhial.Power && h.SwordMode ? DamageConstants.PowerPhialRaw : 1.0;
+            var eleMult = phial == SwitchAxePhial.Element && h.SwordMode ? DamageConstants.ElementPhialElement : 1.0;
+            var eleMod = phial == SwitchAxePhial.Element && h.ElementPhialElement is { } ep ? ep : h.Element;
+            if (rawMult != 1.0) notes.Add(FormattableString.Invariant($"Power phial raw x{rawMult}"));
+            if (eleMult != 1.0) notes.Add(FormattableString.Invariant($"Element phial element x{eleMult}"));
+            if (h.ChargedLv3) notes.Add("Lv3 charged slash");
+            result.Add(new ResolvedHit(h.Name, h.Count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes));
+        }
+        return result;
     }
 
     /// <summary>
@@ -174,6 +203,12 @@ public static class ConditionToggles
 }
 
 public readonly record struct AveragePreset(double HitsPerMinute, double AverageMv, double ChargedLv3Share);
+
+/// <summary>One hit of an attack as it lands (<see cref="AttackProfile.ResolveHits"/>).</summary>
+/// <param name="RawModifier">Raw sharpness modifier x phial (multiplies true raw x MV / 100).</param>
+/// <param name="ElementModifier">Element modifier x element sharpness x phial (multiplies true element).</param>
+/// <param name="Notes">What changed the hit: power version, fixed sharpness, phial, Lv3 charged slash.</param>
+public sealed record ResolvedHit(string Name, int Count, double Mv, double RawModifier, double ElementModifier, bool ChargedLv3, IReadOnlyList<string> Notes);
 
 /// <summary>
 /// The attack as the calculator uses it, per execution of the attack:

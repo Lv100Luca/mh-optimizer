@@ -189,8 +189,13 @@
                         <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 6 : 5)">@group.Key</td></tr>
                         @foreach (var x in group)
                         {
-                            <tr @key="x.Id" class="@(x.Current ? "current" : "")">
-                                <td>@x.Name @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}</td>
+                            var open = _expanded.Contains(x.Id);
+                            <tr @key="x.Id" class="attack-row @(x.Current ? "current" : "") @(open ? "open" : "")" @onclick="() => ToggleAttack(x.Id)"
+                                title="@(open ? "Hide the hits" : "Show every hit without and with a crit, step conditions and modifiers")">
+                                <td>
+                                    <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
+                                    @x.Name @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}
+                                </td>
                                 <td class="num narrow-hide">@Fmt.N(x.Hits, 0)</td>
                                 <td class="num muted narrow-hide">@Fmt.N(x.Mv, 0)</td>
                                 <td class="num"><b>@Fmt.N(x.DamagePerExecution, 0)</b></td>
@@ -215,6 +220,12 @@
                                     </td>
                                 }
                             </tr>
+                            @if (open && Detail(current, x.Id) is { } detail)
+                            {
+                                <tr @key="@(x.Id + ":detail")" class="attack-detail-row">
+                                    <td colspan="@(refBreakdown is not null ? 6 : 5)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" /></td>
+                                </tr>
+                            }
                         }
                     }
                 </tbody>
@@ -310,11 +321,40 @@
     private readonly Dictionary<string, IReadOnlyList<AttackDamageDto>> _breakdowns = new();
     private (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans) _breakdownBasis;
 
+    // rows of the damage-per-attack table that are open, and their details (cached like the rows)
+    private readonly HashSet<string> _expanded = [];
+    private readonly Dictionary<string, AttackDetailDto?> _details = new();
+
+    private void ToggleAttack(string id)
+    {
+        if (!_expanded.Remove(id)) _expanded.Add(id);
+    }
+
+    private AttackDetailDto? Detail(BuildInput input, string id)
+    {
+        Breakdown(input); // drops stale details with the rows
+        var key = id + "|" + System.Text.Json.JsonSerializer.Serialize(input, BrowserProfileStore.Json);
+        if (_details.TryGetValue(key, out var cached)) return cached;
+        AttackDetailDto? detail;
+        try
+        {
+            var payload = new ConfigPayload(App.Request!, App.Talismans.ToList(), [input]);
+            detail = BuildEvaluation.AttackDetail(Resolving.Resolve(payload, App.Data, App.Store.Directory), input, App.Data, id);
+        }
+        catch (Exception)
+        {
+            detail = null;
+        }
+        _details[key] = detail;
+        return detail;
+    }
+
     private IReadOnlyList<AttackDamageDto>? Breakdown(BuildInput input)
     {
         if (!ReferenceEquals(_breakdownBasis.Request, App.Request) || !ReferenceEquals(_breakdownBasis.Talismans, App.Talismans))
         {
             _breakdowns.Clear();
+            _details.Clear();
             _breakdownBasis = (App.Request, App.Talismans);
         }
         var key = System.Text.Json.JsonSerializer.Serialize(input, BrowserProfileStore.Json);

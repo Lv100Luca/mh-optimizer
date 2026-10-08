@@ -1,0 +1,126 @@
+@inject AppState App
+@* One row of the damage-per-attack table taken apart: each hit without and with a crit and on average, each sequence step with
+   the conditions it changes, procs, and the calculator's trace. *@
+@{
+    var single = Detail.Steps.Count == 1 && Detail.Steps[0].Repeat == 1;
+    var element = Element != Element.None;
+}
+<div class="attack-detail">
+    @foreach (var note in Detail.Notes)
+    {
+        <p class="muted small">@note</p>
+    }
+    <table class="table attack-hits">
+        <thead>
+            <tr>
+                <th>Hit</th>
+                <th class="num narrow-hide">MV</th>
+                <th class="num" title="Raw@(element ? " + element" : "") without a critical hit">Non-crit</th>
+                <th class="num" title="Raw@(element ? " + element" : "") on a critical hit">Crit</th>
+                <th class="num narrow-hide" title="Averaged over the affinity: what the score counts">Average</th>
+                <th class="num">Total</th>
+            </tr>
+        </thead>
+        @for (var i = 0; i < Detail.Steps.Count; i++)
+        {
+            var step = Detail.Steps[i];
+            <tbody @key="i">
+                @if (!single || step.Conditions.Count > 0)
+                {
+                    <tr class="step-head">
+                        <td colspan="6">
+                            <span class="step-title">@(Detail.Steps.Count > 1 ? $"{i + 1}. " : "")@step.Name@(step.Repeat > 1 ? $" ×{step.Repeat}" : "")</span>
+                            @foreach (var (key, on) in step.Conditions)
+                            {
+                                <span class="chip step-cond @(on ? "on" : "off")" title="Differs from the hunt conditions during this step">@Label(key): @(on ? "on" : "off")</span>
+                            }
+                            @if (StatsText(step) != StatsText(Detail.Steps[0]) || i == 0 && step.Conditions.Count > 0)
+                            {
+                                <span class="muted small step-stats">@StatsText(step)</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @foreach (var h in step.Hits)
+                {
+                    <tr class="@(h.Shockwave ? "shockwave-row" : "")" title="@(h.Shockwave ? "A proc of the slash above: added to the total" : null)">
+                        <td>
+                            @(h.Shockwave ? "↳ " : "")@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")
+                            @if (h.Notes.Count > 0)
+                            {
+                                <div class="muted tiny">@string.Join(" · ", h.Notes)</div>
+                            }
+                        </td>
+                        <td class="num muted narrow-hide">@Fmt.N(h.Mv, 0)</td>
+                        <td class="num">@Split(h.Raw, h.Element, element)</td>
+                        <td class="num">@Split(h.RawCrit, h.ElementCrit, element)</td>
+                        <td class="num narrow-hide">@Fmt.N(h.Expected, 0)</td>
+                        <td class="num"><b>@Fmt.N(h.Expected * h.Count, 0)</b></td>
+                    </tr>
+                }
+                @if (step.Procs > 0)
+                {
+                    <tr class="procs">
+                        <td>@(step.ProcSources.Count > 0 ? string.Join(", ", step.ProcSources) : "Procs") <span class="muted small">per execution</span></td>
+                        @Gap()
+                        <td class="num"><b>@Fmt.N(step.Procs, 0)</b></td>
+                    </tr>
+                }
+                @if (step.Repeat > 1)
+                {
+                    <tr class="procs">
+                        <td class="muted small">×@step.Repeat</td>
+                        @Gap()
+                        <td class="num"><b>@Fmt.N(step.Total, 0)</b></td>
+                    </tr>
+                }
+            </tbody>
+        }
+        <tfoot>
+            <tr>
+                <td>Total</td>
+                @Gap()
+                <td class="num total-cell">@Fmt.N(Detail.Total, 0)</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p class="muted small">@StatsText(Detail.Steps[0])@(Detail.Steps.Any(x => StatsText(x) != StatsText(Detail.Steps[0])) ? "; steps with other stats say so" : "")</p>
+    <details class="attack-trace">
+        <summary>Every modifier</summary>
+        <ul>
+            @foreach (var line in Detail.Breakdown)
+            {
+                <li>@line</li>
+            }
+        </ul>
+    </details>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public AttackDetailDto Detail { get; set; } = default!;
+    [Parameter] public Element Element { get; set; }
+
+    private string Label(string key) => App.Catalog.Conditions.FirstOrDefault(c => c.Key == key)?.Label ?? key;
+
+    private string StatsText(AttackStepDamageDto s) =>
+        $"raw {Fmt.N(s.TrueRaw, 0)} · affinity {s.Affinity}% (crit ×{Fmt.N(s.CritMultiplier, 2)})"
+        + (Element != Element.None ? $" · {Fmt.TitleCase(Element)} {Fmt.N(s.ElementTrue, 0)} (crit ×{Fmt.N(s.CritElementMultiplier, 2)})" : "");
+
+    /// <summary>The empty cells between a label and the total, matching the hit rows (MV and Average hide on phones).</summary>
+    private static RenderFragment Gap() => __builder =>
+    {
+        <td class="narrow-hide"></td>
+        <td></td>
+        <td></td>
+        <td class="narrow-hide"></td>
+    };
+
+    private static RenderFragment Split(double raw, double ele, bool element) => __builder =>
+    {
+        <span>@Fmt.N(raw + ele, 0)</span>
+        @if (element && ele > 0)
+        {
+            <div class="muted tiny nowrap">@Fmt.N(raw, 0) + @Fmt.N(ele, 0)</div>
+        }
+    };
+}
