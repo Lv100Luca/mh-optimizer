@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using MHWildsOptimizer.Core.Build;
+using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
@@ -45,6 +46,36 @@ public sealed record BuildInput
     /// <summary>The build chosen as the weapon's build: the one the profile's weapon comparison uses (at most one per weapon).</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Picked { get; init; }
+
+    /// <summary>
+    /// Hunt conditions this build is scored under where they differ from the weapon's, by condition key (snake_case, see
+    /// <see cref="ConditionToggles.AllKeys"/>): <c>{ "burst_active": true }</c>. Empty: the weapon's conditions. Lets a build be
+    /// scored as it is played (or as the game's status screen shows it) without changing what the optimizer searches for.
+    /// </summary>
+    public Dictionary<string, bool> Conditions { get; init; } = new();
+    /// <summary>The Omega Resonance phase this build is scored at; null: the weapon's.</summary>
+    public ResonanceMode? Resonance { get; init; }
+    /// <summary>Where this build's hits land; null: the weapon's target.</summary>
+    public Target? Target { get; init; }
+
+    [JsonIgnore]
+    public bool HasOwnConditions => Conditions.Count > 0 || Resonance is not null || Target is not null;
+
+    /// <summary>The conditions this build is scored under: <paramref name="weapon"/>'s with the build's overrides applied (the same object when it has none).</summary>
+    public Conditions ConditionsFor(Conditions weapon)
+    {
+        if (!HasOwnConditions) return weapon;
+        var c = ConditionToggles.With(weapon, Conditions);
+        if (Resonance is { } r) c = c with { Resonance = r };
+        if (Target is { } t) c = c with { Target = t };
+        return c;
+    }
+
+    /// <summary>The build scored under the weapon's conditions (its overrides dropped).</summary>
+    public BuildInput WithoutOwnConditions() => HasOwnConditions ? this with { Conditions = new(), Resonance = null, Target = null } : this;
+
+    /// <summary>Condition keys that are not on/off conditions (they are ignored when scoring).</summary>
+    public IReadOnlyList<string> ConditionErrors() => Conditions.Keys.Where(k => !ConditionToggles.AllKeys.Contains(k)).ToList();
 
     public BuildArmorInput? Armor(ArmorPieceKind kind) => kind switch
     {

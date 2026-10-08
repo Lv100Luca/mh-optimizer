@@ -583,6 +583,21 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .ovr { margin-left: 8px; padding: 0 5px; border-radius: 4px; font-size: 10px; font-weight: 500; color: var(--accent-2); border: 1px solid rgba(79, 163, 230, 0.5); text-transform: uppercase; letter-spacing: 0.04em; }
 .chip.ovr-chip { border-color: rgba(79, 163, 230, 0.5); color: var(--accent-2); }
 
+/* a hand-entered build's own conditions and the stats they give */
+.build-cond-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 16px; align-items: start; }
+.build-conds { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.cond-grid.compact { grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 6px; }
+.cond-grid.compact .cond { padding: 7px 10px; }
+.cond-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.status-screen { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.status-screen h4 { margin: 0 0 6px; font-size: 13px; }
+.status-screen dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 8px; font-size: 13px; }
+.status-screen dt { color: var(--muted); }
+.status-screen dd { margin: 0; }
+.status-screen dd b { font-size: 16px; }
+.status-screen .mods { columns: 1; }
+@media (max-width: 900px), (pointer: fine) and (max-width: 1350px) { .build-cond-layout { grid-template-columns: 1fr; } }
+
 
 
 /* ---------------------------------------------------------------- MudBlazor */

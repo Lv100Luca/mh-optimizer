@@ -36,7 +36,8 @@
     var met = ev?.Targets.Count(t => t.Met) ?? 0;
     var references = References(index);
     var reference = references.FirstOrDefault(r => r.Key == App.CompareKey) ?? references.FirstOrDefault();
-    var scoredRef = reference?.Input is { } input ? Score(input) : null;
+    // an optimizer build is compared under this build's conditions
+    var scoredRef = reference?.Input is { } input ? Score(input with { Conditions = current.Conditions, Resonance = current.Resonance, Target = current.Target }) : null;
     var refBuild = reference is null ? null : reference.Input is not null ? scoredRef?.Build : reference.Build;
 }
 <div class="panel">
@@ -64,6 +65,7 @@
                     <button type="button" role="tab" aria-selected="@(i == index)" class="buildtab @(i == index ? "active" : "")" @onclick="() => App.SetBuildIndex(tab)">
                         <span>@if (x.Picked) {<span class="pickstar" title="the weapon's pick">★ </span>}@(x.Name.Length > 0 ? x.Name : "(unnamed)")</span>
                         @if (e?.Build is { } eb) { <b>@BuildDamage.Text(eb)</b> } else { <span class="muted">…</span> }
+                        @if (x.HasOwnConditions) { <span class="ovr" title="Scored under its own conditions">own</span> }
                         @if (e is { Errors.Count: > 0 }) { <span class="err" title="@string.Join("\n", e.Errors)">!</span> }
                     </button>
                 }
@@ -133,6 +135,104 @@
             <p class="muted small">Your own random talismans come from the Talismans tab; craftable charms are always listed.</p>
         }
     </Section>
+
+    @if (b is not null)
+    {
+        var weaponConditions = request.Conditions;
+        var effective = current.ConditionsFor(weaponConditions);
+        bool Has(string name) => HasSkill(b, name);
+        var relevant = ConditionCatalog.For(Catalog.Conditions, Has);
+        var shown = (_allConditions ? Catalog.Conditions : relevant).ToList();
+        var weaponTarget = weaponConditions.Target ?? new Target();
+        var st = b.StatsRequested;
+        var s = b.Summary;
+        <Section Title="Conditions and stats of this build"
+                 Hint="What is active for this build. Unset toggles follow the weapon's conditions (Conditions tab), so the optimizer's search is not affected: set them to score the build as you play it, or to match the game's status screen and training dummy. Only conditions whose skills this build carries are listed.">
+            <Actions>
+                <div class="btn-row">
+                    <label class="check small" title="Also list conditions this build has no skill for">
+                        <input type="checkbox" checked="@_allConditions" @onchange="e => _allConditions = e.Value is true" />
+                        all conditions
+                    </label>
+                    <MudButton Size="Size.Small" Variant="Variant.Text" Disabled="!current.HasOwnConditions" OnClick="() => Update(x => x.WithoutOwnConditions())"
+                               title="Drop this build's own conditions and target">Follow the weapon's conditions</MudButton>
+                </div>
+            </Actions>
+            <ChildContent>
+                <div class="build-cond-layout">
+                    <div class="build-conds">
+                        @if (shown.Count == 0)
+                        {
+                            <p class="muted small">This build carries no conditional skill.</p>
+                        }
+                        <div class="cond-grid compact">
+                            @foreach (var x in shown.Where(x => x.Group != ConditionsPanel.ProcGroup))
+                            {
+                                @BuildCondition(x, current, effective, weaponConditions)
+                            }
+                        </div>
+                        @if (Has(SkillNames.OmegaResonance) || _allConditions)
+                        {
+                            <div class="cond-line">
+                                <span class="muted small">Omega Resonance phase</span>
+                                <Segmented T="ResonanceMode" Small="true" Value="effective.Resonance" ValueChanged="SetResonance" Options="ResonanceOptions" />
+                                @if (current.Resonance is not null)
+                                {
+                                    <span class="ovr" title="@($"The weapon has {ModeLabel(weaponConditions.Resonance)}")">own</span>
+                                }
+                            </div>
+                        }
+                        @foreach (var x in shown.Where(x => x.Group == ConditionsPanel.ProcGroup))
+                        {
+                            <div class="cond-grid compact">@BuildCondition(x, current, effective, weaponConditions)</div>
+                        }
+                        <div class="cond-line">
+                            <span class="muted small">Target</span>
+                            <Segmented T="string" Small="true" Value="@TargetChoice(current)" ValueChanged="SetTargetChoice"
+                                       Options="@TargetOptions(weaponTarget)" />
+                            @if (current.Target is not null)
+                            {
+                                <span class="ovr" title="@($"The weapon's target is {weaponTarget.Name}")">own</span>
+                            }
+                        </div>
+                        <p class="muted small">
+                            Raw hitzone @Fmt.N(effective.Target.RawHitzone, 0), @(s.Element == Element.None ? "element" : Fmt.Slug(s.Element)) hitzone @Fmt.N(effective.Target.ElementHitzoneFor(s.Element), 0);
+                            attack and skill limits are the weapon's. Hits of the scored attack without and with a crit: open the damage breakdown on the build card below.
+                        </p>
+                    </div>
+                    <div class="status-screen">
+                        <h4>As the status screen shows it</h4>
+                        <dl>
+                            <dt>Attack</dt>
+                            <dd><b>@Fmt.N(st.TrueRaw, 1)</b> <span class="muted small">weapon @s.BaseAttack</span></dd>
+                            <dt>Affinity</dt>
+                            <dd><b>@st.Affinity%</b> <span class="muted small">weapon @s.BaseAffinity%</span></dd>
+                            @if (s.Element != Element.None)
+                            {
+                                <dt>@Fmt.TitleCase(s.Element)</dt>
+                                <dd><b>@st.ElementDisplay</b> <span class="muted small">weapon @b.Weapon.ElementDisplay, cap @Fmt.N(st.ElementCap * 10, 0)</span></dd>
+                            }
+                            <dt>Crit</dt>
+                            <dd>x@(Fmt.N(st.CritMultiplier, 2))@(s.Element != Element.None && st.CritElement > 1 ? $", element x{Fmt.N(st.CritElement, 2)}" : "") <span class="muted small">@(st.Sharpness is { } sh ? $"{Fmt.TitleCase(sh)} sharpness" : "")</span></dd>
+                        </dl>
+                        @if (st.Modifiers.Count > 0)
+                        {
+                            <ul class="mods">
+                                @foreach (var m in st.Modifiers)
+                                {
+                                    <li>@m</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="muted small">No conditional bonus is active.</p>
+                        }
+                    </div>
+                </div>
+            </ChildContent>
+        </Section>
+    }
 
     @if (ev is { Targets.Count: > 0 })
     {
@@ -246,7 +346,7 @@
     }
 
     <Section Title="Compare"
-             Hint="@(reference?.Input is not null ? "The optimizer build is scored again under the current conditions, so both sides use the same assumptions." : "Differences are this build minus the other one; green means this build is ahead.")">
+             Hint="@(reference?.Input is not null ? "The optimizer build is scored again under this build's conditions, so both sides use the same assumptions." : "Differences are this build minus the other one, each under its own conditions; green means this build is ahead.")">
         <Actions>
             @if (references.Count > 0)
             {
@@ -387,6 +487,71 @@
         _breakdowns[key] = rows;
         return rows;
     }
+
+    // ---------------- the build's own conditions ----------------
+    private bool _allConditions;
+
+    private static readonly IReadOnlyList<SegmentOption<ResonanceMode>> ResonanceOptions =
+        [new(ResonanceMode.None, "Off"), new(ResonanceMode.Local, "Local (affinity)"), new(ResonanceMode.Remote, "Remote (attack)")];
+
+    private static string ModeLabel(ResonanceMode m) => m switch { ResonanceMode.None => "it off", ResonanceMode.Local => "Local", _ => "Remote" };
+
+    private const string TargetWeapon = "weapon";
+
+    private static IReadOnlyList<SegmentOption<string>> TargetOptions(Target weaponTarget) =>
+    [
+        new(TargetWeapon, $"Weapon's: {weaponTarget.Name}"),
+        .. Target.DummyParts.Select(d => new SegmentOption<string>(d.Part!, $"Dummy {d.Part!.ToLowerInvariant()}", Hint: $"Training dummy, raw {Fmt.N(d.RawHitzone, 0)} / element {Fmt.N(d.ElementHitzone, 0)}")),
+    ];
+
+    private static string TargetChoice(BuildInput b) => b.Target is { Kind: TargetKind.Dummy, Part: { } part } ? part : b.Target is null ? TargetWeapon : "custom";
+
+    private void SetTargetChoice(string choice) => Update(b => b with { Target = choice == TargetWeapon ? null : Target.Dummy(choice) });
+
+    private void SetResonance(ResonanceMode mode) => Update(b => b with { Resonance = mode == App.Request!.Conditions.Resonance ? null : mode });
+
+    /// <summary>A toggle that equals the weapon's value follows the weapon again instead of overriding it.</summary>
+    private void SetCondition(string key, bool value) => Update(b =>
+    {
+        var overrides = new Dictionary<string, bool>(b.Conditions);
+        if (ConditionToggles.Get(App.Request!.Conditions, key) == value) overrides.Remove(key);
+        else overrides[key] = value;
+        return b with { Conditions = overrides };
+    });
+
+    private static bool HasSkill(BuildDto b, string name) =>
+        b.Skills.Any(x => x.Skill == name && x.Level > 0) || b.SetBonuses.Any(x => x.Name == name && x.Active) || b.GroupSkills.Any(x => x.Name == name && x.Active);
+
+    private RenderFragment BuildCondition(ConditionDto x, BuildInput build, Conditions effective, Conditions weapon) => __builder =>
+    {
+        var on = ConditionAccess.Get(effective, x.Property);
+        var own = build.Conditions.ContainsKey(x.Key);
+        <label @key="x.Key" class="cond @(on ? "on" : "") @(own ? "overridden" : "")" title="@x.Description">
+            <input type="checkbox" checked="@on" @onchange="e => SetCondition(x.Key, e.Value is true)" />
+            <span class="cond-text">
+                <b>
+                    @x.Label
+                    @if (own)
+                    {
+                        <span class="ovr" title="@($"The weapon has this {(ConditionAccess.Get(weapon, x.Property) ? "on" : "off")}; this build overrides it.")">own</span>
+                    }
+                </b>
+                <span class="cond-skills">
+                    @foreach (var sk in x.Skills)
+                    {
+                        var bare = SkillSuffix.Replace(sk, "");
+                        var skill = Cat.SkillsByName.GetValueOrDefault(bare);
+                        <SkillHover @key="sk" Name="@bare" Class="@($"chip skill {(skill?.Kind ?? SkillKind.Armor).ToString().ToLowerInvariant()} tiny")">
+                            <SkillIcon Name="@bare" Kind="skill?.Kind" Size="14" />@sk
+                        </SkillHover>
+                    }
+                </span>
+            </span>
+        </label>
+    };
+
+    /// <summary>"Lord's Soul (Guts)" -> "Lord's Soul".</summary>
+    private static readonly System.Text.RegularExpressions.Regex SkillSuffix = new(@"\s*\(.*\)$");
 
     private void Update(Func<BuildInput, BuildInput> fn)
     {

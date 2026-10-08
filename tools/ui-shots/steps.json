@@ -36,6 +36,10 @@
       "url": "{origin}/{profile}/weapon/{weapon}/builds",
       "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.picker-btn.piecepick')][0].click(); await sleep(800);"
     },
+    "x-builds-own-conditions": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const c = [...document.querySelectorAll('.build-conds .cond')].find(c => c.innerText.includes('Counterstrike')); c?.querySelector('input').click(); await sleep(700); [...document.querySelectorAll('.build-conds .segmented button')].find(b => b.innerText.includes('weak point'))?.click(); await sleep(700); document.querySelector('.build-cond-layout').scrollIntoView();"
+    },
     "x-builds-deco-picker": {
       "url": "{origin}/{profile}/weapon/{weapon}/builds",
       "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.picker-btn.slotpick')][3].click(); await sleep(800);"

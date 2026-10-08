@@ -80,6 +80,26 @@ public static class ConditionCatalog
 
     private static readonly Lazy<Dictionary<string, string>> Labels = new(() => Build().ToDictionary(c => c.Key, c => c.Label));
 
+    private static readonly System.Text.RegularExpressions.Regex SkillSuffix = new(@"\s*\(.*\)$");
+
+    /// <summary>
+    /// Whether a build carries a skill, set bonus or group skill the condition drives (<see cref="ConditionDto.Skills"/>), so toggling it
+    /// can change the build's score. <paramref name="has"/> answers for a skill name (level above 0, set bonus or group skill active).
+    /// </summary>
+    public static bool Applies(ConditionDto condition, Func<string, bool> has) =>
+        condition.Property == nameof(Conditions.FestivalActive)
+            ? SkillNames.FestivalPrayers.Any(has)
+            : condition.Skills.Select(s => SkillSuffix.Replace(s, "")).Any(has);
+
+    /// <summary>The conditions worth showing for a build: the ones that apply, and the other health sides when one of them does (full health excludes red and low).</summary>
+    public static IReadOnlyList<ConditionDto> For(IReadOnlyList<ConditionDto> all, Func<string, bool> has)
+    {
+        var applies = all.Where(c => Applies(c, has)).Select(c => c.Property).ToHashSet();
+        string[] health = [nameof(Conditions.FullHealth), nameof(Conditions.RedHealth), nameof(Conditions.LowHealth)];
+        if (health.Any(applies.Contains)) applies.UnionWith(health);
+        return all.Where(c => applies.Contains(c.Property)).ToList();
+    }
+
     /// <summary>The label of a condition by its snake_case key ("stamina_full": "Stamina full").</summary>
     public static string LabelOf(string key) => Labels.Value.GetValueOrDefault(key) ?? key;
 

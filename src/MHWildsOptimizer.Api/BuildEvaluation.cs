@@ -99,9 +99,10 @@ public static class BuildEvaluation
         var rows = AttackRows(r);
         if (rows.Count == 0) return [];
         var (weapon, skills) = Equip(r, input, data);
+        var conditions = input.ConditionsFor(r.Conditions);
         return rows.Select(row =>
         {
-            var result = DamageCalculator.Calculate(weapon, skills, r.Conditions with { AttackProfile = row.Profile }, trace: false);
+            var result = DamageCalculator.Calculate(weapon, skills, conditions with { AttackProfile = row.Profile }, trace: false);
             var a = result.Attack;
             return new AttackRowDto(row.Id, row.Name, row.Group, row.Current, a.Hits, a.TotalMv, result.DamagePerExecution, result.DamagePerMinute, result.Total, a.Execution);
         }).ToList();
@@ -116,7 +117,7 @@ public static class BuildEvaluation
         if (AttackRows(r).FirstOrDefault(x => x.Id == id) is not { } row) return null;
         var (weapon, skills) = Equip(r, input, data);
         var type = weapon.Type;
-        var asked = r.Conditions with { AttackProfile = row.Profile };
+        var asked = input.ConditionsFor(r.Conditions) with { AttackProfile = row.Profile };
         // both health sides on: the calculator scores the better one, so the steps use that one too
         var conditions = DamageCalculator.HealthSide(weapon, skills, asked);
         var whole = DamageCalculator.Calculate(weapon, skills, conditions, trace: true);
@@ -194,10 +195,13 @@ public static class BuildEvaluation
             var loadout = c.Loadout;
             var w = loadout.Weapon.Stats;
             var pair = w.SetBonus is { } s && w.GroupSkill is { } g ? new GogmaSkillPair(s, g) : null;
-            var ranked = new RankedBuild(loadout, DamageCalculator.Calculate(loadout, data, r.Conditions), pair, $"{w.SetBonus ?? "-"} + {w.GroupSkill ?? "-"}");
-            var build = ResultMapper.MapBuild(0, ranked, r.Conditions, data, input.Name);
+            // a build with its own conditions is scored under them (its overrides on the weapon's conditions)
+            var conditions = input.ConditionsFor(r.Conditions);
+            var ranked = new RankedBuild(loadout, DamageCalculator.Calculate(loadout, data, conditions), pair, $"{w.SetBonus ?? "-"} + {w.GroupSkill ?? "-"}");
+            var build = ResultMapper.MapBuild(0, ranked, conditions, data, input.Name);
             var targets = CheckTargets(r, SkillAggregator.Aggregate(loadout, data), payload.Request.TargetSkills, data);
-            return new EvaluatedBuildDto(input.Name, c.Errors, [.. c.Warnings, .. requestWarning], build, targets);
+            var conditionWarnings = input.ConditionErrors().Select(k => $"'{k}' is not a hunt condition; it is ignored.");
+            return new EvaluatedBuildDto(input.Name, c.Errors, [.. c.Warnings, .. conditionWarnings, .. requestWarning], build, targets);
         }).ToList();
     }
 

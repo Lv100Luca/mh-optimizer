@@ -161,4 +161,58 @@ public class BuildInputTests
             if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true);
         }
     }
+
+    [Fact]
+    public void BuildConditionsOverrideTheWeapons()
+    {
+        var request = Example();
+        var weapon = request.Conditions with { MonsterEnraged = true, BurstActive = false, Resonance = ResonanceMode.Local };
+
+        var plain = new BuildInput { Name = "plain" };
+        Assert.False(plain.HasOwnConditions);
+        Assert.Same(weapon, plain.ConditionsFor(weapon));
+
+        var own = new BuildInput
+        {
+            Name = "own",
+            Conditions = new() { ["monster_enraged"] = false, ["burst_active"] = true, ["red_health"] = true, ["not_a_condition"] = true },
+            Resonance = ResonanceMode.Remote,
+            Target = Target.Dummy("Hard part"),
+        };
+        Assert.True(own.HasOwnConditions);
+        var c = own.ConditionsFor(weapon);
+        Assert.False(c.MonsterEnraged);
+        Assert.True(c.BurstActive);
+        Assert.True(c.RedHealth);
+        Assert.Equal(ResonanceMode.Remote, c.Resonance);
+        Assert.Equal(20, c.Target.RawHitzone);
+        // what the build does not override follows the weapon, the attack and skill limits always do
+        Assert.Equal(weapon.StaminaFull, c.StaminaFull);
+        Assert.Same(weapon.AttackProfile, c.AttackProfile);
+        Assert.Same(weapon.SkillLimits, c.SkillLimits);
+        Assert.Equal(["not_a_condition"], own.ConditionErrors());
+    }
+
+    [Fact]
+    public void BuildConditionsRoundTripThroughTheBuildsFile()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "mhwo-tests-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        try
+        {
+            var path = Path.Combine(dir, "mine.json");
+            var build = new BuildInput { Name = "Worn", Conditions = new() { ["burst_active"] = true }, Resonance = ResonanceMode.None, Target = Target.Dummy("Weak point") };
+            RequestFiles.SaveBuildsFor([build, new BuildInput { Name = "Plain" }], path);
+            var loaded = RequestFiles.LoadBuildsFor(path);
+            Assert.Equal(new Dictionary<string, bool> { ["burst_active"] = true }, loaded[0].Conditions);
+            Assert.Equal(ResonanceMode.None, loaded[0].Resonance);
+            Assert.Equal(TargetKind.Dummy, loaded[0].Target!.Kind);
+            Assert.False(loaded[1].HasOwnConditions);
+            Assert.DoesNotContain("resonance", File.ReadAllText(RequestFiles.BuildsPathFor(path)).Split("Plain")[1]);
+        }
+        finally
+        {
+            if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true);
+        }
+    }
 }

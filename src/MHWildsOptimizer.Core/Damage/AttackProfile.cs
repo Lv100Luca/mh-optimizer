@@ -174,18 +174,21 @@ public sealed record SequenceStep
     public override int GetHashCode() => HashCode.Combine(Attack, Repeat, Conditions.Count);
 }
 
-/// <summary>The on/off hunt conditions of <see cref="Damage.Conditions"/> by snake_case key, for sequence step overrides.</summary>
+/// <summary>The on/off hunt conditions of <see cref="Damage.Conditions"/> by snake_case key, for sequence step and build overrides.</summary>
 public static class ConditionToggles
 {
     private static readonly string[] NotPerStep = [nameof(Damage.Conditions.FullHealth), nameof(Damage.Conditions.RedHealth), nameof(Damage.Conditions.LowHealth), nameof(Damage.Conditions.ProcDamage)];
 
     private static readonly Dictionary<string, PropertyInfo> ByKey = typeof(Conditions)
         .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        .Where(p => p.PropertyType == typeof(bool) && p.CanWrite && !NotPerStep.Contains(p.Name))
+        .Where(p => p.PropertyType == typeof(bool) && p.CanWrite)
         .ToDictionary(p => Key(p.Name), p => p);
 
+    /// <summary>Every on/off condition key (a hand-entered build can override any of them).</summary>
+    public static IReadOnlyCollection<string> AllKeys => ByKey.Keys;
+
     /// <summary>The condition keys a sequence step can change. Health stays the same for the whole sequence; proc damage is all or nothing.</summary>
-    public static IReadOnlyCollection<string> StepKeys => ByKey.Keys;
+    public static IReadOnlyCollection<string> StepKeys { get; } = ByKey.Keys.Where(k => !NotPerStep.Contains(ByKey[k].Name)).ToList();
 
     public static string Key(string propertyName) => JsonNamingPolicy.SnakeCaseLower.ConvertName(propertyName);
 

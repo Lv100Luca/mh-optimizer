@@ -37,7 +37,8 @@ public static class Inventory
             if (weapon is null)
                 return new InventoryEntryDto(summary.Name, summary.Type, summary.Modified, summary.Summary ?? "", null, [summary.Summary ?? "Cannot read the weapon."], [], 0, null, null, false);
 
-            var payload = new ConfigPayload(weapon.Request, talismans, weapon.Builds.Where(b => b.Picked).Take(1).ToList());
+            // the weapons are compared under their own conditions, not under the picked build's overrides
+            var payload = new ConfigPayload(weapon.Request, talismans, weapon.Builds.Where(b => b.Picked).Take(1).Select(b => b.WithoutOwnConditions()).ToList());
             var resolved = Resolving.Resolve(payload, data, store.Directory);
             var described = Resolving.Describe(resolved, weapon.Request.TargetSkills, data);
             var picked = BuildEvaluation.Evaluate(payload, resolved, data).FirstOrDefault();
