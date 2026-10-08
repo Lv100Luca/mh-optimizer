@@ -32,8 +32,9 @@ public sealed record AttackDamageDto(string Id, string Name, string Group, bool 
 /// a single landing; <paramref name="Count"/> is how often it lands per execution.
 /// </summary>
 /// <param name="Shockwave">The Dark Arts shockwave the hit before it sets off (a proc, listed under its Lv3 charged slash).</param>
+/// <param name="RawAverage">Raw averaged over the affinity; with <paramref name="ElementAverage"/> it makes <paramref name="Expected"/>.</param>
 public sealed record HitDamageDto(string Name, int Count, double Mv, double Raw, double RawCrit, double Element, double ElementCrit, double Expected,
-    IReadOnlyList<string> Notes, bool Shockwave = false);
+    IReadOnlyList<string> Notes, bool Shockwave = false, double RawAverage = 0, double ElementAverage = 0);
 
 /// <summary>
 /// One step of an attack or sequence (a single attack has one): its hits under the step's conditions, the hunt conditions the
@@ -156,12 +157,12 @@ public static class BuildEvaluation
                 var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * target.RawHitzone / 100.0;
                 var ele = d.ElementTrue * h.ElementModifier * eleHitzone / 100.0;
                 hits.Add(new HitDamageDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
-                    raw * critFactor + ele * critEleFactor, h.Notes));
+                    raw * critFactor + ele * critEleFactor, h.Notes, RawAverage: raw * critFactor, ElementAverage: ele * critEleFactor));
                 if (shockwave && h.ChargedLv3)
                     hits.Add(new HitDamageDto(DamageCalculator.ShockwaveLabel, h.Count, DamageConstants.DarkArtsShockwaveMv, waveRaw, waveRaw * d.CriticalMultiplier,
                         waveEle, waveEle, waveRaw * critFactor + waveEle,
                         [FormattableString.Invariant($"{DamageConstants.DarkArtsShockwaveMv:0} MV raw + {DamageConstants.DarkArtsShockwaveElement:0} fixed element (no crit), Soul of the Dark Knight")],
-                        Shockwave: true));
+                        Shockwave: true, RawAverage: waveRaw * critFactor, ElementAverage: waveEle));
             }
             // the shockwaves are rows above; what is left are the other procs (Bad Blood)
             var procs = d.ProcDamage * d.Attack.TotalMv / 100.0 * target.RawHitzone / 100.0 - hits.Where(h => h.Shockwave).Sum(h => h.Expected * h.Count);

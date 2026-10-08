@@ -1,6 +1,6 @@
 @inject AppState App
-@* One row of the damage-per-attack table taken apart: each hit without and with a crit and on average, each sequence step with
-   the conditions it changes, procs, and the calculator's trace. *@
+@* One row of the damage-per-attack table taken apart: each hit (without a crit, with one, or averaged over the affinity, as
+   Mode says), each sequence step with the conditions it changes, procs, and the calculator's trace. *@
 @{
     var single = Detail.Steps.Count == 1 && Detail.Steps[0].Repeat == 1;
     var element = Element != Element.None;
@@ -15,9 +15,7 @@
             <tr>
                 <th>Hit</th>
                 <th class="num narrow-hide">MV</th>
-                <th class="num" title="Raw@(element ? " + element" : "") without a critical hit">Non-crit</th>
-                <th class="num" title="Raw@(element ? " + element" : "") on a critical hit">Crit</th>
-                <th class="num narrow-hide" title="Averaged over the affinity: what the score counts">Average</th>
+                <th class="num" title="@ModeTitle">@ModeLabel@(element ? " (raw + element)" : "")</th>
                 <th class="num">Total</th>
             </tr>
         </thead>
@@ -28,7 +26,7 @@
                 @if (!single || step.Conditions.Count > 0)
                 {
                     <tr class="step-head">
-                        <td colspan="6">
+                        <td colspan="4">
                             <span class="step-title">@(Detail.Steps.Count > 1 ? $"{i + 1}. " : "")@step.Name@(step.Repeat > 1 ? $" ×{step.Repeat}" : "")</span>
                             @foreach (var (key, on) in step.Conditions)
                             {
@@ -52,10 +50,8 @@
                             }
                         </td>
                         <td class="num muted narrow-hide">@Fmt.N(h.Mv, 0)</td>
-                        <td class="num">@Split(h.Raw, h.Element, element)</td>
-                        <td class="num">@Split(h.RawCrit, h.ElementCrit, element)</td>
-                        <td class="num narrow-hide">@Fmt.N(h.Expected, 0)</td>
-                        <td class="num"><b>@Fmt.N(h.Expected * h.Count, 0)</b></td>
+                        <td class="num">@Split(Raw(h), Ele(h), element)</td>
+                        <td class="num"><b>@Fmt.N((Raw(h) + Ele(h)) * h.Count, 0)</b></td>
                     </tr>
                 }
                 @if (step.Procs > 0)
@@ -71,16 +67,22 @@
                     <tr class="procs">
                         <td class="muted small">×@step.Repeat</td>
                         @Gap()
-                        <td class="num"><b>@Fmt.N(step.Total, 0)</b></td>
+                        <td class="num"><b>@Fmt.N(StepTotal(step), 0)</b></td>
                     </tr>
                 }
             </tbody>
         }
         <tfoot>
             <tr>
-                <td>Total</td>
+                <td>
+                    Total
+                    @if (Mode != DamageMode.Average)
+                    {
+                        <span class="muted small">if every hit @(Mode == DamageMode.Crit ? "crits" : "lands without a crit"); the score counts the average, @Fmt.N(Detail.Total, 0)</span>
+                    }
+                </td>
                 @Gap()
-                <td class="num total-cell">@Fmt.N(Detail.Total, 0)</td>
+                <td class="num total-cell">@Fmt.N(Detail.Steps.Sum(StepTotal), 0)</td>
             </tr>
         </tfoot>
     </table>
@@ -99,6 +101,23 @@
 @code {
     [Parameter, EditorRequired] public AttackDetailDto Detail { get; set; } = default!;
     [Parameter] public Element Element { get; set; }
+    [Parameter] public DamageMode Mode { get; set; } = DamageMode.Average;
+
+    private double Raw(HitDamageDto h) => Mode switch { DamageMode.NonCrit => h.Raw, DamageMode.Crit => h.RawCrit, _ => h.RawAverage };
+
+    private double Ele(HitDamageDto h) => Mode switch { DamageMode.NonCrit => h.Element, DamageMode.Crit => h.ElementCrit, _ => h.ElementAverage };
+
+    /// <summary>A step over all its repeats in the chosen mode (procs do not crit).</summary>
+    private double StepTotal(AttackStepDamageDto s) => (s.Hits.Sum(h => (Raw(h) + Ele(h)) * h.Count) + s.Procs) * s.Repeat;
+
+    private string ModeLabel => Mode switch { DamageMode.NonCrit => "Non-crit", DamageMode.Crit => "Crit", _ => "Average" };
+
+    private string ModeTitle => Mode switch
+    {
+        DamageMode.NonCrit => "A hit without a critical hit",
+        DamageMode.Crit => "A critical hit (the shockwave element does not crit)",
+        _ => "Averaged over the affinity: what the score counts",
+    };
 
     private string Label(string key) => App.Catalog.Conditions.FirstOrDefault(c => c.Key == key)?.Label ?? key;
 
@@ -106,13 +125,11 @@
         $"raw {Fmt.N(s.TrueRaw, 0)} · affinity {s.Affinity}% (crit ×{Fmt.N(s.CritMultiplier, 2)})"
         + (Element != Element.None ? $" · {Fmt.TitleCase(Element)} {Fmt.N(s.ElementTrue, 0)} (crit ×{Fmt.N(s.CritElementMultiplier, 2)})" : "");
 
-    /// <summary>The empty cells between a label and the total, matching the hit rows (MV and Average hide on phones).</summary>
+    /// <summary>The empty cells between a label and the total, matching the hit rows (MV hides on phones).</summary>
     private static RenderFragment Gap() => __builder =>
     {
         <td class="narrow-hide"></td>
         <td></td>
-        <td></td>
-        <td class="narrow-hide"></td>
     };
 
     private static RenderFragment Split(double raw, double ele, bool element) => __builder =>

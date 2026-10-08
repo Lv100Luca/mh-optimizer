@@ -485,6 +485,7 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .table.attack-hits tfoot td { border-top: 1px solid var(--border-2); border-bottom: none; }
 .table.attack-hits .total-cell { font-weight: 700; color: var(--ok); }
 .attack-trace summary { font-size: 12.5px; }
+.mode-pick { display: inline-flex; align-items: center; gap: 8px; }
 .nowrap { white-space: nowrap; }
 .attack-trace ul { margin: 6px 0 0; padding-left: 18px; columns: 2; column-gap: 28px; font-size: 12px; color: var(--muted); }
 .attack-trace li { break-inside: avoid; }

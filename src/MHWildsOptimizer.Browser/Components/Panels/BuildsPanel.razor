@@ -168,7 +168,17 @@
         var maxPerMinute = breakdown.Max(x => x.DamagePerMinute);
         var refById = refBreakdown?.ToDictionary(x => x.Id) ?? [];
         <Section Title="Damage per attack"
-                 Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab); per minute uses each attack's own pace, so it compares attacks with each other.">
+                 Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab); per minute uses each attack's own pace, so it compares attacks with each other. Click a row for its hits.">
+            <Actions>
+                @if (_expanded.Count > 0)
+                {
+                    <span class="mode-pick" title="The damage the hits of opened rows show">
+                        <span class="muted small">Hits</span>
+                        <Segmented T="DamageMode" Small="true" Value="_mode" ValueChanged="m => _mode = m" Options="ModeOptions" />
+                    </span>
+                }
+            </Actions>
+            <ChildContent>
             <table class="table attack-damage">
                 <thead>
                     <tr>
@@ -223,7 +233,7 @@
                             @if (open && Detail(current, x.Id) is { } detail)
                             {
                                 <tr @key="@(x.Id + ":detail")" class="attack-detail-row">
-                                    <td colspan="@(refBreakdown is not null ? 6 : 5)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" /></td>
+                                    <td colspan="@(refBreakdown is not null ? 6 : 5)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" Mode="_mode" /></td>
                                 </tr>
                             }
                         }
@@ -231,6 +241,7 @@
                 </tbody>
             </table>
             <p class="muted small">Damage against the target before the monster's defense rate and per-hit rounding, like the score.</p>
+            </ChildContent>
         </Section>
     }
 
@@ -323,6 +334,10 @@
 
     // rows of the damage-per-attack table that are open, and their details (cached like the rows)
     private readonly HashSet<string> _expanded = [];
+    private DamageMode _mode = DamageMode.Average;
+
+    private static readonly IReadOnlyList<SegmentOption<DamageMode>> ModeOptions =
+        [new(DamageMode.NonCrit, "Non-crit"), new(DamageMode.Crit, "Crit"), new(DamageMode.Average, "Average", Hint: "Averaged over the affinity: what the score counts")];
     private readonly Dictionary<string, AttackDetailDto?> _details = new();
 
     private void ToggleAttack(string id)

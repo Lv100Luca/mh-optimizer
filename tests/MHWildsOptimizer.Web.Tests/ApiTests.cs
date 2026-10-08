@@ -354,6 +354,7 @@ public class ApiTests : IClassFixture<WebFixture>
             {
                 Assert.True(h.RawCrit >= h.Raw && h.ElementCrit >= h.Element, h.Name);
                 Assert.InRange(h.Expected, h.Raw + h.Element - 1e-9, h.RawCrit + h.ElementCrit + 1e-9);
+                Assert.Equal(h.Expected, h.RawAverage + h.ElementAverage, 9);
             });
             Assert.NotEmpty(detail.Breakdown);
         }
