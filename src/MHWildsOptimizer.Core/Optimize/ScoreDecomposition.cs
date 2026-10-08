@@ -292,7 +292,7 @@ public sealed class ScoreDecomposition
             var rawPct = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
             var elePct = _hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
             var profile = sides[side].Attack;
-            var shockwave = cond.ProcDamage && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
+            var shockwave = cond.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
             var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct, r1.Affinity - ProbeAffinity, elePct,

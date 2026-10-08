@@ -194,6 +194,22 @@ public class BuildInputTests
     }
 
     [Fact]
+    public void LegacyProcDamageToggleReadsAsBothProcToggles()
+    {
+        var off = System.Text.Json.JsonSerializer.Deserialize<Conditions>("""{ "proc_damage": false, "burst_active": false }""", GameDataLoader.JsonOptions)!;
+        Assert.False(off.DarkArtsShockwave);
+        Assert.False(off.BadBlood);
+        Assert.False(off.BurstActive);
+        var mixed = System.Text.Json.JsonSerializer.Deserialize<Conditions>("""{ "proc_damage": false, "bad_blood": true }""", GameDataLoader.JsonOptions)!;
+        Assert.False(mixed.DarkArtsShockwave);
+        Assert.True(mixed.BadBlood);
+        var json = System.Text.Json.JsonSerializer.Serialize(off, RequestFiles.WriteOptions);
+        Assert.DoesNotContain("proc_damage", json);
+        Assert.Contains("\"dark_arts_shockwave\": false", json);
+        Assert.True(ConditionPresets.Same(off, System.Text.Json.JsonSerializer.Deserialize<Conditions>(json, GameDataLoader.JsonOptions)!));
+    }
+
+    [Fact]
     public void BuildConditionsRoundTripThroughTheBuildsFile()
     {
         var dir = Path.Combine(Path.GetTempPath(), "mhwo-tests-" + Guid.NewGuid().ToString("N"));

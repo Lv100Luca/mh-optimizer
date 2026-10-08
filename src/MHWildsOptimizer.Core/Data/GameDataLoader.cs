@@ -12,7 +12,7 @@ public static class GameDataLoader
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower), new Damage.ConditionsJsonConverter() },
     };
 
     /// <summary>The dataset files <see cref="Load(string)"/> reads; the last three are optional.</summary>

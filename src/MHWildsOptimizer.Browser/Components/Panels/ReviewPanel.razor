@@ -139,7 +139,7 @@
                     <div class="kv">
                         <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Conditions)">Conditions</button></h4>
                         <div class="small">@(conditionsOn.Count > 0 ? string.Join(", ", conditionsOn.Select(c => c.Label)) : "nothing conditional"); Resonance @Fmt.Slug(request.Conditions.Resonance)</div>
-                        <div class="small muted">@ConditionsPanel.AttackProfileText(request, Cat) · proc damage @(request.Conditions.ProcDamage ? "on" : "off")</div>
+                        <div class="small muted">@ConditionsPanel.AttackProfileText(request, Cat) · Dark Arts shockwave @(request.Conditions.DarkArtsShockwave ? "on" : "off"), Bad Blood @(request.Conditions.BadBlood ? "on" : "off")</div>
                     </div>
 
                     <div class="kv">

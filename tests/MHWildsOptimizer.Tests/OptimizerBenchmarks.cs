@@ -53,14 +53,14 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
     private static Conditions RedHealthManyConditions => Conditions.AllOff with
     {
         MonsterEnraged = true, HittingWeakPoint = true, RedHealth = true, StaminaFull = true, FrenzyOvercome = true,
-        CounterstrikeActive = true, CoalescenceActive = true, AzureBoltActive = true, PowerhouseActive = true, GutsNotYetTriggered = true, ProcDamage = true,
+        CounterstrikeActive = true, CoalescenceActive = true, AzureBoltActive = true, PowerhouseActive = true, GutsNotYetTriggered = true, DarkArtsShockwave = true, BadBlood = true,
         SkillLimits = new() { ["Burst"] = 1 },
     };
 
     private static Conditions RedHealthConditions => Conditions.AllOff with
     {
         MonsterEnraged = true, HittingWeakPoint = true, RedHealth = true, StaminaFull = true, FrenzyOvercome = true,
-        BurstActive = true, CounterstrikeActive = true, AzureBoltActive = true, GutsNotYetTriggered = true, ProcDamage = true,
+        BurstActive = true, CounterstrikeActive = true, AzureBoltActive = true, GutsNotYetTriggered = true, DarkArtsShockwave = true, BadBlood = true,
         SkillLimits = new() { ["Burst"] = 0 },
     };
 

@@ -99,10 +99,10 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.Equal(AttackProfile.Preset(WeaponType.GreatSword).HitsPerMinute, preset.GetProperty("hits_per_minute").GetDouble());
         Assert.Equal(AttackProfile.Preset(WeaponType.GreatSword).ChargedLv3Share, preset.GetProperty("charged_lv3_share").GetDouble());
 
-        var proc = Assert.Single(catalog.GetProperty("conditions").EnumerateArray(), c => c.GetProperty("key").GetString() == "proc_damage");
+        var proc = Assert.Single(catalog.GetProperty("conditions").EnumerateArray(), c => c.GetProperty("key").GetString() == "dark_arts_shockwave");
         Assert.Equal(ConditionCatalog.GroupProcs, proc.GetProperty("group").GetString());
         var conditions = catalog.GetProperty("default_request").GetProperty("conditions");
-        Assert.True(conditions.GetProperty("proc_damage").GetBoolean());
+        Assert.True(conditions.GetProperty("bad_blood").GetBoolean());
         Assert.Equal(JsonValueKind.Null, conditions.GetProperty("attack_profile").GetProperty("hits_per_minute").ValueKind);
     }
 
@@ -377,7 +377,7 @@ public class ApiTests : IClassFixture<WebFixture>
             Request = payload.Request with
             {
                 Weapon = payload.Request.Weapon with { SetBonus = "Soul of the Dark Knight" },
-                Conditions = payload.Request.Conditions with { ProcDamage = true },
+                Conditions = payload.Request.Conditions with { DarkArtsShockwave = true },
             },
         };
         var resolved = Resolving.Resolve(payload, data, RepoInputs);
@@ -391,7 +391,7 @@ public class ApiTests : IClassFixture<WebFixture>
         var row = BuildEvaluation.AttackBreakdown(resolved, WornBuild(), data).Single(r => r.Id == "charge-combo");
         Assert.Equal(row.DamagePerExecution, detail.Total, 6);
 
-        var off = resolved with { Conditions = resolved.Conditions with { ProcDamage = false } };
+        var off = resolved with { Conditions = resolved.Conditions with { DarkArtsShockwave = false } };
         Assert.DoesNotContain(BuildEvaluation.AttackDetail(off, WornBuild(), data, "charge-combo")!.Steps.Single().Hits, h => h.Shockwave);
     }
 

@@ -110,9 +110,9 @@ public sealed class Relevance
         Set(SkillNames.SeregiossTenacity, c.AdrenalineRushActive && c.AdrenalineRushRetriggered);
         Set(SkillNames.OmegaResonance, c.Resonance != ResonanceMode.None);
         Set(SkillNames.Gogmapocalypse, hasElement && c.MonsterEnraged);
-        var shockwave = c.ProcDamage && weapon.Type == WeaponType.GreatSword && c.Attack(weapon).Shockwaves > 0;
+        var shockwave = c.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && c.Attack(weapon).Shockwaves > 0;
         Set(SkillNames.SoulOfTheDarkKnight, (hasElement && c.RedHealth) || shockwave);
-        Set(SkillNames.NuUdrasMutiny, c.ProcDamage && c.RedHealth);
+        Set(SkillNames.NuUdrasMutiny, c.BadBlood && c.RedHealth);
         Set(SkillNames.EbonyOdogaronsPower, c.BurstActive);
         Set(SkillNames.DoshagumasMight, c.PowerhouseActive);
         Set(SkillNames.XuWusVigor, c.ProteinFiendActive);

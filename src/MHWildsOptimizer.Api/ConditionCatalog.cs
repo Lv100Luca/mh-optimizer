@@ -54,9 +54,12 @@ public static class ConditionCatalog
         [nameof(Conditions.AffinitySlidingActive)] = new("Affinity Sliding active", GroupBonuses, "Buttery Leathercraft: you slid recently.", ["Buttery Leathercraft (Affinity Sliding)"]),
         [nameof(Conditions.GutsNotYetTriggered)] = new("Guts not yet used", GroupBonuses, "Lord's Soul: Guts keeps its attack bonus until it saves you once.", ["Lord's Soul (Guts)"]),
 
-        [nameof(Conditions.ProcDamage)] = new("Count proc damage", GroupProcs,
-            "Extra damage instances that do not scale the hit: the Dark Arts shockwave (Great Sword Lv3 charged slashes) and Bad Blood (needs Resentment and red health). The attack profile converts them to damage per 100 MV and adds them to the score. Azure Bolt bursts and Scorcher are too unreliable to build around and are never counted.",
-            ["Soul of the Dark Knight (Dark Arts)", "Nu Udra's Mutiny (Bad Blood)"]),
+        [nameof(Conditions.DarkArtsShockwave)] = new("Count the Dark Arts shockwave", GroupProcs,
+            "Soul of the Dark Knight on a Great Sword: every Lv3 charged slash sets off a 30 MV shockwave, at any health. The attack profile converts it to damage per 100 MV and adds it to the score. Azure Bolt bursts and Scorcher are too unreliable to build around and are never counted.",
+            ["Soul of the Dark Knight (Dark Arts)"]),
+        [nameof(Conditions.BadBlood)] = new("Count Bad Blood", GroupProcs,
+            "Nu Udra's Mutiny: an extra 45 / 85 x hitzone hit every 2 s while Resentment is active, so it needs red health too.",
+            ["Nu Udra's Mutiny (Bad Blood)"]),
     };
 
     public static IReadOnlyList<PropertyInfo> BoolProperties() =>

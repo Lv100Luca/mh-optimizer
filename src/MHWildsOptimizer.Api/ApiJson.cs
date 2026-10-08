@@ -17,6 +17,7 @@ public static class ApiJson
         o.AllowTrailingCommas = true;
         o.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
         o.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower));
+        o.Converters.Add(new Core.Damage.ConditionsJsonConverter());
         return o;
     }
 }

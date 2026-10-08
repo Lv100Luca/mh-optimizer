@@ -408,27 +408,24 @@ public static class DamageCalculator
         // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
         double procs = 0;
         var procParts = trace ? new List<ProcPart>() : null;
-        if (cond.ProcDamage)
+        void Proc(string label, double damage, double perExecution, string how)
         {
-            void Proc(string label, double damage, double perExecution, string how)
-            {
-                if (damage <= 0 || perExecution <= 0) return;
-                var v = damage * perExecution * profile.PerHundredMv;
-                procs += v;
-                if (!trace) return;
-                procParts!.Add(new ProcPart(label, v));
-                notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
-            }
-
-            // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
-            if (CountsShockwave(type, skills, cond))
-                Proc(ShockwaveLabel, Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
-                    profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
-            var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
-            if (badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
-                Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
-                    profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds) * profile.Hits, Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
+            if (damage <= 0 || perExecution <= 0) return;
+            var v = damage * perExecution * profile.PerHundredMv;
+            procs += v;
+            if (!trace) return;
+            procParts!.Add(new ProcPart(label, v));
+            notes.Add(Inv($"{label}: proc +{v:0.#} per 100 MV ({damage:0.#} damage {how})"));
         }
+
+        // Azure Bolt bursts and Scorcher are not counted: too rare and unreliable to build around (decided 2026-10-07)
+        if (CountsShockwave(type, skills, cond))
+            Proc(ShockwaveLabel, Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
+                profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
+        var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
+        if (cond.BadBlood && badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
+            Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
+                profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds) * profile.Hits, Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
 
         if (trace) notes.Add(Inv($"Attack: {profile.Name}, {profile.Hits:0.##} hits, {profile.TotalMv:0.#} MV; target {cond.Target.Name}, raw hitzone {cond.Target.RawHitzone:0.#}, element hitzone {cond.Target.ElementHitzoneFor(weapon.Element):0.#}"));
         if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}, over the attack x{profile.RawFactor:0.###}; EFR {efr:0.#}"));
@@ -504,7 +501,7 @@ public static class DamageCalculator
 
     /// <summary>Whether a Lv3 charged slash of this loadout sets off a Dark Arts shockwave that the score counts.</summary>
     public static bool CountsShockwave(WeaponType type, ActiveSkills skills, Conditions cond) =>
-        cond.ProcDamage && type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+        cond.DarkArtsShockwave && type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
 
     private static string Inv(FormattableString s) => FormattableString.Invariant(s);
 }

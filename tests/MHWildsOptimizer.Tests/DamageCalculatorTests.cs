@@ -188,7 +188,8 @@ public class DamageCalculatorTests
 
     private static readonly Conditions ProcsOnly = Conditions.AllOff with
     {
-        ProcDamage = true,
+        DarkArtsShockwave = true,
+        BadBlood = true,
         AttackProfile = new AttackProfile { Attack = Attacks.Average, HitsPerMinute = 20, AverageMv = 100, ChargedLv3Share = 0.5 }, // 3 s per hit
     };
 

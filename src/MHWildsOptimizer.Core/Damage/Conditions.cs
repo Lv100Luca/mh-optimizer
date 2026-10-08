@@ -70,9 +70,11 @@ public sealed record Conditions
     /// <summary>Guts (Lord's Soul) keeps its attack bonus until it saves you once.</summary>
     public bool GutsNotYetTriggered { get; init; } = true;
 
-    // ----- proc damage -----
-    /// <summary>Count extra damage instances (Dark Arts shockwave, Bad Blood; Azure Bolt bursts and Scorcher are never counted), converted to per 100 MV with <see cref="AttackProfile"/>.</summary>
-    public bool ProcDamage { get; init; } = true;
+    // ----- proc damage: extra damage instances, converted to per 100 MV with the attack profile (Azure Bolt bursts and Scorcher are never counted) -----
+    /// <summary>Count the Dark Arts shockwave (Soul of the Dark Knight, Great Sword Lv3 charged slashes); it fires at any health.</summary>
+    public bool DarkArtsShockwave { get; init; } = true;
+    /// <summary>Count Bad Blood hits (Nu Udra's Mutiny); they need Resentment, so <see cref="RedHealth"/> as well.</summary>
+    public bool BadBlood { get; init; } = true;
     /// <summary>The attack the score is computed for.</summary>
     public AttackProfile AttackProfile { get; init; } = new();
     /// <summary>Where the hits land: raw and element hitzone.</summary>
@@ -154,7 +156,8 @@ public sealed record Conditions
         InspirationActive = true,
         AffinitySlidingActive = true,
         GutsNotYetTriggered = true,
-        ProcDamage = true,
+        DarkArtsShockwave = true,
+        BadBlood = true,
     };
 
     /// <summary><see cref="AllOn"/> with the attack and target of <paramref name="basis"/>, so the two compare on the same attack.</summary>
@@ -200,6 +203,7 @@ public sealed record Conditions
         InspirationActive = false,
         AffinitySlidingActive = false,
         GutsNotYetTriggered = false,
-        ProcDamage = false,
+        DarkArtsShockwave = false,
+        BadBlood = false,
     };
 }

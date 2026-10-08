@@ -55,7 +55,7 @@
     [Parameter] public EventCallback<IReadOnlyList<SequenceStep>> StepsChanged { get; set; }
 
     /// <summary>Hunt conditions a step cannot change: health holds for the whole sequence, proc damage is all or nothing.</summary>
-    private static readonly HashSet<string> NotPerStep = ["full_health", "red_health", "low_health", "proc_damage"];
+    private static readonly HashSet<string> NotPerStep = ["full_health", "red_health", "low_health", "dark_arts_shockwave", "bad_blood"];
 
     private double TotalMv => Steps.Sum(s => StepMv(s) * s.Repeat);
 

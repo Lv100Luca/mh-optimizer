@@ -177,7 +177,8 @@ public sealed record SequenceStep
 /// <summary>The on/off hunt conditions of <see cref="Damage.Conditions"/> by snake_case key, for sequence step and build overrides.</summary>
 public static class ConditionToggles
 {
-    private static readonly string[] NotPerStep = [nameof(Damage.Conditions.FullHealth), nameof(Damage.Conditions.RedHealth), nameof(Damage.Conditions.LowHealth), nameof(Damage.Conditions.ProcDamage)];
+    private static readonly string[] NotPerStep =
+        [nameof(Damage.Conditions.FullHealth), nameof(Damage.Conditions.RedHealth), nameof(Damage.Conditions.LowHealth), nameof(Damage.Conditions.DarkArtsShockwave), nameof(Damage.Conditions.BadBlood)];
 
     private static readonly Dictionary<string, PropertyInfo> ByKey = typeof(Conditions)
         .GetProperties(BindingFlags.Public | BindingFlags.Instance)

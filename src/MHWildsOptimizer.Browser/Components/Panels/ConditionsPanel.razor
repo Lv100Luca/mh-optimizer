@@ -14,7 +14,7 @@
     var element = weapon?.Element ?? request.Weapon.Spec?.Element ?? Element.None;
     var weaponLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
     var hunt = Catalog.Conditions.Where(x => x.Group != ProcGroup).ToList();
-    var procToggle = Catalog.Conditions.FirstOrDefault(x => x.Group == ProcGroup);
+    var procToggles = Catalog.Conditions.Where(x => x.Group == ProcGroup).ToList();
     var groups = hunt.Select(x => x.Group).Distinct().ToList();
     var onCount = hunt.Count(x => ConditionAccess.Get(c, x.Property));
     var profileErrors = App.Resolved?.Errors.Where(e => e.Contains("attack_profile") || e.Contains("conditions.target")).ToList() ?? [];
@@ -208,9 +208,14 @@
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
                     </p>
                 }
-                @if (procToggle is not null)
+                @if (procToggles.Count > 0)
                 {
-                    <div class="cond-grid">@Condition(procToggle, v)</div>
+                    <div class="cond-grid">
+                        @foreach (var x in procToggles)
+                        {
+                            @Condition(x, v)
+                        }
+                    </div>
                 }
             </ChildContent>
         </Section>

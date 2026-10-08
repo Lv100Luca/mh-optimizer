@@ -219,7 +219,7 @@ public class OptimizerTests(ITestOutputHelper output)
         var noWindow = Relevance.Build(rawGs, targets, Conditions.Default with { AzureBoltActive = false }, data);
         Assert.DoesNotContain("Leviathan's Fury", noWindow.SetBonuses);
 
-        var off = Relevance.Build(rawGs, targets, Conditions.Default with { ProcDamage = false, AzureBoltActive = false }, data);
+        var off = Relevance.Build(rawGs, targets, Conditions.Default with { DarkArtsShockwave = false, BadBlood = false, AzureBoltActive = false }, data);
         Assert.DoesNotContain("Soul of the Dark Knight", off.SetBonuses);
     }
 
