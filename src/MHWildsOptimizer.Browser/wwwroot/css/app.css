@@ -121,7 +121,7 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .two-col .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .card-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px 10px; border-bottom: 1px solid var(--border); }
-.card-title { flex: 1; min-width: 0; }
+.card-title { flex: 1 1 280px; min-width: 0; } /* wide enough that header actions wrap below it on phones */
 .card-head.collapsible .card-title { cursor: pointer; }
 .card-head { position: relative; }
 .card-toggle { position: absolute; left: 3px; top: 15px; width: 14px; height: 20px; padding: 0; border: none; background: none; color: var(--muted); font-size: 12px; cursor: pointer; border-radius: 4px; }
@@ -279,7 +279,9 @@ dl.stats dd { margin: 0; }
 .skillrow.armor { border-left-color: var(--armor); }
 .skillrow.set { border-left-color: var(--set); }
 .skillrow.group { border-left-color: var(--group); }
-.skillrow-main { flex: 1; min-width: 0; }
+.skillrow { flex-wrap: wrap; }
+.skillrow-main { flex: 1 1 220px; min-width: 0; } /* on phones the level controls go below the text */
+.skillrow-actions { margin-left: auto; }
 .skillrow-title { display: flex; align-items: center; gap: 8px; }
 .skillrow-actions { display: flex; align-items: center; gap: 8px; }
 .picker-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -452,6 +454,17 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .tcheck.met { border-color: rgba(95, 191, 122, 0.5); }
 .tcheck.miss { border-color: var(--err); background: rgba(224, 90, 79, 0.1); }
 .build-actions { display: flex; gap: 6px; }
+.table.attack-damage td, .table.attack-damage th { padding: 5px 8px; font-variant-numeric: tabular-nums; }
+.table.attack-damage tr.attack-group td { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 12px; border-bottom-color: var(--border-2); }
+.table.attack-damage tr.current td { background: rgba(227, 182, 78, 0.08); }
+.permin-cell { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.permin-track { flex: 0 0 90px; height: 6px; border-radius: 3px; background: var(--bg-2); overflow: hidden; }
+.permin-bar { display: block; height: 100%; border-radius: 3px; background: rgba(95, 191, 122, 0.55); }
+.permin-value { min-width: 52px; }
+@media (max-width: 700px), (pointer: fine) and (max-width: 1050px) {
+  .table.attack-damage .narrow-hide, .permin-track { display: none; }
+}
+.scored-badge { margin-left: 8px; padding: 0 6px; border-radius: 4px; font-size: 10.5px; color: var(--accent); border: 1px solid rgba(227, 182, 78, 0.5); white-space: nowrap; }
 .mine-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .scored-on { margin: 0 0 8px; }
 .scored-on b { color: var(--text); }

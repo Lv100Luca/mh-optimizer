@@ -16,9 +16,59 @@ public sealed record TargetCheckDto(string Skill, SkillKind Kind, string Label, 
 /// <summary>A hand-entered build scored under the request's conditions; <paramref name="Build"/> is null when the weapon cannot be resolved.</summary>
 public sealed record EvaluatedBuildDto(string Name, IReadOnlyList<string> Errors, IReadOnlyList<string> Warnings, BuildDto? Build, IReadOnlyList<TargetCheckDto> Targets);
 
+/// <summary>
+/// A build's damage on one attack, combo or sequence of the weapon type, under the request's conditions and target.
+/// <paramref name="Group"/> is "Moves", "Combos" or "Sequences"; <paramref name="Current"/> marks the attack the build is scored on
+/// (its numbers equal the build's score). Per minute uses the attack's own duration, except for the current one, which keeps the
+/// profile's landed hits per minute.
+/// </summary>
+public sealed record AttackDamageDto(string Id, string Name, string Group, bool Current, double Hits, double Mv, double DamagePerExecution, double DamagePerMinute,
+    double Score, string Execution);
+
 /// <summary>Scores hand-entered builds the way the optimizer scores its own: same weapon, conditions, skill limits and attack profile.</summary>
 public static class BuildEvaluation
 {
+    public const string GroupMoves = "Moves";
+    public const string GroupCombos = "Combos";
+    public const string GroupSequences = "Sequences";
+
+    /// <summary>
+    /// The damage of <paramref name="input"/> on every move, combo and example sequence of the weapon type, plus the custom
+    /// sequence when the attack profile uses one. Empty for weapon types without attack data (the average-hit model).
+    /// </summary>
+    public static IReadOnlyList<AttackDamageDto> AttackBreakdown(ResolvedRequest r, BuildInput input, GameData data)
+    {
+        var type = r.Weapon.Type;
+        var attacks = Attacks.For(type);
+        if (attacks.Count == 0) return [];
+
+        var random = r.Talismans.Where(t => t.Source == TalismanSource.Random).ToList();
+        var loadout = BuildInputLoader.Convert(input, r.Weapon, random, data).Loadout;
+        var weapon = loadout.Weapon.Stats;
+        var skills = SkillAggregator.Aggregate(loadout, data);
+        var profile = r.Conditions.AttackProfile;
+        var currentId = profile.IsSequence ? Attacks.Sequence : profile.Attack ?? Attacks.DefaultFor(type);
+
+        AttackDamageDto Score(string id, string name, string group, AttackProfile attack)
+        {
+            var current = string.Equals(id, currentId, StringComparison.OrdinalIgnoreCase);
+            // other attacks run at their own pace: a hits-per-minute override belongs to the attack it was set for
+            var conditions = r.Conditions with { AttackProfile = current ? profile : attack };
+            var result = DamageCalculator.Calculate(weapon, skills, conditions, trace: false);
+            var a = result.Attack;
+            return new AttackDamageDto(id, name, group, current, a.Hits, a.TotalMv, result.DamagePerExecution, result.DamagePerMinute, result.Total, a.Execution);
+        }
+
+        var rows = new List<AttackDamageDto>();
+        rows.AddRange(attacks.Where(a => !a.Combo).Select(a => Score(a.Id, a.Name, GroupMoves, new AttackProfile { Attack = a.Id })));
+        rows.AddRange(attacks.Where(a => a.Combo).Select(a => Score(a.Id, a.Name, GroupCombos, new AttackProfile { Attack = a.Id })));
+        rows.AddRange(Attacks.SequencePresetsFor(type).Select(s =>
+            Score("preset:" + s.Id, s.Name, GroupSequences, new AttackProfile { Attack = Attacks.Sequence, Sequence = s.Steps })));
+        if (profile.IsSequence && profile.Sequence is { Count: > 0 })
+            rows.Add(Score(Attacks.Sequence, "Your sequence", GroupSequences, profile));
+        return rows;
+    }
+
     public static IReadOnlyList<EvaluatedBuildDto> Evaluate(ConfigPayload payload, ResolvedRequest r, GameData data)
     {
         var builds = payload.Builds ?? [];

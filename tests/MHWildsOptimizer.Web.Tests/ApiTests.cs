@@ -314,6 +314,26 @@ public class ApiTests : IClassFixture<WebFixture>
     }
 
     [Fact]
+    public void Attack_breakdown_scores_the_build_on_every_attack_and_matches_the_score_on_its_own()
+    {
+        var data = TestGameData();
+        var payload = ExamplePayload() with { Builds = [WornBuild()] };
+        var resolved = Resolving.Resolve(payload, data, RepoInputs);
+        var build = Assert.Single(BuildEvaluation.Evaluate(payload, resolved, data)).Build!;
+
+        var rows = BuildEvaluation.AttackBreakdown(resolved, WornBuild(), data);
+        Assert.Equal(Attacks.For(resolved.Weapon.Type).Count + Attacks.SequencePresetsFor(resolved.Weapon.Type).Count, rows.Count);
+        var current = Assert.Single(rows, r => r.Current);
+        Assert.Equal(build.Score, current.Score, 6);
+        Assert.Equal(build.StatsRequested.DamagePerExecution, current.DamagePerExecution, 6);
+        Assert.Contains(rows, r => r.Group == BuildEvaluation.GroupCombos);
+        Assert.All(rows, r => Assert.True(r.DamagePerExecution > 0 && r.DamagePerMinute > 0, r.Name));
+        // every attack's damage is its score (per 100 MV, raw-hitzone-100 scale) times its MV and the target's raw hitzone
+        var hitzone = (resolved.Conditions.Target ?? new Target()).RawHitzone;
+        Assert.All(rows, r => Assert.Equal(r.Score * r.Mv / 100 * hitzone / 100, r.DamagePerExecution, 6));
+    }
+
+    [Fact]
     public async Task Builds_round_trip_with_the_weapon()
     {
         var client = _fixture.Client;

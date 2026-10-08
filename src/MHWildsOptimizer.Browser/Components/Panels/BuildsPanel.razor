@@ -158,6 +158,71 @@
         </Section>
     }
 
+    @{
+        var breakdown = Breakdown(current);
+        var refInput = reference is null ? null : reference.Input ?? (reference.Key.StartsWith("mine:") && int.TryParse(reference.Key[5..], out var ri) && ri < App.Builds.Count ? App.Builds[ri] : null);
+        var refBreakdown = refInput is not null ? Breakdown(refInput) : null;
+    }
+    @if (breakdown is { Count: > 0 })
+    {
+        var maxPerMinute = breakdown.Max(x => x.DamagePerMinute);
+        var refById = refBreakdown?.ToDictionary(x => x.Id) ?? [];
+        <Section Title="Damage per attack"
+                 Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab); per minute uses each attack's own pace, so it compares attacks with each other.">
+            <table class="table attack-damage">
+                <thead>
+                    <tr>
+                        <th>Attack</th>
+                        <th class="num narrow-hide">Hits</th>
+                        <th class="num narrow-hide">MV</th>
+                        <th class="num">Damage</th>
+                        <th class="num">Per minute</th>
+                        @if (refBreakdown is not null)
+                        {
+                            <th class="num" title="@($"This build minus {reference!.Label}, per execution")">vs @reference!.Label</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var group in breakdown.GroupBy(x => x.Group))
+                    {
+                        <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 6 : 5)">@group.Key</td></tr>
+                        @foreach (var x in group)
+                        {
+                            <tr @key="x.Id" class="@(x.Current ? "current" : "")">
+                                <td>@x.Name @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}</td>
+                                <td class="num narrow-hide">@Fmt.N(x.Hits, 0)</td>
+                                <td class="num muted narrow-hide">@Fmt.N(x.Mv, 0)</td>
+                                <td class="num"><b>@Fmt.N(x.DamagePerExecution, 0)</b></td>
+                                <td class="num">
+                                    <span class="permin-cell">
+                                        <span class="permin-track"><span class="permin-bar" style="width: @((100 * x.DamagePerMinute / Math.Max(1, maxPerMinute)).ToString("0.#", CultureInfo.InvariantCulture))%"></span></span>
+                                        <span class="permin-value">@Fmt.N(x.DamagePerMinute, 0)</span>
+                                    </span>
+                                </td>
+                                @if (refBreakdown is not null)
+                                {
+                                    <td class="num">
+                                        @if (refById.GetValueOrDefault(x.Id) is { } other)
+                                        {
+                                            var pct = other.DamagePerExecution != 0 ? (x.DamagePerExecution - other.DamagePerExecution) / other.DamagePerExecution * 100 : 0;
+                                            <Delta Value="@(x.DamagePerExecution - other.DamagePerExecution)" Digits="0" /> <span class="muted small">(@(pct >= 0 ? "+" : "−")@Fmt.N(Math.Abs(pct), 1)%)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="muted">—</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <p class="muted small">Damage against the target before the monster's defense rate and per-hit rounding, like the score.</p>
+        </Section>
+    }
+
     <Section Title="Compare"
              Hint="@(reference?.Input is not null ? "The optimizer build is scored again under the current conditions, so both sides use the same assumptions." : "Differences are this build minus the other one; green means this build is ahead.")">
         <Actions>
@@ -239,6 +304,33 @@
         }
         _scored = (App.Request, App.Talismans, key, result);
         return result;
+    }
+
+    // per-attack damage of a build, cached until the request, talismans or build change
+    private readonly Dictionary<string, IReadOnlyList<AttackDamageDto>> _breakdowns = new();
+    private (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans) _breakdownBasis;
+
+    private IReadOnlyList<AttackDamageDto>? Breakdown(BuildInput input)
+    {
+        if (!ReferenceEquals(_breakdownBasis.Request, App.Request) || !ReferenceEquals(_breakdownBasis.Talismans, App.Talismans))
+        {
+            _breakdowns.Clear();
+            _breakdownBasis = (App.Request, App.Talismans);
+        }
+        var key = System.Text.Json.JsonSerializer.Serialize(input, BrowserProfileStore.Json);
+        if (_breakdowns.TryGetValue(key, out var cached)) return cached;
+        IReadOnlyList<AttackDamageDto> rows;
+        try
+        {
+            var payload = new ConfigPayload(App.Request!, App.Talismans.ToList(), [input]);
+            rows = BuildEvaluation.AttackBreakdown(Resolving.Resolve(payload, App.Data, App.Store.Directory), input, App.Data);
+        }
+        catch (Exception)
+        {
+            rows = []; // the weapon or the build has errors; the cards above say which
+        }
+        _breakdowns[key] = rows;
+        return rows;
     }
 
     private void Update(Func<BuildInput, BuildInput> fn)
