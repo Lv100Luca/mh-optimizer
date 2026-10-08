@@ -32,6 +32,9 @@ window.mhwo = {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   },
 
+  /** Scrolls the first element matching the selector into view (smoothly). */
+  scrollIntoView: (selector) => { document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+
   copyText: async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } },
 
   /** Warns before leaving the page while there are unsaved edits or a run is going. */

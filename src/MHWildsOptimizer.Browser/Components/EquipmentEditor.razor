@@ -35,10 +35,10 @@
             <td class="skills">
                 <div class="pairpick">
                     <span class="with-icon muted small"><SkillIcon Name="set" Kind="SkillKind.Set" Size="16" /> set bonus</span>
-                    <SelectBox Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {rw?.SetBonus ?? "none"}")"
+                    <SearchSelect Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {rw?.SetBonus ?? "none"}")"
                                Options="@App.Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList()" />
                     <span class="with-icon muted small"><SkillIcon Name="group" Kind="SkillKind.Group" Size="16" /> group skill</span>
-                    <SelectBox Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {rw?.GroupSkill ?? "none"}")"
+                    <SearchSelect Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {rw?.GroupSkill ?? "none"}")"
                                Options="@App.Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList()" />
                 </div>
             </td>

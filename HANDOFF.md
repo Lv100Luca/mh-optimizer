@@ -65,9 +65,9 @@ Chrome; it needed a reconnect once).
 1. Optional speed-ups left: AOT (`RunAOTCompilation`; mostly helps C# work, which is small now, and costs download
    size), more workers per solve in phase 2 when lanes outnumber the shown classes (`MaxWorkersPerSolve` says more than 4
    does not help a single solve, so measure first).
-2. Small UI issues seen: the profile MudMenu stays open behind the import dialog; segmented labels run together
-   ("Attack200 raw"); the excluded-sets list in Options is cramped; the run log is not visible after a run finishes
-   (check what the React ResultsPanel did).
+2. Small UI issues seen (fixed 2026-10-08 in the UI/UX pass: menu closes before dialogs, segmented labels stack, set rows have
+   two lines; the run log toggle already existed). Cards collapse from their header (state in `mhwo:ui:collapsed`), long lists use
+   the searchable `SearchSelect`.
 3. Subagent suggestions not done: `Toggle` `HintContent` parameter (OptionsPanel core skill chips); `mhwo.scrollIntoView`
    / `scrollToBottom` helpers in `wwwroot/js/app.js` for ResultsPanel.
 4. Not tested: Firefox, Safari, mobile; deployment to Luca's nginx (needs HTTPS + COOP/COEP headers, see README).

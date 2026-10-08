@@ -1,15 +1,27 @@
-@* A card with a title, an optional hint and header actions. *@
-<section class="card @Class">
-    <header class="card-head">
-        <div>
+@inject UiState Ui
+@* A card with a title, an optional hint and header actions. Cards collapse from their header (the chevron or the title);
+   the state is kept in this browser under Key (the title when no key is given). *@
+@{
+    var collapsed = Collapsible && Ui.IsCollapsed(StateKey, DefaultCollapsed);
+}
+<section class="card @Class @(collapsed ? "collapsed" : "")">
+    <header class="card-head @(Collapsible ? "collapsible" : "")">
+        @if (Collapsible)
+        {
+            <button type="button" class="card-toggle" @onclick="Toggle" aria-expanded="@(!collapsed)" title="@(collapsed ? "Expand" : "Collapse")">@(collapsed ? "▸" : "▾")</button>
+        }
+        <div class="card-title" @onclick="Toggle">
             <h2>@if (TitleContent is not null) { @TitleContent } else { @Title }</h2>
-            @if (HintContent is not null)
+            @if (!collapsed)
             {
-                <p class="hint">@HintContent</p>
-            }
-            else if (Hint is not null)
-            {
-                <p class="hint">@Hint</p>
+                @if (HintContent is not null)
+                {
+                    <p class="hint">@HintContent</p>
+                }
+                else if (Hint is not null)
+                {
+                    <p class="hint">@Hint</p>
+                }
             }
         </div>
         @if (Actions is not null)
@@ -17,7 +29,10 @@
             <div class="card-actions">@Actions</div>
         }
     </header>
-    <div class="card-body">@ChildContent</div>
+    @if (!collapsed)
+    {
+        <div class="card-body">@ChildContent</div>
+    }
 </section>
 
 @code {
@@ -28,4 +43,18 @@
     [Parameter] public RenderFragment? Actions { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Class { get; set; }
+    /// <summary>Whether the card can be collapsed from its header (default: yes).</summary>
+    [Parameter] public bool Collapsible { get; set; } = true;
+    /// <summary>Collapsed until the user expands it (e.g. reference lists).</summary>
+    [Parameter] public bool DefaultCollapsed { get; set; }
+    /// <summary>Identifies the card for the remembered state; defaults to the title, so give one when the title varies.</summary>
+    [Parameter] public string? Key { get; set; }
+
+    private string StateKey => Key ?? Title ?? "";
+
+    private void Toggle()
+    {
+        if (!Collapsible) return;
+        Ui.SetCollapsed(StateKey, !Ui.IsCollapsed(StateKey, DefaultCollapsed), DefaultCollapsed);
+    }
 }

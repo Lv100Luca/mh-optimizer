@@ -31,16 +31,20 @@ else
         </header>
 
         <nav class="sidenav" aria-label="Sections">
-            @foreach (var item in Nav())
+            @foreach (var group in Nav().GroupBy(n => n.Group))
             {
-                <button class="navitem @(App.Tab == item.Tab ? "active" : "")" @onclick="() => App.SetTab(item.Tab)">
-                    <img src="@item.Icon" alt="" />
-                    <span class="navlabel">@item.Label</span>
-                    @if (item.Badge is { } badge)
-                    {
-                        <span class="navbadge @item.Tone">@badge</span>
-                    }
-                </button>
+                <div class="navgroup">@group.Key</div>
+                @foreach (var item in group)
+                {
+                    <button class="navitem @(App.Tab == item.Tab ? "active" : "")" @onclick="() => App.SetTab(item.Tab)" title="@item.Label">
+                        <img src="@item.Icon" alt="" />
+                        <span class="navlabel">@item.Label</span>
+                        @if (item.Badge is { } badge)
+                        {
+                            <span class="navbadge @item.Tone">@badge</span>
+                        }
+                    </button>
+                }
             }
         </nav>
 
@@ -69,11 +73,11 @@ else
             }
             else if (resolved.Errors.Count > 0)
             {
-                <button class="linklike err" @onclick="() => App.SetTab(Tab.Review)">@Fmt.Plural(resolved.Errors.Count, "error") · @resolved.Errors[0]</button>
+                <button class="linklike err statuslink" @onclick="() => App.SetTab(Tab.Review)" title="@string.Join("\n", resolved.Errors)">✕ @Fmt.Plural(resolved.Errors.Count, "error") · @resolved.Errors[0]</button>
             }
             else if (resolved.Warnings.Count > 0)
             {
-                <button class="linklike warn" @onclick="() => App.SetTab(Tab.Review)">@Fmt.Plural(resolved.Warnings.Count, "warning") · @resolved.Warnings[0]</button>
+                <button class="linklike warn statuslink" @onclick="() => App.SetTab(Tab.Review)" title="@string.Join("\n", resolved.Warnings)">⚠ @Fmt.Plural(resolved.Warnings.Count, "warning") · @resolved.Warnings[0]</button>
             }
             else
             {
@@ -95,7 +99,11 @@ else
 
     private bool _started;
 
-    private sealed record NavItem(Tab Tab, string Label, string Icon, string? Badge = null, string? Tone = null);
+    private sealed record NavItem(string Group, Tab Tab, string Label, string Icon, string? Badge = null, string? Tone = null);
+
+    private const string GroupProfile = "Profile";
+    private const string GroupWeapon = "Weapon";
+    private const string GroupBuilds = "Builds";
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,18 +127,19 @@ else
         var busy = App.Batch.Values.Count(b => b.Status is BatchStatus.Running or BatchStatus.Queued);
         string? Count(int n) => n > 0 ? n.ToString() : null;
 
-        yield return new(Tab.Inventory, "Inventory", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
-        yield return new(Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
-        yield return new(Tab.Pair, "Skill pair", GameIcons.SkillGeneric("set"), request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed" : "optimize");
-        yield return new(Tab.Targets, "Target skills", GameIcons.SkillGeneric("offense"), Count(request.TargetSkills.Count));
-        yield return new(Tab.Limits, "Skill limits", GameIcons.SkillGeneric("utility"), Count(limits));
-        yield return new(Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
-        yield return new(Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
-        yield return new(Tab.Options, "Options", GameIcons.Defense);
-        yield return new(Tab.Review, "Review", GameIcons.SkillGeneric("item"),
+        // profile-wide things first, then the open weapon's setup, then what comes out of it
+        yield return new(GroupProfile, Tab.Inventory, "Inventory", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
+        yield return new(GroupProfile, Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
+        yield return new(GroupWeapon, Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
+        yield return new(GroupWeapon, Tab.Pair, "Skill pair", GameIcons.SkillGeneric("set"), request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed" : "optimize");
+        yield return new(GroupWeapon, Tab.Targets, "Target skills", GameIcons.SkillGeneric("offense"), Count(request.TargetSkills.Count));
+        yield return new(GroupWeapon, Tab.Limits, "Skill limits", GameIcons.SkillGeneric("utility"), Count(limits));
+        yield return new(GroupWeapon, Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
+        yield return new(GroupWeapon, Tab.Options, "Options", GameIcons.Defense);
+        yield return new(GroupBuilds, Tab.Review, "Review", GameIcons.SkillGeneric("item"),
             errors > 0 ? $"{errors} err" : warnings > 0 ? $"{warnings} warn" : "ok", errors > 0 ? "err" : warnings > 0 ? "warn" : "ok");
-        yield return new(Tab.Results, "Results", GameIcons.Affinity,
+        yield return new(GroupBuilds, Tab.Results, "Results", GameIcons.Affinity,
             App.Run.Status == RunStatus.Running ? "…" : App.Run.Result is { } r ? r.Pairs.Sum(p => p.Builds.Count).ToString() : null);
-        yield return new(Tab.Builds, "My builds", GameIcons.Armor(ArmorPieceKind.Chest, 8), Count(App.Builds.Count));
+        yield return new(GroupBuilds, Tab.Builds, "My builds", GameIcons.Armor(ArmorPieceKind.Chest, 8), Count(App.Builds.Count));
     }
 }

@@ -279,15 +279,17 @@
             return;
         }
         <span class="slotdecos">
-            @for (var i = 0; i < levels.Count; i++)
-            {
-                var deco = i < decos.Count ? decos[i] : null;
-                <span class="slotdeco">
-                    <DecoIcon Deco="deco" SlotLevel="levels[i]" Size="28" />
-                    <span class="muted tiny">@(deco?.Name ?? "")</span>
-                </span>
-            }
-            <span class="muted small"><Slots Numbers="numbers" Named="named" /></span>
+            <span class="slotdeco-row">
+                @for (var i = 0; i < levels.Count; i++)
+                {
+                    var deco = i < decos.Count ? decos[i] : null;
+                    <span class="slotdeco">
+                        <DecoIcon Deco="deco" SlotLevel="levels[i]" Size="28" />
+                        <span class="muted tiny">@(deco?.Name ?? "empty")</span>
+                    </span>
+                }
+            </span>
+            <span class="muted small slotdeco-levels" title="slot levels"><Slots Numbers="numbers" Named="named" /></span>
         </span>
     };
 

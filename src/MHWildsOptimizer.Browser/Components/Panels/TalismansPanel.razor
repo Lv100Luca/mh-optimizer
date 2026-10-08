@@ -1,4 +1,5 @@
 @inherits AppComponent
+@inject IJSRuntime JS
 
 @if (App.Request is { } request)
 {
@@ -9,7 +10,7 @@
         .ToList();
 
     <div class="panel">
-        <Section Title="@($"Talismans of {App.Profile}")"
+        <Section Key="talismans" Title="@($"Talismans of {App.Profile}")"
                  Hint="Talismans belong to the account: every weapon of the profile draws from this pool, and changes are saved in this browser right away. Craftable charm lines are always available at their highest rank. Add the random (melded) talismans you own; the optimizer picks the best one per build.">
             <Actions>
                 @if (_draft is null)
@@ -65,7 +66,7 @@
 
         @if (_draft is { } draft)
         {
-            <Section Title="@(_index is { } editing ? $"Edit {talismans.ElementAtOrDefault(editing)?.Name}" : "New talisman")"
+            <Section Key="talisman-editor" Collapsible="false" Class="talisman-editor" Title="@(_index is { } editing ? $"Edit {talismans.ElementAtOrDefault(editing)?.Name}" : "New talisman")"
                      Hint="Skill 1 is the weapon-kind line a random talisman rolls first; skills 2 and 3 are armor-kind lines.">
                 <div class="form-grid">
                     <Field Label="Name">
@@ -131,10 +132,21 @@
 
     private void SetIncludeCraftable(bool include) => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeCraftable = include } });
 
+    private bool _scrollToEditor;
+
     private void Edit(int? index)
     {
         _index = index;
         _draft = ToDraft(index is { } i ? App.Talismans[i] : null);
+        _scrollToEditor = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // the editor opens below the list, which can be long: bring it into view
+        if (!_scrollToEditor) return;
+        _scrollToEditor = false;
+        await JS.InvokeVoidAsync("mhwo.scrollIntoView", ".talisman-editor");
     }
 
     private void Remove(int index) => App.SetTalismans(list => list.Where((_, j) => j != index).ToList());
@@ -183,7 +195,7 @@
         var options = pool.Where(p => p.Skill != exclude || p.Skill == value?.Skill).Select(p => new SelectOption(p.Skill, p.Skill)).ToList();
         <Field Label="@label" Hint="@(value is not null && poolMax < skillMax ? $"random talismans roll {value.Skill} at most at level {poolMax}" : null)">
             <div class="btn-row">
-                <SelectBox Value="@value?.Skill" Placeholder="(none)" Options="options"
+                <SearchSelect Value="@value?.Skill" Placeholder="(none)" Options="options"
                            ValueChanged="skill => onChange(skill is null ? null : new Pick(skill, Math.Min(Cat.SkillsByName.GetValueOrDefault(skill)?.MaxLevel ?? 1, pool.FirstOrDefault(p => p.Skill == skill)?.MaxLevel ?? 1)))" />
                 @if (value is not null)
                 {

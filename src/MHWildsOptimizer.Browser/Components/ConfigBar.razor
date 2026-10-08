@@ -15,7 +15,7 @@
                 <MudSelectItem Value="p.Name">@p.Name <span class="muted small">· @Fmt.Plural(p.Weapons, "weapon"), @Fmt.Plural(p.Talismans, "talisman")</span></MudSelectItem>
             }
         </MudSelect>
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AriaLabel="Profile actions" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+        <MudMenu @ref="_menu" Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AriaLabel="Profile actions" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
             <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd" OnClick="NewProfile">New profile…</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="Import">Import…</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="Export">Export @App.Profile</MudMenuItem>
@@ -35,19 +35,25 @@
         </MudSelect>
     </div>
 
-    <span class="configname @(App.Dirty ? "dirty" : "")" title="@(App.Dirty ? "unsaved changes" : "saved")">@(App.Name ?? "unsaved")@(App.Dirty ? " *" : "")</span>
-
-    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="@(App.Name is null || !App.Dirty)" OnClick="() => App.SaveAsync()"
-               title="@(App.Name is { } n ? $"Save {n}" : "Use Save as… first")">Save</MudButton>
     @if (App.Dirty)
     {
-        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">Revert</MudButton>
+        <span class="configname dirty" title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">unsaved changes</span>
     }
-    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="SaveAs">Save as…</MudButton>
-    @if (App.Name is { } name)
-    {
-        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(name)" title="Delete this weapon">Delete</MudButton>
-    }
+
+    <div class="btn-row configactions">
+        <MudButton Variant="@(App.Dirty && App.Name is not null ? Variant.Filled : Variant.Outlined)" Color="@(App.Dirty && App.Name is not null ? Color.Primary : Color.Default)"
+                   Size="Size.Small" Disabled="@(App.Name is null || !App.Dirty)" OnClick="() => App.SaveAsync()"
+                   title="@(App.Name is { } n ? $"Save {n}" : "Use Save as… first")">Save</MudButton>
+        @if (App.Dirty)
+        {
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" title="Drop the unsaved changes">Revert</MudButton>
+        }
+        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="SaveAs">Save as…</MudButton>
+        @if (App.Name is { } name)
+        {
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(name)" title="Delete this weapon">Delete</MudButton>
+        }
+    </div>
 
     @if (App.Run.Status == RunStatus.Running)
     {
@@ -64,6 +70,11 @@
 @code {
     private const string NewKey = "\u0000new";
 
+    private MudMenu? _menu;
+
+    /// <summary>A dialog opened from the menu renders above it while it is still closing: close it first.</summary>
+    private Task CloseMenu() => _menu?.CloseMenuAsync() ?? Task.CompletedTask;
+
     private static string? NameError(string name) => ProfileRules.IsValidName(name) ? null : ProfileRules.NameRules;
 
     private async Task PickProfile(string profile)
@@ -79,6 +90,7 @@
 
     private async Task NewProfile()
     {
+        await CloseMenu();
         var name = await NameDialog.AskAsync(Dialogs, "New profile", "Profile name", ok: "Create",
             message: "A profile is an account with its own talismans, condition presets and weapons.",
             validate: n => NameError(n) ?? (App.Profiles.Any(p => p.Name.Equals(n, StringComparison.OrdinalIgnoreCase)) ? "That profile exists already." : null));
@@ -108,6 +120,7 @@
 
     private async Task Import()
     {
+        await CloseMenu();
         var parameters = new DialogParameters<ImportDialog>();
         var dialog = await Dialogs.ShowAsync<ImportDialog>("Import profile", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true });
         if (await dialog.Result is { Canceled: false, Data: string profile })
@@ -128,6 +141,7 @@
     private async Task DeleteProfile()
     {
         if (App.Profile is not { } profile) return;
+        await CloseMenu();
         if (!await App.ConfirmAsync("Delete profile", $"Delete the profile {profile} with its {Fmt.Plural(App.Weapons.Count, "weapon")}, talismans and results from this browser? Export it first to keep a copy.", "Delete"))
             return;
         BrowserStore.DeleteProfile(profile);

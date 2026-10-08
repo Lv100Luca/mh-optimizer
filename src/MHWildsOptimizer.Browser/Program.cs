@@ -38,6 +38,7 @@ builder.Services.AddSingleton(data);
 builder.Services.AddSingleton(sp => Catalog.Build(sp.GetRequiredService<GameData>()));
 builder.Services.AddSingleton<BrowserStorage>();
 builder.Services.AddSingleton<BrowserProfileStore>();
+builder.Services.AddSingleton<UiState>();
 builder.Services.AddSingleton<IProfileStore>(sp => sp.GetRequiredService<BrowserProfileStore>());
 builder.Services.AddSingleton<CpSatBridge>();
 builder.Services.AddScoped<AppState>();

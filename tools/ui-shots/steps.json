@@ -1,0 +1,94 @@
+{
+  "extra": {
+    "x-talisman-editor": {
+      "url": "{origin}/{profile}/weapon/{weapon}/talismans",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Edit').click(); await sleep(600);"
+    },
+    "x-talisman-skill-open": {
+      "url": "{origin}/{profile}/weapon/{weapon}/talismans",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Edit').click(); await sleep(600); const f = [...document.querySelectorAll('.field')].find(f => f.innerText.includes('Skill 2')); const i = f.querySelector('input'); i.focus(); i.click(); i.value = 'res'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(900);"
+    },
+    "x-weapon-stats-mode": {
+      "url": "{origin}/{profile}/weapon/{weapon}/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Enter stats').click(); await sleep(600);"
+    },
+    "x-weapon-setbonus-open": {
+      "url": "{origin}/{profile}/weapon/{weapon}/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const f = [...document.querySelectorAll('.field')].find(f => f.innerText.includes('Set bonus')); const i = f.querySelector('input'); i.focus(); i.click(); i.value = 'sou'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(900);"
+    },
+    "x-targets-search": {
+      "url": "{origin}/{profile}/weapon/{weapon}/targets",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const i = document.querySelector('.picker-tools input'); i.focus(); i.value = 'crit'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(600);"
+    },
+    "x-conditions-sequence": {
+      "url": "{origin}/{profile}/weapon/{weapon}/conditions",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const sel = document.querySelector('.attack-col .mud-select'); sel.querySelector('.mud-input')?.click(); sel.querySelector('input')?.click(); await sleep(600); [...document.querySelectorAll('.mud-popover .mud-list-item')].find(e => e.innerText.includes('Custom sequence'))?.click(); await sleep(800); document.querySelector('.attack-col').scrollIntoView();"
+    },
+    "x-conditions-monster": {
+      "url": "{origin}/{profile}/weapon/{weapon}/conditions",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.target-col .segmented button')].find(b => b.innerText.trim() === 'Monster').click(); await sleep(700); const i = document.querySelector('.target-pickers input'); i.focus(); i.click(); i.value = 'ra'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(900);"
+    },
+    "x-results-details": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); document.querySelector('.details-toggle').click(); await sleep(600);"
+    },
+    "x-builds-piece-picker": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.picker-btn.piecepick')][0].click(); await sleep(800);"
+    },
+    "x-builds-deco-picker": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.picker-btn.slotpick')][3].click(); await sleep(800);"
+    },
+    "x-options-set-search": {
+      "url": "{origin}/{profile}/weapon/{weapon}/options",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const i = document.querySelector('.searchbox input'); i.focus(); i.value = 'gore'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(600);"
+    },
+    "x-profile-menu": {
+      "url": "{origin}/{profile}/inventory",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label') || '').includes('Profile actions')).click(); await sleep(600);"
+    },
+    "x-new-weapon": {
+      "url": "{origin}/{profile}/new/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);"
+    },
+    "x-new-results": {
+      "url": "{origin}/{profile}/new/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);"
+    },
+    "x-new-builds": {
+      "url": "{origin}/{profile}/new/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);"
+    },
+    "x-pair-optimize": {
+      "url": "{origin}/{profile}/weapon/{weapon}/pair",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.choice')][1].click(); await sleep(900);"
+    },
+    "x-results-phone": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);",
+      "width": 412,
+      "mobile": true
+    },
+    "x-builds-phone": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);",
+      "width": 412,
+      "mobile": true
+    },
+    "x-tablet-weapon": {
+      "url": "{origin}/{profile}/weapon/{weapon}/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(300);",
+      "width": 1100,
+      "mobile": false
+    },
+    "x-collapsed-conditions": {
+      "url": "{origin}/{profile}/weapon/{weapon}/conditions",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); for (const b of document.querySelectorAll('.card-toggle')) { b.click(); await sleep(150); } await sleep(400);"
+    },
+    "x-import-dialog": {
+      "url": "{origin}/{profile}/inventory",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label') || '').includes('Profile actions')).click(); await sleep(500); [...document.querySelectorAll('.mud-menu-item, .mud-list-item, [role=menuitem]')].find(e => e.textContent.trim().startsWith('Import')).click(); await sleep(900);"
+    }
+  }
+}

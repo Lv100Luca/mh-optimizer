@@ -29,7 +29,7 @@
     var v = new View(c, typePreset, overridden, weaponLabel);
 
     <div class="panel">
-        <Section Title="@($"{weaponLabel} preset")"
+        <Section Key="conditions-preset" Title="@($"{weaponLabel} preset")"
                  Hint="@($"Conditions are set per weapon type: every {weaponLabel} of the profile starts from this preset (hunt conditions, skill limits and attack profile). A weapon can override single values; the rest follows the preset when it changes.")">
             <Actions>
                 <div class="btn-row">
@@ -164,7 +164,7 @@
                             case TargetKind.Monster:
                                 var monster = Catalog.Monsters.FirstOrDefault(m => m.Name == target.Monster);
                                 <div class="target-pickers">
-                                    <SelectBox Value="@target.Monster" Placeholder="Pick a monster" Options="MonsterOptions" ValueChanged="m => SetMonster(m, type)" />
+                                    <SearchSelect Value="@target.Monster" Placeholder="Pick a monster" Options="MonsterOptions" ValueChanged="m => SetMonster(m, type)" />
                                     @if (monster is not null)
                                     {
                                         <SelectBox Value="@target.Part" Options="PartOptions(monster, type, element)" ValueChanged="part => SetPart(monster, part, type)" />

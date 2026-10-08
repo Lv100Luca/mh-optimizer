@@ -76,7 +76,7 @@
         </div>
 
         <div class="col">
-            <Section Title="@($"Excluded armor sets ({o.ExcludeSets.Count})")"
+            <Section Key="excluded-sets" Title="@($"Excluded armor sets ({o.ExcludeSets.Count})")"
                      Hint="Leave out sets you do not own, e.g. event or collaboration gear. Only sets at or above the minimum rarity are listed.">
                 <Actions>
                     @if (o.ExcludeSets.Count > 0)
@@ -96,18 +96,21 @@
                             <label @key="s.Name" class="setrow @(excluded.Contains(s.Name) ? "excluded" : "")">
                                 <input type="checkbox" checked="@excluded.Contains(s.Name)" @onchange="() => ToggleSet(s.Name)" />
                                 <img class="icon" src="@GameIcons.Armor(ArmorPieceKind.Head, s.Rarity)" alt="" width="22" height="22" />
-                                <span class="setname">@s.Name</span>
-                                <RarityBadge Rarity="s.Rarity" />
-                                <span class="muted small setinfo">
-                                    @foreach (var b in s.SetBonus)
+                                <span class="setmain">
+                                    <span class="setname">@s.Name <RarityBadge Rarity="s.Rarity" /> <span class="muted small">@Fmt.Plural(s.Pieces.Count, "piece")</span></span>
+                                    @if (s.SetBonus.Count > 0 || s.GroupSkill is not null)
                                     {
-                                        <SkillHover @key="b" Name="@b" Class="with-icon"><SkillIcon Name="@b" Kind="SkillKind.Set" Size="14" />@b</SkillHover>
+                                        <span class="muted small setinfo">
+                                            @foreach (var b in s.SetBonus)
+                                            {
+                                                <SkillHover @key="b" Name="@b" Class="with-icon"><SkillIcon Name="@b" Kind="SkillKind.Set" Size="14" />@b</SkillHover>
+                                            }
+                                            @if (s.GroupSkill is { } group)
+                                            {
+                                                <SkillHover Name="@group" Class="with-icon"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" />@group</SkillHover>
+                                            }
+                                        </span>
                                     }
-                                    @if (s.GroupSkill is { } group)
-                                    {
-                                        <SkillHover Name="@group" Class="with-icon"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" />@group</SkillHover>
-                                    }
-                                    <span>@Fmt.Plural(s.Pieces.Count, "piece")</span>
                                 </span>
                             </label>
                         }

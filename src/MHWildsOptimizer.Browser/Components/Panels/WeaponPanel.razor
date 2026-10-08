@@ -145,14 +145,14 @@
                     <Field>
                         <LabelContent><span class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonus</span></LabelContent>
                         <ChildContent>
-                            <SelectBox Value="@w.SetBonus" Placeholder="(none)" Options="@(Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList())"
+                            <SearchSelect Value="@w.SetBonus" Placeholder="(none)" Options="@(Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList())"
                                        ValueChanged="v => App.PatchWeapon(x => x with { SetBonus = v })" />
                         </ChildContent>
                     </Field>
                     <Field>
                         <LabelContent><span class="with-icon"><SkillIcon Name="group" Kind="SkillKind.Group" /> Group skill</span></LabelContent>
                         <ChildContent>
-                            <SelectBox Value="@w.GroupSkill" Placeholder="(none)" Options="@(Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList())"
+                            <SearchSelect Value="@w.GroupSkill" Placeholder="(none)" Options="@(Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList())"
                                        ValueChanged="v => App.PatchWeapon(x => x with { GroupSkill = v })" />
                         </ChildContent>
                     </Field>
@@ -260,7 +260,7 @@
     private IReadOnlyList<SegmentOption<SharpnessColor>> SharpnessOptions => [.. Catalog.SharpnessColors.Select(name =>
     {
         var c = Enum.Parse<SharpnessColor>(name, ignoreCase: true);
-        return new SegmentOption<SharpnessColor>(c, Fmt.TitleCase(c), @<span class="sharp-dot @name">@Fmt.TitleCase(c)</span>);
+        return new SegmentOption<SharpnessColor>(c, Fmt.TitleCase(c), @<span class="sharp-dot sharp-@name">@Fmt.TitleCase(c)</span>);
     })];
 
     private static IReadOnlyList<SegmentOption<GogmaFocus>> FocusOptions(WeaponTypeDto? wt) => [.. Enum.GetValues<GogmaFocus>().Select(f =>

@@ -13,7 +13,7 @@
     var cb = compared.Count > 1 ? Representative(compared[1]) : null;
 
     <div class="panel">
-        <Section Title="@($"Weapons of {profile}")"
+        <Section Key="inventory" Title="@($"Weapons of {profile}")"
                  Hint="Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile. A weapon is compared by its picked build (★, scored with today's conditions and talismans) or else by the best build of its last run.">
             <Actions>
                 <div class="btn-row">

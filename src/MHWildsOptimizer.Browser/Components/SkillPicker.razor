@@ -70,7 +70,7 @@
     <div class="picker-tools">
         <SearchBox @bind-Value="_query" Class="search" Placeholder="@(Mode == PickerMode.Target ? "Search skills, set bonuses, group skills…" : "Search skills…")" />
         <Segmented T="SkillKind?" Small="true" @bind-Value="_kind" Options="KindOptions" />
-        <span class="muted small">@available.Count @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills")</span>
+        <span class="muted small">@available.Count @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills")@if (HighlightLegend is not null && Highlight is { Count: > 0 }) {<text> · @HighlightLegend</text>}</span>
     </div>
     <div class="available">
         @foreach (var s in available)
@@ -97,6 +97,8 @@
 
     /// <summary>Skills, set bonuses and group skills to mark (e.g. the ones the optimizer values under the current conditions).</summary>
     [Parameter] public IReadOnlySet<string>? Highlight { get; set; }
+    /// <summary>What the star next to a highlighted skill means, shown next to the count.</summary>
+    [Parameter] public string? HighlightLegend { get; set; }
 
     private string _query = "";
     /// <summary>null = all kinds.</summary>

@@ -1,0 +1,39 @@
+@* A dropdown of strings you can type into to filter (for long lists: skills, monsters, set bonuses). Same contract as
+   SelectBox: null = nothing chosen (the placeholder); the clear button appears when a placeholder is given. *@
+<MudAutocomplete T="SelectOption" Value="@Current" ValueChanged="OnChanged" SearchFunc="Search" ToStringFunc="@(o => o?.Label ?? "")"
+                 Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true" Placeholder="@Placeholder" Clearable="@(Placeholder is not null)"
+                 MaxItems="@((int?)null)" CoerceText="true" ResetValueOnEmptyText="true" SelectOnActivation="true" OpenOnFocus="true" SelectValueOnTab="true"
+                 Class="@("selectbox searchselect " + Class)" Style="@Style" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft"
+                 ListClass="searchselect-list">
+    <ItemTemplate Context="o">
+        <span class="searchselect-item">
+            <span>@o.Label</span>
+            @if (o.Group is not null)
+            {
+                <span class="muted small">@o.Group</span>
+            }
+        </span>
+    </ItemTemplate>
+    <NoItemsTemplate><span class="muted picker-empty">Nothing matches.</span></NoItemsTemplate>
+</MudAutocomplete>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public IReadOnlyList<SelectOption> Options { get; set; } = [];
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    private SelectOption? Current => Value is null ? null : Options.FirstOrDefault(o => o.Value == Value) ?? new SelectOption(Value, Value);
+
+    private Task OnChanged(SelectOption? o) => ValueChanged.InvokeAsync(o?.Value);
+
+    private Task<IEnumerable<SelectOption>> Search(string? query, CancellationToken _)
+    {
+        var words = (query ?? "").Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        // the chosen entry's own label is not a filter: opening the list again shows everything
+        if (words.Length == 0 || Current?.Label == query) return Task.FromResult<IEnumerable<SelectOption>>(Options);
+        return Task.FromResult(Options.Where(o => words.All(w => o.Label.Contains(w, StringComparison.OrdinalIgnoreCase) || (o.Group ?? "").Contains(w, StringComparison.OrdinalIgnoreCase))));
+    }
+}

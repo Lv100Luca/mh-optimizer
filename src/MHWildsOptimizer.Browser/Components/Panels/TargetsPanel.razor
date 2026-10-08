@@ -15,7 +15,7 @@
             {
                 <Alert Kind="error">@e</Alert>
             }
-            <SkillPicker Mode="SkillPicker.PickerMode.Target" Values="request.TargetSkills" Highlight="relevant"
+            <SkillPicker Mode="SkillPicker.PickerMode.Target" Values="request.TargetSkills" Highlight="relevant" HighlightLegend="★ valued under your conditions"
                          ValuesChanged="v => App.PatchRequest(r => r with { TargetSkills = v })" />
         </Section>
 
