@@ -81,6 +81,16 @@
                             {
                                 @Condition(x, v)
                             }
+                            @if (group == ConditionCatalog.GroupHunter)
+                            {
+                                <div class="cond resonance">
+                                    <span class="cond-text">
+                                        <b>Meal attack</b>
+                                        <span class="muted small">The "Attack +N" of your meal's effects (0 without one). Flat, after the percentage bonuses.</span>
+                                        <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
+                                    </span>
+                                </div>
+                            }
                             @if (group == ConditionCatalog.GroupBonuses)
                             {
                                 <div class="cond resonance">
@@ -231,6 +241,7 @@
     private static readonly Dictionary<string, string> OtherLabels = new()
     {
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
+        [nameof(Conditions.MealAttack)] = "Meal attack",
         [nameof(Conditions.AttackProfile)] = "Attack",
         [nameof(Conditions.Target)] = "Target",
         [nameof(Conditions.SkillLimits)] = "Skill limits",

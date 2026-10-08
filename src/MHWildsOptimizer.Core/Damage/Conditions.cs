@@ -70,6 +70,12 @@ public sealed record Conditions
     /// <summary>Guts (Lord's Soul) keeps its attack bonus until it saves you once.</summary>
     public bool GutsNotYetTriggered { get; init; } = true;
 
+    // ----- items and meals: flat attack after the percentage bonuses, for every build -----
+    /// <summary>A Powercharm in the item pouch: +<see cref="DamageConstants.PowercharmAttack"/> attack.</summary>
+    public bool Powercharm { get; init; } = true;
+    /// <summary>Attack from the meal (its "Attack +N" in the meal effects; 0 without one).</summary>
+    public int MealAttack { get; init; }
+
     // ----- proc damage: extra damage instances, converted to per 100 MV with the attack profile (Azure Bolt bursts and Scorcher are never counted) -----
     /// <summary>Count the Dark Arts shockwave (Soul of the Dark Knight, Great Sword Lv3 charged slashes); it fires at any health.</summary>
     public bool DarkArtsShockwave { get; init; } = true;
@@ -156,12 +162,13 @@ public sealed record Conditions
         InspirationActive = true,
         AffinitySlidingActive = true,
         GutsNotYetTriggered = true,
+        Powercharm = true,
         DarkArtsShockwave = true,
         BadBlood = true,
     };
 
     /// <summary><see cref="AllOn"/> with the attack and target of <paramref name="basis"/>, so the two compare on the same attack.</summary>
-    public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target };
+    public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target, MealAttack = basis.MealAttack };
 
     /// <summary><paramref name="basis"/> with every toggle on that is on in any of <paramref name="parts"/> (the segments of a sequence): what can matter somewhere.</summary>
     public static Conditions Union(Conditions basis, IReadOnlyList<Conditions> parts)
@@ -203,6 +210,7 @@ public sealed record Conditions
         InspirationActive = false,
         AffinitySlidingActive = false,
         GutsNotYetTriggered = false,
+        Powercharm = false,
         DarkArtsShockwave = false,
         BadBlood = false,
     };

@@ -295,11 +295,12 @@ internal sealed class CpSatSearch
         }
         static long Sum(List<Bounded> xs, Func<Bounded, long> f) => xs.Sum(f);
 
-        // raw: TR = B * prod(pct) + sum(flat), in 1e-4
+        // raw: TR = B * prod(pct) + base flat + sum(flat), in 1e-4
         var pct = Product(All(c => (long)Math.Round(c.RawPct * S), "pct"), $"rawPct{side}");
         var flats = All(c => (long)Math.Round(c.RawFlat * S), "flat");
-        var tr = NewVar(m, _weapon.TrueRaw * pct.Lb + Sum(flats, f => f.Lb), _weapon.TrueRaw * pct.Ub + Sum(flats, f => f.Ub), $"tr{side}");
-        m.Add(tr.Var == LinearExpr.Term(pct.Var, _weapon.TrueRaw) + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
+        var baseFlat = (long)Math.Round(sc.BaseRawFlat * S);
+        var tr = NewVar(m, _weapon.TrueRaw * pct.Lb + baseFlat + Sum(flats, f => f.Lb), _weapon.TrueRaw * pct.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{side}");
+        m.Add(tr.Var == LinearExpr.Term(pct.Var, _weapon.TrueRaw) + baseFlat + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
 
         // affinity, clamped
         var affs = All(c => (long)Math.Round(c.Affinity), "aff");

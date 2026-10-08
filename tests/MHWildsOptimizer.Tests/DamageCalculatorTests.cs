@@ -47,7 +47,8 @@ public class DamageCalculatorTests
     {
         var loadout = new Loadout { Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data) };
         var off = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.AllOff);
-        var on = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.Default);
+        // the Powercharm is not a skill toggle: it counts for every build
+        var on = DamageCalculator.Calculate(loadout, TestData.Data, Conditions.Default with { Powercharm = false });
         Assert.Equal(off.Total, on.Total, Tol);
     }
 
@@ -184,6 +185,30 @@ public class DamageCalculatorTests
         Assert.Equal(off.TrueRaw + 8, capped.TrueRaw, Tol);    // valued as Burst 1
         Assert.Equal(off.TrueRaw, excluded.TrueRaw, Tol);
         Assert.Equal(off.Total, excluded.Total, Tol);
+    }
+
+    /// <summary>
+    /// Status screen readings of 2026-10-08 (233-raw Great Sword, Powercharm, meal +5, nothing conditional active unless named);
+    /// the game rounds down. Pins Attack Boost 3 / 5, Guts, Agitator 5, Resentment 5 and the Powercharm.
+    /// </summary>
+    [Theory]
+    [InlineData(0, false, false, false, 0, 233)] // bare weapon, no meal, no Powercharm (equipment info)
+    [InlineData(0, false, false, true, 0, 239)]  // bare weapon with the Powercharm
+    [InlineData(0, false, false, true, 5, 244)]  // and the +5 meal
+    [InlineData(3, false, false, true, 5, 251)]  // Attack Boost 3, no Guts
+    [InlineData(3, true, false, true, 5, 262)]   // Attack Boost 3 with Guts
+    [InlineData(5, false, false, true, 5, 262)]  // Attack Boost 5, no Guts
+    [InlineData(5, true, false, true, 5, 274)]   // the full build
+    [InlineData(5, true, true, true, 5, 319)]    // + Agitator 5 (enraged) and Resentment 5 (red health)
+    [InlineData(3, true, true, true, 5, 307)]    // Attack Boost 3: 312 in game with Burst's first-hit +5
+    public void StatusScreenAttackMatchesTheGame(int attackBoost, bool guts, bool angry, bool powercharm, int meal, int game)
+    {
+        var w = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }.Resolve(TestData.Data) with { TrueRaw = 233 };
+        var levels = new Dictionary<string, int> { [SkillNames.AttackBoost] = attackBoost, [SkillNames.Agitator] = 5, [SkillNames.Resentment] = 5 };
+        var groups = new Dictionary<string, int> { [SkillNames.LordsSoul] = guts ? 3 : 0 };
+        var skills = new ActiveSkills(levels, levels, new Dictionary<string, int>(), groups);
+        var cond = Conditions.AllOff with { GutsNotYetTriggered = guts, MonsterEnraged = angry, RedHealth = angry, Powercharm = powercharm, MealAttack = meal };
+        Assert.Equal(game, (int)Math.Floor(DamageCalculator.Calculate(w, skills, cond).TrueRaw));
     }
 
     private static readonly Conditions ProcsOnly = Conditions.AllOff with

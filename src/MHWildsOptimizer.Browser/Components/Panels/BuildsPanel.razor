@@ -182,9 +182,23 @@
                                 }
                             </div>
                         }
-                        @foreach (var x in shown.Where(x => x.Group == ConditionsPanel.ProcGroup))
+                        <div class="cond-line">
+                            <span class="muted small">Meal attack</span>
+                            <NumberInput T="int" Value="effective.MealAttack" Min="0" Max="50" Width="90" ValueChanged="SetMealAttack" />
+                            @if (current.MealAttack is not null)
+                            {
+                                <span class="ovr" title="@($"The weapon has {weaponConditions.MealAttack}")">own</span>
+                            }
+                        </div>
+                        @{ var procs = shown.Where(x => x.Group == ConditionsPanel.ProcGroup).ToList(); }
+                        @if (procs.Count > 0)
                         {
-                            <div class="cond-grid compact">@BuildCondition(x, current, effective, weaponConditions)</div>
+                            <div class="cond-grid compact">
+                                @foreach (var x in procs)
+                                {
+                                    @BuildCondition(x, current, effective, weaponConditions)
+                                }
+                            </div>
                         }
                         <div class="cond-line">
                             <span class="muted small">Target</span>
@@ -509,6 +523,8 @@
     private void SetTargetChoice(string choice) => Update(b => b with { Target = choice == TargetWeapon ? null : Target.Dummy(choice) });
 
     private void SetResonance(ResonanceMode mode) => Update(b => b with { Resonance = mode == App.Request!.Conditions.Resonance ? null : mode });
+
+    private void SetMealAttack(int meal) => Update(b => b with { MealAttack = meal == App.Request!.Conditions.MealAttack ? null : meal });
 
     /// <summary>A toggle that equals the weapon's value follows the weapon again instead of overriding it.</summary>
     private void SetCondition(string key, bool value) => Update(b =>

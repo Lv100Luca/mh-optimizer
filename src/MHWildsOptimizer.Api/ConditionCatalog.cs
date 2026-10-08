@@ -54,6 +54,8 @@ public static class ConditionCatalog
         [nameof(Conditions.AffinitySlidingActive)] = new("Affinity Sliding active", GroupBonuses, "Buttery Leathercraft: you slid recently.", ["Buttery Leathercraft (Affinity Sliding)"]),
         [nameof(Conditions.GutsNotYetTriggered)] = new("Guts not yet used", GroupBonuses, "Lord's Soul: Guts keeps its attack bonus until it saves you once.", ["Lord's Soul (Guts)"]),
 
+        [nameof(Conditions.Powercharm)] = new("Powercharm in the pouch", GroupHunter, "+6 attack for every build, added after the percentage bonuses like a meal's attack.", []),
+
         [nameof(Conditions.DarkArtsShockwave)] = new("Count the Dark Arts shockwave", GroupProcs,
             "Soul of the Dark Knight on a Great Sword: every Lv3 charged slash sets off a 30 MV shockwave, at any health. The attack profile converts it to damage per 100 MV and adds it to the score. Azure Bolt bursts and Scorcher are too unreliable to build around and are never counted.",
             ["Soul of the Dark Knight (Dark Arts)"]),
@@ -90,9 +92,10 @@ public static class ConditionCatalog
     /// can change the build's score. <paramref name="has"/> answers for a skill name (level above 0, set bonus or group skill active).
     /// </summary>
     public static bool Applies(ConditionDto condition, Func<string, bool> has) =>
-        condition.Property == nameof(Conditions.FestivalActive)
+        condition.Skills.Count == 0 // not tied to a skill: counts for every build (Powercharm)
+        || (condition.Property == nameof(Conditions.FestivalActive)
             ? SkillNames.FestivalPrayers.Any(has)
-            : condition.Skills.Select(s => SkillSuffix.Replace(s, "")).Any(has);
+            : condition.Skills.Select(s => SkillSuffix.Replace(s, "")).Any(has));
 
     /// <summary>The conditions worth showing for a build: the ones that apply, and the other health sides when one of them does (full health excludes red and low).</summary>
     public static IReadOnlyList<ConditionDto> For(IReadOnlyList<ConditionDto> all, Func<string, bool> has)

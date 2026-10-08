@@ -178,7 +178,8 @@ public sealed record SequenceStep
 public static class ConditionToggles
 {
     private static readonly string[] NotPerStep =
-        [nameof(Damage.Conditions.FullHealth), nameof(Damage.Conditions.RedHealth), nameof(Damage.Conditions.LowHealth), nameof(Damage.Conditions.DarkArtsShockwave), nameof(Damage.Conditions.BadBlood)];
+        [nameof(Damage.Conditions.FullHealth), nameof(Damage.Conditions.RedHealth), nameof(Damage.Conditions.LowHealth), nameof(Damage.Conditions.DarkArtsShockwave), nameof(Damage.Conditions.BadBlood),
+         nameof(Damage.Conditions.Powercharm)];
 
     private static readonly Dictionary<string, PropertyInfo> ByKey = typeof(Conditions)
         .GetProperties(BindingFlags.Public | BindingFlags.Instance)

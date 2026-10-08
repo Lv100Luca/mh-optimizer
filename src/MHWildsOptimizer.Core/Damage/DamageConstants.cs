@@ -19,6 +19,12 @@ public static class DamageConstants
     /// <summary>Overcoming Frenzy grants +15% affinity for 60 s (what Black Eclipse I effectively gives).</summary>
     public const int FrenzyOvercomeAffinity = 15;
 
+    /// <summary>
+    /// Powercharm in the item pouch: flat attack after the percentage bonuses, like a meal's. Measured on the status screen
+    /// (2026-10-08): a bare 233-raw weapon shows 239 with it, and every reading with skills fits the model + 6 (+ the meal).
+    /// </summary>
+    public const int PowercharmAttack = 6;
+
     /// <summary>Weak point for Weakness Exploit = hitzone >= 45. At hitzone 100 every hit is a weak-point hit.</summary>
     public const int WeakPointHitzone = 45;
 

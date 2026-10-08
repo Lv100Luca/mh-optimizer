@@ -57,9 +57,11 @@ public sealed record BuildInput
     public ResonanceMode? Resonance { get; init; }
     /// <summary>Where this build's hits land; null: the weapon's target.</summary>
     public Target? Target { get; init; }
+    /// <summary>The meal's attack this build is scored with; null: the weapon's.</summary>
+    public int? MealAttack { get; init; }
 
     [JsonIgnore]
-    public bool HasOwnConditions => Conditions.Count > 0 || Resonance is not null || Target is not null;
+    public bool HasOwnConditions => Conditions.Count > 0 || Resonance is not null || Target is not null || MealAttack is not null;
 
     /// <summary>The conditions this build is scored under: <paramref name="weapon"/>'s with the build's overrides applied (the same object when it has none).</summary>
     public Conditions ConditionsFor(Conditions weapon)
@@ -68,11 +70,12 @@ public sealed record BuildInput
         var c = ConditionToggles.With(weapon, Conditions);
         if (Resonance is { } r) c = c with { Resonance = r };
         if (Target is { } t) c = c with { Target = t };
+        if (MealAttack is { } meal) c = c with { MealAttack = meal };
         return c;
     }
 
     /// <summary>The build scored under the weapon's conditions (its overrides dropped).</summary>
-    public BuildInput WithoutOwnConditions() => HasOwnConditions ? this with { Conditions = new(), Resonance = null, Target = null } : this;
+    public BuildInput WithoutOwnConditions() => HasOwnConditions ? this with { Conditions = new(), Resonance = null, Target = null, MealAttack = null } : this;
 
     /// <summary>Condition keys that are not on/off conditions (they are ignored when scoring).</summary>
     public IReadOnlyList<string> ConditionErrors() => Conditions.Keys.Where(k => !ConditionToggles.AllKeys.Contains(k)).ToList();

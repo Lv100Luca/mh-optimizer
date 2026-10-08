@@ -379,6 +379,10 @@ public static class DamageCalculator
         if (cond.AffinitySlidingActive && skills.GroupActive(SkillNames.ButteryLeathercraft))
             Aff("Affinity Sliding", 30);
 
+        // ---------------- items and meals ----------------
+        if (cond.Powercharm) Flat("Powercharm", DamageConstants.PowercharmAttack);
+        Flat("Meal", cond.MealAttack);
+
         // ---------------- combine ----------------
         var trueRaw = weapon.TrueRaw * rawPct + rawFlat;
         var aff = Math.Clamp(affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);

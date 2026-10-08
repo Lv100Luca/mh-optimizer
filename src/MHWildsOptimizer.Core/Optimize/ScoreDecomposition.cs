@@ -38,8 +38,9 @@ public sealed class ScoreUnit
 /// <param name="RawFactor">EFR per true raw and crit factor: the attack's MV-weighted sharpness (and phial), <see cref="ResolvedAttackProfile.RawFactor"/>.</param>
 /// <param name="SharpEle">The weapon's element sharpness modifier (the Dark Arts shockwave's element).</param>
 /// <param name="ShockwaveRawShare">Shockwave damage per 100 MV = this x EFR + <paramref name="ShockwaveConstant"/>.</param>
+/// <param name="BaseRawFlat">Flat raw the conditions give every build (Powercharm, meal); the units' flat raw comes on top.</param>
 public sealed record ScoreSide(Conditions Conditions, int Health, double Weight, ResolvedAttackProfile Attack, double RawFactor, double SharpEle,
-    double BaseCritMult, double BaseCritEleMult, double ElementCap, double ShockwaveRawShare, double ShockwaveConstant)
+    double BaseCritMult, double BaseCritEleMult, double ElementCap, double ShockwaveRawShare, double ShockwaveConstant, double BaseRawFlat = 0)
 {
     /// <summary>Element per true element point per 100 MV of the segment's attack, sharpness included: <see cref="ResolvedAttackProfile.ElementFactor"/>.</summary>
     public double ElementScale => Attack.ElementFactor;
@@ -47,7 +48,7 @@ public sealed record ScoreSide(Conditions Conditions, int Health, double Weight,
 
 /// <summary>
 /// The damage formula as seen by an exact solver:
-/// raw = (B * prod rawPct + sum rawFlat) * rawFactor * critFactor(clamp(affinity), critMult),
+/// raw = (B * prod rawPct + base flat + sum rawFlat) * rawFactor * critFactor(clamp(affinity), critMult),
 /// element = min(E * prod elePct + sum eleFlat, cap) * critElementFactor * <see cref="ScoreSide.ElementScale"/>, plus procs;
 /// per health side the segments of a sequence add up weighted by their share of the motion value, and the best health side wins.
 /// The per-feature contributions are not re-implemented: they are probed from <see cref="DamageCalculator"/> with two
@@ -117,7 +118,7 @@ public sealed class ScoreDecomposition
                 sides.Add(new ScoreSide(segments[i], health, p.TotalMv / totalMv, p, p.RawFactor, r.SharpnessElementModifier,
                     r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap,
                     DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / p.RawFactor * p.Shockwaves * p.PerHundredMv,
-                    Shockwave(0, r.SharpnessElementModifier, p)));
+                    Shockwave(0, r.SharpnessElementModifier, p), r.TrueRaw - bare.TrueRaw));
             }
         }
 
@@ -171,7 +172,7 @@ public sealed class ScoreDecomposition
 
     private double SideTotal(Channels ch, ScoreSide side)
     {
-        var trueRaw = _weapon.TrueRaw * ch.RawPct + ch.RawFlat;
+        var trueRaw = _weapon.TrueRaw * ch.RawPct + ch.RawFlat + side.BaseRawFlat;
         var aff = Math.Clamp(_weapon.Affinity + ch.Affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);
         var critFactor = aff >= 0 ? 1.0 + aff / 100.0 * (ch.CritMult - 1.0) : 1.0 + -aff / 100.0 * (DamageConstants.NegativeCriticalMultiplier - 1.0);
         var efr = trueRaw * side.RawFactor * critFactor;
@@ -295,7 +296,8 @@ public sealed class ScoreDecomposition
             var shockwave = cond.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
-            var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct, r1.Affinity - ProbeAffinity, elePct,
+            // the conditions' own flat raw is the side's base, not part of any unit
+            var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct - sides[side].BaseRawFlat, r1.Affinity - ProbeAffinity, elePct,
                 _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock, shockwave);
             _cache[key] = ch;
             return ch;

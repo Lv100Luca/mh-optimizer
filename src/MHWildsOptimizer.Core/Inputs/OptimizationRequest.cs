@@ -188,6 +188,7 @@ public static class RequestLoader
         if (profile.ChargedLv3Share is < 0 or > 1) errors.Add("conditions.attack_profile.charged_lv3_share must be between 0 and 1.");
         if (weaponErrors.Count == 0) errors.AddRange(profile.Validate(weapon.Type));
         errors.AddRange(request.Conditions.Target.Validate());
+        if (request.Conditions.MealAttack is < 0 or > 50) errors.Add("conditions.meal_attack must be between 0 and 50.");
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();
