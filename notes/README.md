@@ -118,6 +118,10 @@ Still open:
 2. Resolved: Burst arrays decoded (GS Lv5 = +18 attack / +200 display element, LS Lv5 = +18 / +140), Critical Element GS 1.07/1.14/1.21 vs LS 1.05/1.10/1.15, Coalescence GS x1.10-1.30 vs LS x1.05-1.15. Still fuzzy: Elemental Absorption flat values, Flayer burst size, Charge Master grouping.
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
 4. Attacks exist for Great Sword and Switch Axe only; other weapon types still use the average-hit model. A sequence step cannot yet say "not amped" (Switch Axe sword moves always carry their amped explosion) or count Power Axe.
+5. Switch Axe: every move of the 1.040 MV sheet is in `Damage/Attacks.cs`. Still open:
+   * Hit counts of the Elemental Discharge ticks, Focus Strike swings, Mount Finisher multihits and Seikret swings are unknown; each is a separate per-hit attack to repeat in a sequence.
+   * Mode check: the gauge a hit fills gives the mode it lands in (switch gauge = axe, amped gauge = sword). By that rule Sword: Morph Double Slash (switch gauge, modelled as amped sword) and Axe: Follow-up Morph Slash (amped gauge, modelled as axe) look swapped.
+   * Mount and Seikret hits are counted without phial boost or amped explosions.
 
 ## 6. Optimizer inputs (implemented in `src/MHWildsOptimizer.Core/Inputs`)
 
