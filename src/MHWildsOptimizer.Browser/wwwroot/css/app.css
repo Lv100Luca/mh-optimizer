@@ -244,7 +244,14 @@ button.chip:hover { border-color: var(--accent); }
 .rarity.r7 { color: #b07be8; }
 .rarity.r8 { color: #ff8c42; }
 .slots { display: inline-flex; gap: 3px; }
-.slot { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; background: var(--border-2); font-size: 11px; font-weight: 700; color: var(--armor); }
+.slot { position: relative; display: inline-flex; align-items: center; justify-content: flex-end; width: 24px; height: 18px; padding-right: 4px; border-radius: 4px; background: var(--border-2); font-size: 11px; font-weight: 700; color: var(--armor); }
+/* the helmet (armor) or sword (weapon) mark in the top-left corner of a slot square */
+.slot-kind { position: absolute; left: 1px; top: 1px; height: 10px; width: auto; pointer-events: none; }
+.talisman-slots { display: flex; flex-direction: column; gap: 6px; }
+.talisman-slot-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.talisman-slot-row > .muted { width: 12px; text-align: right; }
+.kind-choice { display: inline-flex; align-items: center; gap: 5px; }
+.kind-choice img { height: 14px; width: auto; }
 .slot.weapon { color: var(--weapon); }
 .deco-empty { display: inline-flex; align-items: center; justify-content: center; border: 1px dashed var(--border-2); border-radius: 50%; color: var(--muted); font-size: 11px; }
 .sharp-dot::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; background: var(--c, #888); }

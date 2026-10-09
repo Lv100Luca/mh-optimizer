@@ -207,6 +207,8 @@
   "ui/decoration.png": "UI-Decoration_Icon.png",
   "ui/defense-up.png": "MHWA-Defense_Up_Icon.png",
   "ui/sharpness.png": "MHWA-Restore_Sharpness_Icon.png",
+  "ui/slot-armor.png": "corner mark of MHWilds-Decoration_Level_{1,2}-Armor_Icon_*.png (cut out by tools/cut_slot_icons.py)",
+  "ui/slot-weapon.png": "corner mark of MHWilds-Decoration_Level_{1,2}-Sword_Icon_*.png (cut out by tools/cut_slot_icons.py)",
   "weapons/bow-base.webp": "MHWA-Bow_Icon_Base.webp",
   "weapons/bow-r8.png": "MHWA-Bow_Icon_Rare_8.png",
   "weapons/charge-blade-base.webp": "MHWA-Charge_Blade_Icon_Base.webp",

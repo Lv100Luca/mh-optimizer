@@ -40,6 +40,9 @@ public static class GameIcons
     public const string Defense = "icons/ui/defense-up.png";
     public const string Sharpness = "icons/ui/sharpness.png";
     public const string DecorationGeneric = "icons/ui/decoration.png";
+    /// <summary>The helmet and sword marks of the game's decoration icons: an armor-kind and a weapon-kind slot.</summary>
+    public const string SlotArmor = "icons/ui/slot-armor.png";
+    public const string SlotWeapon = "icons/ui/slot-weapon.png";
 
     public static readonly IReadOnlyDictionary<SharpnessColor, string> SharpnessCss = new Dictionary<SharpnessColor, string>
     {

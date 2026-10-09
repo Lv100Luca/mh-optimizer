@@ -1,4 +1,4 @@
-@* Slot levels as small badges: numbers (with Kind) or talisman notation ("weapon2", "armor1"). *@
+@* Slot levels as small badges with the game's helmet (armor) or sword (weapon) mark: numbers (with Kind) or talisman notation ("weapon2", "armor1"). *@
 @if (Levels.Count == 0)
 {
     <span class="muted">no slots</span>
@@ -8,7 +8,7 @@ else
     <span class="slots">
         @foreach (var (level, weapon) in Levels)
         {
-            <span class="slot @(weapon ? "weapon" : "")" title="@((weapon ? "weapon" : "armor") + $" slot level {level}")">@level</span>
+            <span class="slot @(weapon ? "weapon" : "")" title="@((weapon ? "weapon" : "armor") + $" slot level {level}")"><img class="slot-kind" src="@(weapon ? GameIcons.SlotWeapon : GameIcons.SlotArmor)" alt="" />@level</span>
         }
     </span>
 }

@@ -78,9 +78,8 @@
                     @SkillField("Skill 1 (weapon-kind)", _primary, draft.Primary, p => _draft = _draft! with { Primary = p }, null)
                     @SkillField("Skill 2 (armor-kind)", _secondary, draft.Second, p => _draft = _draft! with { Second = p }, draft.Third?.Skill)
                     @SkillField("Skill 3 (armor-kind)", _secondary, draft.Third, p => _draft = _draft! with { Third = p }, draft.Second?.Skill)
-                    <Field Label="Decoration slots" Hint="Random talismans roll these layouts; w = weapon-kind slot, a = armor-kind slot.">
-                        <SelectBox Value="@(draft.Slots == "" ? null : draft.Slots)" Placeholder="(no slots)" Options="_slotOptions"
-                                   ValueChanged="s => _draft = _draft! with { Slots = s ?? string.Empty }" />
+                    <Field Label="Decoration slots" Hint="Weapon or armor kind and level per slot; choices that make a layout random talismans do not roll are greyed out.">
+                        <TalismanSlotEditor Value="@draft.Slots" Patterns="_slotPatterns" ValueChanged="s => _draft = _draft! with { Slots = s }" />
                     </Field>
                 </div>
                 <div class="btn-row">
@@ -108,7 +107,7 @@
     private IReadOnlyList<PoolSkillDto> _primary = [];
     private IReadOnlyList<PoolSkillDto> _secondary = [];
     private HashSet<string> _primaryNames = [];
-    private IReadOnlyList<SelectOption> _slotOptions = [];
+    private IReadOnlyList<string> _slotPatterns = [];
     private IReadOnlyList<SegmentOption<int>> _rarityOptions = [];
 
     protected override void OnInitialized()
@@ -118,12 +117,7 @@
         _primary = pool?.Primary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Weapon).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
         _secondary = pool?.Secondary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Armor).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
         _primaryNames = _primary.Select(p => p.Skill).ToHashSet();
-        _slotOptions = (pool?.SlotPatterns.Select(p => string.Join(',', p)) ?? FallbackSlotPatterns)
-            .Distinct()
-            .Where(p => p != "")
-            .OrderBy(p => p.Length).ThenBy(p => p, StringComparer.Ordinal)
-            .Select(p => new SelectOption(p, string.Join(" · ", p.Split(',').Select(s => s.Replace("armor", "a").Replace("weapon", "w")))))
-            .ToList();
+        _slotPatterns = (pool?.SlotPatterns.Select(p => string.Join(',', p)) ?? FallbackSlotPatterns).Distinct().ToList();
         IReadOnlyList<int> rarities = pool is { Rarities.Count: > 0 } ? pool.Rarities : [4, 5, 6, 7];
         _rarityOptions = rarities.Select(r => new SegmentOption<int>(r, $"R{r}", RarityLabel(r))).ToList();
     }

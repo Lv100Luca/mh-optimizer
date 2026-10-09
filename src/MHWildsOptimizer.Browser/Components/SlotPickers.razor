@@ -20,7 +20,7 @@ else
                     OnClear="@(name is not null ? EventCallback.Factory.Create(this, () => Set(index, null)) : default)"
                     ClearLabel="— empty slot —" Placeholder="@($"Level {slot.Level} {slot.Kind.ToString().ToLowerInvariant()} slot: search jewels or skills…")">
                 <Trigger>
-                    <span class="slot @(slot.Kind == SkillKind.Weapon ? "weapon" : "")">@slot.Level</span>
+                    <span class="slot @(slot.Kind == SkillKind.Weapon ? "weapon" : "")"><img class="slot-kind" src="@(slot.Kind == SkillKind.Weapon ? GameIcons.SlotWeapon : GameIcons.SlotArmor)" alt="" />@slot.Level</span>
                     <DecoIcon Decoration="deco" SlotLevel="slot.Level" Size="22" />
                     <span class="slotpick-name">@(deco?.Name ?? (name is not null ? $"{name} (unknown)" : "empty"))</span>
                 </Trigger>
