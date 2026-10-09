@@ -1,0 +1,46 @@
+{
+  "extra": {
+    "c01-results-pairs": {
+      "url": "{origin}/{profile}/weapon/Pairs/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500);"
+    },
+    "c02-results-cards": {
+      "url": "{origin}/{profile}/weapon/Pairs/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Cards')?.click(); await sleep(1500); document.querySelector('.build .dmg-toggle')?.click(); await sleep(800); document.querySelector('.build .details-toggle')?.click(); await sleep(1200);"
+    },
+    "c03-results-current": {
+      "url": "{origin}/{profile}/weapon/Current/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Table')?.click(); await sleep(1200); document.querySelector('tr.result-row.clickable')?.click(); await sleep(1500);"
+    },
+    "c04-compare": {
+      "url": "{origin}/{profile}/weapon/Pairs/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Table')?.click(); await sleep(1200); const all = [...document.querySelectorAll('button')].find(b => b.innerText.includes('Compare all')); if (all) { all.click(); await sleep(3000); } else { const rows = [...document.querySelectorAll('tr.result-row')].slice(0, 5); for (const r of rows) { r.querySelector('.tray-toggle')?.click(); await sleep(700); } [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Open the comparison')?.click(); await sleep(3000); } for (const b of [...document.querySelectorAll('.cmp button')].filter(b => /differ/i.test(b.innerText))) { b.click(); await sleep(800); } await sleep(1000); document.querySelectorAll('.cmp-scroll').forEach(e => e.style.maxHeight = 'none'); await sleep(500);"
+    },
+    "c05-builds-attacks": {
+      "url": "{origin}/{profile}/weapon/Pairs/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); [...document.querySelectorAll('.buildtab')].find(b => b.innerText.includes('In game'))?.click(); await sleep(1500); const row = [...document.querySelectorAll('tr.attack-row')].find(r => r.classList.contains('current')); row?.click(); await sleep(1500); document.querySelector('.build .dmg-toggle')?.click(); await sleep(1200);"
+    },
+    "c06-conditions-sequence": {
+      "url": "{origin}/{profile}/weapon/Pairs/conditions",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500);"
+    },
+    "c07-talismans-edit": {
+      "url": "{origin}/{profile}/weapon/Current/talismans",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.talisman-table button')].find(b => b.innerText.trim() === 'Edit')?.click(); await sleep(1500);"
+    },
+    "c08-inventory-h2h": {
+      "url": "{origin}/{profile}/inventory",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(1500); for (const n of ['Current', 'Pairs']) { document.querySelector(`input[aria-label=\"Compare ${n}\"]`)?.click(); await sleep(900); } await sleep(800);"
+    },
+    "c09-results-collapsed": {
+      "url": "{origin}/{profile}/weapon/Current/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); document.querySelector('.card .card-toggle')?.click(); await sleep(1200);"
+    },
+    "c10-talismans-phone": {
+      "url": "{origin}/{profile}/weapon/Current/talismans",
+      "mobile": true,
+      "width": 412,
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.talisman-table button')].find(b => b.innerText.trim() === 'Edit')?.click(); await sleep(1500);"
+    }
+  }
+}

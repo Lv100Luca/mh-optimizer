@@ -1,7 +1,21 @@
 # Build comparison: changes to make
 
 Collected from the user while trying the branch `claude/build-comparison-ux-d98b9e` on http://localhost:5240.
-Nothing here is done yet; they are made together once the list is complete.
+
+## Done (2026-10-09, on the branch, not merged or pushed)
+
+All twelve, in 39b3a63 (8, 10), c4da6da (2), ecfb80b (3), 32775d1 (5), 0a8d172 + b431b65 (4, 6, 7's limit and scrolling),
+58a0186 (1, 7, 9, 11), 4db3a89 (12); 1df4e24 gives `serve.py` a listen backlog (page loads failed now and then).
+Before / after: `mockups/build-comparison/changes-before-after.html`. Screenshot steps: `tools/ui-shots/comparison-changes-steps.json`
+(needs a profile with a weapon "Pairs" run in optimize mode on a sequence; the session made one in `bin/claude-build/shots-inputs`).
+
+- Saved sequences: `ProfileSettings.Sequences` (per weapon type, in profile.json, merged on import), `IProfileStore.SaveSequences`,
+  `AppState.Sequences.cs`. The request carries no name: a sequence shows by the saved one with the same steps (runs keep only
+  the step names, matched through `Attacks.StepList`), so renaming renames it everywhere, old runs included.
+  `Components/Common/ScoredAttack.razor` is the chip, `InfoHover.razor` the lazy (i).
+- Slot icons: cut out of the decoration icons by `tools/cut_slot_icons.py` into `src/MHWildsOptimizer.Web/client/public/icons/ui/`
+  (the tracked icon source; the browser app copies it into wwwroot on build). The wiki has no separate slot icons.
+- The Landed hits per minute input is gone; a value set earlier still counts and shows with a "Use the attack's pace" link.
 
 ## Handoff (state on 2026-10-09)
 
@@ -31,14 +45,16 @@ Nothing here is done yet; they are made together once the list is complete.
   one URL with timeouts and prints console errors. Shots import the profile into a throw-away Edge profile.
 - Bash heredocs with apostrophes break in this shell: write scripts to a file and run them.
 
-## Open questions to ask the user before starting
+## Open questions (answered by the user on 2026-10-09)
 
-- Item 2: keep the "Landed hits per minute" input on the Conditions tab (it changes proc damage)? Recommended: keep.
-- Item 4: "What it takes" and "Stats" are not in the new Compare order: drop them, or where?
-- Item 5: saved sequences per weapon type in the profile (like condition presets) or per weapon? Single moves as chips too?
-- Item 11: "Compare with" / "View" on the first pair's heading only, or a row of their own above the pairs?
-- Item 12: impossible talisman slot layouts: disable those buttons or warn? Slot order like the game (highest first)?
-- Item 1 (my note): should the pair ranking's "Best" show damage instead of score?
+- Item 2: keep the "Landed hits per minute" input on the Conditions tab? **No: remove it** (left unticked).
+- Item 4: "Stats" goes right after Damage, "What it takes" right after Equipment.
+- Item 5: saved sequences per weapon type in the profile (like condition presets); single moves show as a chip too, its
+  (i) gives kind, hits, MV and target.
+- Item 11: "Compare with" / "View" on the first pair's heading only; solver details into a tooltip.
+- Item 12: disable buttons that make a layout random talismans cannot roll; keep slots in game order (weapon slot first,
+  then armor slots highest level first).
+- Item 1: the pair ranking's "Best" shows damage, "vs #1" the percent of that.
 
 ## To do
 
