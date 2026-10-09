@@ -79,14 +79,6 @@
             }
             @if (result is not null)
             {
-                <div class="results-strip">
-                    <span class="muted">Compare with</span>
-                    <RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 300px" />
-                    <span class="muted">View</span>
-                    <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="v => _view = v" Options="ViewOptions" />
-                    <span class="muted">Sort</span>
-                    <Segmented T="ResultsSort" Small="true" Value="_sort" ValueChanged="s => _sort = s" Options="SortOptions" />
-                </div>
                 @if (baseline is { BasisApplied: true } && baselineRef is not null)
                 {
                     var ownConditions = App.BuildsOf(baselineRef.Weapon).FirstOrDefault(b => b.Name == baselineRef.Mine)?.HasOwnConditions == true;
@@ -99,7 +91,7 @@
                 {
                     <Alert Kind="info">
                         The run was made with other conditions, targets or talismans than the weapon has now: its builds are scored again under today's
-                        (the order is still the run's). <button class="linklike" @onclick="App.RunOptimizerAsync" disabled="@(!valid)">Run again</button>
+                        and sorted by that damage. <button class="linklike" @onclick="App.RunOptimizerAsync" disabled="@(!valid)">Run again</button>
                     </Alert>
                 }
                 @if (baseBuild is not null && rows.Count > 0)
@@ -112,18 +104,29 @@
 
     @if (result is not null && result.SkillPairMode == SkillPairMode.Optimize && result.Pairs.Count > 1)
     {
-        <Section Title="Skill pair ranking" Hint="Best score each rollable pair class can reach. '(any other)' means the set bonus or group skill does not matter for the score.">
+        var bestOf = result.Pairs.ToDictionary(p => p.Rank, p => rows.Where(r => r.Pair == p).Select(r => r.Damage).DefaultIfEmpty(p.BestScore).Max());
+        var hasDamage = rows.Count > 0 && rows.All(r => r.HasDamage);
+        var top = bestOf[result.Pairs[0].Rank];
+        <Section Title="Skill pair ranking" Hint="The best build each rollable pair class reaches, and how far it is behind the first. '(any other)' means the set bonus or group skill does not matter for the score.">
             <table class="table pairs">
-                <thead><tr><th>#</th><th>Set bonus</th><th>Group skill</th><th class="num">Best</th><th class="num">vs #1</th><th class="num">Builds</th><th class="num">Work</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>#</th><th>Set bonus</th><th>Group skill</th>
+                        <th class="num" title="@(hasDamage ? "Damage of the pair's best build" : "Score of the pair's best build")">Best</th>
+                        <th class="num" title="The pair's best against the first pair's best">vs #1</th>
+                        <th class="num">Builds</th><th class="num">Work</th>
+                    </tr>
+                </thead>
                 <tbody>
                     @foreach (var p in result.Pairs)
                     {
+                        var best = bestOf[p.Rank];
                         <tr @key="p.Rank" @onclick="() => ScrollToPair(p.Rank)">
                             <td>@p.Rank</td>
                             <td><SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="18" />@p.SetBonus</SkillHover></td>
                             <td><SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="18" />@p.GroupSkill</SkillHover></td>
-                            <td class="num"><b>@Fmt.N(p.BestScore)</b></td>
-                            <td class="num muted">@(p.Rank == 1 ? "—" : Fmt.N(p.BestScore - result.Pairs[0].BestScore))</td>
+                            <td class="num"><b>@Fmt.N(best, hasDamage ? 0 : 1)</b></td>
+                            <td class="num muted">@(p.Rank == 1 || top == 0 ? "—" : SignedPct((best - top) / top * 100))</td>
                             <td class="num">@p.Builds.Count</td>
                             <td class="num muted" title="@(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel)">@p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture)</td>
                         </tr>
@@ -138,13 +141,28 @@
         foreach (var p in result.Pairs)
         {
             var pairRows = Sorted(rows.Where(r => r.Pair == p));
+            var firstPair = p == result.Pairs[0];
             <div @key="p.Rank" id="@($"pair-{p.Rank}")" class="pair-block">
                 <div class="pairhead">
-                    <span class="rank">#@p.Rank</span>
+                    <span class="rank" title="@($"{p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture)} {(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel)} · {p.CandidateSummary}")">#@p.Rank</span>
                     <SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="20" /><b>@p.SetBonus</b></SkillHover>
                     <span class="muted">+</span>
                     <SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="20" /><b>@p.GroupSkill</b></SkillHover>
-                    <span class="muted">best @(pairRows.Count > 0 ? $"{Fmt.N(pairRows.Max(r => r.Damage), pairRows[0].HasDamage ? 0 : 1)} {(pairRows[0].HasDamage ? BuildDamage.Label(pairRows[0].Build) : "score")}" : Fmt.N(p.BestScore)) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
+                    <span class="pairhead-tools">
+                        @if (firstPair)
+                        {
+                            @* they apply to every pair *@
+                            <span class="muted">Compare with</span>
+                            <RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 260px" />
+                            <span class="muted">View</span>
+                            <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="v => _view = v" Options="ViewOptions" />
+                        }
+                        @if (pairRows.Count > 0)
+                        {
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => CompareAll(pairRows, baselineRef)"
+                                       title="@($"Put the {pairRows.Count} builds of this pair{(baselineRef is null ? "" : $" and {baseName} as the baseline")} into the Compare tab")">⇄ Compare all</MudButton>
+                        }
+                    </span>
                 </div>
                 @if (p.Builds.Count == 0)
                 {
@@ -175,23 +193,14 @@
 
     private enum ResultsView { Table, Cards }
 
-    private enum ResultsSort { Damage, Changes }
-
     // kept while the app runs, so coming back to Results shows the same view
     private static ResultsView _view = ResultsView.Table;
-    private static ResultsSort _sort = ResultsSort.Damage;
 
     /// <summary>Rows (or cards) opened to show how they differ from the baseline, by "pair:rank".</summary>
     private readonly HashSet<string> _open = [];
 
     private static readonly IReadOnlyList<SegmentOption<ResultsView>> ViewOptions =
         [new(ResultsView.Table, "Table", Hint: "One line per build"), new(ResultsView.Cards, "Cards", Hint: "Every build in full")];
-
-    private static readonly IReadOnlyList<SegmentOption<ResultsSort>> SortOptions =
-    [
-        new(ResultsSort.Damage, "Damage", Hint: "The run's order"),
-        new(ResultsSort.Changes, "Fewest changes", Hint: "The builds you get to with the fewest new pieces first (then the fewest decoration changes)"),
-    ];
 
     /// <summary>A build of the run as shown: rescored when the run is stale, and how it differs from the baseline.</summary>
     private sealed record Row(PairResultDto Pair, BuildDto Build, bool Rescored, double RunScore, BuildRef Ref, BuildDiffDto? Diff, double Damage, bool HasDamage, double? Gain, double? GainPct)
@@ -222,9 +231,12 @@
         return rows;
     }
 
-    private static List<Row> Sorted(IEnumerable<Row> rows) => _sort == ResultsSort.Changes
-        ? rows.OrderBy(r => r.Diff?.Swapped.Count ?? 0).ThenBy(r => r.Diff?.Regemmed.Count ?? 0).ThenByDescending(r => r.Damage).ThenBy(r => r.Build.Rank).ToList()
-        : rows.OrderBy(r => r.Build.Rank).ToList();
+    /// <summary>By the damage shown, highest first: a stale run's builds are scored again, which can change the run's order.</summary>
+    private static List<Row> Sorted(IEnumerable<Row> rows) => rows.OrderByDescending(r => r.Damage).ThenBy(r => r.Build.Rank).ToList();
+
+    /// <summary>The pair's builds into the Compare tab, with the build they are compared with as the baseline.</summary>
+    private void CompareAll(List<Row> pairRows, BuildRef? baselineRef) =>
+        App.OpenCompare([.. baselineRef is null ? [] : new[] { baselineRef }, .. pairRows.Select(r => r.Ref)]);
 
     private string Label(ResultDto result, Row row) => result.Pairs.Count > 1 ? $"Pair #{row.Pair.Rank} build {row.Build.Rank}" : $"Optimizer build {row.Build.Rank}";
 
@@ -232,6 +244,8 @@
     {
         if (!_open.Remove(key)) _open.Add(key);
     }
+
+    private static string SignedPct(double p) => Math.Abs(p) < 0.05 ? "±0.0%" : $"{(p > 0 ? "+" : "−")}{Fmt.N(Math.Abs(p), 1)}%";
 
     private static string Pct(double? pct) => pct is { } p ? $"({(p >= 0 ? "+" : "−")}{Fmt.N(Math.Abs(p), 1)}%)" : "";
 
