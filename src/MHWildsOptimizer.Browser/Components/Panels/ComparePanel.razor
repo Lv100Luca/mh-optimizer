@@ -26,7 +26,7 @@
             {
                 <div class="empty">
                     <p>Nothing to compare yet. Add builds with <b>⇄</b> on Results, My builds or the Inventory, or pick one here:</p>
-                    <RefSelect Value="null" ValueChanged="Add" Placeholder="+ Add a build" Style="min-width: 320px" />
+                    <RefSelect @key="_added" Value="null" ValueChanged="Add" Placeholder="+ Add a build" Style="min-width: 320px" />
                 </div>
             }
             else
@@ -35,7 +35,7 @@
                 <div class="btn-row">
                     @if (refs.Count < AppState.TrayLimit)
                     {
-                        <RefSelect Value="null" ValueChanged="Add" Exclude="refs" Placeholder="+ Add a build" Style="min-width: 260px" />
+                        <RefSelect @key="_added" Value="null" ValueChanged="Add" Exclude="refs" Placeholder="+ Add a build" Style="min-width: 260px" />
                     }
                     <span class="muted small">@refs.Count of @AppState.TrayLimit builds · ‹ › move a column, ☆ makes it the baseline</span>
                 </div>
@@ -84,8 +84,12 @@
         return refs.Select(r => r == baseRef ? new Col(r, baseScored, true) : new Col(r, App.ScoreRef(r, basis, baseScored), false)).ToList();
     }
 
+    // a new picker after every pick, so it shows its placeholder again
+    private int _added;
+
     private void Add(BuildRef? r)
     {
+        _added++;
         if (r is not null && !App.InTray(r)) App.ToggleTray(r);
     }
 

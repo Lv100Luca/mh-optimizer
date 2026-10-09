@@ -28,8 +28,9 @@
             {
                 if (OwnOnly && r.IsRun || Exclude?.Contains(r) == true) continue;
                 var input = r.IsRun ? null : App.BuildsOf(weapon).FirstOrDefault(b => b.Name == r.Mine);
-                // own builds are scored now; run builds show what the run scored (cheap, and the Compare tab rescores them)
-                var build = r.IsRun ? App.RunBuild(r) : App.ScoreRef(r)?.Build;
+                // scored now; a run's builds as the run scored them while the run is current (cheap)
+                var saved = r.IsRun ? App.RunBuild(r) : null;
+                var build = saved is { StatsRequested.DamagePerExecution: > 0 } && !App.IsStale(weapon) ? saved : App.ScoreRef(r)?.Build;
                 var mark = input?.Picked == true ? "★ " : input?.DraftOf is not null ? "✎ " : "";
                 var label = $"{mark}{App.RefName(r)}{(build is not null ? $" · {BuildDamage.Text(build)}" : "")}";
                 options.Add(new SelectOption(r.Key, label, AppState.WeaponTitle(weapon) + (r.IsRun ? " · last run" : "")));
