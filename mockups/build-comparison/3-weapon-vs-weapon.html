@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapon vs weapon · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .wrow { display: grid; grid-template-columns: 26px 230px minmax(0, 1fr) 170px 150px; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--border); }
+  .wrow.sel { background: rgba(227, 182, 78, 0.05); }
+  .wrow.head { padding: 4px 6px; border-bottom-color: var(--border-2); color: var(--muted); font-size: 11.5px; }
+  .wname b { font-size: 14px; }
+  .wname .pair { font-size: 12px; color: var(--muted); }
+  .nums { display: grid; grid-template-columns: auto auto; gap: 1px 10px; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .nums dt { color: var(--muted); }
+  .nums dd { margin: 0; text-align: right; font-weight: 700; }
+  .track { position: relative; height: 34px; margin-top: 6px; }
+  .track .axis { position: absolute; left: 0; right: 0; top: 16px; height: 2px; background: var(--border); }
+  .track .grid { position: absolute; top: 4px; bottom: 4px; width: 1px; background: rgba(255, 255, 255, 0.04); }
+  .track .span { position: absolute; top: 15px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(127, 209, 196, 0.35), rgba(95, 191, 122, 0.85)); }
+  .track .mk { position: absolute; top: 8px; transform: translateX(-50%); width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .track .mk.mine { border-radius: 50%; border: 2px solid var(--armor); background: var(--panel); width: 15px; height: 15px; top: 10px; }
+  .track .mk.pick { color: var(--accent); font-size: 17px; top: -9px; text-shadow: 0 0 4px #000; z-index: 2; }
+  .track .mk.ceil { width: 14px; height: 14px; top: 10px; transform: translateX(-50%) rotate(45deg); background: var(--ok); border-radius: 2px; }
+  .track .mk.ceil.stale { background: var(--panel); border: 2px dashed var(--warn); }
+  .track .tag { position: absolute; top: -6px; transform: translateX(-50%); font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+  .ticks { position: relative; height: 16px; font-size: 10.5px; color: var(--muted); }
+  .ticks span { position: absolute; transform: translateX(-50%); }
+  .h2h { grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr); }
+  .h2h .same { color: var(--muted); }
+  .bars { display: grid; grid-template-columns: 200px minmax(0, 1fr) 110px; gap: 4px 12px; align-items: center; font-size: 12.5px; }
+  .bars .b { height: 9px; border-radius: 3px; }
+  .bars .b.a { background: rgba(95, 191, 122, 0.75); }
+  .bars .b.bb { background: rgba(79, 163, 230, 0.75); }
+  .bars .pairb { display: flex; flex-direction: column; gap: 3px; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+</style>
+</head>
+<body data-active="inventory" data-weapon="Current" data-compare="2">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 3 · Weapon vs weapon in the Inventory</h3>
+      <ol>
+        <li><span class="n">1</span><span>One <b>damage axis per weapon type</b>. Each weapon shows your builds (●), its ★ pick and the best build of its last run (◆, dashed when stale). The gap between ● and ◆ is what a rebuild would gain.</span></li>
+        <li><span class="n">2</span><span>Tick two weapons for a <b>head to head</b> (three or more open the Compare tab). Today the comparison mixes a pick scored now with a stale run, so +1.4 is only staleness.</span></li>
+        <li><span class="n">3</span><span><b>Compare by</b>: the ceiling (best of the run), the same armor (each weapon's In game), the picks, or a build you choose per side.</span></li>
+        <li><span class="n">4</span><span>A <b>verdict</b> in one sentence that says what the numbers mean.</span></li>
+        <li><span class="n">5</span><span>The <b>weapons themselves</b> side by side: rolled pair, attack, affinity, element, sharpness, slots. Rows that are the same are dimmed.</span></li>
+        <li><span class="n">6</span><span><b>Fairness check</b>: each weapon keeps its own conditions. Here they really differ: Coalescence is on for Current only. One click scores both under the same.</span></li>
+        <li><span class="n">7</span><span>Both runs are stale: rerun both before deciding.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>Weapons of Luca</h2>
+          <p class="hint">Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">▶ Run stale (2)</button>
+          <span class="fakeselect" style="min-width:150px">Great Sword</span>
+          <button class="btn sm primary">+ New weapon</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="row">
+          <h3 class="with-icon" style="font-size:15px"><img class="icon24" src="icons/weapons/great-sword-r8.png" alt="">Great Sword <span class="muted small" style="font-weight:400">· 4 weapons · damage per True Charged Slash Lv3, scored now</span></h3>
+          <span class="n">1</span>
+          <span class="legend right"><span><span class="dot"></span>your builds</span><span><span class="pickstar">★</span> the weapon's pick</span><span><span class="dia"></span>best of the last run</span><span><span class="dia stale"></span>… from a stale run</span></span>
+        </div>
+        <div id="rows"></div>
+      </div>
+    </section>
+
+    <section class="card newpart" id="h2h-card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>Head to head <span class="n">2</span></h2>
+          <p class="hint">Current vs Current new reroll. Differences are left minus right.</p>
+        </div>
+        <div class="card-actions">
+          <span class="muted small">Compare by</span>
+          <span class="segmented small" id="by"><button class="active" data-v="ceil">Best of the run</button><button data-v="ingame">Same armor (In game)</button><button data-v="pick">Picks</button><button data-v="choose">Choose…</button></span>
+          <span class="n">3</span>
+          <button class="btn sm">Open in Compare</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="verdict" id="verdict"></div>
+        <div class="grid2">
+          <div class="stack">
+            <div class="alert warn"><span class="n">6</span><span><b>The conditions differ.</b> Current has <b>Coalescence active</b> on, Current new reroll has it off; none of the compared builds has Coalescence, so the numbers are not affected. <button class="linklike">Score both under Current's conditions</button></span></div>
+            <div class="alert info"><span class="n">7</span><span>Both runs are from 2 days ago and no longer match their weapons; their builds are rescored now. <button class="linklike">Run both again</button> <span class="muted">(about 30 s)</span></span></div>
+            <div class="h2h" id="facts"></div>
+          </div>
+          <div class="stack">
+            <div class="row small"><b>Damage per attack</b><span class="muted" id="bars-what"></span><span class="right"><span class="sw" style="background:rgba(95,191,122,.75)"></span>Current <span class="sw" style="background:rgba(79,163,230,.75); margin-left:8px"></span>Current new reroll</span></div>
+            <div class="bars" id="bars"></div>
+            <div class="small muted">The per-attack numbers move together because both weapons have the same base stats: the difference is in the rolled pair, which only matters through the armor it enables.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="tray newpart"><span class="tray-title">⇄ Compare</span><span class="tray-item"><img src="icons/weapons/great-sword-r8.png" alt=""><span class="muted">Current ·</span> In game <b>1,289</b><span class="x">✕</span></span><span class="tray-item"><img src="icons/weapons/great-sword-r8.png" alt=""><span class="muted">Current new reroll ·</span> In game <b>1,164</b><span class="x">✕</span></span><span class="right btn-row"><button class="btn sm text">Clear</button><button class="btn sm primary">Open the comparison</button></span></div>
+</main>
+<script src="mock.js"></script>
+<script src="data.js"></script>
+<script>
+  const MIN = 1100, MAX = 1400;
+  const x = (v) => ((v - MIN) / (MAX - MIN) * 100).toFixed(2) + '%';
+  const WEAPONS = [
+    { name: 'Current', pair: ['Soul of the Dark Knight', "Lord's Favor"], sel: true, open: true, mine: [['In game', 1289]], pick: ['Optimizer build 1 (picked)', 1353], ceil: 1353, stale: true, run: '2 days ago' },
+    { name: 'Current new reroll', pair: ["Leviathan's Fury", "Lord's Soul"], sel: true, mine: [['In game', 1164]], pick: null, ceil: 1353, stale: true, run: '2 days ago' },
+    { name: 'the best', pair: ["Leviathan's Fury", "Lord's Soul"], mine: [['In game', 1164]], pick: null, ceil: null, run: null },
+    { name: 'Test', pair: ['Soul of the Dark Knight', "Lord's Favor"], mine: [], pick: null, ceil: null, run: null },
+  ];
+  function rows() {
+    let h = `<div class="wrow head"><span>⇄</span><span>Weapon</span><div class="ticks">${[1100, 1150, 1200, 1250, 1300, 1350].map((t) => `<span style="left:${x(t)}">${fmt(t)}</span>`).join('')}</div><span>Numbers</span><span></span></div>`;
+    for (const w of WEAPONS) {
+      const all = [...w.mine.map((m) => m[1]), ...(w.pick ? [w.pick[1]] : []), ...(w.ceil ? [w.ceil] : [])];
+      const lo = Math.min(...all), hi = Math.max(...all);
+      const best = Math.max(...w.mine.map((m) => m[1]), w.pick?.[1] ?? 0);
+      h += `<div class="wrow ${w.sel ? 'sel' : ''}">
+        <input type="checkbox" ${w.sel ? 'checked' : ''} ${all.length ? '' : 'disabled'} aria-label="Compare ${w.name}">
+        <div class="wname"><button class="linklike" style="font-weight:700; text-decoration:none; color:var(--text)">${w.name}</button> <span class="elem-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dragon)"></span>
+          <div class="pair">${w.pair[0]} / ${w.pair[1]}</div>
+          <div class="tiny">${w.run ? `<span class="muted">run ${w.run}</span> ${w.stale ? '<span class="badge stale">stale</span>' : ''}` : '<span class="muted">never run</span>'}</div></div>
+        <div class="track">${[1150, 1200, 1250, 1300, 1350].map((t) => `<span class="grid" style="left:${x(t)}"></span>`).join('')}<span class="axis"></span>
+          ${all.length > 1 ? `<span class="span" style="left:${x(lo)}; width:calc(${x(hi)} - ${x(lo)})"></span>` : ''}
+          ${w.mine.map(([n, v]) => `<span class="mk mine" style="left:${x(v)}" title="${n}: ${fmt(v)}"></span><span class="tag" style="left:${x(v)}">${n}</span>`).join('')}
+          ${w.pick ? `<span class="mk pick" style="left:${x(w.pick[1])}" title="${w.pick[0]}: ${fmt(w.pick[1])}">★</span><span class="tag" style="left:calc(${x(w.pick[1])} + 34px); top:-7px">pick</span>` : ''}
+          ${w.ceil ? `<span class="mk ceil ${w.stale ? 'stale' : ''}" style="left:${x(w.ceil)}" title="Best of the last run: ${fmt(w.ceil)}"></span>` : ''}
+          ${!all.length ? '<span class="tag" style="left:50%; top:9px">no builds yet</span>' : ''}</div>
+        <dl class="nums">
+          ${w.mine.length ? `<dt>best of yours</dt><dd>${fmt(best)}</dd>` : ''}
+          ${w.ceil ? `<dt>best of the run</dt><dd class="ok">${fmt(w.ceil)}</dd><dt>headroom</dt><dd>${w.ceil - best > 0 ? `<span class="delta up">+${w.ceil - best}</span>` : '<span class="delta same">±0</span>'}</dd>` : '<dt class="tiny">run it to see the ceiling</dt><dd></dd>'}
+        </dl>
+        <div class="btn-row nowrap"><button class="btn sm">Builds</button>${w.run ? '<button class="btn sm text">Results</button>' : ''}<button class="btn sm text" title="Run the optimizer for this weapon">▶</button></div>
+      </div>`;
+    }
+    document.getElementById('rows').innerHTML = h;
+  }
+
+  const MODES = {
+    ceil: { a: 1353, b: 1353, al: 'Run build 1', bl: 'Run build 1', fa: 1, fb: 1,
+      verdict: `<span class="big" style="color:var(--muted)">±0</span><div><p><b>Same ceiling: both weapons reach 1,353</b> on True Charged Slash Lv3.</p><p class="small muted">Leviathan's Fury I is active on the reroll's best build but adds nothing under the current conditions. The reroll is not an upgrade; it only pays off with a different armor set.</p></div>` },
+    ingame: { a: 1289, b: 1164, al: 'In game', bl: 'In game', fa: 0.9527, fb: 0.8603,
+      verdict: `<span class="big ok">+125</span><div><p><b>With your In game armor, Current is 10.7% ahead</b> (1,289 vs 1,164).</p><p class="small muted">The armor counts on Soul of the Dark Knight from Current's roll: on the reroll it loses Dark Arts. Switching means a rebuild, and the rebuild only gets back to the same 1,353.</p></div>` },
+    pick: { a: 1353, b: null, al: '★ Optimizer build 1 (picked)', bl: 'no pick', fa: 1, fb: 0,
+      verdict: `<span class="big" style="color:var(--muted)">?</span><div><p><b>Current new reroll has no pick.</b> Today the Inventory then falls back to the stale run, and the +1.4 it shows is only the run being out of date.</p><p class="small muted"><button class="linklike">Pick a build for Current new reroll</button> or compare by the run.</p></div>` },
+    choose: { a: 1289, b: 1353, al: 'In game ▾', bl: 'Run build 1 ▾', fa: 0.9527, fb: 1,
+      verdict: `<span class="big err">−64</span><div><p><b>Your In game on Current vs the reroll's best:</b> rebuilding on the reroll gains 64 (+5.0%), but the same rebuild on Current gains the same.</p><p class="small muted">Each side has its own build picker here (any of its My builds or run builds).</p></div>` },
+  };
+  function h2h(mode) {
+    const m = MODES[mode];
+    document.getElementById('verdict').innerHTML = `<span class="n">4</span>${m.verdict}`;
+    const facts = [
+      ['hd', 'Current', '', 'Current new reroll'],
+      ['diff', 'Soul of the Dark Knight', 'Set bonus roll', "Leviathan's Fury"],
+      ['diff', "Lord's Favor", 'Group skill roll', "Lord's Soul"],
+      ['same', '233', 'Attack', '233'],
+      ['same', '8%', 'Affinity', '8%'],
+      ['same', '480 Dragon', 'Element', '480 Dragon'],
+      ['same', 'White', 'Sharpness', 'White'],
+      ['same', '3 · 3 · 3', 'Slots', '3 · 3 · 3'],
+      ['diff', '11 on', 'Conditions', '10 on <span class="tiny warn">no Coalescence</span>'],
+      ['res', `${m.al}`, 'Compared build', `${m.bl}`],
+      ['win', m.a ? fmt(m.a) : '—', 'Damage per attack', m.b ? fmt(m.b) : '—'],
+    ];
+    document.getElementById('facts').innerHTML = facts.map(([k, a, label, b]) => {
+      if (k === 'hd') return `<div class="hd l">${a}</div><div class="hd mid"><span class="n">5</span></div><div class="hd">${b}</div>`;
+      const cls = k === 'same' ? 'same' : k === 'diff' ? 'diffcell' : '';
+      const wa = k === 'win' && m.a && m.b && m.a > m.b ? 'win' : '', wb = k === 'win' && m.a && m.b && m.b > m.a ? 'win' : '';
+      return `<div class="l ${cls} ${wa}">${a}</div><div class="mid">${label}</div><div class="${cls} ${wb}">${b}</div>`;
+    }).join('');
+    const atk = ATTACKS.slice(0, 6);
+    const max = Math.max(...atk.map((a) => a[4]));
+    document.getElementById('bars-what').textContent = `· ${m.al.replace(' ▾', '')} vs ${m.bl.replace(' ▾', '')}`;
+    document.getElementById('bars').innerHTML = atk.map(([, n, , , d]) => {
+      const a = Math.round(d * m.fa), b = Math.round(d * m.fb);
+      return `<span>${n}</span><div class="pairb"><span class="b a" style="width:${(a / max * 100).toFixed(1)}%"></span><span class="b bb" style="width:${(b / max * 100).toFixed(1)}%"></span></div><span class="num">${fmt(a)} / ${b ? fmt(b) : '—'} ${b ? `<span class="small">${delta(a - b)}</span>` : ''}</span>`;
+    }).join('');
+  }
+  rows();
+  h2h('ceil');
+  document.getElementById('by').addEventListener('seg', (e) => h2h(e.detail));
+</script>
+</body>
+</html>

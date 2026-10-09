@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare tab · mockup</title>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body data-active="compare" data-weapon="Current" data-compare="4">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 1 · One Compare tab for the whole profile</h3>
+      <ol>
+        <li><span class="n">1</span><span>A <b>Compare</b> tab in the Profile group. It takes builds from <b>any weapon</b> of the profile: My builds, the ★ pick, builds of a last run.</span></li>
+        <li><span class="n">2</span><span>One column is the <b>baseline</b> (★). Every difference is measured against it. Click ☆ on another column to make that one the baseline (works in this mockup).</span></li>
+        <li><span class="n">3</span><span>All columns are scored on <b>one basis</b>: each build's own conditions, the baseline's conditions, or every condition on. That keeps weapon A vs weapon B fair.</span></li>
+        <li><span class="n">4</span><span><b>Damage</b> of the scored attack leads, with per-minute damage and score under it. The best value in each row is green.</span></li>
+        <li><span class="n">5</span><span><b>What it takes</b>: the pieces to swap or re-gem and the skills you gain or lose, spelled out, so you know what to craft.</span></li>
+        <li><span class="n">6</span><span>Damage per attack for every column, so a build that is only better on one move stands out.</span></li>
+        <li><span class="n">7</span><span>Skills and equipment as a grid. Cells that differ from the baseline are marked; skills that are the same everywhere are folded away.</span></li>
+        <li><span class="n">8</span><span>A <b>stale</b> run is rescored now and flagged, with its run score, so +1.4 from an old run is never mistaken for a real gain.</span></li>
+        <li><span class="n">9</span><span>The <b>compare tray</b> stays at the bottom on every tab: add builds from Results, My builds or the Inventory, then open them here.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>Compare <span class="n">1</span></h2>
+          <p class="hint">Builds from any weapon of Luca, scored on the same basis. Differences are against the baseline (★); green means better than the baseline.</p>
+        </div>
+        <div class="card-actions">
+          <span class="muted small">Score every column under</span>
+          <span class="segmented small newpart" id="mode"><button class="active" data-v="own">Its own conditions</button><button data-v="base">The baseline's</button><button data-v="all">Every condition on</button></span>
+          <span class="n">3</span>
+          <button class="btn sm text">Clear</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="row small">
+          <span class="badge ok">✓ same conditions</span>
+          <span class="muted">All four columns use the same conditions and target (Custom, raw hitzone 70), and all are scored on True Charged Slash Lv3, so the numbers compare directly.</span>
+        </div>
+        <div class="alert warn"><span class="n">8</span><span><b>Current new reroll · Run build 1</b> comes from a run 2 days ago that no longer matches the weapon. It is rescored under today's conditions: 681.6 in the run, 683.0 now. <button class="linklike">Run Current new reroll again</button></span></div>
+        <div class="cmp-wrap"><table class="cmp" id="cmp"></table></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tray newpart" id="tray"></div>
+</main>
+<script src="mock.js"></script>
+<script src="data.js"></script>
+<script>
+  let baseId = 'ingame';
+  let mode = 'own';
+  const cols = BUILDS;
+
+  function colHead(b) {
+    const isBase = b.id === baseId;
+    const src = b.source === 'mine'
+      ? `<span class="badge mine">My build</span>${b.picked ? ' <span class="badge base">★ pick</span>' : ''}`
+      : `<span class="badge run">Last run · ${b.ago}</span>${b.stale ? ' <span class="badge stale">stale</span>' : ''}`;
+    return `<th class="${isBase ? 'basecol' : ''}"><div class="colhead">
+      <div class="top">
+        ${isBase ? `<span class="badge base">★ baseline</span>${b.id === 'ingame' ? ' <span class="n">2</span>' : ''}` : `<button class="linklike small" data-base="${b.id}" title="Measure every difference against this build">☆ make baseline</button>`}
+        <span class="tools"><button title="Move left">‹</button><button title="Move right">›</button><button title="Remove from the comparison">✕</button></span>
+      </div>
+      <div class="name">${b.name}</div>
+      <div class="weapon"><img src="icons/weapons/great-sword-r8.png" alt=""><span><b style="color:var(--text)">${b.weapon}</b> · ${b.pair[0]} / ${b.pair[1]}</span></div>
+      <div>${src}</div>
+      <button class="linklike small" style="align-self:flex-start">Open in ${b.source === 'mine' ? 'My builds' : 'Results'} →</button>
+    </div></th>`;
+  }
+
+  function render() {
+    const base = cols.find((b) => b.id === baseId);
+    const dmgOf = (b) => mode === 'all' ? b.everyOn : b.dmg;
+    const metric = (label, get, d = 0, suffix = '', headline = false, sub = '') => {
+      const vals = cols.map(get);
+      const best = Math.max(...vals);
+      return `<tr class="${headline ? 'headline' : ''}"><td class="rowh">${label}${sub ? `<div class="tiny muted">${sub}</div>` : ''}</td>${cols.map((b, i) => {
+        const v = vals[i], isBase = b.id === baseId;
+        return `<td class="val ${isBase ? 'basecol' : ''} ${v === best && vals.some((x) => x !== best) ? 'best' : ''}"><span class="v">${fmt(v, d)}${suffix}</span>${isBase ? '<span class="d muted">baseline</span>' : `<span class="d">${delta(v - get(base), d, suffix)} ${suffix ? '' : pct(v, get(base))}</span>`}</td>`;
+      }).join('')}<td></td></tr>`;
+    };
+
+    let h = `<thead><tr><th class="rowh"></th>${cols.map(colHead).join('')}<th><div class="addcol"><button class="btn sm">+ Add a build</button><span class="tiny">From any weapon: My builds, picks, last runs</span></div></th></tr></thead><tbody>`;
+
+    h += `<tr class="sec"><td class="rowh">Damage <span class="n">4</span></td><td colspan="${cols.length + 1}"></td></tr>`;
+    h += metric(`Damage per attack`, dmgOf, 0, '', true, mode === 'all' ? 'True Charged Slash Lv3, every condition on' : 'True Charged Slash Lv3');
+    h += metric('Per minute', (b) => mode === 'all' ? Math.round(b.perMin * b.everyOn / b.dmg) : b.perMin);
+    h += metric('Score', (b) => mode === 'all' ? b.score * b.everyOn / b.dmg : b.score, 1, '', false, 'per 100 MV');
+
+    h += `<tr class="sec"><td class="rowh">What it takes <span class="n">5</span></td><td colspan="${cols.length + 1}"></td></tr><tr><td class="rowh">From the baseline</td>${cols.map((b) => {
+      if (b.id === baseId) return '<td class="basecol muted small">—</td>';
+      const c = changes(base, b);
+      const weaponSwap = c.swap.includes('weapon');
+      const pieces = c.swap.filter((p) => p !== 'weapon');
+      return `<td><ul class="difflist">
+        ${weaponSwap ? `<li><span class="k">Weapon</span><span class="warn">other weapon: ${b.weapon}</span></li>` : ''}
+        <li><span class="k">Swap</span><span>${pieces.length ? `<b>${pieces.length}</b> ${pieces.map((p) => PIECE_LABEL[p].toLowerCase()).join(', ')}` : '<span class="muted">no piece</span>'}</span></li>
+        ${c.redeco.length ? `<li><span class="k">Re-gem</span><span>${c.redeco.map((p) => PIECE_LABEL[p].toLowerCase()).join(', ')}</span></li>` : ''}
+        <li><span class="k">Gains</span><span class="chip-row">${c.gain.slice(0, 4).map(([s, d]) => `<span class="chip tiny gain"><img src="${skillIcon(s)}" alt="">${s} <b>+${d}</b></span>`).join('')}${c.gain.length > 4 ? `<span class="muted tiny">+${c.gain.length - 4} more</span>` : ''}</span></li>
+        <li><span class="k">Loses</span><span class="chip-row">${c.loss.slice(0, 4).map(([s, d]) => `<span class="chip tiny loss"><img src="${skillIcon(s)}" alt="">${s} <b>${d}</b></span>`).join('')}${c.loss.length > 4 ? `<span class="muted tiny">${c.loss.length - 4} more</span>` : ''}</span></li>
+      </ul></td>`;
+    }).join('')}<td></td></tr>`;
+
+    h += `<tr class="sec"><td class="rowh">Stats</td><td colspan="${cols.length + 1}"></td></tr>`;
+    h += metric('Attack (true)', (b) => b.atk);
+    h += metric('Affinity', (b) => b.aff, 0, '%');
+    h += metric('Crit multiplier', (b) => b.crit, 2);
+    h += metric('Dragon (true)', (b) => b.ele);
+    h += metric('Procs', (b) => b.procs, 1, '', false, 'per 100 MV');
+
+    h += `<tr class="sec"><td class="rowh">Damage per attack <span class="n">6</span></td><td colspan="${cols.length + 1}"></td></tr>`;
+    for (const [group, name, hits, mv, dmg, perMin, scored] of ATTACKS) {
+      const vals = cols.map((b) => Math.round(dmg * b.factor * (mode === 'all' ? b.everyOn / b.dmg : 1)));
+      const bv = vals[cols.indexOf(base)];
+      const max = Math.max(...vals);
+      h += `<tr><td class="rowh">${name}${scored ? ' <span class="badge base">scored on</span>' : ''}<div class="tiny muted">${group.slice(0, -1).toLowerCase()} · ${hits} hit${hits > 1 ? 's' : ''} · MV ${mv}</div></td>${cols.map((b, i) => `<td class="val ${b.id === baseId ? 'basecol' : ''}"><b>${fmt(vals[i])}</b> ${b.id === baseId ? '' : `<span class="small">${delta(vals[i] - bv)}</span>`}<span class="bar"><span style="width:${(vals[i] / max * 100).toFixed(1)}%"></span></span></td>`).join('')}<td></td></tr>`;
+    }
+    h += `<tr><td class="rowh"></td><td colspan="${cols.length + 1}"><button class="linklike small">Show all 13 attacks</button></td></tr>`;
+
+    // skills: only the ones that differ between any two columns, offense first
+    const names = [...new Set(cols.flatMap((b) => Object.keys(b.skills)))];
+    const differ = names.filter((s) => new Set(cols.map((b) => b.skills[s] ?? 0)).size > 1);
+    const same = names.filter((s) => !differ.includes(s));
+    const rank = (s) => { const i = DAMAGE_SKILLS.indexOf(s); return i < 0 ? 99 : i; };
+    differ.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+    h += `<tr class="sec"><td class="rowh">Skills that differ <span class="n">7</span></td><td colspan="${cols.length + 1}"></td></tr>`;
+    for (const s of differ) {
+      const bl = base.skills[s] ?? 0;
+      h += `<tr><td class="rowh">${chip(s, null, 'tiny')}</td>${cols.map((b) => {
+        const l = b.skills[s] ?? 0, isBase = b.id === baseId;
+        return `<td class="val ${isBase ? 'basecol' : ''} ${!isBase && l !== bl ? 'changed' : ''}">${l ? `<b>${l}</b>` : '<span class="muted">–</span>'} ${!isBase && l !== bl ? `<span class="small">${delta(l - bl)}</span>` : ''}</td>`;
+      }).join('')}<td></td></tr>`;
+    }
+    h += `<tr><td class="rowh">Same in every column</td><td colspan="${cols.length + 1}"><span class="chip-row">${same.map((s) => chip(s, base.skills[s], 'tiny')).join('')}</span></td></tr>`;
+    h += `<tr><td class="rowh">Set bonuses, group</td>${cols.map((b) => `<td class="${b.id === baseId ? 'basecol' : ''} ${b.id !== baseId && b.sets.join() !== base.sets.join() ? 'changed' : ''}"><span class="chip-row">${b.sets.map(setChip).join('')}</span></td>`).join('')}<td></td></tr>`;
+
+    h += `<tr class="sec"><td class="rowh">Equipment</td><td colspan="${cols.length + 1}"></td></tr>`;
+    for (const p of PIECES) {
+      const [bn, bd] = base.equip[p];
+      h += `<tr><td class="rowh"><span class="with-icon"><img class="icon24" src="${PIECE_ICON[p]}" alt="">${PIECE_LABEL[p]}</span></td>${cols.map((b) => {
+        const [n, d, t] = b.equip[p], isBase = b.id === baseId;
+        const swapped = !isBase && n !== bn, regem = !isBase && !swapped && d.join() !== bd.join();
+        return `<td class="${isBase ? 'basecol' : ''} ${swapped ? 'changed' : ''}" ${regem ? 'style="box-shadow: inset 3px 0 0 rgba(227,182,78,.4)"' : ''}><div class="piece"><span class="pn ${!isBase && !swapped ? 'muted' : ''}">${n}${t ? ' <span class="badge">T</span>' : ''}</span>
+          <span class="decos">${d.map(decoImg).join('') || '<span class="tiny muted">no decorations</span>'}</span>
+          ${swapped ? '<span class="tiny warn">other piece</span>' : regem ? '<span class="tiny muted">same piece, other decorations</span>' : ''}</div></td>`;
+      }).join('')}<td></td></tr>`;
+    }
+    h += '</tbody>';
+    document.getElementById('cmp').innerHTML = h;
+
+    document.getElementById('tray').innerHTML = `<span class="tray-title"><span class="n">9</span>⇄ Compare</span>
+      ${cols.map((b) => `<span class="tray-item ${b.id === baseId ? 'base' : ''}">${b.id === baseId ? '<span class="pickstar">★</span>' : ''}<img src="icons/weapons/great-sword-r8.png" alt=""><span class="muted">${b.weapon} ·</span> ${b.name} <b>${fmt(dmgOf(b))}</b><span class="x">✕</span></span>`).join('')}
+      <span class="muted small">up to 5 builds</span>
+      <span class="right btn-row"><button class="btn sm text">Clear</button><button class="btn sm primary">Open the comparison</button></span>`;
+  }
+
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-base]');
+    if (b) { baseId = b.dataset.base; render(); }
+  });
+  document.getElementById('mode').addEventListener('seg', (e) => { mode = e.detail; render(); });
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results vs your build · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .rtable td { vertical-align: middle; }
+  .rtable tr.baseline td { background: rgba(227, 182, 78, 0.05); }
+  .rtable tr.open td { border-bottom-color: transparent; background: var(--panel-2); }
+  .rtable tr.res { cursor: pointer; }
+  .rtable tr.res:hover td { background: var(--panel-2); }
+  .rtable .dmg { font-size: 16px; font-weight: 800; color: var(--ok); }
+  .slots7 { display: inline-flex; gap: 3px; }
+  .slots7 span { width: 26px; height: 26px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); opacity: 0.35; }
+  .slots7 span img { width: 20px; height: 20px; }
+  .slots7 span.swap { opacity: 1; border-color: var(--accent); background: rgba(227, 182, 78, 0.16); }
+  .slots7 span.regem { opacity: 0.9; border: 1px dashed rgba(227, 182, 78, 0.8); }
+  .detail-row > td { background: var(--bg-2); padding: 0 !important; }
+  .detail { padding: 14px 18px 16px 18px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; border-left: 3px solid var(--accent); }
+  .swaps { width: 100%; border-collapse: collapse; }
+  .swaps td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; }
+  .swaps td.k { width: 92px; color: var(--muted); font-size: 12px; }
+  .swaps td.arrowc { width: 24px; color: var(--muted); text-align: center; }
+  .swaps .from { color: var(--muted); }
+  .rank { font-weight: 700; padding: 2px 9px; border-radius: 6px; background: var(--border); display: inline-block; }
+  .rank.best { background: var(--ok); color: #0d1a10; }
+  .pathcard { display: flex; gap: 14px; align-items: stretch; flex-wrap: wrap; }
+  .pathstep { flex: 1 1 220px; border: 1px solid var(--border-2); border-radius: 8px; padding: 10px 12px; background: var(--bg-2); display: flex; flex-direction: column; gap: 4px; }
+  .pathstep.hl { border-color: var(--ok); }
+  .pathstep .big { font-size: 20px; font-weight: 800; color: var(--ok); }
+</style>
+</head>
+<body data-active="results" data-weapon="Current" data-compare="2">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 2 · Results measured against your build, without leaving the tab</h3>
+      <ol>
+        <li><span class="n">1</span><span><b>Compare with</b> is a setting of its own, saved per weapon (default: the ★ pick). Today it follows whichever My builds tab was last selected. Any build of the profile can go here, also another weapon's.</span></li>
+        <li><span class="n">2</span><span>A <b>table view</b> with one line per build: damage, the gain over your build, and what you'd have to change. Five builds fit on one screen instead of five tall cards.</span></li>
+        <li><span class="n">3</span><span><b>To get there</b>: the seven slots. Filled means another piece, dashed means the same piece with other decorations.</span></li>
+        <li><span class="n">4</span><span><b>Fewest changes</b> sorts by how many pieces you'd craft: build 5 keeps your chest, head and waist and gets +62 of the +64.</span></li>
+        <li><span class="n">5</span><span>Clicking a row opens the swap list <b>inline</b>. Today "Compare" jumps to My builds, about 4,300 px above the comparison.</span></li>
+        <li><span class="n">6</span><span>One unit everywhere: damage of the scored attack. Builds of an old run are rescored now, so the deltas don't mix score and damage.</span></li>
+        <li><span class="n">7</span><span>The card view gets the same one-line summary under its header.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>Results</h2>
+          <p class="hint">1 skill pair, 5 builds · search took 13.8 s · 2026-10-07 15:01 · last run of Current</p>
+        </div>
+        <div class="card-actions"><button class="btn primary">▶ Run again</button><button class="btn">Download .txt</button><button class="btn text">Copy</button></div>
+      </header>
+      <div class="card-body">
+        <div class="row newpart" style="gap:14px">
+          <span class="n">1</span>
+          <span class="muted">Compare with</span>
+          <span class="fakeselect" style="min-width:300px; background: var(--bg-2)"><span><span class="pickstar">★</span> In game <span class="muted small">· Current · My build</span> <b class="ok">1,289</b></span></span>
+          <span class="muted">View</span>
+          <span class="segmented small" id="view"><button class="active" data-v="table">Table</button><button data-v="cards">Cards</button></span>
+          <span class="n">2</span>
+          <span class="muted">Sort</span>
+          <span class="segmented small" id="sort"><button data-v="dmg">Damage</button><button class="active" data-v="changes">Fewest changes</button></span>
+          <span class="n">4</span>
+        </div>
+        <p class="small muted" style="margin:0">Scored on <b style="color:var(--text)">True Charged Slash Lv3</b> under today's conditions <span class="n">6</span> · the run was 2 days ago and is rescored now (681.6 in the run, 683.0 now). <button class="linklike">Run again</button></p>
+
+        <div class="pathcard newpart">
+          <div class="pathstep"><span class="muted small">Your build</span><span class="big" style="color:var(--text)">1,289</span><span class="small muted">In game · as worn</span></div>
+          <div class="pathstep hl"><span class="muted small">3 pieces away · build 5</span><span class="big">+62 <span class="pct">(+4.8%)</span></span><span class="small">swap arms, legs, talisman · keeps head, chest, waist</span></div>
+          <div class="pathstep"><span class="muted small">4 pieces away · build 1</span><span class="big">+64 <span class="pct">(+5.0%)</span></span><span class="small">swap head, arms, waist, talisman · 1 more piece for +2</span></div>
+          <div class="pathstep"><span class="muted small">Best of the run</span><span class="big">1,353</span><span class="small muted">build 1 and 2 tie</span></div>
+        </div>
+
+        <table class="table rtable" id="rt"></table>
+      </div>
+    </section>
+
+    <div id="cards"></div>
+  </div>
+</main>
+<script src="mock.js"></script>
+<script src="data.js"></script>
+<script>
+  const base = BUILDS.find((b) => b.id === 'ingame');
+  const w = (decos) => ['Current', decos];
+  const RUN = [
+    { rank: 1, dmg: 1353, perMin: 27061, atk: 321, aff: 84, ele: 58, skills: BUILDS[1].skills, equip: BUILDS[1].equip },
+    { rank: 2, dmg: 1353, perMin: 27061, atk: 321, aff: 84, ele: 58,
+      skills: { 'Critical Boost': 5, 'Critical Eye': 4, 'Focus': 3, 'Agitator': 5, 'Resentment': 5, 'Counterstrike': 3, 'Maximum Might': 3, 'Stun Resistance': 3, 'Weakness Exploit': 3, 'Constitution': 2, 'Defense Boost': 2, 'Fire Resistance': 2 },
+      equip: { weapon: w(['Critical Jewel III', 'Critical Jewel III', 'Expert Jewel III']), head: ['Arkvulcan Helm γ', ['Mighty Jewel']], chest: ['Udra Miremail γ', ['Challenger Jewel', 'Challenger Jewel']], arms: ['Udra Mirebraces γ', ['Challenger Jewel']], waist: ['Bale Flanchard α', ['Challenger Jewel', 'Furor Jewel', 'Steadfast Jewel']], legs: ['Blango Greaves α', ['Mighty Jewel', 'Mighty Jewel']], talisman: BUILDS[1].equip.talisman } },
+    { rank: 3, dmg: 1351, perMin: 27023, atk: 321, aff: 83, ele: 62, skills: BUILDS[2].skills, equip: BUILDS[2].equip },
+    { rank: 4, dmg: 1351, perMin: 27023, atk: 321, aff: 83, ele: 62, skills: BUILDS[2].skills,
+      equip: { ...BUILDS[2].equip, chest: ['Udra Miremail γ', ['Tenderizer Jewel', 'Tenderizer Jewel']], arms: ['Udra Mirebraces γ', ['Mighty Jewel', 'Steadfast Jewel', 'Steadfast Jewel']], legs: ['Dahaad Shardgreaves β', ['Counter Jewel']] } },
+    { rank: 5, dmg: 1351, perMin: 27023, atk: 321, aff: 83, ele: 62, skills: { ...BUILDS[2].skills, 'Foray': 1 },
+      equip: { ...BUILDS[2].equip, chest: ['Udra Miremail γ', ['Challenger Jewel', 'Challenger Jewel']], arms: ['Udra Mirebraces γ', ['Mighty Jewel', 'Steadfast Jewel', 'Steadfast Jewel']], legs: ['Dahaad Shardgreaves γ', ['Counter Jewel']] } },
+  ];
+  for (const r of RUN) r.c = changes(base, r);
+  let sort = 'changes', view = 'table', open = 5;
+
+  const slots = (c) => `<span class="slots7">${PIECES.map((p) => `<span class="${c.swap.includes(p) ? 'swap' : c.redeco.includes(p) ? 'regem' : ''}" title="${PIECE_LABEL[p]}: ${c.swap.includes(p) ? 'other piece' : c.redeco.includes(p) ? 'other decorations' : 'unchanged'}"><img src="${PIECE_ICON[p]}" alt=""></span>`).join('')}</span>`;
+  const gains = (c, n = 3) => c.gain.slice(0, n).map(([s, d]) => `<span class="chip tiny gain"><img src="${skillIcon(s)}" alt="">${s} <b>+${d}</b></span>`).join('') + (c.gain.length > n ? `<span class="tiny muted">+${c.gain.length - n}</span>` : '');
+  const losses = (c, n = 3) => c.loss.slice(0, n).map(([s, d]) => `<span class="chip tiny loss"><img src="${skillIcon(s)}" alt="">${s} <b>${d}</b></span>`).join('') + (c.loss.length > n ? `<span class="tiny muted">+${c.loss.length - n}</span>` : '');
+
+  function detail(r) {
+    const rows = PIECES.filter((p) => r.c.swap.includes(p) || r.c.redeco.includes(p)).map((p) => {
+      const [fn, fd, ft] = base.equip[p], [tn, td, tt] = r.equip[p];
+      return `<tr><td class="k"><span class="with-icon"><img class="icon24" src="${PIECE_ICON[p]}" alt="">${PIECE_LABEL[p]}</span></td>
+        <td class="from"><div>${fn}${ft ? ' <span class="badge">T</span>' : ''}</div><span class="decos">${fd.map(decoImg).join('')}</span></td>
+        <td class="arrowc">→</td>
+        <td><div><b>${r.c.swap.includes(p) ? tn : `<span class="muted">${tn}</span> <span class="tiny muted">(other decorations)</span>`}</b>${tt ? ' <span class="badge">T</span>' : ''}${p === 'talisman' && tn.startsWith('Exploiter') ? ' <span class="badge mine">craftable charm</span>' : ''}</div><span class="decos">${td.map(decoImg).join('') || '<span class="tiny muted">no decorations</span>'}</span></td></tr>`;
+    }).join('');
+    const kept = PIECES.filter((p) => !r.c.swap.includes(p) && !r.c.redeco.includes(p)).map((p) => PIECE_LABEL[p].toLowerCase());
+    return `<tr class="detail-row"><td colspan="9"><div class="detail">
+      <div class="stack">
+        <div class="row"><span class="n">5</span><b>From In game to build ${r.rank}</b><span class="muted small">${kept.length ? `keeps ${kept.join(', ')}` : ''}</span></div>
+        <table class="swaps">${rows}</table>
+      </div>
+      <div class="stack">
+        <div><div class="muted small" style="margin-bottom:4px">Skills</div><div class="chip-row">${gains(r.c, 9)}</div><div class="chip-row" style="margin-top:5px">${losses(r.c, 9)}</div></div>
+        <div><div class="muted small" style="margin-bottom:4px">Stats</div><div class="statchips">
+          <span class="statchip atk"><img src="icons/ui/attack-up.png" alt="">ATK <b>${r.atk}</b> ${delta(r.atk - base.atk)}</span>
+          <span class="statchip aff"><img src="icons/ui/affinity-up.png" alt="">AFF <b>${r.aff}%</b> ${delta(r.aff - base.aff, 0, '%')}</span>
+          <span class="statchip ele"><img src="icons/elements/dragon.png" alt="">Dragon <b>${r.ele}</b> ${delta(r.ele - base.ele)}</span></div></div>
+        <div><div class="muted small" style="margin-bottom:4px">Damage per attack</div><div class="chip-row small">
+          ${ATTACKS.slice(0, 5).map(([, n, , , d]) => `<span class="chip tiny">${n.replace(' Lv3', '')} ${delta(Math.round(d * r.dmg / 1353) - Math.round(d * base.factor))}</span>`).join('')}</div></div>
+        <div class="btn-row" style="margin-top:4px"><button class="btn sm">⇄ Side by side in Compare</button><button class="btn sm">Try it on In game</button><button class="btn sm text">Edit a copy</button></div>
+      </div></div></td></tr>`;
+  }
+
+  function renderTable() {
+    const rows = [...RUN].sort(sort === 'dmg' ? (a, b) => b.dmg - a.dmg || a.rank - b.rank : (a, b) => (a.c.swap.length - b.c.swap.length) || (a.c.redeco.length - b.c.redeco.length) || b.dmg - a.dmg);
+    let h = `<thead><tr><th>Build</th><th class="num">Damage</th><th class="num">vs In game</th><th class="num">Per minute</th><th>To get there <span class="n">3</span></th><th>Gains</th><th>Loses</th><th></th></tr></thead><tbody>`;
+    h += `<tr class="baseline"><td><span class="pickstar">★</span> <b>In game</b> <span class="badge mine">yours</span></td><td class="num"><span class="dmg" style="color:var(--text)">1,289</span></td><td class="num muted">baseline</td><td class="num">25,788</td><td><span class="muted small">what you wear</span></td><td></td><td></td><td></td></tr>`;
+    for (const r of rows) {
+      h += `<tr class="res ${open === r.rank ? 'open' : ''}" data-open="${r.rank}">
+        <td><span class="row-toggle muted">${open === r.rank ? '▾' : '▸'}</span> <span class="rank ${r.rank === 1 ? 'best' : ''}">Build ${r.rank}</span></td>
+        <td class="num"><span class="dmg">${fmt(r.dmg)}</span></td>
+        <td class="num nowrap">${delta(r.dmg - base.dmg)} ${pct(r.dmg, base.dmg)}</td>
+        <td class="num">${fmt(r.perMin)}</td>
+        <td><div class="row" style="gap:8px">${slots(r.c)} <span class="small"><b>${r.c.swap.length}</b> piece${r.c.swap.length > 1 ? 's' : ''}${r.c.redeco.length ? `<span class="muted"> + ${r.c.redeco.length} re-gem</span>` : ''}</span></div></td>
+        <td><span class="chip-row">${gains(r.c)}</span></td>
+        <td><span class="chip-row">${losses(r.c)}</span></td>
+        <td><div class="btn-row nowrap"><button class="btn sm ${r.rank === 1 ? 'on' : ''}" title="Add to the compare tray">⇄</button><button class="btn sm">★ Pick</button></div></td></tr>`;
+      if (open === r.rank) h += detail(r);
+    }
+    document.getElementById('rt').innerHTML = h + '</tbody>';
+  }
+
+  function renderCards() {
+    const r = RUN[0];
+    document.getElementById('cards').innerHTML = view !== 'cards' ? `<div class="notes" style="background:none"><h3>Card view (View: Cards) <span class="n">7</span></h3><p class="small muted" style="margin:0">Each card keeps today's layout and gets the same summary under its header. Switch View to Cards above to see it.</p></div>` :
+      RUN.map((r) => `<article class="build ${r.rank === 1 ? 'best' : ''}">
+        <header class="build-head">
+          <div class="build-rank">Build ${r.rank}</div>
+          <div class="score"><span class="total">${fmt(r.dmg)}</span><span class="muted">damage per attack · ${fmt(r.perMin)} per minute</span></div>
+          <div class="statchips" style="margin-left:auto"><span class="statchip atk"><img src="icons/ui/attack-up.png" alt="">ATK <b>${r.atk}</b></span><span class="statchip aff"><img src="icons/ui/affinity-up.png" alt="">AFF <b>${r.aff}%</b></span><span class="statchip crit">CRIT <b>x1.40</b></span><span class="statchip ele">Dragon <b>${r.ele}</b></span></div>
+          <div class="btn-row"><button class="btn sm">Edit a copy</button><button class="btn sm">★ Pick</button><button class="btn sm">⇄</button></div>
+        </header>
+        <div class="build-body">
+          <div class="diffstrip newpart">${r.rank === 1 ? '<span class="n">7</span>' : ''}<span class="muted">vs ★ In game</span> ${delta(r.dmg - base.dmg)} ${pct(r.dmg, base.dmg)}
+            <span class="sep">|</span> ${slots(r.c)} <span><b>${r.c.swap.length}</b> pieces</span>
+            <span class="sep">|</span> <span class="chip-row">${gains(r.c, 2)} ${losses(r.c, 2)}</span>
+            <button class="linklike right small">Show the swaps ▾</button></div>
+          <p class="muted small" style="margin:0">… skills, equipment and decorations as today …</p>
+        </div></article>`).join('');
+  }
+
+  function render() { document.getElementById('rt').style.display = view === 'table' ? '' : 'none'; renderTable(); renderCards(); }
+  document.addEventListener('click', (e) => { const t = e.target.closest('[data-open]'); if (t && !e.target.closest('button')) { open = open === +t.dataset.open ? 0 : +t.dataset.open; render(); } });
+  document.getElementById('sort').addEventListener('seg', (e) => { sort = e.detail; render(); });
+  document.getElementById('view').addEventListener('seg', (e) => { view = e.detail; render(); });
+  render();
+</script>
+</body>
+</html>

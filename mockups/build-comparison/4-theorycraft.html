@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try a change · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .split .eff .gainline { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .split .eff .alone { font-size: 13px; }
+  .split .rev { margin-top: 4px; }
+  .draft-badge { font-size: 10.5px; padding: 0 6px; border-radius: 4px; border: 1px dashed var(--note); color: var(--note); }
+  .upg { display: grid; grid-template-columns: 90px minmax(0, 1fr) 70px 90px; gap: 6px 10px; align-items: center; font-size: 13px; }
+  .upg .h { color: var(--muted); font-size: 11.5px; }
+  .tcheck { padding: 2px 10px 2px 6px; }
+  .tcheck.miss { border-color: rgba(224, 90, 79, 0.6); color: #f0a29b; }
+  .tcheck.met { border-color: rgba(95, 191, 122, 0.5); }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current" data-compare="2">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 4 · Try a change on the build you wear</h3>
+      <ol>
+        <li><span class="n">1</span><span><b>Try a change</b> makes a <b>draft</b> of In game that remembers where it came from. Its baseline is In game, not "optimizer build 1" (today's default reference).</span></li>
+        <li><span class="n">2</span><span>The <b>score bar</b> stays visible while you edit: the draft's damage, the gain over In game and how each stat moves.</span></li>
+        <li><span class="n">3</span><span><b>Side by side</b>: In game on the left (read-only), the draft on the right, piece by piece.</span></li>
+        <li><span class="n">4</span><span>Each changed row says what that swap <b>alone</b> is worth (damage and skills), and ↺ undoes just that row.</span></li>
+        <li><span class="n">5</span><span>Targets the draft breaks show up right away (here: Stun Resistance 3 is lost with the talisman).</span></li>
+        <li><span class="n">6</span><span><b>Apply to In game</b>, <b>Keep as a new build</b> or <b>Discard</b>. Drafts don't pile up as "In game copy 3".</span></li>
+        <li><span class="n">7</span><span><b>One-piece upgrades</b>: for each slot, the best piece from the last run that fits with the rest of In game, with its gain. One click puts it in the draft.</span></li>
+      </ol>
+      <p class="small muted" style="margin:8px 0 0">The pieces are real; the draft's damage and the per-swap gains are made up to show the layout.</p>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm on newpart">Try a change</button><span class="n">1</span>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs">
+          <button class="buildtab"><span>In game</span><b>1,289</b></button>
+          <button class="buildtab"><span><span class="pickstar">★</span> Optimizer build 1 (picked)</span><b>1,353</b></button>
+          <button class="buildtab active"><span>In game</span> <span class="draft-badge">draft</span><b>1,319</b></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="scorebar newpart">
+      <span class="n">2</span>
+      <span class="scorebar-total"><b>1,319</b> <span class="muted small">damage per attack</span></span>
+      <span class="delta up" style="font-size:15px">+30</span><span class="pct">(+2.3%) vs In game</span>
+      <span class="statchip atk"><img src="icons/ui/attack-up.png" alt="">ATK <b>329</b> <span class="delta down small">−10</span></span>
+      <span class="statchip aff"><img src="icons/ui/affinity-up.png" alt="">AFF <b>73%</b> <span class="delta up small">+15%</span></span>
+      <span class="statchip ele">Dragon <b>58</b> <span class="delta same small">±0</span></span>
+      <span class="muted small">2 swaps</span>
+      <span class="right btn-row"><span class="n">6</span><button class="btn sm primary">Apply to In game</button><button class="btn sm">Keep as a new build</button><button class="btn sm text">Discard</button></span>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>Equipment <span class="muted" style="font-weight:400">· draft vs In game</span> <span class="n">3</span></h2>
+          <p class="hint">Pick pieces and decorations on the right; In game stays as it is until you apply the draft.</p>
+        </div>
+        <div class="card-actions"><span class="segmented small"><button class="active">Side by side</button><button>Only the draft</button></span></div>
+      </header>
+      <div class="card-body" style="padding-top:0">
+        <div class="split" id="split"></div>
+        <div class="row" style="margin-top:4px"><span class="n">5</span><span class="muted small">Targets</span>
+          <span class="chip tcheck met"><img src="icons/skills/offense.png" alt="">✓ Focus 3</span>
+          <span class="chip tcheck miss"><img src="icons/skills/defense.png" alt="">✗ Stun Resistance 3 <span class="muted small">has 2 · Secret Charm gave 3</span></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <header class="card-head"><div class="card-title"><h2>Damage per attack</h2><p class="hint">The draft against In game.</p></div></header>
+        <div class="card-body"><table class="table" id="atk"></table></div>
+      </section>
+      <section class="card newpart">
+        <header class="card-head"><div class="card-title"><h2>One-piece upgrades for In game <span class="n">7</span></h2><p class="hint">Each row swaps one piece of In game for one from the last run, keeping everything else. Gains are each on its own.</p></div></header>
+        <div class="card-body">
+          <div class="upg">
+            <span class="h">Slot</span><span class="h">Piece (from the run)</span><span class="h num">Gain</span><span></span>
+            <span class="with-icon"><img class="icon24" src="icons/armor/arms-r8.png" alt="">Arms</span><span><b>Udra Mirebraces γ</b> <span class="decos">${'x'}</span></span><span class="num"><span class="delta up">+21</span></span><span><button class="btn sm on">In the draft</button></span>
+            <span class="with-icon"><img class="icon24" src="icons/talisman/r8.png" alt="">Talisman</span><span><b>Exploiter Charm III</b> <span class="badge mine">craftable</span></span><span class="num"><span class="delta up">+9</span></span><span><button class="btn sm on">In the draft</button></span>
+            <span class="with-icon"><img class="icon24" src="icons/armor/legs-r8.png" alt="">Legs</span><span><b>Dahaad Shardgreaves γ</b></span><span class="num"><span class="delta up">+7</span></span><span><button class="btn sm">+ Try</button></span>
+            <span class="with-icon"><img class="icon24" src="icons/armor/head-r8.png" alt="">Head</span><span><b>Arkvulcan Helm γ</b> <span class="tiny warn">breaks Dark Arts</span></span><span class="num"><span class="delta down">−12</span></span><span><button class="btn sm">+ Try</button></span>
+            <span class="with-icon"><img class="icon24" src="icons/weapons/great-sword-r8.png" alt="">Weapon</span><span><b>Critical III, Critical III, Focus/Dragon</b> <span class="tiny muted">decorations</span></span><span class="num"><span class="delta up">+5</span></span><span><button class="btn sm">+ Try</button></span>
+          </div>
+          <p class="small muted" style="margin:0">All three swaps of run build 5 together: <b class="ok">+62</b>. <button class="linklike">Load build 5 into the draft</button></p>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="mock.js"></script>
+<script src="data.js"></script>
+<script>
+  const base = BUILDS.find((b) => b.id === 'ingame');
+  const draft = JSON.parse(JSON.stringify(base.equip));
+  draft.arms = ['Udra Mirebraces γ', ['Tenderizer Jewel', 'Steadfast Jewel', 'Steadfast Jewel']];
+  draft.talisman = ['Exploiter Charm III', []];
+  const EFFECT = {
+    arms: { alone: 21, gain: [['Weakness Exploit', 1], ['Stun Resistance', 2]], loss: [['Burst', 1]] },
+    talisman: { alone: 9, gain: [['Weakness Exploit', 3]], loss: [['Attack Boost', 3], ['Stun Resistance', 3], ['Survival Expert', 1]] },
+  };
+  const slotRows = (decos) => `<div class="decoslots">${decos.length ? decos.map((d) => `<span class="decoslot">${decoImg(d)}${d}</span>`).join('') : '<span class="tiny muted">no decorations</span>'}</div>`;
+  let h = `<div class="hd"></div><div class="hd">In game <span class="badge base">baseline</span></div><div class="hd"></div><div class="hd">Draft</div><div class="hd" style="text-align:right">This change alone <span class="n">4</span></div>`;
+  for (const p of PIECES) {
+    const [bn, bd, bt] = base.equip[p], [dn, dd, dt] = draft[p];
+    const changed = bn !== dn || bd.join() !== dd.join();
+    const e = EFFECT[p];
+    const cls = changed ? 'row-changed' : '';
+    h += `<div class="icon ${cls}"><img class="icon32" src="${PIECE_ICON[p]}" alt=""></div>
+      <div class="base"><div class="pn">${p === 'weapon' ? 'Current <span class="tiny muted">Dark Knight / Lord\'s Favor</span>' : bn}${bt ? ' <span class="badge">T</span>' : ''}</div>${slotRows(bd)}</div>
+      <div class="mid">${changed ? '→' : '='}</div>
+      <div><div class="editpick">${p === 'weapon' ? 'Current <span class="tiny muted">from the Weapon tab</span>' : dn}${dt ? ' <span class="badge">T</span>' : ''}</div>${slotRows(dd)}</div>
+      <div class="eff">${changed && e ? `<span class="alone">${delta(e.alone)} <span class="muted small">damage</span></span>
+          <span class="gainline">${e.gain.map(([s, d]) => `<span class="chip tiny gain"><img src="${skillIcon(s)}" alt="">${s} <b>+${d}</b></span>`).join('')}</span>
+          <span class="gainline">${e.loss.map(([s, d]) => `<span class="chip tiny loss"><img src="${skillIcon(s)}" alt="">${s} <b>−${d}</b></span>`).join('')}</span>
+          <button class="linklike small rev">↺ back to ${bn.split(' (')[0]}</button>` : '<span class="muted small">unchanged</span>'}</div>`;
+  }
+  document.getElementById('split').innerHTML = h;
+  // the upgrade list's decoration icons
+  document.querySelectorAll('.upg .decos').forEach((el) => { el.innerHTML = ['Tenderizer Jewel', 'Steadfast Jewel', 'Steadfast Jewel'].map(decoImg).join(''); });
+
+  const rows = ATTACKS.map(([g, n, , , d, , scored]) => {
+    const b = Math.round(d * base.factor), x = Math.round(d * base.factor * 1319 / 1289);
+    return `<tr><td>${n}${scored ? ' <span class="badge base">scored on</span>' : ''}</td><td class="num muted">${fmt(b)}</td><td class="num"><b>${fmt(x)}</b></td><td class="num">${delta(x - b)} ${pct(x, b)}</td></tr>`;
+  }).join('');
+  document.getElementById('atk').innerHTML = `<thead><tr><th>Attack</th><th class="num">In game</th><th class="num">Draft</th><th class="num">Difference</th></tr></thead><tbody>${rows}</tbody>`;
+</script>
+</body>
+</html>
