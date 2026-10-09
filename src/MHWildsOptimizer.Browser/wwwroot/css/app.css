@@ -702,6 +702,17 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .mud-tooltip.skilltip-pop { background: transparent; padding: 0; box-shadow: none; max-width: none; }
 .skilltip-pop .skilltip { position: static; pointer-events: auto; }
 .skillhover { display: inline-flex; }
+/* the (i) of InfoHover and its tooltip */
+.infohover { display: inline-flex; vertical-align: middle; margin-left: 4px; }
+.info-i {
+  display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--border-2);
+  color: var(--muted); font: italic 700 10px/1 Georgia, serif; cursor: help; user-select: none;
+}
+.info-i:hover, .info-i:focus-visible { color: var(--text); border-color: var(--muted); outline: none; }
+.mud-tooltip.infotip-pop { background: var(--panel-2); color: var(--text); border: 1px solid var(--border-2); box-shadow: var(--shadow); padding: 8px 10px; max-width: 420px; text-align: left; }
+.infotip { font-size: 12.5px; line-height: 1.45; display: flex; flex-direction: column; gap: 4px; }
+.infotip ol, .infotip ul { margin: 0; padding-left: 18px; }
+.infotip .muted { color: var(--muted); }
 
 .import-summary { margin: 12px 0; display: flex; flex-direction: column; gap: 6px; }
 .grants { display: inline-flex; flex-wrap: wrap; gap: 4px; }

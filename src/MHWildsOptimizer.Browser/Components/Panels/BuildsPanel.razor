@@ -411,8 +411,6 @@
                 <thead>
                     <tr>
                         <th>Attack</th>
-                        <th class="num narrow-hide">Hits</th>
-                        <th class="num narrow-hide">MV</th>
                         <th class="num">Damage</th>
                         @if (refBreakdown is not null)
                         {
@@ -423,7 +421,7 @@
                 <tbody>
                     @foreach (var group in breakdown.GroupBy(x => x.Group))
                     {
-                        <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 5 : 4)">@group.Key</td></tr>
+                        <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 3 : 2)">@group.Key</td></tr>
                         @foreach (var x in group)
                         {
                             var open = _expanded.Contains(x.Id);
@@ -431,10 +429,9 @@
                                 title="@(open ? "Hide the hits" : "Show every hit without and with a crit, step conditions and modifiers")">
                                 <td>
                                     <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
-                                    @x.Name @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}
+                                    @x.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(x.Group, x.Hits, x.Mv)</InfoHover>
+                                    @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}
                                 </td>
-                                <td class="num narrow-hide">@Fmt.N(x.Hits, 0)</td>
-                                <td class="num muted narrow-hide">@Fmt.N(x.Mv, 0)</td>
                                 <td class="num">
                                     <span class="dmgbar-cell">
                                         <span class="dmgbar-track"><span class="dmgbar" style="width: @((100 * x.DamagePerExecution / Math.Max(1, groupMax[x.Group])).ToString("0.#", CultureInfo.InvariantCulture))%"></span></span>
@@ -459,7 +456,7 @@
                             @if (open && Detail(current, x.Id) is { } detail)
                             {
                                 <tr @key="@(x.Id + ":detail")" class="attack-detail-row">
-                                    <td colspan="@(refBreakdown is not null ? 5 : 4)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" Mode="_mode" /></td>
+                                    <td colspan="@(refBreakdown is not null ? 3 : 2)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" Mode="_mode" /></td>
                                 </tr>
                             }
                         }

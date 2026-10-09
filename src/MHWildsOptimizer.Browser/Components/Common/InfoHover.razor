@@ -1,0 +1,32 @@
+@* A small (i) that shows its content while hovered or focused (tapped on a phone), e.g. the hits and MV of an attack.
+   The MudTooltip (a popover with components of its own) is only created once the pointer or the focus gets here, with the
+   same markup standing in until then: tables list dozens of these. A click on it does not reach the row it sits in. *@
+@if (_armed)
+{
+    <MudTooltip Placement="Placement.Bottom" Delay="120" Class="infotip-pop" RootClass="infohover" RootStyle="display: inline-flex" @bind-Visible="_visible">
+        <ChildContent><span class="info-i @Class" tabindex="0" role="img" aria-label="@Label" @onclick:stopPropagation="true">i</span></ChildContent>
+        <TooltipContent><div class="infotip">@ChildContent</div></TooltipContent>
+    </MudTooltip>
+}
+else
+{
+    <span class="mud-tooltip-root mud-tooltip-inline infohover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="Arm" @onclick:stopPropagation="true">
+        <span class="info-i @Class" tabindex="0" role="img" aria-label="@Label">i</span>
+    </span>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>What the (i) stands for, for screen readers.</summary>
+    [Parameter] public string Label { get; set; } = "Details";
+    [Parameter] public string? Class { get; set; }
+
+    private bool _armed, _visible;
+
+    /// <summary>The pointer arrived before the tooltip existed: create it, already showing.</summary>
+    private void Arm()
+    {
+        _armed = true;
+        _visible = true;
+    }
+}

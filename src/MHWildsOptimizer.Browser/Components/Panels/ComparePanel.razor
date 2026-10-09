@@ -435,12 +435,11 @@
             var bv = baseRows?.GetValueOrDefault(a.Id)?.DamagePerExecution;
             <tr @key="a.Id">
                 <td class="rowh">
-                    @a.Name
+                    @a.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(a.Group, a.Hits, a.Mv)</InfoHover>
                     @if (a.Current)
                     {
                         <span class="scored-badge" title="The builds are scored on this one">scored on</span>
                     }
-                    <div class="tiny muted">@a.Group.TrimEnd('s').ToLowerInvariant() · @Fmt.Plural((int)Math.Round(a.Hits), "hit") · MV @Fmt.N(a.Mv, 0)</div>
                 </td>
                 @for (var i = 0; i < cols.Count; i++)
                 {

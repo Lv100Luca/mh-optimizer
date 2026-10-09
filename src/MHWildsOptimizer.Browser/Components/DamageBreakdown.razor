@@ -47,7 +47,7 @@
                                     }
                                     @if (single)
                                     {
-                                        <span class="muted small">@Fmt.N(a.Hits[0].Mv, 0) MV</span>
+                                        <InfoHover Label="MV">1 hit · @Fmt.N(a.Hits[0].Mv, 0) MV</InfoHover>
                                     }
                                     @foreach (var c in a.Changes)
                                     {
@@ -82,7 +82,7 @@
                                             {
                                                 <span>×@h.Count</span>
                                             }
-                                            <span class="small">@Fmt.N(h.Mv, 0) MV</span>
+                                            <InfoHover Label="MV">@Fmt.N(h.Mv, 0) MV@(h.Count > 1 ? $" each, {Fmt.N(h.Mv * h.Count, 0)} MV in all" : "")</InfoHover>
                                         </span>
                                     </td>
                                     <td class="num">@Fmt.N(h.Normal, 0)</td>

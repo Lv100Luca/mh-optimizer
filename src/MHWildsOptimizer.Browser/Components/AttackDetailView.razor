@@ -14,7 +14,6 @@
         <thead>
             <tr>
                 <th>Hit</th>
-                <th class="num narrow-hide">MV</th>
                 <th class="num" title="@ModeTitle">@ModeLabel@(element ? " (raw + element)" : "")</th>
                 <th class="num">Total</th>
             </tr>
@@ -26,7 +25,7 @@
                 @if (!single || step.Conditions.Count > 0)
                 {
                     <tr class="step-head">
-                        <td colspan="4">
+                        <td colspan="3">
                             <span class="step-title">@(Detail.Steps.Count > 1 ? $"{i + 1}. " : "")@step.Name@(step.Repeat > 1 ? $" ×{step.Repeat}" : "")</span>
                             @foreach (var (key, on) in step.Conditions)
                             {
@@ -44,12 +43,15 @@
                     <tr class="@(h.Shockwave ? "shockwave-row" : "")" title="@(h.Shockwave ? "A proc of the slash above: added to the total" : null)">
                         <td>
                             @(h.Shockwave ? "↳ " : "")@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")
+                            @if (h.Mv > 0)
+                            {
+                                <InfoHover Label="MV">@Fmt.N(h.Mv, 0) MV@(h.Count > 1 ? $" each, {Fmt.N(h.Mv * h.Count, 0)} MV in all" : "")</InfoHover>
+                            }
                             @if (h.Notes.Count > 0)
                             {
                                 <div class="muted tiny">@string.Join(" · ", h.Notes)</div>
                             }
                         </td>
-                        <td class="num muted narrow-hide">@Fmt.N(h.Mv, 0)</td>
                         <td class="num">@Split(Raw(h), Ele(h), element)</td>
                         <td class="num"><b>@Fmt.N((Raw(h) + Ele(h)) * h.Count, 0)</b></td>
                     </tr>
@@ -125,10 +127,9 @@
         $"attack {Fmt.N(s.TrueRaw, 0)} · affinity {s.Affinity}% (crit ×{Fmt.N(s.CritMultiplier, 2)})"
         + (Element != Element.None ? $" · {Fmt.TitleCase(Element)} {Fmt.N(s.ElementTrue * 10, 0)} (crit ×{Fmt.N(s.CritElementMultiplier, 2)})" : "");
 
-    /// <summary>The empty cells between a label and the total, matching the hit rows (MV hides on phones).</summary>
+    /// <summary>The empty cell between a label and the total, matching the hit rows.</summary>
     private static RenderFragment Gap() => __builder =>
     {
-        <td class="narrow-hide"></td>
         <td></td>
     };
 

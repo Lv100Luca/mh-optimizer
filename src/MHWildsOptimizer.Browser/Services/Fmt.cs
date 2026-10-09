@@ -28,6 +28,10 @@ public static partial class Fmt
 
     public static string Plural(int n, string one, string? many = null) => $"{n} {(n == 1 ? one : many ?? one + "s")}";
 
+    /// <summary>"Move · 2 hits · 283 MV": what an attack is, for the (i) next to its name (<paramref name="group"/> "Moves", "Combos", "Sequences").</summary>
+    public static string AttackFacts(string group, double hits, double mv) =>
+        $"{group.TrimEnd('s')} · {Plural((int)Math.Round(hits), "hit")} · {N(mv, 0)} MV";
+
     public static string Ago(DateTimeOffset when)
     {
         var span = DateTimeOffset.Now - when;
