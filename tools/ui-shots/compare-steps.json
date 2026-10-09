@@ -1,0 +1,44 @@
+{
+  "extra": {
+    "a1-inventory-h2h": {
+      "url": "{origin}/{profile}/inventory",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(1500); for (const n of ['Current', 'Current new reroll']) { document.querySelector(`input[aria-label=\"Compare ${n}\"]`)?.click(); await sleep(900); } await sleep(800);"
+    },
+    "a2-inventory-yours": {
+      "url": "{origin}/{profile}/inventory",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(1500); for (const n of ['Current', 'Current new reroll']) { document.querySelector(`input[aria-label=\"Compare ${n}\"]`)?.click(); await sleep(900); } [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Best of yours')?.click(); await sleep(1200);"
+    },
+    "a3-results-table": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); document.querySelector('tr.result-row.clickable')?.click(); await sleep(1500);"
+    },
+    "a4-results-changes": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Fewest changes')?.click(); await sleep(1200);"
+    },
+    "a5-results-cards": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Cards')?.click(); await sleep(1200); [...document.querySelectorAll('button')].find(b => b.innerText.includes('Show the swaps'))?.click(); await sleep(1200);"
+    },
+    "a6-results-tray": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); const rows = [...document.querySelectorAll('tr.result-row')]; for (const i of [0, 4]) { rows[i]?.querySelector('.tray-toggle')?.click(); await sleep(900); } await sleep(600);"
+    },
+    "a7-builds-ingame": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.buildtab')].find(b => b.innerText.includes('In game'))?.click(); await sleep(1500); document.querySelector('.card-actions .tray-toggle')?.click(); await sleep(1200);"
+    },
+    "a8-compare": {
+      "url": "{origin}/{profile}/compare",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); const heads = [...document.querySelectorAll('.cmp thead th')]; const ig = heads.find(h => h.innerText.includes('In game')); ig?.querySelector('button.linklike')?.click(); await sleep(2000);"
+    },
+    "a9-compare-reroll": {
+      "url": "{origin}/{profile}/compare",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2500); const sel = document.querySelector('.content .selectbox'); const inp = sel?.querySelector('.mud-input'); inp?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); await sleep(900); const items = [...document.querySelectorAll('.mud-popover .mud-list-item')].filter(e => e.innerText.trim().startsWith('Run build 1')); items[items.length - 1]?.click(); await sleep(2000); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === \"The baseline's\")?.click(); await sleep(2000);"
+    },
+    "a10-builds-try": {
+      "url": "{origin}/{profile}/weapon/{weapon}/builds",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.buildtab')].find(b => b.innerText.includes('In game'))?.click(); await sleep(1500); [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Try a change')?.click(); await sleep(2000); [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Find them')?.click(); for (let i = 0; i < 80 && !document.querySelector('.table.upgrades'); i++) await sleep(500); [...document.querySelectorAll('.table.upgrades button')][0]?.click(); await sleep(2500); console.error('UPGRADES', document.querySelector('.table.upgrades')?.innerText.replace(/\\s+/g, ' ').slice(0, 400));"
+    }
+  }
+}
