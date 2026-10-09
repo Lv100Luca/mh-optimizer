@@ -346,10 +346,18 @@
         <tr class="cmp-sec"><td class="rowh">@title</td><td colspan="@span"></td></tr>
     };
 
-    /// <summary>A section heading with a button in it, e.g. to open the differences.</summary>
-    private RenderFragment Sec(string title, int span, string button, Action onClick) => __builder =>
+    /// <summary>The row under a list that opens its differences: the rows after it.</summary>
+    private RenderFragment DiffToggle(int span, int count, string what, bool open, Action onClick) => __builder =>
     {
-        <tr class="cmp-sec"><td class="rowh">@title</td><td colspan="@span"><button type="button" class="linklike small" @onclick="onClick">@button</button></td></tr>
+        <tr class="cmp-toggle">
+            <td class="rowh">
+                @if (count > 0)
+                {
+                    <button type="button" class="linklike small" @onclick="onClick">@(open ? "▾ Hide the differences" : "▸ Show the differences")</button>
+                }
+            </td>
+            <td colspan="@span" class="muted small">@(count == 0 ? $"Every column has the same {what}" : $"{count} {what} differ between the columns")</td>
+        </tr>
     };
 
     /// <summary>A number per column with its difference to the baseline; the best one is green.</summary>
@@ -500,15 +508,7 @@
             .ThenByDescending(s => scoredCols.Max(c => levels[c.Ref].GetValueOrDefault(s)) - scoredCols.Min(c => levels[c.Ref].GetValueOrDefault(s)))
             .ThenBy(s => s, StringComparer.InvariantCulture).ToList();
         var baseLevels = baseCol is null ? null : levels[baseCol.Ref];
-        @if (cols.Count > 1)
-        {
-            @Sec("Skills", n, differ.Count == 0 ? "Every column has the same skills" : _skillDiffs ? "▾ Hide the differences" : $"▸ Show the differences ({Fmt.Plural(differ.Count, "skill")})",
-                () => _skillDiffs = !_skillDiffs)
-        }
-        else
-        {
-            @Sec("Skills", n)
-        }
+        @Sec("Skills", n)
         <tr>
             <td class="rowh">Its skills</td>
             @foreach (var c in cols)
@@ -524,6 +524,10 @@
                 </td>
             }
         </tr>
+        @if (cols.Count > 1)
+        {
+            @DiffToggle(n, differ.Count, differ.Count == 1 ? "skill" : "skills", _skillDiffs, () => _skillDiffs = !_skillDiffs)
+        }
         @if (_skillDiffs && differ.Count > 0)
         {
             @foreach (var s in differ)
@@ -562,15 +566,7 @@
         var scoredCols = cols.Where(c => c.Build is not null).ToList();
         var differ = active.Values.SelectMany(x => x).Distinct().Where(x => !scoredCols.All(c => active[c.Ref].Contains(x))).ToList();
         var baseActive = baseCol is null ? null : active[baseCol.Ref];
-        @if (cols.Count > 1)
-        {
-            @Sec("Set bonuses and group skills", n, differ.Count == 0 ? "Every column has the same" : _bonusDiffs ? "▾ Hide the differences" : $"▸ Show the differences ({differ.Count})",
-                () => _bonusDiffs = !_bonusDiffs)
-        }
-        else
-        {
-            @Sec("Set bonuses and group skills", n)
-        }
+        @Sec("Set bonuses and group skills", n)
         <tr>
             <td class="rowh">Active</td>
             @foreach (var c in cols)
@@ -590,6 +586,10 @@
                 </td>
             }
         </tr>
+        @if (cols.Count > 1)
+        {
+            @DiffToggle(n, differ.Count, differ.Count == 1 ? "bonus" : "bonuses", _bonusDiffs, () => _bonusDiffs = !_bonusDiffs)
+        }
         @if (_bonusDiffs && differ.Count > 0)
         {
             @foreach (var x in differ)
