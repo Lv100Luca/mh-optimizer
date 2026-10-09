@@ -13,7 +13,7 @@ namespace MHWildsOptimizer.Browser.Services;
 /// </summary>
 public sealed partial class AppState
 {
-    public const int TrayLimit = 5;
+    public const int TrayLimit = 20;
 
     // ---------------------------------------------------------------- the compare tray
 

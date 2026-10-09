@@ -4,7 +4,8 @@
 {
     var baseline = App.TrayBaseline;
     <div class="tray" role="region" aria-label="Builds to compare">
-        <span class="tray-title">⇄ Compare</span>
+        <span class="tray-title">⇄ Compare <span class="muted small">@App.Tray.Count</span></span>
+        <div class="tray-items">
         @foreach (var r in App.Tray)
         {
             var scored = App.ScoreRef(r);
@@ -27,6 +28,7 @@
                 <button type="button" class="tray-x" title="Take it out" @onclick="() => App.RemoveFromTray(r)">✕</button>
             </span>
         }
+        </div>
         <span class="right btn-row nowrap">
             <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="App.ClearTray">Clear</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => App.OpenCompare()">Open the comparison</MudButton>

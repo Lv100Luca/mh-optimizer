@@ -1,5 +1,5 @@
 @inherits AppComponent
-@* The Compare tab: up to five builds of any weapon of the profile side by side, scored on one basis, measured against a baseline. *@
+@* The Compare tab: up to TrayLimit builds of any weapon of the profile side by side, scored on one basis, measured against a baseline. *@
 @{
     var refs = App.Tray;
     var baseRef = App.TrayBaseline;
@@ -40,7 +40,7 @@
                     <span class="muted small">@refs.Count of @AppState.TrayLimit builds · ‹ › move a column, ☆ makes it the baseline</span>
                 </div>
                 <div class="cmp-scroll">
-                    <table class="cmp">
+                    <table class="cmp" style="@($"width: max(100%, {RowHeadWidth + cols.Count * MinColumnWidth}px)")">
                         <thead>
                             <tr>
                                 <th class="rowh"></th>
@@ -67,6 +67,10 @@
         public BuildDto? Build => Scored?.Build;
     }
 
+    // columns share the width until they would get narrower than this; then the table scrolls sideways
+    private const int RowHeadWidth = 150;
+    private const int MinColumnWidth = 190;
+
     private static readonly IReadOnlyList<SegmentOption<CompareBasis>> BasisOptions =
     [
         new(CompareBasis.Own, "Its own conditions", Hint: "Each build under its weapon's conditions (and its own overrides)"),
@@ -74,9 +78,10 @@
         new(CompareBasis.AllOn, "Every condition on", Hint: "Every hunt condition on, the ceiling of each build"),
     ];
 
-    // the attack table shows the first rows until opened
+    // the attack table shows the first rows until opened; skills and bonuses show their differences when opened
     private bool _allAttacks;
-    private bool _sameSkills;
+    private bool _skillDiffs;
+    private bool _bonusDiffs;
 
     private List<Col> Columns(IReadOnlyList<BuildRef> refs, BuildRef? baseRef, CompareBasis basis)
     {
@@ -266,6 +271,52 @@
         }
         @Metric(cols, "Score", "per 100 MV", b => b.Score, 1, headline: !hasDamage)
 
+        @Sec("Stats", n)
+        @Metric(cols, "Attack", null, b => b.Summary.Attack, 0)
+        @Metric(cols, "Affinity", null, b => b.Summary.Affinity, 0, suffix: "%")
+        @Metric(cols, "Crit multiplier", null, b => b.Summary.CritMultiplier, 2)
+        @if (cols.Any(c => c.Build?.Summary.Element is { } e && e != Element.None))
+        {
+            @Metric(cols, "Element", null, b => b.Summary.Element == Element.None ? null : b.Summary.ElementDisplay, 0)
+        }
+        <tr>
+            <td class="rowh">Weapon</td>
+            @foreach (var c in cols)
+            {
+                var w = c.Build?.Weapon;
+                var changed = w is not null && bb is not null && !c.IsBase && (w.TrueRaw != bb.Weapon.TrueRaw || w.Affinity != bb.Weapon.Affinity || w.ElementDisplay != bb.Weapon.ElementDisplay || w.Sharpness != bb.Weapon.Sharpness);
+                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(changed ? "changed" : "")">
+                    @if (w is not null)
+                    {
+                        <div class="small">@w.TrueRaw attack, @Fmt.Signed(w.Affinity)%@(w.Element == Element.None ? "" : $", {w.ElementDisplay} {Fmt.TitleCase(w.Element)}")@(w.Sharpness is { } sh ? $", {Fmt.TitleCase(sh)}" : "")</div>
+                        <div class="muted tiny">slots <Slots Numbers="w.Slots" Kind="weapon" /></div>
+                    }
+                </td>
+            }
+        </tr>
+
+        @Skills(cols, baseCol, n, valued)
+        @Bonuses(cols, baseCol, n)
+
+        @Sec("Equipment", n)
+        @foreach (var slot in BuildDiff.AllSlots)
+        {
+            <tr @key="slot">
+                <td class="rowh"><span class="with-icon"><img class="icon" width="22" height="22" src="@SlotStrip.Icon(slot, first?.Weapon.Type ?? "great-sword")" alt="" />@slot</span></td>
+                @foreach (var c in cols)
+                {
+                    var change = diffs[c.Ref]?.Slots[slot] ?? SlotChange.Same;
+                    <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(change == SlotChange.Piece ? "changed" : change == SlotChange.Decorations ? "regem" : "")">
+                        @if (c.Build is { } b)
+                        {
+                            @Piece(b, slot, change)
+                        }
+                    </td>
+                }
+            </tr>
+        }
+        @EmptySlots(cols, baseCol)
+
         @if (bb is not null && cols.Count > 1)
         {
             @Sec("What it takes", n)
@@ -287,59 +338,18 @@
             </tr>
         }
 
-        @Sec("Stats", n)
-        @Metric(cols, "Attack", null, b => b.Summary.Attack, 0)
-        @Metric(cols, "Affinity", null, b => b.Summary.Affinity, 0, suffix: "%")
-        @Metric(cols, "Crit multiplier", null, b => b.Summary.CritMultiplier, 2)
-        @if (cols.Any(c => c.Build?.Summary.Element is { } e && e != Element.None))
-        {
-            @Metric(cols, "Element", null, b => b.Summary.Element == Element.None ? null : b.Summary.ElementDisplay, 0)
-        }
-        @if (cols.Any(c => c.Build?.Procs > 0))
-        {
-            @Metric(cols, "Procs", "per 100 MV", b => b.Procs, 1)
-        }
-        <tr>
-            <td class="rowh">Weapon</td>
-            @foreach (var c in cols)
-            {
-                var w = c.Build?.Weapon;
-                var changed = w is not null && bb is not null && !c.IsBase && (w.TrueRaw != bb.Weapon.TrueRaw || w.Affinity != bb.Weapon.Affinity || w.ElementDisplay != bb.Weapon.ElementDisplay || w.Sharpness != bb.Weapon.Sharpness);
-                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(changed ? "changed" : "")">
-                    @if (w is not null)
-                    {
-                        <div class="small">@w.TrueRaw attack, @Fmt.Signed(w.Affinity)%@(w.Element == Element.None ? "" : $", {w.ElementDisplay} {Fmt.TitleCase(w.Element)}")@(w.Sharpness is { } sh ? $", {Fmt.TitleCase(sh)}" : "")</div>
-                        <div class="muted tiny">slots <Slots Numbers="w.Slots" Kind="weapon" /></div>
-                    }
-                </td>
-            }
-        </tr>
-
         @Attacks(cols, baseCol, n)
-        @Skills(cols, baseCol, n, valued)
-
-        @Sec("Equipment", n)
-        @foreach (var slot in BuildDiff.AllSlots)
-        {
-            <tr @key="slot">
-                <td class="rowh"><span class="with-icon"><img class="icon" width="22" height="22" src="@SlotStrip.Icon(slot, first?.Weapon.Type ?? "great-sword")" alt="" />@slot</span></td>
-                @foreach (var c in cols)
-                {
-                    var change = diffs[c.Ref]?.Slots[slot] ?? SlotChange.Same;
-                    <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(change == SlotChange.Piece ? "changed" : change == SlotChange.Decorations ? "regem" : "")">
-                        @if (c.Build is { } b)
-                        {
-                            @Piece(b, slot, change)
-                        }
-                    </td>
-                }
-            </tr>
-        }
     };
 
     private static RenderFragment Sec(string title, int span) => __builder =>
     {
         <tr class="cmp-sec"><td class="rowh">@title</td><td colspan="@span"></td></tr>
+    };
+
+    /// <summary>A section heading with a button in it, e.g. to open the differences.</summary>
+    private RenderFragment Sec(string title, int span, string button, Action onClick) => __builder =>
+    {
+        <tr class="cmp-sec"><td class="rowh">@title</td><td colspan="@span"><button type="button" class="linklike small" @onclick="onClick">@button</button></td></tr>
     };
 
     /// <summary>A number per column with its difference to the baseline; the best one is green.</summary>
@@ -479,6 +489,7 @@
         }
     };
 
+    /// <summary>Each column's skills; opened, the skills that differ between the columns with their levels against the baseline.</summary>
     private RenderFragment Skills(List<Col> cols, Col? baseCol, int n, IReadOnlyCollection<string>? valued) => __builder =>
     {
         var levels = cols.ToDictionary(c => c.Ref, c => c.Build?.Skills.ToDictionary(x => x.Skill, x => x.Level) ?? []);
@@ -488,76 +499,186 @@
             .OrderBy(s => valued is null || valued.Contains(s) ? 0 : 1)
             .ThenByDescending(s => scoredCols.Max(c => levels[c.Ref].GetValueOrDefault(s)) - scoredCols.Min(c => levels[c.Ref].GetValueOrDefault(s)))
             .ThenBy(s => s, StringComparer.InvariantCulture).ToList();
-        var same = names.Except(differ).OrderBy(s => s, StringComparer.InvariantCulture).ToList();
         var baseLevels = baseCol is null ? null : levels[baseCol.Ref];
-        @Sec("Skills that differ", n)
-        @if (differ.Count == 0)
+        @if (cols.Count > 1)
         {
-            <tr><td class="rowh"></td><td colspan="@n" class="muted small">Every column has the same skills.</td></tr>
+            @Sec("Skills", n, differ.Count == 0 ? "Every column has the same skills" : _skillDiffs ? "▾ Hide the differences" : $"▸ Show the differences ({Fmt.Plural(differ.Count, "skill")})",
+                () => _skillDiffs = !_skillDiffs)
         }
-        @foreach (var s in differ)
+        else
         {
-            <tr @key="s">
-                <td class="rowh"><SkillChip Name="@s" Class="tiny" /></td>
-                @foreach (var c in cols)
-                {
-                    var l = levels[c.Ref].GetValueOrDefault(s);
-                    var bl = baseLevels?.GetValueOrDefault(s) ?? l;
-                    <td @key="c.Ref.Key" class="val @(c.IsBase ? "basecol" : "") @(!c.IsBase && l != bl ? "changed" : "")">
-                        @if (l > 0)
-                        {
-                            <b>@l</b>
-                        }
-                        else
-                        {
-                            <span class="muted">–</span>
-                        }
-                        @if (!c.IsBase && l != bl && c.Build is not null)
-                        {
-                            <span class="small cmp-d"><Delta Value="@(l - bl)" Digits="0" /></span>
-                        }
-                    </td>
-                }
-            </tr>
-        }
-        @if (same.Count > 0)
-        {
-            <tr>
-                <td class="rowh">
-                    <button type="button" class="linklike small" @onclick="() => _sameSkills = !_sameSkills">@(_sameSkills ? "▾" : "▸") @Fmt.Plural(same.Count, "skill") the same everywhere</button>
-                </td>
-                <td colspan="@n">
-                    @if (_sameSkills)
-                    {
-                        <span class="chip-row">
-                            @foreach (var s in same)
-                            {
-                                <SkillChip @key="s" Name="@s" Level="@levels.Values.First(x => x.ContainsKey(s))[s]" Class="tiny" />
-                            }
-                        </span>
-                    }
-                </td>
-            </tr>
+            @Sec("Skills", n)
         }
         <tr>
-            <td class="rowh">Set bonuses, group skills</td>
+            <td class="rowh">Its skills</td>
             @foreach (var c in cols)
             {
-                var bonuses = c.Build is { } b ? b.Summary.ActiveSetBonuses.Concat(b.Summary.ActiveGroupSkills).ToList() : [];
-                var baseBonuses = baseCol?.Build is { } bb ? bb.Summary.ActiveSetBonuses.Concat(bb.Summary.ActiveGroupSkills).ToHashSet() : null;
-                var groups = c.Build?.Summary.ActiveGroupSkills.ToHashSet() ?? [];
-                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(!c.IsBase && baseBonuses is not null && !baseBonuses.SetEquals(bonuses) ? "changed" : "")">
+                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "")">
                     <span class="chip-row">
-                        @foreach (var x in bonuses)
+                        @foreach (var x in c.Build?.Skills ?? [])
                         {
-                            var group = groups.Contains(x);
-                            <span @key="x" class="chip skill tiny @(group ? "group" : "set")"><SkillIcon Name="@x" Kind="@(group ? SkillKind.Group : SkillKind.Set)" Size="14" />@x</span>
+                            @* plain chips: twenty columns of hover cards would make the tab slow *@
+                            <span @key="x.Skill" class="chip skill tiny @x.Kind.ToString().ToLowerInvariant()" title="@($"{x.Skill} {x.Level}")"><SkillIcon Name="@x.Skill" Kind="x.Kind" Size="14" />@x.Skill <b>@x.Level</b></span>
                         }
                     </span>
                 </td>
             }
         </tr>
+        @if (_skillDiffs && differ.Count > 0)
+        {
+            @foreach (var s in differ)
+            {
+                <tr @key="s" class="cmp-diff">
+                    <td class="rowh"><SkillChip Name="@s" Class="tiny" /></td>
+                    @foreach (var c in cols)
+                    {
+                        var l = levels[c.Ref].GetValueOrDefault(s);
+                        var bl = baseLevels?.GetValueOrDefault(s) ?? l;
+                        <td @key="c.Ref.Key" class="val @(c.IsBase ? "basecol" : "") @(!c.IsBase && l != bl ? "changed" : "")">
+                            @if (l > 0)
+                            {
+                                <b>@l</b>
+                            }
+                            else
+                            {
+                                <span class="muted">–</span>
+                            }
+                            @if (!c.IsBase && l != bl && c.Build is not null)
+                            {
+                                <span class="small cmp-d"><Delta Value="@(l - bl)" Digits="0" /></span>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        }
     };
+
+    /// <summary>Each column's active set bonuses and group skills; opened, the ones not every column has, against the baseline.</summary>
+    private RenderFragment Bonuses(List<Col> cols, Col? baseCol, int n) => __builder =>
+    {
+        var active = cols.ToDictionary(c => c.Ref, c => c.Build is { } b ? b.Summary.ActiveSetBonuses.Concat(b.Summary.ActiveGroupSkills).ToList() : []);
+        var groups = cols.SelectMany(c => c.Build?.Summary.ActiveGroupSkills ?? []).ToHashSet();
+        var scoredCols = cols.Where(c => c.Build is not null).ToList();
+        var differ = active.Values.SelectMany(x => x).Distinct().Where(x => !scoredCols.All(c => active[c.Ref].Contains(x))).ToList();
+        var baseActive = baseCol is null ? null : active[baseCol.Ref];
+        @if (cols.Count > 1)
+        {
+            @Sec("Set bonuses and group skills", n, differ.Count == 0 ? "Every column has the same" : _bonusDiffs ? "▾ Hide the differences" : $"▸ Show the differences ({differ.Count})",
+                () => _bonusDiffs = !_bonusDiffs)
+        }
+        else
+        {
+            @Sec("Set bonuses and group skills", n)
+        }
+        <tr>
+            <td class="rowh">Active</td>
+            @foreach (var c in cols)
+            {
+                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "")">
+                    <span class="chip-row">
+                        @foreach (var x in active[c.Ref])
+                        {
+                            var group = groups.Contains(x);
+                            <span @key="x" class="chip skill tiny @(group ? "group" : "set")"><SkillIcon Name="@x" Kind="@(group ? SkillKind.Group : SkillKind.Set)" Size="14" />@x</span>
+                        }
+                        @if (c.Build is not null && active[c.Ref].Count == 0)
+                        {
+                            <span class="muted small">none</span>
+                        }
+                    </span>
+                </td>
+            }
+        </tr>
+        @if (_bonusDiffs && differ.Count > 0)
+        {
+            @foreach (var x in differ)
+            {
+                var group = groups.Contains(x);
+                <tr @key="x" class="cmp-diff">
+                    <td class="rowh"><span class="chip skill tiny @(group ? "group" : "set")"><SkillIcon Name="@x" Kind="@(group ? SkillKind.Group : SkillKind.Set)" Size="14" />@x</span></td>
+                    @foreach (var c in cols)
+                    {
+                        var on = active[c.Ref].Contains(x);
+                        var changed = !c.IsBase && baseActive is not null && c.Build is not null && on != baseActive.Contains(x);
+                        <td @key="c.Ref.Key" class="val @(c.IsBase ? "basecol" : "") @(changed ? "changed" : "")">
+                            @if (c.Build is null)
+                            {
+                            }
+                            else if (on)
+                            {
+                                <b class="@(changed ? "ok" : "")">✓ active</b>
+                            }
+                            else
+                            {
+                                <span class="@(changed ? "err" : "muted")">–</span>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    };
+
+    /// <summary>The decoration slots a build leaves empty, weapon and armor kind apart (talisman slots count by their kind).</summary>
+    private RenderFragment EmptySlots(List<Col> cols, Col? baseCol) => __builder =>
+    {
+        var free = cols.ToDictionary(c => c.Ref, c => c.Build is { } b ? FreeSlots(b) : default);
+        var baseFree = baseCol?.Build is not null ? free[baseCol.Ref] : default;
+        <tr>
+            <td class="rowh">Available empty slots</td>
+            @foreach (var c in cols)
+            {
+                var (armor, weapon) = free[c.Ref];
+                var changed = !c.IsBase && baseCol?.Build is not null && c.Build is not null
+                              && (!armor!.SequenceEqual(baseFree.Armor!) || !weapon!.SequenceEqual(baseFree.Weapon!));
+                <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(changed ? "changed" : "")">
+                    @if (c.Build is not null)
+                    {
+                        <div class="free-slots">
+                            <span class="free-k">Armor</span>
+                            @if (armor!.Count == 0)
+                            {
+                                <span class="muted small">none</span>
+                            }
+                            else
+                            {
+                                <Slots Numbers="armor" />
+                            }
+                            <span class="free-k">Weapon</span>
+                            @if (weapon!.Count == 0)
+                            {
+                                <span class="muted small">none</span>
+                            }
+                            else
+                            {
+                                <Slots Numbers="weapon" Kind="weapon" />
+                            }
+                        </div>
+                    }
+                </td>
+            }
+        </tr>
+    };
+
+    /// <summary>Levels of the empty slots, highest first.</summary>
+    private static (List<int> Armor, List<int> Weapon) FreeSlots(BuildDto b)
+    {
+        var armor = new List<int>();
+        var weapon = new List<int>();
+        static void Add(IReadOnlyList<int> levels, IReadOnlyList<DecoDto?> decos, List<int> into)
+        {
+            for (var i = 0; i < levels.Count; i++)
+                if (levels[i] > 0 && (i >= decos.Count || decos[i] is null)) into.Add(levels[i]);
+        }
+        Add(b.Weapon.Slots, b.Weapon.Decorations, weapon);
+        foreach (var a in b.Armor) Add(a.Slots, a.Decorations, armor);
+        if (b.Talisman is { } t)
+            for (var i = 0; i < t.Slots.Count; i++)
+                if (i >= t.Decorations.Count || t.Decorations[i] is null)
+                    (t.Slots[i].StartsWith('w') ? weapon : armor).Add(BuildHelpers.ParseSlot(t.Slots[i]).Level);
+        return (armor.OrderByDescending(x => x).ToList(), weapon.OrderByDescending(x => x).ToList());
+    }
 
     private static RenderFragment Piece(BuildDto b, BuildSlot slot, SlotChange change) => __builder =>
     {
