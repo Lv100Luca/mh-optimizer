@@ -12,7 +12,7 @@
 
     <div class="panel">
         <Section Key="inventory" Title="@($"Weapons of {profile}")"
-                 Hint="Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile. The chart puts every weapon of a type on one damage scale: your builds, its pick and the best build of its last run, all scored now.">
+                 Hint="Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile. The chart puts every weapon of a type on one damage scale: your builds, its pick and the best build of its last run, all scored now under the weapon's conditions (a build's own overrides left out).">
             <Actions>
                 <div class="btn-row">
                     @if (running)
@@ -136,7 +136,8 @@
         string? unit = null;
         foreach (var b in App.BuildsOf(e.Name).Where(b => b.DraftOf is null))
         {
-            if (App.ScoreRef(BuildRef.Own(e.Name, b.Name))?.Build is not { } scored) continue;
+            // under the weapon's conditions, like the run's builds (a build's own overrides are for checking it against the game)
+            if (App.ScoreUnderWeapon(BuildRef.Own(e.Name, b.Name))?.Build is not { } scored) continue;
             damage &= BuildDamage.Of(scored) is not null;
             unit ??= BuildDamage.Of(scored) is not null ? BuildDamage.Label(scored) : null;
             var v = BuildDamage.Of(scored) ?? scored.Score;
@@ -335,9 +336,9 @@
     {
         var refA = Side(a.Name, _chooseA);
         var refB = Side(b.Name, _chooseB);
-        var sa = refA is null ? null : App.ScoreRef(refA);
+        var sa = refA is null ? null : App.ScoreUnderWeapon(refA);
         var sameType = a.Type == b.Type;
-        var sb = refB is null ? null : _sameConditions && sameType && sa is not null ? App.ScoreRef(refB, CompareBasis.Baseline, sa) : App.ScoreRef(refB);
+        var sb = refB is null ? null : _sameConditions && sameType && sa is not null ? App.ScoreRef(refB, CompareBasis.Baseline, sa) : App.ScoreUnderWeapon(refB);
         var ba = sa?.Build;
         var bb = sb?.Build;
         var differences = sameType ? ConditionDifferences(a.Name, b.Name) : [];

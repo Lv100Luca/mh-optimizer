@@ -443,17 +443,24 @@ public sealed partial class AppState
         return best;
     }
 
-    /// <summary>The weapon's best own build now (drafts left out), by damage.</summary>
+    /// <summary>
+    /// The weapon's best own build now (drafts left out), by damage under the weapon's conditions: a build's own overrides
+    /// (a status-screen check, a dummy target) are left out, so it compares with the run's builds.
+    /// </summary>
     public (BuildRef Ref, BuildDto Build)? OwnBest(string weapon)
     {
+        if (RequestOf(weapon) is not { } request) return null;
         (BuildRef Ref, BuildDto Build)? best = null;
         foreach (var b in BuildsOf(weapon).Where(b => b.DraftOf is null))
         {
             var r = BuildRef.Own(weapon, b.Name);
-            if (ScoreRef(r)?.Build is { } now && (best is null || Value(now) > Value(best.Value.Build))) best = (r, now);
+            if (ScoreUnder(r, request)?.Build is { } now && (best is null || Value(now) > Value(best.Value.Build))) best = (r, now);
         }
         return best;
     }
+
+    /// <summary>A build under its own weapon's conditions, without its own overrides: how the Inventory compares weapons.</summary>
+    public ScoredRef? ScoreUnderWeapon(BuildRef r) => RequestOf(r.Weapon) is { } request ? ScoreUnder(r, request) : null;
 
     private static double Value(BuildDto b) => BuildDamage.Of(b) ?? b.Score;
 
