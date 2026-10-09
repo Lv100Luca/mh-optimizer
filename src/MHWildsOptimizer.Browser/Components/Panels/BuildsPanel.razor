@@ -429,7 +429,14 @@
                                 title="@(open ? "Hide the hits" : "Show every hit without and with a crit, step conditions and modifiers")">
                                 <td>
                                     <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
-                                    @x.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(x.Group, x.Hits, x.Mv)</InfoHover>
+                                    @if (x.Id == Attacks.Sequence)
+                                    {
+                                        <ScoredAttack Steps="@App.Request?.Conditions.AttackProfile?.Sequence" WeaponType="@App.WeaponKind" Unsaved="Your sequence" />
+                                    }
+                                    else
+                                    {
+                                        @x.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(x.Group, x.Hits, x.Mv)</InfoHover>
+                                    }
                                     @if (x.Current) {<span class="scored-badge" title="The build's score uses this attack">scored on</span>}
                                 </td>
                                 <td class="num">

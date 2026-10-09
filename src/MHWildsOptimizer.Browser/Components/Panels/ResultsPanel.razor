@@ -75,7 +75,7 @@
             }
             @if (rows.FirstOrDefault()?.Build.StatsRequested.ScoredOn is { } scoredOn)
             {
-                <p class="small scored-on">Scored on <b>@scoredOn</b> <span class="muted">@(stale ? "(today's attack and target)" : "(what this run used, saved with it)")</span></p>
+                <p class="small scored-on">Scored on <ScoredAttack ScoredOn="@scoredOn" WeaponType="@rows[0].Build.Weapon.Type" /> <span class="muted">@(stale ? "(today's attack and target)" : "(what this run used, saved with it)")</span></p>
             }
             @if (result is not null)
             {
@@ -473,7 +473,7 @@
         var theirs = App.AttackRowsOf(baseline.Request, baseline.Input).ToDictionary(x => x.Id);
         return mine.Where(x => theirs.ContainsKey(x.Id))
             .OrderByDescending(x => x.Current).Take(8)
-            .Select(x => (x.Name, x.DamagePerExecution, x.DamagePerExecution - theirs[x.Id].DamagePerExecution, x.Current))
+            .Select(x => (App.AttackRowName(x, request), x.DamagePerExecution, x.DamagePerExecution - theirs[x.Id].DamagePerExecution, x.Current))
             .ToList();
     }
 

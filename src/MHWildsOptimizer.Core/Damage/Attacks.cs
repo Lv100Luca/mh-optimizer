@@ -231,6 +231,11 @@ public static class Attacks
 
     public static IReadOnlyList<SequencePreset> SequencePresetsFor(WeaponType type) => SequencePresets.Where(s => s.Type == type).ToList();
 
+    /// <summary>"Offset Rising Slash Lv3 + Tackle x2 + ...": the steps of a sequence by attack name (steps of unknown attacks or no repeat are left out).</summary>
+    public static string StepList(WeaponType type, IEnumerable<SequenceStep> steps) =>
+        string.Join(" + ", steps.Select(s => (Step: s, Def: Find(type, s.Attack))).Where(x => x.Def is not null && x.Step.Repeat > 0)
+            .Select(x => x.Def!.Name + (x.Step.Repeat > 1 ? $" x{x.Step.Repeat}" : "")));
+
     /// <summary>The attack a weapon type is scored with when the profile names none; null means the average-hit model.</summary>
     public static string? DefaultFor(WeaponType type) => type switch
     {

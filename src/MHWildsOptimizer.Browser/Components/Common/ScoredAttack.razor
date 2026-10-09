@@ -1,0 +1,102 @@
+@inject AppState App
+@implements IDisposable
+@*
+    The attack or sequence a build is scored on, as an outlined chip: a saved sequence by its name, another sequence as
+    "Custom sequence", an attack by its name. The (i) shows a sequence's steps, an attack's kind, hits and MV, and the target.
+    Reads a run's scored-on text (ScoredOn), or the steps of a request (Steps) for the per-attack tables.
+*@
+@{
+    var v = Describe();
+}
+<span class="attack-chip @Class">
+    <span class="attack-chip-name">@v.Name</span>
+    <InfoHover Label="@(v.Steps is not null ? "Its steps" : "Hits and MV")">
+        @if (v.Steps is { } steps)
+        {
+            <span><b>@v.Name</b> <span class="muted">· @(v.Saved ? "saved sequence" : "not saved")</span></span>
+            <ol>
+                @foreach (var s in steps)
+                {
+                    <li>@s</li>
+                }
+            </ol>
+        }
+        else
+        {
+            <b>@v.Name</b>
+            @if (v.Facts is { } facts)
+            {
+                <span class="muted">@facts</span>
+            }
+        }
+        @if (v.Phial is { } phial)
+        {
+            <span class="muted">@phial phial</span>
+        }
+        @if (ShowTarget && v.Target is { } target)
+        {
+            <span>against @target</span>
+        }
+    </InfoHover>
+</span>
+
+@code {
+    /// <summary>A build's scored-on text (<c>StatsDto.ScoredOn</c>).</summary>
+    [Parameter] public string? ScoredOn { get; set; }
+    /// <summary>The steps of a request's sequence; used instead of <see cref="ScoredOn"/> when given.</summary>
+    [Parameter] public IReadOnlyList<SequenceStep>? Steps { get; set; }
+    /// <summary>The weapon type (API kind): its attacks and saved sequences.</summary>
+    [Parameter, EditorRequired] public string WeaponType { get; set; } = "great-sword";
+    [Parameter] public bool ShowTarget { get; set; } = true;
+    /// <summary>The name of a sequence that is not saved.</summary>
+    [Parameter] public string Unsaved { get; set; } = "Custom sequence";
+    [Parameter] public string? Class { get; set; }
+
+    // a saved sequence renamed or deleted: the chip's parameters stay the same, so it follows the sequences itself
+    private object? _sequences;
+
+    protected override void OnInitialized()
+    {
+        _sequences = App.Sequences;
+        App.Changed += OnChanged;
+    }
+
+    private void OnChanged()
+    {
+        if (ReferenceEquals(_sequences, App.Sequences)) return;
+        _sequences = App.Sequences;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => App.Changed -= OnChanged;
+
+    private sealed record View(string Name, bool Saved, IReadOnlyList<string>? Steps, string? Facts, string? Phial, string? Target);
+
+    private View Describe()
+    {
+        var attacks = App.Index.WeaponTypes.GetValueOrDefault(WeaponType)?.AttackProfile.Attacks ?? [];
+        if (Steps is { Count: > 0 } steps)
+        {
+            var saved = App.SavedSequenceOf(WeaponType, steps);
+            return new View(saved?.Name ?? Unsaved, saved is not null, steps.Select(s => StepLine(s, attacks)).ToList(), null, null, null);
+        }
+        if (ScoredOn is null) return new View("—", false, null, null, null, null);
+        var p = ScoredOnText.Parse(ScoredOn);
+        if (p.IsSequence)
+        {
+            var name = App.SequenceNameOf(WeaponType, p.StepList!);
+            return new View(name ?? Unsaved, name is not null, p.Steps, null, p.Phial, p.Target);
+        }
+        var a = attacks.FirstOrDefault(x => x.Name == p.Attack);
+        var facts = a is null ? null : Fmt.AttackFacts(a.Combo ? "Combos" : "Moves", a.Hits.Sum(h => h.Count), a.Hits.Sum(h => h.Mv * h.Count));
+        return new View(p.Attack, false, null, facts, p.Phial, p.Target);
+    }
+
+    /// <summary>"Strong Charged Slash Lv3 ×2 · Stamina full: off".</summary>
+    private string StepLine(SequenceStep s, IReadOnlyList<AttackDto> attacks)
+    {
+        var name = attacks.FirstOrDefault(a => a.Id == s.Attack)?.Name ?? s.Attack;
+        var changes = s.Conditions.Select(kv => $"{App.Catalog.Conditions.FirstOrDefault(c => c.Key == kv.Key)?.Label ?? kv.Key}: {(kv.Value ? "on" : "off")}");
+        return string.Join(" · ", changes.Prepend(name + (s.Repeat > 1 ? $" ×{s.Repeat}" : "")));
+    }
+}

@@ -237,7 +237,7 @@
             lines.Add("Target: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {(x.C.Target ?? new Target()).Name}")));
         var scoredOn = eff.Select(x => x.Col.Build?.StatsRequested.ScoredOn).ToList();
         if (scoredOn.All(s => s is not null) && scoredOn.Distinct().Count() > 1)
-            lines.Add("Scored on: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.Col.Build!.StatsRequested.ScoredOn}")));
+            lines.Add("Scored on: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {App.ScoredOnLabel(x.Col.Build!.StatsRequested.ScoredOn!, x.Col.Build.Weapon.Type)}")));
         if (eff.Select(x => x.C.MealAttack).Distinct().Count() > 1)
             lines.Add("Meal attack: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.C.MealAttack}")));
         if (eff.Select(x => x.C.Resonance).Distinct().Count() > 1)
@@ -257,7 +257,8 @@
         @Sec("Damage", n)
         @if (hasDamage && first is not null)
         {
-            @Metric(cols, $"Damage per {first.StatsRequested.Execution ?? "attack"}", first.StatsRequested.ScoredOn, b => BuildDamage.Of(b), 0, headline: true)
+            @Metric(cols, $"Damage per {first.StatsRequested.Execution ?? "attack"}", null, b => BuildDamage.Of(b), 0, headline: true,
+                subContent: first.StatsRequested.ScoredOn is { } on ? @<ScoredAttack ScoredOn="@on" WeaponType="@first.Weapon.Type" /> : null)
             @if (basis != CompareBasis.AllOn)
             {
                 @Metric(cols, "Every condition on", "the same attack", b => b.StatsAllOn.DamagePerExecution, 0)
@@ -342,7 +343,8 @@
     };
 
     /// <summary>A number per column with its difference to the baseline; the best one is green.</summary>
-    private RenderFragment Metric(List<Col> cols, string label, string? sub, Func<BuildDto, double?> get, int digits, string? suffix = null, bool headline = false) => __builder =>
+    private RenderFragment Metric(List<Col> cols, string label, string? sub, Func<BuildDto, double?> get, int digits, string? suffix = null, bool headline = false,
+        RenderFragment? subContent = null) => __builder =>
     {
         var values = cols.Select(c => c.Build is { } b ? get(b) : null).ToList();
         var known = values.OfType<double>().ToList();
@@ -350,7 +352,7 @@
         var baseIndex = cols.FindIndex(c => c.IsBase);
         var baseValue = baseIndex >= 0 ? values[baseIndex] : null;
         <tr class="@(headline ? "headline" : "")">
-            <td class="rowh">@label@if (sub is not null) {<div class="tiny muted">@sub</div>}</td>
+            <td class="rowh">@label@if (sub is not null) {<div class="tiny muted">@sub</div>}@if (subContent is not null) {<div class="small">@subContent</div>}</td>
             @for (var i = 0; i < cols.Count; i++)
             {
                 var v = values[i];
@@ -423,7 +425,8 @@
     private RenderFragment Attacks(List<Col> cols, Col? baseCol, int n) => __builder =>
     {
         var rows = cols.ToDictionary(c => c.Ref, c => c.Scored is { Build: not null } s ? App.AttackRowsOf(s.Request, s.Input).ToDictionary(x => x.Id) : []);
-        var order = cols.Select(c => rows[c.Ref].Values).FirstOrDefault(x => x.Count > 0)?.ToList() ?? [];
+        var firstCol = cols.FirstOrDefault(c => rows[c.Ref].Count > 0);
+        var order = firstCol is null ? [] : rows[firstCol.Ref].Values.ToList();
         if (order.Count == 0) return;
         var baseRows = baseCol is null ? null : rows[baseCol.Ref];
         var shown = _allAttacks ? order : order.Where(x => x.Current).Concat(order.Where(x => !x.Current).Take(7)).ToList();
@@ -435,7 +438,14 @@
             var bv = baseRows?.GetValueOrDefault(a.Id)?.DamagePerExecution;
             <tr @key="a.Id">
                 <td class="rowh">
-                    @a.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(a.Group, a.Hits, a.Mv)</InfoHover>
+                    @if (a.Id == Core.Damage.Attacks.Sequence && firstCol?.Scored is { } fs)
+                    {
+                        <ScoredAttack Steps="@fs.Request.Conditions.AttackProfile?.Sequence" WeaponType="@fs.WeaponType" Unsaved="Your sequence" />
+                    }
+                    else
+                    {
+                        @a.Name<InfoHover Label="Hits and MV">@Fmt.AttackFacts(a.Group, a.Hits, a.Mv)</InfoHover>
+                    }
                     @if (a.Current)
                     {
                         <span class="scored-badge" title="The builds are scored on this one">scored on</span>

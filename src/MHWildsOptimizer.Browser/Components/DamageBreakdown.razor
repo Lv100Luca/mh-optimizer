@@ -130,7 +130,11 @@
             </table>
         </div>
         <p class="muted small">
-            @(r.ScoredOn is { } on ? $"{on}. " : "")Hit rows are one hit; @(attacks.Count > 1 ? "a step row counts all its hits and repeats" : "the attack row all of them").
+            @if (r.ScoredOn is { } on)
+            {
+                <ScoredAttack ScoredOn="@on" WeaponType="@Build.Weapon.Type" /><span>. </span>
+            }
+            Hit rows are one hit; @(attacks.Count > 1 ? "a step row counts all its hits and repeats" : "the attack row all of them").
             Before the monster's defense rate and per-hit rounding; the average counts crits at the affinity's chance.
         </p>
     </section>

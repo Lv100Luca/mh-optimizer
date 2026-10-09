@@ -9,6 +9,7 @@
     var type = TypeOf(request);
     var weapon = WeaponOf(request);
     var attackId = profile.Attack ?? preset.DefaultAttack ?? Attacks.Average;
+    var savedSequence = profile.IsSequence ? App.SavedSequenceOf(Kind(request), profile.Sequence) : null;
     var attack = preset.Attacks.FirstOrDefault(a => a.Id == attackId);
     var resolved = weapon is not null ? c.Attack(weapon) : (ResolvedAttackProfile?)null;
     var element = weapon?.Element ?? request.Weapon.Spec?.Element ?? Element.None;
@@ -125,7 +126,8 @@
                         <h3>Attack</h3>
                         @if (preset.Attacks.Count > 0)
                         {
-                            <SelectBox Value="@attackId" Options="AttackOptions(preset)" ValueChanged="id => SetAttack(id, preset)" Style="max-width: 360px" />
+                            <SelectBox Value="@(savedSequence is not null ? SavedPrefix + savedSequence.Name : attackId)" Options="AttackOptions(preset, kind)"
+                                       ValueChanged="id => SetAttack(id, preset, kind)" Style="max-width: 360px" />
                         }
                         @if (profile.IsSequence)
                         {
@@ -133,7 +135,8 @@
                                 Your rotation in order. Every step adds its hits; a step can change hunt conditions (e.g. Maximum Might off after a tackle used stamina),
                                 and steps are weighted by their share of the motion value, so big finishers count most without dropping the hits before them.
                             </p>
-                            <SequenceEditor Steps="profile.Sequence ?? []" Preset="preset" Base="c" StepsChanged="steps => SetProfile(p => p with { Sequence = steps.ToList() })" />
+                            <SequenceEditor Steps="profile.Sequence ?? []" Preset="preset" Base="c" WeaponKind="@kind" WeaponLabel="@weaponLabel"
+                                            StepsChanged="steps => SetProfile(p => p with { Sequence = steps.ToList() })" />
                         }
                         else if (attack is not null)
                         {
@@ -271,9 +274,13 @@
         catch (Exception) { return null; }
     }
 
-    private static IReadOnlyList<SelectOption> AttackOptions(AttackProfileDto preset) =>
+    /// <summary>Attack picker values of the saved sequences: "saved:" + the name.</summary>
+    private const string SavedPrefix = "saved:";
+
+    private IReadOnlyList<SelectOption> AttackOptions(AttackProfileDto preset, string kind) =>
         preset.Attacks.Select(a => new SelectOption(a.Id, a.Id == preset.DefaultAttack ? $"{a.Name} (default)" : a.Name, a.Combo ? "Combos" : "Moves"))
             .OrderBy(o => o.Group == "Combos")
+            .Concat(App.SequencesFor(kind).Select(s => new SelectOption(SavedPrefix + s.Name, s.Name, "Your sequences")))
             .Append(new SelectOption(Attacks.Sequence, "Custom sequence (your rotation)", "Other"))
             .Append(new SelectOption(Attacks.Average, "Average hit (motion value per hit)", "Other"))
             .ToList();
@@ -295,15 +302,25 @@
             return new SelectOption(p.Name, $"{p.Name} — raw {Num(t.RawHitzone)}{ele}");
         }).ToList();
 
-    private void SetAttack(string? id, AttackProfileDto preset) =>
+    private void SetAttack(string? id, AttackProfileDto preset, string kind)
+    {
+        // a saved sequence: its steps, copied (the request must not share them)
+        if (id is not null && id.StartsWith(SavedPrefix))
+        {
+            if (App.SequencesFor(kind).FirstOrDefault(s => s.Name == id[SavedPrefix.Length..]) is { } saved)
+                SetProfile(p => p with { Attack = Attacks.Sequence, Sequence = saved.Steps.Select(s => s with { Conditions = new(s.Conditions) }).ToList() });
+            return;
+        }
         SetProfile(p => p with
         {
             Attack = id is null || id == (preset.DefaultAttack ?? Attacks.Average) ? null : id,
-            // a new sequence starts from the first example, or from the attack picked so far
+            // a new sequence starts from the first saved one or example, or from the attack picked so far
             Sequence = id == Attacks.Sequence && p.Sequence is not { Count: > 0 }
-                ? preset.Sequences.FirstOrDefault()?.Steps.ToList() ?? [new SequenceStep { Attack = p.Attack ?? preset.DefaultAttack ?? preset.Attacks[0].Id }]
+                ? (App.SequencesFor(kind).FirstOrDefault()?.Steps ?? preset.Sequences.FirstOrDefault()?.Steps)?.Select(s => s with { Conditions = new(s.Conditions) }).ToList()
+                  ?? [new SequenceStep { Attack = p.Attack ?? preset.DefaultAttack ?? preset.Attacks[0].Id }]
                 : p.Sequence,
         });
+    }
 
     private void SetTarget(Func<Target, Target> fn) => App.PatchConditions(c => c with { Target = fn(c.Target ?? new Target()) });
 

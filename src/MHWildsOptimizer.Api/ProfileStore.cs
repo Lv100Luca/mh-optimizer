@@ -35,7 +35,8 @@ public sealed class ProfileStore(string inputs) : IProfileStore
     public ProfileDto? LoadProfile(string profile)
     {
         if (!ProfileExists(profile)) return null;
-        return new ProfileDto(profile, LoadTalismans(profile), ProfileFiles.ReadSettings(ProfileDir(profile)).ConditionPresets);
+        var settings = ProfileFiles.ReadSettings(ProfileDir(profile));
+        return new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences);
     }
 
     public ProfileDto CreateProfile(string profile)
@@ -86,6 +87,17 @@ public sealed class ProfileStore(string inputs) : IProfileStore
             updated.Add(Path.GetFileNameWithoutExtension(file));
         }
         return new PresetSavedDto(LoadProfile(profile)!, updated);
+    }
+
+    public ProfileDto SaveSequences(string profile, string weaponKind, IReadOnlyList<SavedSequence> sequences)
+    {
+        var dir = ProfileDir(profile);
+        var settings = ProfileFiles.ReadSettings(dir);
+        var all = new Dictionary<string, List<SavedSequence>>(settings.Sequences);
+        if (sequences.Count == 0) all.Remove(weaponKind);
+        else all[weaponKind] = sequences.ToList();
+        ProfileFiles.SaveSettings(settings with { Sequences = all }, dir);
+        return LoadProfile(profile)!;
     }
 
     // ---------------------------------------------------------------- weapons

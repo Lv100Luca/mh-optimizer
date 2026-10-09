@@ -5,8 +5,9 @@ namespace MHWildsOptimizer.Api;
 
 public sealed record ProfileSummaryDto(string Name, int Weapons, int Talismans, DateTimeOffset Modified);
 
-/// <summary>Account-wide data: the talisman pool every weapon draws from and the condition preset of each weapon type.</summary>
-public sealed record ProfileDto(string Name, IReadOnlyList<TalismanInput> Talismans, IReadOnlyDictionary<string, Conditions> ConditionPresets);
+/// <summary>Account-wide data: the talisman pool every weapon draws from, the condition preset and the named sequences of each weapon type.</summary>
+public sealed record ProfileDto(string Name, IReadOnlyList<TalismanInput> Talismans, IReadOnlyDictionary<string, Conditions> ConditionPresets,
+    IReadOnlyDictionary<string, List<SavedSequence>>? Sequences = null);
 
 public sealed record WeaponSummaryDto(string Name, string Type, DateTimeOffset Modified, bool HasResults, string? Summary);
 
@@ -54,6 +55,9 @@ public interface IProfileStore
     /// values that matched the old preset take the new one, the weapons' own overrides stay.
     /// </summary>
     PresetSavedDto SavePreset(string profile, string weaponKind, Conditions preset);
+
+    /// <summary>Replaces the named sequences of a weapon type (an empty list drops them).</summary>
+    ProfileDto SaveSequences(string profile, string weaponKind, IReadOnlyList<SavedSequence> sequences);
 
     IReadOnlyList<WeaponSummaryDto> ListWeapons(string profile);
     WeaponDto? LoadWeapon(string profile, string name);

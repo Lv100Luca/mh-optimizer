@@ -29,6 +29,9 @@ public sealed record AttackProfile
 
     public bool IsSequence => string.Equals(Attack, Attacks.Sequence, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>What the name of a sequence starts with, before its <see cref="Attacks.StepList"/>.</summary>
+    public const string SequencePrefix = "Sequence: ";
+
     /// <summary>The attack definition this profile scores <paramref name="type"/> with; null for the average-hit model and for sequences.</summary>
     public AttackDefinition? AttackFor(WeaponType type) =>
         string.Equals(Attack, Attacks.Average, StringComparison.OrdinalIgnoreCase) || IsSequence ? null : Attacks.Find(type, Attack ?? Attacks.DefaultFor(type));
@@ -41,7 +44,7 @@ public sealed record AttackProfile
             var steps = (Sequence ?? []).Select(st => (Step: st, Def: Attacks.Find(type, st.Attack))).Where(x => x.Def is not null && x.Step.Repeat > 0).ToList();
             if (steps.Count == 0) return null;
             var hits = steps.SelectMany(x => Enumerable.Repeat(x.Def!.Hits, x.Step.Repeat).SelectMany(h => h)).ToList();
-            var name = "Sequence: " + string.Join(" + ", steps.Select(x => x.Def!.Name + (x.Step.Repeat > 1 ? $" x{x.Step.Repeat}" : "")));
+            var name = SequencePrefix + Attacks.StepList(type, steps.Select(x => x.Step));
             return (name, steps.Sum(x => x.Def!.Seconds * x.Step.Repeat), hits);
         }
         return AttackFor(type) is { } a ? (a.Name, a.Seconds, a.Hits.ToList()) : null;
@@ -172,6 +175,16 @@ public sealed record SequenceStep
         && Conditions.Count == other.Conditions.Count && Conditions.All(kv => other.Conditions.TryGetValue(kv.Key, out var v) && v == kv.Value);
 
     public override int GetHashCode() => HashCode.Combine(Attack, Repeat, Conditions.Count);
+}
+
+/// <summary>
+/// A custom sequence saved under a name in the profile, per weapon type: the Conditions tab picks it again, and wherever a
+/// sequence with the same steps is shown, it shows by this name.
+/// </summary>
+public sealed record SavedSequence
+{
+    public required string Name { get; init; }
+    public required IReadOnlyList<SequenceStep> Steps { get; init; }
 }
 
 /// <summary>The on/off hunt conditions of <see cref="Damage.Conditions"/> by snake_case key, for sequence step and build overrides.</summary>

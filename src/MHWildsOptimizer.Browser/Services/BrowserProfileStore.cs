@@ -37,7 +37,7 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
     public bool ProfileExists(string profile) => storage.GetString($"{P(profile)}settings") is not null;
 
     public ProfileDto? LoadProfile(string profile) =>
-        ProfileExists(profile) ? new ProfileDto(profile, LoadTalismans(profile), Settings(profile).ConditionPresets) : null;
+        ProfileExists(profile) && Settings(profile) is var settings ? new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences) : null;
 
     public ProfileDto CreateProfile(string profile)
     {
@@ -87,6 +87,17 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
         }
         Touch(profile);
         return new PresetSavedDto(LoadProfile(profile)!, updated);
+    }
+
+    public ProfileDto SaveSequences(string profile, string weaponKind, IReadOnlyList<SavedSequence> sequences)
+    {
+        var settings = Settings(profile);
+        var all = new Dictionary<string, List<SavedSequence>>(settings.Sequences);
+        if (sequences.Count == 0) all.Remove(weaponKind);
+        else all[weaponKind] = sequences.ToList();
+        storage.Set($"{P(profile)}settings", settings with { Sequences = all }, Json);
+        Touch(profile);
+        return LoadProfile(profile)!;
     }
 
     private ProfileSettings Settings(string profile) => storage.Get<ProfileSettings>($"{P(profile)}settings", Json) ?? new ProfileSettings();

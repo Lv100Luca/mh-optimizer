@@ -453,7 +453,11 @@
                     {
                         <b>@winner is @Fmt.N(Math.Abs(pct), 1)% ahead</b> <span>(@Fmt.N(va, digits) vs @Fmt.N(vb, digits))</span>
                     }
-                    <span class="muted"> · @App.RefName(sa.Ref) vs @App.RefName(sb.Ref)@(scoredOn is not null ? $", {scoredOn}" : "")</span>
+                    <span class="muted"> · @App.RefName(sa.Ref) vs @App.RefName(sb.Ref)@(scoredOn is not null ? ", on " : "")</span>
+                    @if (scoredOn is not null)
+                    {
+                        <ScoredAttack ScoredOn="@scoredOn" WeaponType="@sa.Build!.Weapon.Type" />
+                    }
                 </p>
                 <p class="small muted">
                     Best of the run: @a.Name @N(runA), @b.Name @N(runB). Best of yours: @a.Name @N(ownA), @b.Name @N(ownB).

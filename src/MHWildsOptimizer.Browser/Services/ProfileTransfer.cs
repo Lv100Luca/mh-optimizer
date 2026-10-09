@@ -109,8 +109,8 @@ public sealed class ProfileTransfer(BrowserProfileStore store)
     }
 
     /// <summary>
-    /// Writes the plan into a profile (created when missing): condition presets are merged, a talisman pool replaces the
-    /// profile's, weapons replace ones with the same name.
+    /// Writes the plan into a profile (created when missing): condition presets and named sequences are merged (an imported
+    /// sequence replaces one of the same name), a talisman pool replaces the profile's, weapons replace ones with the same name.
     /// </summary>
     public void Apply(ImportPlan plan, string profile)
     {
@@ -120,7 +120,10 @@ public sealed class ProfileTransfer(BrowserProfileStore store)
             var current = store.LoadSettings(profile);
             var presets = new Dictionary<string, Core.Damage.Conditions>(current.ConditionPresets);
             foreach (var (kind, preset) in settings.ConditionPresets) presets[kind] = preset;
-            store.SaveSettings(profile, current with { ConditionPresets = presets });
+            var sequences = new Dictionary<string, List<Core.Damage.SavedSequence>>(current.Sequences);
+            foreach (var (kind, list) in settings.Sequences)
+                sequences[kind] = (sequences.GetValueOrDefault(kind) ?? []).Where(s => list.All(x => x.Name != s.Name)).Concat(list).ToList();
+            store.SaveSettings(profile, current with { ConditionPresets = presets, Sequences = sequences });
         }
         if (plan.Talismans is { } talismans) store.SaveTalismans(profile, talismans);
         foreach (var (name, weapon) in plan.Weapons)

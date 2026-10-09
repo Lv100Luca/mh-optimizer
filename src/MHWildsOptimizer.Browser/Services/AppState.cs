@@ -239,6 +239,7 @@ public sealed partial class AppState : IDisposable
 
         Profile = p.Name;
         Presets = p.ConditionPresets;
+        Sequences = p.Sequences ?? new Dictionary<string, List<SavedSequence>>();
         Talismans = p.Talismans;
         Weapons = list;
 

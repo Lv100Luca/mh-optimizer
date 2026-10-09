@@ -157,6 +157,34 @@ public class AttackSequenceTests
     }
 
     [Fact]
+    public void ASequenceIsNamedByItsStepList()
+    {
+        // a saved sequence is recognised in a run's scored-on text by this list
+        var steps = new[] { new SequenceStep { Attack = "offset-rising-slash" }, new SequenceStep { Attack = "tackle", Repeat = 2 }, new SequenceStep { Attack = "made-up" } };
+        var list = Attacks.StepList(WeaponType.GreatSword, steps);
+        Assert.Equal("Offset Rising Slash Lv3 + Tackle (shoulder bash) Lv3 x2", list);
+        Assert.Equal(AttackProfile.SequencePrefix + list, (Conditions.Default with { AttackProfile = Sequence(steps) }).Attack(Gs).Name);
+    }
+
+    [Fact]
+    public void SavedSequencesRoundTripThroughProfileJson()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "mhwilds-profile-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var saved = new SavedSequence { Name = "Offset TCS", Steps = [new SequenceStep { Attack = "tackle", Conditions = new() { ["stamina_full"] = false } }] };
+            ProfileFiles.SaveSettings(new ProfileSettings { Sequences = new() { ["great-sword"] = [saved] } }, dir);
+            var back = ProfileFiles.ReadSettings(dir).Sequences["great-sword"].Single();
+            Assert.Equal(saved.Name, back.Name);
+            Assert.Equal(saved.Steps, back.Steps);
+        }
+        finally
+        {
+            try { Directory.Delete(dir, recursive: true); } catch (IOException) { }
+        }
+    }
+
+    [Fact]
     public void SequencesCompareByValue()
     {
         AttackProfile Make() => Sequence(new SequenceStep { Attack = "tackle", Conditions = new() { ["stamina_full"] = false } });

@@ -1,10 +1,29 @@
 @inherits AppComponent
-@* The steps of a custom attack sequence: attack, repeat, and hunt conditions that differ during the step. *@
+@inject IDialogService Dialogs
+@* The steps of a custom attack sequence: attack, repeat, and hunt conditions that differ during the step; saved under a name
+   for the weapon type, so it can be picked again and shows by that name wherever it is the scored attack. *@
+@{
+    var saved = App.SavedSequenceOf(WeaponKind, Steps);
+}
 
 <div class="sequence">
     <div class="sequence-head">
-        <SelectBox Value="@((string?)null)" Placeholder="Load an example…" Options="ExampleOptions" ValueChanged="LoadExample" Style="max-width: 300px" />
+        <SelectBox Value="@((string?)null)" Placeholder="Load a sequence…" Options="LoadOptions" ValueChanged="Load" Style="max-width: 300px" />
         <span class="muted small">@Steps.Sum(s => s.Repeat) attacks · @Num(Math.Round(TotalMv)) MV</span>
+    </div>
+    <div class="sequence-name">
+        @if (saved is not null)
+        {
+            <span class="attack-chip"><span class="attack-chip-name">@saved.Name</span></span>
+            <span class="muted small">saved for every @WeaponLabel of the profile</span>
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Rename(saved.Name)">Rename</MudButton>
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(saved.Name)">Delete</MudButton>
+        }
+        else
+        {
+            <span class="muted small">Not saved. Give it a name to pick it again and to see that name wherever builds are scored on it.</span>
+            <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="Steps.Count == 0" OnClick="SaveAs">Save as…</MudButton>
+        }
     </div>
     @if (Steps.Count == 0)
     {
@@ -53,6 +72,13 @@
     /// <summary>The hunt conditions the steps differ from.</summary>
     [Parameter, EditorRequired] public Conditions Base { get; set; } = default!;
     [Parameter] public EventCallback<IReadOnlyList<SequenceStep>> StepsChanged { get; set; }
+    /// <summary>The weapon type (API kind) the sequence is saved for.</summary>
+    [Parameter, EditorRequired] public string WeaponKind { get; set; } = "great-sword";
+    [Parameter] public string WeaponLabel { get; set; } = "weapon";
+
+    private const string SavedPrefix = "saved:";
+    private const string ExamplePrefix = "example:";
+    private const int MaxNameLength = 40;
 
     /// <summary>Hunt conditions a step cannot change: health holds for the whole sequence, proc damage is all or nothing.</summary>
     private static readonly HashSet<string> NotPerStep = ["full_health", "red_health", "low_health", "dark_arts_shockwave", "bad_blood"];
@@ -65,7 +91,10 @@
     private IReadOnlyList<SelectOption> AttackOptions =>
         Preset.Attacks.Select(a => new SelectOption(a.Id, a.Name, a.Combo ? "Combos" : "Moves")).OrderBy(o => o.Group == "Combos").ToList();
 
-    private IReadOnlyList<SelectOption> ExampleOptions => Preset.Sequences.Select(s => new SelectOption(s.Id, s.Name)).ToList();
+    private IReadOnlyList<SelectOption> LoadOptions =>
+        App.SequencesFor(WeaponKind).Select(s => new SelectOption(SavedPrefix + s.Name, s.Name, "Your sequences"))
+            .Concat(Preset.Sequences.Select(s => new SelectOption(ExamplePrefix + s.Id, s.Name, "Examples")))
+            .ToList();
 
     private IReadOnlyList<SelectOption> ConditionOptions(SequenceStep step) =>
         Catalog.Conditions
@@ -120,10 +149,42 @@
         return Set(steps);
     }
 
-    private Task LoadExample(string? id) =>
-        Preset.Sequences.FirstOrDefault(s => s.Id == id) is { } example
-            ? Set(example.Steps.Select(s => s with { Conditions = new Dictionary<string, bool>(s.Conditions) }).ToList())
-            : Task.CompletedTask;
+    private Task Load(string? value)
+    {
+        IReadOnlyList<SequenceStep>? steps = value switch
+        {
+            not null when value.StartsWith(SavedPrefix) => App.SequencesFor(WeaponKind).FirstOrDefault(s => s.Name == value[SavedPrefix.Length..])?.Steps,
+            not null when value.StartsWith(ExamplePrefix) => Preset.Sequences.FirstOrDefault(s => s.Id == value[ExamplePrefix.Length..])?.Steps,
+            _ => null,
+        };
+        return steps is null ? Task.CompletedTask : Set(steps.Select(s => s with { Conditions = new Dictionary<string, bool>(s.Conditions) }).ToList());
+    }
+
+    /// <summary>Why a name cannot be used; <paramref name="renaming"/> is the name being changed (saving under a taken name replaces that sequence).</summary>
+    private string? NameError(string name, string? renaming = null) =>
+        name.Length > MaxNameLength ? $"At most {MaxNameLength} characters."
+        : renaming is not null && name != renaming && App.SequencesFor(WeaponKind).Any(s => s.Name == name) ? "Another sequence has this name."
+        : null;
+
+    private async Task SaveAs()
+    {
+        var name = await NameDialog.AskAsync(Dialogs, "Save the sequence", "Name", ok: "Save",
+            message: $"Saved for every {WeaponLabel} of {App.Profile}. Saving under the name of a saved sequence replaces it.",
+            validate: n => NameError(n));
+        if (name is not null) App.SaveSequence(WeaponKind, name, Steps);
+    }
+
+    private async Task Rename(string current)
+    {
+        var name = await NameDialog.AskAsync(Dialogs, "Rename the sequence", "Name", current, "Rename", validate: n => NameError(n, current));
+        if (name is not null && name != current) App.RenameSequence(WeaponKind, current, name);
+    }
+
+    private async Task Delete(string name)
+    {
+        if (await App.ConfirmAsync("Delete the sequence", $"Delete the saved sequence {name}? Weapons scored on it keep its steps.", "Delete"))
+            App.DeleteSequence(WeaponKind, name);
+    }
 
     private static string Num(double n) => n.ToString(CultureInfo.InvariantCulture);
 

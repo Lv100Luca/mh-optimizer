@@ -253,8 +253,8 @@
                 </table>
 
                 <div class="stats-compare">
-                    @StatsBlock("Under the requested conditions", b.StatsRequested)
-                    @StatsBlock("Every conditional skill active", b.StatsAllOn)
+                    @StatsBlock("Under the requested conditions", b.StatsRequested, w.Type)
+                    @StatsBlock("Every conditional skill active", b.StatsAllOn, w.Type)
                 </div>
 
                 <details>
@@ -315,7 +315,7 @@
         $"Against the target, before the monster's defense rate and per-hit rounding. Score: EFR {Fmt.N(b.Efr)} + EFE {Fmt.N(b.Efe)}"
         + (b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "") + $" = {Fmt.N(b.Score)} per 100 MV; it ranks builds the same as the damage.";
 
-    private static RenderFragment StatsBlock(string title, StatsDto r) => __builder =>
+    private static RenderFragment StatsBlock(string title, StatsDto r, string weaponType) => __builder =>
     {
         <div class="statsblock">
             <h4>@title</h4>
@@ -329,7 +329,7 @@
                 }
                 @if (r.ScoredOn is { } scoredOn)
                 {
-                    <dt>Scored on</dt><dd>@scoredOn</dd>
+                    <dt>Scored on</dt><dd><ScoredAttack ScoredOn="@scoredOn" WeaponType="@weaponType" /></dd>
                 }
                 <dt>Score</dt>
                 <dd><b>EFR @Fmt.N(r.Efr)</b> + <b>EFE @Fmt.N(r.Efe)</b>@if (r.Procs > 0) {@(" + ")<b>procs @Fmt.N(r.Procs)</b>}@(" = ")<b class="total">@Fmt.N(r.Total)</b> <span class="muted">per 100 MV</span></dd>
