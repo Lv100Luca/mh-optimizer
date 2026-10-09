@@ -147,13 +147,9 @@
                                 @(preset.Attacks.Count == 0 ? $"There is no attack data for the {weaponLabel} yet." : "")
                             </p>
                         }
-                        <div class="form-grid profile">
-                            <Field Label="Landed hits per minute" Hint="Cooldown-limited procs (Bad Blood every 2 s) fire at most once per cooldown. The default follows from the attack's rough duration.">
-                                <OptionalNumberInput Value="profile.HitsPerMinute" Preset="Math.Round(resolved?.HitsPerMinute ?? preset.HitsPerMinute, 1)" Min="1" Max="600"
-                                                     ValueChanged="n => SetProfile(p => p with { HitsPerMinute = n })" />
-                            </Field>
-                            @if (attack is null && !profile.IsSequence)
-                            {
+                        @if (attack is null && !profile.IsSequence)
+                        {
+                            <div class="form-grid profile">
                                 <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV.">
                                     <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
                                                          ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
@@ -162,8 +158,16 @@
                                     <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
                                                          ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
                                 </Field>
-                            }
-                        </div>
+                            </div>
+                        }
+                        @if (profile.HitsPerMinute is { } hitsPerMinute)
+                        {
+                            @* the input is gone; a value set before still counts for proc cooldowns, so it shows until dropped *@
+                            <p class="muted small">
+                                Proc cooldowns count @Num(hitsPerMinute) landed hits per minute (set earlier) instead of the attack's own pace.
+                                <button type="button" class="linklike" @onclick="() => SetProfile(p => p with { HitsPerMinute = null })">Use the attack's pace</button>
+                            </p>
+                        }
                     </div>
 
                     <div class="target-col">
@@ -211,8 +215,7 @@
                 @if (resolved is { } rp)
                 {
                     <p class="small attack-summary">
-                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV,
-                        @Num(Math.Round(rp.ExecutionsPerMinute, 2)) per minute (results show its damage per @rp.Execution and per minute).
+                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
                         Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (sharpness@(type == WeaponType.SwitchAxe ? ", phial" : "")),
                         element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).

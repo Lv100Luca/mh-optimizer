@@ -392,10 +392,11 @@
     }
     @if (breakdown is { Count: > 0 })
     {
-        var maxPerMinute = breakdown.Max(x => x.DamagePerMinute);
+        // bars compare attacks within their group (a sequence deals far more than one move)
+        var groupMax = breakdown.GroupBy(x => x.Group).ToDictionary(g => g.Key, g => g.Max(x => x.DamagePerExecution));
         var refById = refBreakdown?.ToDictionary(x => x.Id) ?? [];
         <Section Title="Damage per attack"
-                 Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab); per minute uses each attack's own pace, so it compares attacks with each other. Click a row for its hits.">
+                 Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab). Click a row for its hits.">
             <Actions>
                 @if (_expanded.Count > 0)
                 {
@@ -413,7 +414,6 @@
                         <th class="num narrow-hide">Hits</th>
                         <th class="num narrow-hide">MV</th>
                         <th class="num">Damage</th>
-                        <th class="num">Per minute</th>
                         @if (refBreakdown is not null)
                         {
                             <th class="num" title="@($"This build minus {reference!.Label}, per execution")">vs @reference!.Label</th>
@@ -423,7 +423,7 @@
                 <tbody>
                     @foreach (var group in breakdown.GroupBy(x => x.Group))
                     {
-                        <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 6 : 5)">@group.Key</td></tr>
+                        <tr class="attack-group"><td colspan="@(refBreakdown is not null ? 5 : 4)">@group.Key</td></tr>
                         @foreach (var x in group)
                         {
                             var open = _expanded.Contains(x.Id);
@@ -435,11 +435,10 @@
                                 </td>
                                 <td class="num narrow-hide">@Fmt.N(x.Hits, 0)</td>
                                 <td class="num muted narrow-hide">@Fmt.N(x.Mv, 0)</td>
-                                <td class="num"><b>@Fmt.N(x.DamagePerExecution, 0)</b></td>
                                 <td class="num">
-                                    <span class="permin-cell">
-                                        <span class="permin-track"><span class="permin-bar" style="width: @((100 * x.DamagePerMinute / Math.Max(1, maxPerMinute)).ToString("0.#", CultureInfo.InvariantCulture))%"></span></span>
-                                        <span class="permin-value">@Fmt.N(x.DamagePerMinute, 0)</span>
+                                    <span class="dmgbar-cell">
+                                        <span class="dmgbar-track"><span class="dmgbar" style="width: @((100 * x.DamagePerExecution / Math.Max(1, groupMax[x.Group])).ToString("0.#", CultureInfo.InvariantCulture))%"></span></span>
+                                        <b class="dmgbar-value">@Fmt.N(x.DamagePerExecution, 0)</b>
                                     </span>
                                 </td>
                                 @if (refBreakdown is not null)
@@ -460,7 +459,7 @@
                             @if (open && Detail(current, x.Id) is { } detail)
                             {
                                 <tr @key="@(x.Id + ":detail")" class="attack-detail-row">
-                                    <td colspan="@(refBreakdown is not null ? 6 : 5)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" Mode="_mode" /></td>
+                                    <td colspan="@(refBreakdown is not null ? 5 : 4)"><AttackDetailView Detail="detail" Element="@(b?.Summary.Element ?? Element.None)" Mode="_mode" /></td>
                                 </tr>
                             }
                         }

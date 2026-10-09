@@ -21,12 +21,11 @@
                         <span class="total">@Fmt.N(damage, 0)</span>
                         <span class="muted">@BuildDamage.Label(b) <span class="caret">@(_breakdown ? "▾" : "▸")</span></span>
                     </button>
-                    <span class="muted">· @Fmt.N(r.DamagePerMinute, 0) per minute</span>
                 }
                 else
                 {
                     <span class="total" title="@ScoreTitle(b)">@Fmt.N(damage, 0)</span>
-                    <span class="muted">@BuildDamage.Label(b) · @Fmt.N(r.DamagePerMinute, 0) per minute</span>
+                    <span class="muted">@BuildDamage.Label(b)</span>
                 }
                 <span class="muted small" title="The same attack with every hunt condition on">every condition on: @Fmt.N(b.StatsAllOn.DamagePerExecution, 0)</span>
             }
@@ -338,7 +337,7 @@
                 {
                     <dt>Damage</dt>
                     <dd title="Against the target, before the monster's defense rate and per-hit rounding. Ranks builds exactly like the score.">
-                        <b>@Fmt.N(r.DamagePerExecution, 0)</b> per @(r.Execution ?? "attack") · <b>@Fmt.N(r.DamagePerMinute, 0)</b> per minute
+                        <b>@Fmt.N(r.DamagePerExecution, 0)</b> per @(r.Execution ?? "attack")
                     </dd>
                 }
             </dl>

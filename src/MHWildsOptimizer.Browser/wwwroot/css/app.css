@@ -499,12 +499,12 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .table.attack-damage td, .table.attack-damage th { padding: 5px 8px; font-variant-numeric: tabular-nums; }
 .table.attack-damage tr.attack-group td { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 12px; border-bottom-color: var(--border-2); }
 .table.attack-damage tr.current td { background: rgba(227, 182, 78, 0.08); }
-.permin-cell { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-.permin-track { flex: 0 0 90px; height: 6px; border-radius: 3px; background: var(--bg-2); overflow: hidden; }
-.permin-bar { display: block; height: 100%; border-radius: 3px; background: rgba(95, 191, 122, 0.55); }
-.permin-value { min-width: 52px; }
+.dmgbar-cell { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.dmgbar-track { flex: 0 0 90px; height: 6px; border-radius: 3px; background: var(--bg-2); overflow: hidden; }
+.dmgbar { display: block; height: 100%; border-radius: 3px; background: rgba(95, 191, 122, 0.55); }
+.dmgbar-value { min-width: 52px; }
 @media (max-width: 700px), (pointer: fine) and (max-width: 1050px) {
-  .table.attack-damage .narrow-hide, .table.attack-hits .narrow-hide, .permin-track { display: none; }
+  .table.attack-damage .narrow-hide, .table.attack-hits .narrow-hide, .dmgbar-track { display: none; }
   .table.attack-damage tr.attack-detail-row > td { padding-left: 8px; }
   .attack-trace ul { columns: 1; }
 }

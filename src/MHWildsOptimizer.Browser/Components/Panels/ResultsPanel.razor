@@ -280,7 +280,7 @@
     private RenderFragment Table(List<Row> rows, ResultDto result, ScoredRef? baseline, BuildRef? baselineRef, string baseName) => __builder =>
     {
         var baseBuild = baseline?.Build;
-        var cols = baseBuild is not null ? 8 : 4;
+        var cols = baseBuild is not null ? 7 : 3;
         <div class="table-scroll">
             <table class="table results-table">
                 <thead>
@@ -291,7 +291,6 @@
                         {
                             <th class="num" title="@($"This build minus {baseName}")">Gain</th>
                         }
-                        <th class="num narrow-hide">Per minute</th>
                         @if (baseBuild is not null)
                         {
                             <th title="Filled: another piece; dashed: the same piece with other decorations">To get there</th>
@@ -308,7 +307,6 @@
                             <td><span class="pickstar">★</span> <b>@baseName</b></td>
                             <td class="num"><b class="dmg plain">@BuildDamage.Text(baseBuild)</b></td>
                             <td class="num muted">compared with</td>
-                            <td class="num narrow-hide">@(BuildDamage.Of(baseBuild) is not null ? Fmt.N(baseBuild.StatsRequested.DamagePerMinute, 0) : "")</td>
                             <td colspan="3"></td>
                             <td></td>
                         </tr>
@@ -336,7 +334,6 @@
                             {
                                 <td class="num nowrap"><Delta Value="gain" Digits="@(row.HasDamage ? 0 : 1)" /> <span class="muted small">@Pct(row.GainPct)</span></td>
                             }
-                            <td class="num narrow-hide">@(row.HasDamage ? Fmt.N(b.StatsRequested.DamagePerMinute, 0) : "")</td>
                             @if (row.Diff is { } diff)
                             {
                                 <td><SlotStrip Diff="diff" WeaponKind="@b.Weapon.Type" Count="true" /></td>

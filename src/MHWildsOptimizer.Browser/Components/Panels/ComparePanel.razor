@@ -258,7 +258,6 @@
         @if (hasDamage && first is not null)
         {
             @Metric(cols, $"Damage per {first.StatsRequested.Execution ?? "attack"}", first.StatsRequested.ScoredOn, b => BuildDamage.Of(b), 0, headline: true)
-            @Metric(cols, "Per minute", null, b => b.StatsRequested.DamagePerMinute, 0)
             @if (basis != CompareBasis.AllOn)
             {
                 @Metric(cols, "Every condition on", "the same attack", b => b.StatsAllOn.DamagePerExecution, 0)

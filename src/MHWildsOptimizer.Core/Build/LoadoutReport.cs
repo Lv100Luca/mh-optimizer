@@ -114,8 +114,7 @@ public static class LoadoutReport
         if (w.Element != Element.None)
             sb.AppendLine(string.Format(inv, "  Element    {0} {1:0} -> {2:0}, cap {3:0}, crit element x{4:0.00}", w.Element, r.BaseElementTrue * 10, r.ElementTrue * 10, r.ElementCap * 10, r.CriticalElementMultiplier));
         sb.AppendLine(string.Format(inv, "  Scored on  {0} ({1:0.#} MV), per 100 MV", r.Attack.Name, r.Attack.TotalMv));
-        sb.AppendLine(string.Format(inv, "  Damage     {0:0} per {1}, {2:0} per minute ({3:0.#} hits per minute)",
-            r.DamagePerExecution, r.Attack.Execution, r.DamagePerMinute, r.Attack.HitsPerMinute));
+        sb.AppendLine(string.Format(inv, "  Damage     {0:0} per {1}", r.DamagePerExecution, r.Attack.Execution));
         sb.AppendLine(string.Format(inv, "  EFR {0:0.00}   EFE {1:0.00}{2}   Total {3:0.00}", r.EffectiveRaw, r.EffectiveElement,
             r.ProcDamage > 0 ? string.Format(inv, "   procs {0:0.00}", r.ProcDamage) : "", r.Total));
         var mods = r.Breakdown.Skip(1).Where(l => !l.StartsWith("Raw ") && !l.StartsWith("Element ") && !l.StartsWith("Attack: ")).ToList();
