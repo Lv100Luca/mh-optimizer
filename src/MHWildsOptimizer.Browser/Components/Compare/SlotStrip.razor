@@ -1,0 +1,44 @@
+@* The seven slots of a build against another: filled = another piece, dashed = the same piece with other decorations, faint = unchanged.
+   With Count, "3 pieces + 2 re-gems" follows. *@
+<span class="slotstrip-wrap">
+    <span class="slotstrip">
+        @foreach (var slot in BuildDiff.AllSlots)
+        {
+            var change = Diff.Slots[slot];
+            <span class="slotstrip-cell @Css(change)" title="@($"{slot}: {Text(change)}")"><img src="@Icon(slot, WeaponKind)" alt="" /></span>
+        }
+    </span>
+    @if (Count)
+    {
+        <span class="small">@CountText(Diff)</span>
+    }
+</span>
+
+@code {
+    [Parameter, EditorRequired] public BuildDiffDto Diff { get; set; } = default!;
+    [Parameter] public string WeaponKind { get; set; } = "great-sword";
+    [Parameter] public bool Count { get; set; }
+
+    private static string Css(SlotChange c) => c switch { SlotChange.Piece => "swap", SlotChange.Decorations => "regem", _ => "" };
+
+    private static string Text(SlotChange c) => c switch { SlotChange.Piece => "another piece", SlotChange.Decorations => "other decorations", _ => "unchanged" };
+
+    public static string Icon(BuildSlot slot, string weaponKind) => slot switch
+    {
+        BuildSlot.Weapon => GameIcons.Weapon(weaponKind),
+        BuildSlot.Talisman => GameIcons.Talisman(8),
+        _ => GameIcons.Armor(BuildDiff.ArmorSlots[slot], 8),
+    };
+
+    /// <summary>"3 pieces + 2 re-gems", "same equipment".</summary>
+    public static string CountText(BuildDiffDto d)
+    {
+        var swapped = d.Swapped.Count;
+        var regemmed = d.Regemmed.Count;
+        if (swapped == 0 && regemmed == 0) return "same equipment";
+        var parts = new List<string>();
+        if (swapped > 0) parts.Add(Fmt.Plural(swapped, "piece"));
+        if (regemmed > 0) parts.Add(Fmt.Plural(regemmed, "re-gem"));
+        return string.Join(" + ", parts);
+    }
+}

@@ -1,20 +1,24 @@
+using System.Text.Json.Serialization;
 using MHWildsOptimizer.Api;
 using MHWildsOptimizer.Core.Inputs;
 
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Weapon, Pair, Targets, Limits, Conditions, Talismans, Options, Review, Results, Builds }
+public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Limits, Conditions, Talismans, Options, Review, Results, Builds }
 
 public static class Tabs
 {
     public static string Slug(this Tab tab) => tab.ToString().ToLowerInvariant();
 
     public static Tab? Parse(string? slug) => Enum.TryParse<Tab>(slug, ignoreCase: true, out var t) && slug!.All(char.IsLetter) ? t : null;
+
+    /// <summary>Tabs of the whole profile rather than of the open weapon.</summary>
+    public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare;
 }
 
 /// <summary>
-/// Page URLs, so back / forward, reloads and bookmarks work: <c>&lt;profile&gt;/inventory</c>,
+/// Page URLs, so back / forward, reloads and bookmarks work: <c>&lt;profile&gt;/inventory</c>, <c>&lt;profile&gt;/compare</c>,
 /// <c>&lt;profile&gt;/weapon/&lt;weapon&gt;/&lt;tab&gt;</c> and <c>&lt;profile&gt;/new/&lt;tab&gt;</c> (the unsaved new weapon).
 /// </summary>
 /// <param name="WeaponGiven">Whether the URL names the weapon: false = keep the open one; true with a null weapon = the new weapon.</param>
@@ -23,7 +27,7 @@ public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Ta
     public static string Url(string profile, string? weapon, Tab tab)
     {
         var p = Uri.EscapeDataString(profile);
-        if (tab == Services.Tab.Inventory) return $"{p}/inventory";
+        if (tab.IsProfileTab()) return $"{p}/{tab.Slug()}";
         return weapon is null ? $"{p}/new/{tab.Slug()}" : $"{p}/weapon/{Uri.EscapeDataString(weapon)}/{tab.Slug()}";
     }
 
@@ -34,10 +38,11 @@ public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Ta
         string? At(int i) => i < parts.Length ? parts[i] : null;
         var profile = At(0);
         if (profile is null) return new Route(null, null, false, null);
-        var tab = (string? s) => Tabs.Parse(s) is { } t && t != Services.Tab.Inventory ? t : Services.Tab.Weapon;
+        var tab = (string? s) => Tabs.Parse(s) is { } t && !t.IsProfileTab() ? t : Services.Tab.Weapon;
         return At(1) switch
         {
             "inventory" => new Route(profile, null, false, Services.Tab.Inventory),
+            "compare" => new Route(profile, null, false, Services.Tab.Compare),
             "new" => new Route(profile, null, true, tab(At(2))),
             "weapon" when At(2) is { } weapon => new Route(profile, weapon, true, tab(At(3))),
             _ => new Route(profile, null, false, null),
@@ -60,7 +65,7 @@ public sealed record RunState(RunStatus Status, IReadOnlyList<string> Log, Resul
 /// selected build and the last run stay where they were.
 /// </summary>
 /// <param name="Name">Null for the unsaved new weapon.</param>
-/// <param name="CompareKey">What My builds compares the selected build with: "opt:&lt;pair rank&gt;:&lt;build rank&gt;" or "mine:&lt;index&gt;"; null = the best optimizer build.</param>
+/// <param name="CompareKey">What My builds compares the selected build with: "opt:&lt;pair rank&gt;:&lt;build rank&gt;" or "mine:&lt;index&gt;"; null = the weapon's baseline (or the best optimizer build).</param>
 /// <param name="ResultsPending">The weapon's saved last run still has to be loaded (a draft restored after a reload).</param>
 public sealed record WeaponSession(
     string Key, string? Name, OptimizationRequest Request, IReadOnlyList<BuildInput> Builds, int BuildIndex, string? CompareKey,
@@ -80,3 +85,64 @@ public sealed record BatchMark(BatchStatus Status, string? Message = null);
 
 /// <summary>Unsaved edits of a weapon, kept in the browser so a reload or a profile switch does not lose them.</summary>
 public sealed record Draft(OptimizationRequest Request, List<BuildInput> Builds);
+
+/// <summary>
+/// A build anywhere in the profile: one of a weapon's own builds (<paramref name="Mine"/>, by name) or build
+/// <paramref name="Rank"/> of skill pair <paramref name="Pair"/> in the weapon's last run.
+/// </summary>
+/// <param name="Weapon">The weapon's session key: its name, or <see cref="AppState.NewWeapon"/>.</param>
+public sealed record BuildRef(string Weapon, string? Mine, int Pair = 0, int Rank = 0)
+{
+    private const char Sep = '';
+
+    public static BuildRef Own(string weapon, string name) => new(weapon, name);
+
+    public static BuildRef Run(string weapon, int pair, int rank) => new(weapon, null, pair, rank);
+
+    [JsonIgnore]
+    public bool IsRun => Mine is null;
+
+    /// <summary>A string form for select boxes and storage.</summary>
+    [JsonIgnore]
+    public string Key => Mine is not null ? $"mine{Sep}{Weapon}{Sep}{Mine}" : $"run{Sep}{Weapon}{Sep}{Pair}{Sep}{Rank}";
+
+    public static BuildRef? Parse(string? key)
+    {
+        var parts = key?.Split(Sep);
+        return parts switch
+        {
+            ["mine", var weapon, var name] => Own(weapon, name),
+            ["run", var weapon, var pair, var rank] when int.TryParse(pair, out var p) && int.TryParse(rank, out var r) => Run(weapon, p, r),
+            _ => null,
+        };
+    }
+}
+
+/// <summary>What the columns of a comparison are scored under.</summary>
+public enum CompareBasis
+{
+    /// <summary>Each build under its own weapon's conditions (and its own overrides).</summary>
+    Own,
+    /// <summary>Every build under the baseline's conditions (builds of another weapon type keep their own).</summary>
+    Baseline,
+    /// <summary>Every hunt condition on.</summary>
+    AllOn,
+}
+
+/// <summary>
+/// A build of the profile looked up and scored now. <paramref name="Request"/> and <paramref name="Input"/> are what it was
+/// scored with (after the comparison basis), so its damage per attack can be worked out the same way.
+/// </summary>
+/// <param name="RunScore">For a build of a last run: its score in that run.</param>
+/// <param name="Stale">For a build of a last run: the weapon's request or the talismans changed since.</param>
+public sealed record ScoredRef(
+    BuildRef Ref, string Name, string Weapon, string WeaponType, OptimizationRequest Request, BuildInput Input, EvaluatedBuildDto? Evaluated,
+    bool Picked, double? RunScore, DateTimeOffset? RunAt, bool Stale, bool BasisApplied)
+{
+    public BuildDto? Build => Evaluated?.Build;
+
+    /// <summary>"Current · In game".</summary>
+    public string Label => $"{Weapon} · {Name}";
+
+    public IReadOnlyList<string> Errors => Evaluated?.Errors ?? ["This build cannot be scored."];
+}

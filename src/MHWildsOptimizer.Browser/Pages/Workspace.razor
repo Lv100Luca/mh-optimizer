@@ -48,10 +48,11 @@ else
             }
         </nav>
 
-        <main class="content">
+        <main class="content @(App.Tray.Count > 0 && App.Tab != Tab.Compare ? "with-tray" : "")">
             @switch (App.Tab)
             {
                 case Tab.Inventory: <InventoryPanel /> break;
+                case Tab.Compare: <ComparePanel /> break;
                 case Tab.Weapon: <WeaponPanel /> break;
                 case Tab.Pair: <SkillPairPanel /> break;
                 case Tab.Targets: <TargetsPanel /> break;
@@ -64,6 +65,7 @@ else
                 case Tab.Builds: <BuildsPanel /> break;
             }
         </main>
+        <TrayBar />
 
         <footer class="statusbar">
             @{ var resolved = App.Resolved; }
@@ -114,6 +116,7 @@ else
 
     private string Title => App.Tab == Tab.Inventory || App.Request is null
         ? "MH Wilds Optimizer"
+        : App.Tab == Tab.Compare ? "Compare · MH Wilds Optimizer"
         : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds Optimizer";
 
     private IEnumerable<NavItem> Nav()
@@ -130,6 +133,7 @@ else
         // profile-wide things first, then the open weapon's setup, then what comes out of it
         yield return new(GroupProfile, Tab.Inventory, "Inventory", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
         yield return new(GroupProfile, Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
+        yield return new(GroupProfile, Tab.Compare, "Compare", GameIcons.SkillGeneric("handicraft"), Count(App.Tray.Count), App.Tray.Count > 0 ? "acc" : null);
         yield return new(GroupWeapon, Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
         yield return new(GroupWeapon, Tab.Pair, "Skill pair", GameIcons.SkillGeneric("set"), request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed" : "optimize");
         yield return new(GroupWeapon, Tab.Targets, "Target skills", GameIcons.SkillGeneric("offense"), Count(request.TargetSkills.Count));

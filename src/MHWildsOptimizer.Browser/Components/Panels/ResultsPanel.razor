@@ -4,13 +4,7 @@
     var run = App.Run;
     var result = run.Result;
     double? elapsed = run.StartedAt is { } started ? ((run.FinishedAt ?? DateTimeOffset.Now) - started).TotalSeconds : null;
-    var builds = App.Builds;
     var valid = App.Resolved?.IsValid == true;
-
-    // the selected hand-entered build every result is compared with
-    var mineIndex = Math.Max(0, Math.Min(App.BuildIndex, builds.Count - 1));
-    var mineName = mineIndex < builds.Count ? builds[mineIndex].Name : "";
-    var mine = App.Evaluated is { } ev && mineIndex < ev.Count ? ev[mineIndex].Build : null;
 }
 @if (run.Status == RunStatus.Idle && result is null)
 {
@@ -27,7 +21,16 @@
     </div>
     return;
 }
-
+@{
+    var request = App.Request!;
+    var stale = result is not null && run.Status != RunStatus.Running && App.IsStale(App.ActiveKey);
+    // the build every result is measured against, scored under this weapon's conditions like the run's builds
+    var baselineRef = App.Baseline;
+    var baseline = baselineRef is not null ? App.ScoreUnder(baselineRef, request) : null;
+    var baseBuild = baseline?.Build;
+    var baseName = baselineRef is null ? "" : baselineRef.Weapon == App.ActiveKey ? App.RefName(baselineRef) : App.RefLabel(baselineRef);
+    var rows = result is null ? [] : Rows(result, baseBuild);
+}
 <div class="panel">
     <Section Title="@(run.Status == RunStatus.Running ? "Searching…" : "Results")" Hint="@Hint(run, result, elapsed)">
         <Actions>
@@ -70,17 +73,39 @@
                     }
                 </div>
             }
-            @if (result?.Pairs.SelectMany(p => p.Builds).FirstOrDefault()?.StatsRequested.ScoredOn is { } scoredOn)
+            @if (rows.FirstOrDefault()?.Build.StatsRequested.ScoredOn is { } scoredOn)
             {
-                <p class="small scored-on">Scored on <b>@scoredOn</b> <span class="muted">(what this run used, saved with it)</span></p>
+                <p class="small scored-on">Scored on <b>@scoredOn</b> <span class="muted">@(stale ? "(today's attack and target)" : "(what this run used, saved with it)")</span></p>
             }
-            @if (result is not null && builds.Count > 0)
+            @if (result is not null)
             {
-                <div class="mine-strip">
-                    <span class="muted">Differences against</span>
-                    <Segmented T="int" Small="true" Value="mineIndex" ValueChanged="App.SetBuildIndex" Options="@MineOptions(builds)" />
-                    <span class="muted small">your builds are scored under the current conditions; rerun after changing them</span>
+                <div class="results-strip">
+                    <span class="muted">Compare with</span>
+                    <RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 300px" />
+                    <span class="muted">View</span>
+                    <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="v => _view = v" Options="ViewOptions" />
+                    <span class="muted">Sort</span>
+                    <Segmented T="ResultsSort" Small="true" Value="_sort" ValueChanged="s => _sort = s" Options="SortOptions" />
                 </div>
+                @if (baseline is { BasisApplied: true } && baselineRef is not null)
+                {
+                    var ownConditions = App.BuildsOf(baselineRef.Weapon).FirstOrDefault(b => b.Name == baselineRef.Mine)?.HasOwnConditions == true;
+                    <p class="muted small">
+                        @baseName is scored under this weapon's conditions here@(ownConditions ? ", without its own" : "")@(baselineRef.Weapon != App.ActiveKey ? $" (with {AppState.WeaponTitle(baselineRef.Weapon)} as its weapon)" : ""),
+                        so both sides use the same assumptions.
+                    </p>
+                }
+                @if (stale)
+                {
+                    <Alert Kind="info">
+                        The run was made with other conditions, targets or talismans than the weapon has now: its builds are scored again under today's
+                        (the order is still the run's). <button class="linklike" @onclick="App.RunOptimizerAsync" disabled="@(!valid)">Run again</button>
+                    </Alert>
+                }
+                @if (baseBuild is not null && rows.Count > 0)
+                {
+                    @UpgradePath(rows, baseBuild, baseName)
+                }
             }
         </ChildContent>
     </Section>
@@ -112,38 +137,29 @@
     {
         foreach (var p in result.Pairs)
         {
+            var pairRows = Sorted(rows.Where(r => r.Pair == p));
             <div @key="p.Rank" id="@($"pair-{p.Rank}")" class="pair-block">
                 <div class="pairhead">
                     <span class="rank">#@p.Rank</span>
                     <SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="20" /><b>@p.SetBonus</b></SkillHover>
                     <span class="muted">+</span>
                     <SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="20" /><b>@p.GroupSkill</b></SkillHover>
-                    <span class="muted">best @(p.Builds.FirstOrDefault() is { } top && BuildDamage.Of(top) is { } topDamage ? $"{Fmt.N(topDamage, 0)} {BuildDamage.Label(top)}" : Fmt.N(p.BestScore)) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
+                    <span class="muted">best @(pairRows.Count > 0 ? $"{Fmt.N(pairRows.Max(r => r.Damage), pairRows[0].HasDamage ? 0 : 1)} {(pairRows[0].HasDamage ? BuildDamage.Label(pairRows[0].Build) : "score")}" : Fmt.N(p.BestScore)) · @p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture) @(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel) · @p.CandidateSummary</span>
                 </div>
                 @if (p.Builds.Count == 0)
                 {
                     <Alert Kind="warning">No build satisfies the targets for this pair.</Alert>
                 }
-                @foreach (var b in p.Builds)
+                else if (_view == ResultsView.Table)
                 {
-                    var key = $"opt:{p.Rank}:{b.Rank}";
-                    var label = result.Pairs.Count > 1 ? $"Pair #{p.Rank} build {b.Rank}" : $"Optimizer build {b.Rank}";
-                    <BuildCard @key="b.Rank" Build="b" Best="@(p.Rank == 1 && b.Rank == 1)" Delta="@(mine is null ? null : DeltaTo(b, mine, mineName))">
-                        <Actions>
-                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => EditCopy(b, label, key)"
-                                       title="Copy this build into My builds to change pieces or decorations">
-                                Edit a copy
-                            </MudButton>
-                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Pick(b, label, key)"
-                                       title="Keep this build as the weapon's pick: it is copied into My builds and the inventory compares weapons by it (save the weapon to keep it)">
-                                ★ Pick
-                            </MudButton>
-                            @if (mine is not null)
-                            {
-                                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Compare(key)" title="@($"Compare side by side with {mineName}")">Compare</MudButton>
-                            }
-                        </Actions>
-                    </BuildCard>
+                    @Table(pairRows, result, baseline, baselineRef, baseName)
+                }
+                else
+                {
+                    @foreach (var row in pairRows)
+                    {
+                        @Card(row, result, baseline, baselineRef, baseName)
+                    }
                 }
             </div>
         }
@@ -157,6 +173,319 @@
     private int _scrolledLog;
     private Timer? _clock;
 
+    private enum ResultsView { Table, Cards }
+
+    private enum ResultsSort { Damage, Changes }
+
+    // kept while the app runs, so coming back to Results shows the same view
+    private static ResultsView _view = ResultsView.Table;
+    private static ResultsSort _sort = ResultsSort.Damage;
+
+    /// <summary>Rows (or cards) opened to show how they differ from the baseline, by "pair:rank".</summary>
+    private readonly HashSet<string> _open = [];
+
+    private static readonly IReadOnlyList<SegmentOption<ResultsView>> ViewOptions =
+        [new(ResultsView.Table, "Table", Hint: "One line per build"), new(ResultsView.Cards, "Cards", Hint: "Every build in full")];
+
+    private static readonly IReadOnlyList<SegmentOption<ResultsSort>> SortOptions =
+    [
+        new(ResultsSort.Damage, "Damage", Hint: "The run's order"),
+        new(ResultsSort.Changes, "Fewest changes", Hint: "The builds you get to with the fewest new pieces first (then the fewest decoration changes)"),
+    ];
+
+    /// <summary>A build of the run as shown: rescored when the run is stale, and how it differs from the baseline.</summary>
+    private sealed record Row(PairResultDto Pair, BuildDto Build, bool Rescored, double RunScore, BuildRef Ref, BuildDiffDto? Diff, double Damage, bool HasDamage, double? Gain, double? GainPct)
+    {
+        public string Key => $"{Pair.Rank}:{Build.Rank}";
+    }
+
+    private List<Row> Rows(ResultDto result, BuildDto? baseBuild)
+    {
+        var valued = App.Resolved?.Relevance?.Skills;
+        var rows = new List<Row>();
+        foreach (var p in result.Pairs)
+            foreach (var saved in p.Builds)
+            {
+                var (b, rescored) = App.RunBuildNow(p.Rank, saved);
+                var hasDamage = BuildDamage.Of(b) is not null;
+                double? gain = null, pct = null;
+                BuildDiffDto? diff = null;
+                if (baseBuild is not null)
+                {
+                    var (value, reference, _) = BuildDamage.Compare(b, baseBuild);
+                    gain = value - reference;
+                    pct = reference != 0 ? gain / reference * 100 : null;
+                    diff = BuildDiff.Between(baseBuild, b, valued);
+                }
+                rows.Add(new Row(p, b, rescored, saved.Score, BuildRef.Run(App.ActiveKey, p.Rank, saved.Rank), diff, BuildDamage.Of(b) ?? b.Score, hasDamage, gain, pct));
+            }
+        return rows;
+    }
+
+    private static List<Row> Sorted(IEnumerable<Row> rows) => _sort == ResultsSort.Changes
+        ? rows.OrderBy(r => r.Diff?.Swapped.Count ?? 0).ThenBy(r => r.Diff?.Regemmed.Count ?? 0).ThenByDescending(r => r.Damage).ThenBy(r => r.Build.Rank).ToList()
+        : rows.OrderBy(r => r.Build.Rank).ToList();
+
+    private string Label(ResultDto result, Row row) => result.Pairs.Count > 1 ? $"Pair #{row.Pair.Rank} build {row.Build.Rank}" : $"Optimizer build {row.Build.Rank}";
+
+    private void Toggle(string key)
+    {
+        if (!_open.Remove(key)) _open.Add(key);
+    }
+
+    private static string Pct(double? pct) => pct is { } p ? $"({(p >= 0 ? "+" : "−")}{Fmt.N(Math.Abs(p), 1)}%)" : "";
+
+    private static string SlotList(IEnumerable<BuildSlot> slots) => string.Join(", ", slots.Select(s => s.ToString().ToLowerInvariant()));
+
+    /// <summary>Your build, the result that beats it with the fewest new pieces, and the best of the run.</summary>
+    private RenderFragment UpgradePath(List<Row> rows, BuildDto baseBuild, string baseName) => __builder =>
+    {
+        var better = rows.Where(r => r.Gain > 0.5).ToList();
+        var fewest = better.OrderBy(r => r.Diff!.Swapped.Count).ThenBy(r => r.Diff!.Regemmed.Count).ThenByDescending(r => r.Gain).FirstOrDefault();
+        var best = rows.OrderByDescending(r => r.Damage).ThenBy(r => r.Pair.Rank).ThenBy(r => r.Build.Rank).First();
+        var digits = BuildDamage.Compare(best.Build, baseBuild).Digits;
+        <div class="pathcards">
+            <div class="pathcard">
+                <span class="muted small">Compare with</span>
+                <span class="big plain">@Fmt.N(BuildDamage.Of(baseBuild) ?? baseBuild.Score, digits)</span>
+                <span class="small muted">@baseName</span>
+            </div>
+            @if (fewest is null)
+            {
+                <div class="pathcard">
+                    <span class="muted small">Gain</span>
+                    <span class="big plain">none</span>
+                    <span class="small muted">No build of this run beats @baseName.</span>
+                </div>
+            }
+            else
+            {
+                <button type="button" class="pathcard hl" @onclick="() => { _open.Add(fewest.Key); }" title="Open its swap list">
+                    <span class="muted small">@(fewest.Diff!.Swapped.Count == 0 ? "No new piece" : $"{Fmt.Plural(fewest.Diff!.Swapped.Count, "piece")} away") · build @fewest.Build.Rank</span>
+                    <span class="big"><Delta Value="@fewest.Gain!.Value" Digits="digits" /> <span class="muted small">@Pct(fewest.GainPct)</span></span>
+                    <span class="small">@(fewest.Diff.Swapped.Count > 0 ? $"swap {SlotList(fewest.Diff.Swapped)}" : $"re-gem {SlotList(fewest.Diff.Regemmed)}")</span>
+                </button>
+            }
+            @if (best != fewest && best.Gain is { } bestGain)
+            {
+                <button type="button" class="pathcard" @onclick="() => { _open.Add(best.Key); }" title="Open its swap list">
+                    <span class="muted small">Best of the run · build @best.Build.Rank@(rows.Select(r => r.Pair).Distinct().Count() > 1 ? $" of pair #{best.Pair.Rank}" : "")</span>
+                    <span class="big"><Delta Value="bestGain" Digits="digits" /> <span class="muted small">@Pct(best.GainPct)</span></span>
+                    <span class="small">@SlotStrip.CountText(best.Diff!)@(fewest is not null && best.Diff!.Swapped.Count > fewest.Diff!.Swapped.Count ? $" · {best.Diff.Swapped.Count - fewest.Diff.Swapped.Count} more for {Fmt.N(bestGain - fewest.Gain!.Value, digits)}" : "")</span>
+                </button>
+            }
+        </div>
+    };
+
+    private RenderFragment Table(List<Row> rows, ResultDto result, ScoredRef? baseline, BuildRef? baselineRef, string baseName) => __builder =>
+    {
+        var baseBuild = baseline?.Build;
+        var cols = baseBuild is not null ? 8 : 4;
+        <div class="table-scroll">
+            <table class="table results-table">
+                <thead>
+                    <tr>
+                        <th>Build</th>
+                        <th class="num">Damage</th>
+                        @if (baseBuild is not null)
+                        {
+                            <th class="num" title="@($"This build minus {baseName}")">Gain</th>
+                        }
+                        <th class="num narrow-hide">Per minute</th>
+                        @if (baseBuild is not null)
+                        {
+                            <th title="Filled: another piece; dashed: the same piece with other decorations">To get there</th>
+                            <th>Gains</th>
+                            <th>Loses</th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (baseBuild is not null)
+                    {
+                        <tr class="result-base">
+                            <td><span class="pickstar">★</span> <b>@baseName</b></td>
+                            <td class="num"><b class="dmg plain">@BuildDamage.Text(baseBuild)</b></td>
+                            <td class="num muted">compared with</td>
+                            <td class="num narrow-hide">@(BuildDamage.Of(baseBuild) is not null ? Fmt.N(baseBuild.StatsRequested.DamagePerMinute, 0) : "")</td>
+                            <td colspan="3"></td>
+                            <td></td>
+                        </tr>
+                    }
+                    @foreach (var row in rows)
+                    {
+                        var open = _open.Contains(row.Key) && row.Diff is not null;
+                        var b = row.Build;
+                        var label = Label(result, row);
+                        <tr @key="row.Key" class="result-row @(open ? "open" : "") @(row.Diff is not null ? "clickable" : "")" @onclick="() => Toggle(row.Key)"
+                            title="@(row.Diff is not null ? (open ? "Hide the swaps" : "Show what changes") : null)">
+                            <td class="nowrap">
+                                @if (row.Diff is not null)
+                                {
+                                    <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
+                                }
+                                <span class="rank-chip @(row.Pair.Rank == 1 && b.Rank == 1 ? "best" : "")">Build @b.Rank</span>
+                                @if (row.Rescored)
+                                {
+                                    <span class="badge-mini" title="@($"Scored again under today's conditions; the run scored it {Fmt.N(row.RunScore)}")">now</span>
+                                }
+                            </td>
+                            <td class="num"><b class="dmg">@BuildDamage.Text(b)</b></td>
+                            @if (row.Gain is { } gain)
+                            {
+                                <td class="num nowrap"><Delta Value="gain" Digits="@(row.HasDamage ? 0 : 1)" /> <span class="muted small">@Pct(row.GainPct)</span></td>
+                            }
+                            <td class="num narrow-hide">@(row.HasDamage ? Fmt.N(b.StatsRequested.DamagePerMinute, 0) : "")</td>
+                            @if (row.Diff is { } diff)
+                            {
+                                <td><SlotStrip Diff="diff" WeaponKind="@b.Weapon.Type" Count="true" /></td>
+                                <td><span class="chip-row"><SkillDeltas Diff="diff" Max="3" Empty="—" /></span></td>
+                                <td><span class="chip-row"><SkillDeltas Diff="diff" Gains="false" Max="3" Empty="—" /></span></td>
+                            }
+                            <td @onclick:stopPropagation="true">
+                                <div class="btn-row nowrap">
+                                    <TrayToggle Ref="row.Ref" Short="true" />
+                                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Pick(b, label, row.Ref)"
+                                               title="Keep this build as the weapon's pick: it is copied into My builds and the inventory compares weapons by it (save the weapon to keep it)">★ Pick</MudButton>
+                                </div>
+                            </td>
+                        </tr>
+                        @if (open)
+                        {
+                            <tr @key="@(row.Key + ":detail")" class="result-detail-row">
+                                <td colspan="@cols">@Detail(row, baseline!, baselineRef!, baseName)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    };
+
+    private RenderFragment Card(Row row, ResultDto result, ScoredRef? baseline, BuildRef? baselineRef, string baseName) => __builder =>
+    {
+        var b = row.Build;
+        var label = Label(result, row);
+        var open = _open.Contains(row.Key) && row.Diff is not null;
+        <BuildCard @key="row.Key" Build="b" Best="@(row.Pair.Rank == 1 && b.Rank == 1)"
+                   Delta="@(baseline?.Build is { } bb ? DeltaTo(b, bb, baseName) : null)">
+            <Summary>
+                @if (row.Diff is { } diff)
+                {
+                    <div class="diffstrip">
+                        <span class="muted">vs @baseName</span>
+                        <SlotStrip Diff="diff" WeaponKind="@b.Weapon.Type" Count="true" />
+                        <span class="chip-row"><SkillDeltas Diff="diff" Max="3" /><SkillDeltas Diff="diff" Gains="false" Max="3" /></span>
+                        <button type="button" class="linklike small right" @onclick="() => Toggle(row.Key)">@(open ? "Hide the swaps ▴" : "Show the swaps ▾")</button>
+                    </div>
+                    @if (open)
+                    {
+                        @Detail(row, baseline!, baselineRef!, baseName)
+                    }
+                }
+                @if (row.Rescored)
+                {
+                    <p class="muted small">Scored again under today's conditions; the run scored it @Fmt.N(row.RunScore).</p>
+                }
+            </Summary>
+            <Actions>
+                <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => EditCopy(b, label, row.Ref)" title="Copy this build into My builds to change pieces or decorations">Edit a copy</MudButton>
+                <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Pick(b, label, row.Ref)"
+                           title="Keep this build as the weapon's pick: it is copied into My builds and the inventory compares weapons by it (save the weapon to keep it)">★ Pick</MudButton>
+                <TrayToggle Ref="row.Ref" />
+            </Actions>
+        </BuildCard>
+    };
+
+    /// <summary>What it takes to get from the baseline to a result: the swaps, the skills, the stats and the damage per attack.</summary>
+    private RenderFragment Detail(Row row, ScoredRef baseline, BuildRef baselineRef, string baseName) => __builder =>
+    {
+        var b = row.Build;
+        var bb = baseline.Build!;
+        var diff = row.Diff!;
+        var s = b.Summary;
+        var sb = bb.Summary;
+        var mine = baselineRef.Weapon == App.ActiveKey && !baselineRef.IsRun;
+        var attacks = AttackDeltas(row, baseline);
+        <div class="result-detail">
+            <div class="stack">
+                <div class="row-line"><b>From @baseName to build @b.Rank</b></div>
+                <SwapList From="bb" To="b" Diff="diff" />
+            </div>
+            <div class="stack">
+                <div>
+                    <div class="muted small">Skills</div>
+                    <div class="chip-row"><SkillDeltas Diff="diff" Max="12" Empty="no skill gained" /></div>
+                    <div class="chip-row" style="margin-top: 4px"><SkillDeltas Diff="diff" Gains="false" Max="12" Empty="no skill lost" /></div>
+                    @if (diff.BonusesGained.Count > 0 || diff.BonusesLost.Count > 0)
+                    {
+                        <div class="small" style="margin-top: 4px">
+                            @foreach (var x in diff.BonusesGained)
+                            {
+                                <span class="ok">+ @x </span>
+                            }
+                            @foreach (var x in diff.BonusesLost)
+                            {
+                                <span class="err">− @x </span>
+                            }
+                        </div>
+                    }
+                </div>
+                <div>
+                    <div class="muted small">Stats</div>
+                    <div class="statchips start">
+                        <span class="statchip atk"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b> <Delta Value="@(s.Attack - sb.Attack)" Digits="0" /></span>
+                        <span class="statchip aff"><img src="@GameIcons.Affinity" alt="" />AFF <b>@s.Affinity%</b> <Delta Value="@(s.Affinity - sb.Affinity)" Digits="0" Suffix="%" /></span>
+                        @if (s.Element != Element.None)
+                        {
+                            <span class="statchip ele" style="--tint: @GameIcons.ElementCss[s.Element]">@Fmt.TitleCase(s.Element) <b>@s.ElementDisplay</b> <Delta Value="@(s.ElementDisplay - sb.ElementDisplay)" Digits="0" /></span>
+                        }
+                    </div>
+                </div>
+                @if (attacks.Count > 0)
+                {
+                    <div>
+                        <div class="muted small">Damage per attack</div>
+                        <div class="chip-row">
+                            @foreach (var (name, value, delta, current) in attacks)
+                            {
+                                <span class="chip tiny @(current ? "current-attack" : "")" title="@($"{name}: {Fmt.N(value, 0)}")">@name <Delta Value="delta" Digits="0" /></span>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="btn-row">
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => App.OpenCompare(baselineRef, row.Ref)">⇄ Side by side in Compare</MudButton>
+                    @if (mine)
+                    {
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => TryOn(baselineRef, b)"
+                                   title="@($"A draft of {baseName} with this build's equipment, edited next to {baseName}")">Try it on @baseName</MudButton>
+                    }
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => EditCopy(b, Label(App.Run.Result!, row), row.Ref)" title="Copy this build into My builds to change pieces or decorations">Edit a copy</MudButton>
+                </div>
+            </div>
+        </div>
+    };
+
+    /// <summary>The run build's damage on the main attacks against the baseline's, under the same conditions; the scored one first.</summary>
+    private List<(string Name, double Value, double Delta, bool Current)> AttackDeltas(Row row, ScoredRef baseline)
+    {
+        var request = App.Request!;
+        var mine = App.AttackRowsOf(request, BuildHelpers.FromBuild(row.Build, "run"));
+        var theirs = App.AttackRowsOf(baseline.Request, baseline.Input).ToDictionary(x => x.Id);
+        return mine.Where(x => theirs.ContainsKey(x.Id))
+            .OrderByDescending(x => x.Current).Take(8)
+            .Select(x => (x.Name, x.DamagePerExecution, x.DamagePerExecution - theirs[x.Id].DamagePerExecution, x.Current))
+            .ToList();
+    }
+
+    private static RenderFragment DeltaTo(BuildDto b, BuildDto reference, string label)
+    {
+        var (value, against, digits) = BuildDamage.Compare(b, reference);
+        return @<ScoreDelta Score="value" Reference="against" Digits="digits" Label="@label" />;
+    }
+
     private string? Hint(RunState run, ResultDto? result, double? elapsed)
     {
         if (run.Status == RunStatus.Running)
@@ -168,33 +497,24 @@
             + (run.FromDisk && App.Name is { } name ? $" · last run of {name}" : "");
     }
 
-    private IReadOnlyList<SegmentOption<int>> MineOptions(IReadOnlyList<BuildInput> builds) =>
-        builds.Select((b, i) =>
-        {
-            var build = App.Evaluated is { } ev && i < ev.Count ? ev[i].Build : null;
-            var name = string.IsNullOrEmpty(b.Name) ? "(unnamed)" : b.Name;
-            RenderFragment content = @<span>@name@if (build is not null) {<small>@(" ")@BuildDamage.Text(build)</small>}</span>;
-            return new SegmentOption<int>(i, name, content);
-        }).ToList();
-
-    private static RenderFragment DeltaTo(BuildDto b, BuildDto reference, string label)
-    {
-        var (value, against, digits) = BuildDamage.Compare(b, reference);
-        return @<ScoreDelta Score="value" Reference="against" Digits="digits" Label="@label" />;
-    }
-
     private IEnumerable<string> BuildNames => App.Builds.Select(x => x.Name);
 
-    private void EditCopy(BuildDto b, string label, string key) =>
-        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (copy)", BuildNames)), key);
+    private void EditCopy(BuildDto b, string label, BuildRef r) =>
+        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (copy)", BuildNames)), $"opt:{r.Pair}:{r.Rank}");
 
-    private void Pick(BuildDto b, string label, string key) =>
-        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (picked)", BuildNames)) with { Picked = true }, key);
+    private void Pick(BuildDto b, string label, BuildRef r) =>
+        App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (picked)", BuildNames)) with { Picked = true }, $"opt:{r.Pair}:{r.Rank}");
 
-    private void Compare(string key)
+    /// <summary>A draft of the baseline (one of this weapon's builds) with the result's equipment and the baseline's own conditions.</summary>
+    private void TryOn(BuildRef baselineRef, BuildDto b)
     {
-        App.SetCompareKey(key);
-        App.SetTab(Tab.Builds);
+        if (App.Builds.FirstOrDefault(x => x.Name == baselineRef.Mine) is not { } baseInput) return;
+        var draft = BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{baseInput.Name} (try)", BuildNames)) with
+        {
+            DraftOf = baseInput.Name,
+            Conditions = new(baseInput.Conditions), Resonance = baseInput.Resonance, Target = baseInput.Target, MealAttack = baseInput.MealAttack,
+        };
+        App.AddBuild(draft);
     }
 
     private async Task Download()

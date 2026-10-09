@@ -1,0 +1,35 @@
+@inherits AppComponent
+@* The compare tray at the bottom of every tab but Compare: the builds collected for the comparison, from any weapon. *@
+@if (App.Tray.Count > 0 && App.Tab != Tab.Compare)
+{
+    var baseline = App.TrayBaseline;
+    <div class="tray" role="region" aria-label="Builds to compare">
+        <span class="tray-title">⇄ Compare</span>
+        @foreach (var r in App.Tray)
+        {
+            var scored = App.ScoreRef(r);
+            <span @key="r.Key" class="tray-item @(r == baseline ? "base" : "")" title="@(r == baseline ? "The baseline: every difference is measured against it" : null)">
+                @if (r == baseline)
+                {
+                    <span class="pickstar">★</span>
+                }
+                <img src="@GameIcons.Weapon(scored?.WeaponType ?? "great-sword")" alt="" />
+                <span class="muted">@AppState.WeaponTitle(r.Weapon) ·</span>
+                <span>@App.RefName(r)</span>
+                @if (scored?.Build is { } b)
+                {
+                    <b>@BuildDamage.Text(b)</b>
+                }
+                else
+                {
+                    <span class="err small" title="@(scored is null ? "The build is gone" : string.Join("\n", scored.Errors))">!</span>
+                }
+                <button type="button" class="tray-x" title="Take it out" @onclick="() => App.RemoveFromTray(r)">✕</button>
+            </span>
+        }
+        <span class="right btn-row nowrap">
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="App.ClearTray">Clear</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => App.OpenCompare()">Open the comparison</MudButton>
+        </span>
+    </div>
+}

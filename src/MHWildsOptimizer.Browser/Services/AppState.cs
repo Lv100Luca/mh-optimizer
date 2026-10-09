@@ -15,7 +15,7 @@ namespace MHWildsOptimizer.Browser.Services;
 /// presets, the open weapons as sessions (unsaved edits survive weapon switches and reloads), live validation and build
 /// scoring, optimizer runs and the URL. Components read the properties and re-render on <see cref="Changed"/>.
 /// </summary>
-public sealed class AppState : IDisposable
+public sealed partial class AppState : IDisposable
 {
     /// <summary>Session key of the unsaved new weapon; weapon names start with a letter or digit, so it never clashes.</summary>
     public const string NewWeapon = "(new)";
@@ -273,6 +273,8 @@ public sealed class AppState : IDisposable
         InventoryCompare = [];
         Resolved = null;
         Evaluated = null;
+        _baselines.Clear();
+        LoadTray(p.Name);
         TouchSaved();
     }
 
@@ -364,7 +366,7 @@ public sealed class AppState : IDisposable
     }
 
     /// <summary>Leaves the inventory for a weapon tab; any other tab stays (switching weapons keeps the view).</summary>
-    private Tab WeaponTab(Tab? tab = null) => tab ?? (Tab == Tab.Inventory ? Tab.Weapon : Tab);
+    private Tab WeaponTab(Tab? tab = null) => tab ?? (Tab.IsProfileTab() ? Tab.Weapon : Tab);
 
     /// <summary>
     /// Shows the unsaved new weapon. With a type, starts it over as a weapon of that type (with that type's condition preset),
@@ -476,6 +478,7 @@ public sealed class AppState : IDisposable
         // the open weapon is gone: show the new one, but stay on the current tab (e.g. the inventory)
         if (_activeKey == weaponName) { _activeKey = NewWeapon; ShowCached(); }
         InventoryCompare = InventoryCompare.Where(x => x != weaponName).ToList();
+        if (Tray.Any(r => r.Weapon == weaponName)) { Tray = Tray.Where(r => r.Weapon != weaponName).ToList(); SaveTray(); }
         Toast($"Deleted {weaponName}");
         RefreshWeapons();
         TouchSaved();
@@ -581,7 +584,11 @@ public sealed class AppState : IDisposable
     // ---------------------------------------------------------------- debounced work
 
     /// <summary>Reloads the inventory (after saved profile data changed).</summary>
-    public void TouchSaved() => _ = ReloadInventoryAsync(++_inventoryVersion);
+    public void TouchSaved()
+    {
+        ForgetSaved();
+        _ = ReloadInventoryAsync(++_inventoryVersion);
+    }
 
     private async Task ReloadInventoryAsync(int version)
     {

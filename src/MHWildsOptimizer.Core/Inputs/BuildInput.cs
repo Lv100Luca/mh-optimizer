@@ -48,6 +48,13 @@ public sealed record BuildInput
     public bool Picked { get; init; }
 
     /// <summary>
+    /// The build this one is a draft of ("Try a change" in the browser app): edited next to that build, then applied to it,
+    /// kept as a build of its own or dropped. Null: a build of its own.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? DraftOf { get; init; }
+
+    /// <summary>
     /// Hunt conditions this build is scored under where they differ from the weapon's, by condition key (snake_case, see
     /// <see cref="ConditionToggles.AllKeys"/>): <c>{ "burst_active": true }</c>. Empty: the weapon's conditions. Lets a build be
     /// scored as it is played (or as the game's status screen shows it) without changing what the optimizer searches for.

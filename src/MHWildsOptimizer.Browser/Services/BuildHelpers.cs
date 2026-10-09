@@ -46,6 +46,17 @@ public static class BuildHelpers
         };
     }
 
+    /// <summary>
+    /// <paramref name="b"/> with one slot taken from <paramref name="source"/>: the weapon's roll and decorations, an armor piece
+    /// with its decorations, or the talisman with its decorations.
+    /// </summary>
+    public static BuildInput WithSlotFrom(this BuildInput b, BuildInput source, BuildSlot slot) => slot switch
+    {
+        BuildSlot.Weapon => b with { SetBonus = source.SetBonus, GroupSkill = source.GroupSkill, WeaponDecorations = [.. source.WeaponDecorations] },
+        BuildSlot.Talisman => b with { Talisman = source.Talisman is { } t ? t with { Decorations = [.. t.Decorations] } : null },
+        _ => b.WithArmor(BuildDiff.ArmorSlots[slot], source.Armor(BuildDiff.ArmorSlots[slot]) is { } a ? a with { Decorations = [.. a.Decorations] } : null),
+    };
+
     /// <summary>"weapon1" / "armor2" (talisman slot notation) -> slot spec.</summary>
     public static SlotSpec ParseSlot(string text) =>
         new(int.TryParse(new string(text.Where(char.IsDigit).ToArray()), out var n) && n > 0 ? n : 1, text.StartsWith('w') ? SkillKind.Weapon : SkillKind.Armor);

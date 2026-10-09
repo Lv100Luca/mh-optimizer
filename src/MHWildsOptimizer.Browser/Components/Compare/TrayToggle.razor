@@ -1,0 +1,15 @@
+@inherits AppComponent
+@* Puts a build into the compare tray (the Compare tab's columns) or takes it out. *@
+@{
+    var on = App.InTray(Ref);
+}
+<MudButton Variant="@(on ? Variant.Filled : Variant.Outlined)" Color="@(on ? Color.Primary : Color.Default)" Size="Size.Small" Class="tray-toggle"
+           OnClick="() => App.ToggleTray(Ref)" title="@(on ? "In the comparison: click to take it out" : "Add to the comparison (Compare tab)")">
+    @(Short ? (on ? "⇄ ✓" : "⇄") : on ? "⇄ In compare" : "⇄ Compare")
+</MudButton>
+
+@code {
+    [Parameter, EditorRequired] public BuildRef Ref { get; set; } = default!;
+    /// <summary>Only the icon (and a check mark while the build is in the tray).</summary>
+    [Parameter] public bool Short { get; set; }
+}

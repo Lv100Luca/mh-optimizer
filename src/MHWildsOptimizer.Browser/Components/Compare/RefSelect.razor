@@ -1,0 +1,40 @@
+@inherits AppComponent
+@* Picks a build of the profile: every weapon's own builds and last-run builds, grouped by weapon, with their damage. *@
+<SelectBox Value="@Value?.Key" ValueChanged="Changed" Options="@Options()" Placeholder="@Placeholder" Style="@Style" Class="@Class" />
+
+@code {
+    [Parameter] public BuildRef? Value { get; set; }
+    [Parameter] public EventCallback<BuildRef?> ValueChanged { get; set; }
+    /// <summary>Only builds of weapons of this type (null = all).</summary>
+    [Parameter] public string? WeaponType { get; set; }
+    /// <summary>Only these weapons (null = all).</summary>
+    [Parameter] public IReadOnlyList<string>? Weapons { get; set; }
+    /// <summary>Leave the last-run builds out.</summary>
+    [Parameter] public bool OwnOnly { get; set; }
+    [Parameter] public IReadOnlyCollection<BuildRef>? Exclude { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private Task Changed(string? key) => ValueChanged.InvokeAsync(BuildRef.Parse(key));
+
+    private List<SelectOption> Options()
+    {
+        var options = new List<SelectOption>();
+        foreach (var weapon in Weapons ?? App.CompareWeapons)
+        {
+            if (WeaponType is not null && App.RequestOf(weapon) is { } request && ProfileRules.WeaponKind(request) != WeaponType) continue;
+            foreach (var r in App.RefsOf(weapon))
+            {
+                if (OwnOnly && r.IsRun || Exclude?.Contains(r) == true) continue;
+                var input = r.IsRun ? null : App.BuildsOf(weapon).FirstOrDefault(b => b.Name == r.Mine);
+                // own builds are scored now; run builds show what the run scored (cheap, and the Compare tab rescores them)
+                var build = r.IsRun ? App.RunBuild(r) : App.ScoreRef(r)?.Build;
+                var mark = input?.Picked == true ? "★ " : input?.DraftOf is not null ? "✎ " : "";
+                var label = $"{mark}{App.RefName(r)}{(build is not null ? $" · {BuildDamage.Text(build)}" : "")}";
+                options.Add(new SelectOption(r.Key, label, AppState.WeaponTitle(weapon) + (r.IsRun ? " · last run" : "")));
+            }
+        }
+        return options;
+    }
+}

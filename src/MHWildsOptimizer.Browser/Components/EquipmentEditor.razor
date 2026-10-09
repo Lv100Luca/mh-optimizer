@@ -1,6 +1,8 @@
 @inject AppState App
 
-@* The editor of a hand-entered build: weapon pair and decorations, the five armor pieces with their decorations, the talisman. *@
+@* The editor of a hand-entered build: weapon pair and decorations, the five armor pieces with their decorations, the talisman.
+   With a Baseline (the build a draft was made from), each row shows that build's piece read-only next to the editor, marks the
+   rows that differ and ends with what the change alone is worth (Effect) and a way back. *@
 @{
     var request = App.Request!;
     var rw = App.Resolved?.Weapon;
@@ -14,11 +16,25 @@
         : charm?.Skills.ToList() ?? [];
     var talismanRarity = randomTalisman?.Rarity ?? charm?.Rarity ?? 1;
 }
-<table class="table equip editor">
+<table class="table equip editor @(Baseline is not null ? "side-by-side" : "")">
+    @if (Baseline is not null)
+    {
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="was">@BaselineName <span class="badge-base">baseline</span></th>
+                <th>This build</th>
+                <th class="decos"></th>
+                <th class="effect">This change alone</th>
+            </tr>
+        </thead>
+    }
     <tbody>
-        <tr>
+        <tr class="@RowClass(BuildSlot.Weapon)">
             <td class="icon-cell"><img class="icon" src="@GameIcons.Weapon(rw?.Type ?? App.WeaponKind)" alt="" width="32" height="32" /></td>
             <td class="piece">Weapon</td>
+            @Was(BuildSlot.Weapon)
             <td class="name">
                 @if (rw is not null)
                 {
@@ -31,29 +47,30 @@
                 {
                     <span class="err">Weapon has errors</span>
                 }
+                @if (Baseline is not null)
+                {
+                    @PairPicker(rw)
+                }
             </td>
-            <td class="skills">
-                <div class="pairpick">
-                    <span class="with-icon muted small"><SkillIcon Name="set" Kind="SkillKind.Set" Size="16" /> set bonus</span>
-                    <SearchSelect Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {rw?.SetBonus ?? "none"}")"
-                               Options="@App.Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList()" />
-                    <span class="with-icon muted small"><SkillIcon Name="group" Kind="SkillKind.Group" Size="16" /> group skill</span>
-                    <SearchSelect Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {rw?.GroupSkill ?? "none"}")"
-                               Options="@App.Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList()" />
-                </div>
-            </td>
+            @if (Baseline is null)
+            {
+                <td class="skills">@PairPicker(rw)</td>
+            }
             <td class="decos">
                 <SlotPickers Slots="weaponSlots" Values="Build.WeaponDecorations" ValuesChanged="v => Update.Invoke(b => b with { WeaponDecorations = v })" />
             </td>
+            @EffectCell(BuildSlot.Weapon)
         </tr>
 
         @foreach (var kind in BuildHelpers.ArmorKinds)
         {
             var a = Build.Armor(kind);
             var p = a is not null ? App.Index.ArmorByName.GetValueOrDefault(a.Piece) : null;
-            <tr>
+            var slot = BuildDiff.ArmorSlots.First(x => x.Value == kind).Key;
+            <tr class="@RowClass(slot)">
                 <td class="icon-cell"><img class="icon" src="@(p is not null ? GameIcons.Armor(kind, p.Rarity) : GameIcons.ArmorBase(kind))" alt="" width="32" height="32" /></td>
                 <td class="piece">@BuildHelpers.PieceLabel(kind)</td>
+                @Was(slot)
                 <td class="name">
                     <Picker T="string" Class="piecepick" Options="ArmorOptions(kind)" OnPick="name => PickPiece(kind, name)"
                             OnClear="@(a is not null ? EventCallback.Factory.Create(this, () => SetArmor(kind, null)) : default)"
@@ -94,24 +111,28 @@
                         </div>
                     }
                 </td>
-                <td class="skills">
-                    <span class="chip-row">
-                        @foreach (var g in p?.Piece.Skills ?? [])
-                        {
-                            <SkillChip Name="@g.Skill" Level="g.Level" />
-                        }
-                    </span>
-                </td>
+                @if (Baseline is null)
+                {
+                    <td class="skills">
+                        <span class="chip-row">
+                            @foreach (var g in p?.Piece.Skills ?? [])
+                            {
+                                <SkillChip Name="@g.Skill" Level="g.Level" />
+                            }
+                        </span>
+                    </td>
+                }
                 <td class="decos">
                     @if (a is not null && p is not null)
                     {
                         <SlotPickers Slots="ArmorSlots(a)" Values="a.Decorations" ValuesChanged="v => SetArmor(kind, a with { Decorations = v })" />
                     }
                 </td>
+                @EffectCell(slot)
             </tr>
         }
 
-        <tr>
+        <tr class="@RowClass(BuildSlot.Talisman)">
             <td class="icon-cell">
                 @if (t is not null)
                 {
@@ -119,6 +140,7 @@
                 }
             </td>
             <td class="piece">Talisman</td>
+            @Was(BuildSlot.Talisman)
             <td class="name">
                 <Picker T="string" Class="piecepick" Options="TalismanOptions()" OnPick="PickTalisman"
                         OnClear="@(t is not null ? EventCallback.Factory.Create(this, () => Update.Invoke(b => b with { Talisman = null })) : default)"
@@ -143,20 +165,24 @@
                     <div class="muted small">@(randomTalisman is not null ? "your random talisman" : charm is not null ? "craftable charm" : "not in your talisman list; pick it again")</div>
                 }
             </td>
-            <td class="skills">
-                <span class="chip-row">
-                    @foreach (var g in talismanSkills)
-                    {
-                        <SkillChip Name="@g.Skill" Level="g.Level" />
-                    }
-                </span>
-            </td>
+            @if (Baseline is null)
+            {
+                <td class="skills">
+                    <span class="chip-row">
+                        @foreach (var g in talismanSkills)
+                        {
+                            <SkillChip Name="@g.Skill" Level="g.Level" />
+                        }
+                    </span>
+                </td>
+            }
             <td class="decos">
                 @if (t is not null)
                 {
                     <SlotPickers Slots="talismanSlots" Values="t.Decorations" ValuesChanged="v => Update.Invoke(b => b with { Talisman = t with { Decorations = v } })" />
                 }
             </td>
+            @EffectCell(BuildSlot.Talisman)
         </tr>
     </tbody>
 </table>
@@ -165,6 +191,88 @@
     [Parameter, EditorRequired] public BuildInput Build { get; set; } = default!;
     /// <summary>Applies a change to the build.</summary>
     [Parameter, EditorRequired] public Action<Func<BuildInput, BuildInput>> Update { get; set; } = default!;
+    /// <summary>Side by side: the build this one is compared with (a draft's original), shown read-only in each row.</summary>
+    [Parameter] public BuildInput? Baseline { get; set; }
+    [Parameter] public string? BaselineName { get; set; }
+    /// <summary>How each slot differs from the baseline (from the scored builds, so "as rolled" equals the rolled pair).</summary>
+    [Parameter] public IReadOnlyDictionary<BuildSlot, SlotChange>? Changes { get; set; }
+    /// <summary>What the change of a slot alone is worth, shown at the end of a changed row.</summary>
+    [Parameter] public RenderFragment<BuildSlot>? Effect { get; set; }
+
+    /// <summary>The weapon's rolled set bonus and group skill as this build sets them.</summary>
+    private RenderFragment PairPicker(WeaponStatsDto? rw) => __builder =>
+    {
+        <div class="pairpick">
+            <span class="with-icon muted small"><SkillIcon Name="set" Kind="SkillKind.Set" Size="16" /> set bonus</span>
+            <SearchSelect Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {rw?.SetBonus ?? "none"}")"
+                          Options="@App.Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList()" />
+            <span class="with-icon muted small"><SkillIcon Name="group" Kind="SkillKind.Group" Size="16" /> group skill</span>
+            <SearchSelect Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {rw?.GroupSkill ?? "none"}")"
+                          Options="@App.Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList()" />
+        </div>
+    };
+
+    private SlotChange ChangeOf(BuildSlot slot) => Changes?.GetValueOrDefault(slot) ?? SlotChange.Same;
+
+    private string RowClass(BuildSlot slot) => Baseline is not null && ChangeOf(slot) != SlotChange.Same ? "row-changed" : "";
+
+    /// <summary>The baseline's piece of a row, read-only.</summary>
+    private RenderFragment Was(BuildSlot slot) => __builder =>
+    {
+        if (Baseline is not { } b) return;
+        string? name;
+        IReadOnlyList<string?> decos;
+        switch (slot)
+        {
+            case BuildSlot.Weapon:
+                name = b.SetBonus is null && b.GroupSkill is null ? "as rolled" : $"{b.SetBonus ?? "as rolled"} / {b.GroupSkill ?? "as rolled"}";
+                decos = b.WeaponDecorations;
+                break;
+            case BuildSlot.Talisman:
+                name = b.Talisman?.Name;
+                decos = b.Talisman?.Decorations ?? [];
+                break;
+            default:
+                var a = b.Armor(BuildDiff.ArmorSlots[slot]);
+                name = a is null ? null : a.Piece + (a.Transcended ? " (transcended)" : "");
+                decos = a?.Decorations ?? [];
+                break;
+        }
+        <td class="was">
+            @if (name is null)
+            {
+                <div class="was-label tiny">@BaselineName</div>
+                <span class="muted">nothing</span>
+            }
+            else
+            {
+                <div class="was-label tiny">@BaselineName</div>
+                <div class="was-name">@name</div>
+                <div class="equipview-decos">
+                    @foreach (var d in decos.Where(d => d is not null))
+                    {
+                        <DecoIcon Decoration="@App.Index.DecorationsByName.GetValueOrDefault(d!)" Size="20" />
+                    }
+                </div>
+            }
+        </td>
+    };
+
+    private RenderFragment EffectCell(BuildSlot slot) => __builder =>
+    {
+        if (Baseline is not { } b) return;
+        <td class="effect">
+            @if (ChangeOf(slot) == SlotChange.Same)
+            {
+                <span class="muted small">unchanged</span>
+            }
+            else
+            {
+                @Effect?.Invoke(slot)
+                <button type="button" class="linklike small" title="Take this slot back from the baseline" @onclick="() => Update.Invoke(x => x.WithSlotFrom(b, slot))">↺ back</button>
+            }
+        </td>
+    };
 
     private static bool CanTranscend(ArmorEntry p) =>
         p.Piece.SlotsTranscended.Count > 0 && !p.Piece.SlotsTranscended.SequenceEqual(p.Piece.Slots);

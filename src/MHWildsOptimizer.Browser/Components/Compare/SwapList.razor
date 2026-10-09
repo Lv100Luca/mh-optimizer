@@ -1,0 +1,91 @@
+@* The slots that change from one build to another, each as "from -> to" with the pieces' own skills and decorations. *@
+@{
+    var rows = BuildDiff.AllSlots.Where(s => Diff.Slots[s] != SlotChange.Same).ToList();
+    var kept = BuildDiff.AllSlots.Where(s => Diff.Slots[s] == SlotChange.Same).Select(s => s.ToString().ToLowerInvariant()).ToList();
+}
+@if (rows.Count == 0)
+{
+    <p class="muted small">The same equipment.</p>
+}
+else
+{
+    <table class="table swaplist">
+        <tbody>
+            @foreach (var slot in rows)
+            {
+                var piece = Diff.Slots[slot] == SlotChange.Piece;
+                <tr @key="slot">
+                    <td class="swap-slot"><span class="with-icon"><img class="icon" width="22" height="22" src="@SlotStrip.Icon(slot, From.Weapon.Type)" alt="" />@slot</span></td>
+                    <td class="swap-from">@Piece(From, slot)</td>
+                    <td class="swap-arrow">→</td>
+                    <td class="swap-to">@Piece(To, slot, other: !piece)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (kept.Count > 0)
+    {
+        <p class="muted small">Unchanged: @string.Join(", ", kept).</p>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired] public BuildDto From { get; set; } = default!;
+    [Parameter, EditorRequired] public BuildDto To { get; set; } = default!;
+    [Parameter, EditorRequired] public BuildDiffDto Diff { get; set; } = default!;
+
+    /// <param name="other">The same piece with other decorations: the name is dimmed, the decorations count.</param>
+    private static RenderFragment Piece(BuildDto b, BuildSlot slot, bool other = false) => __builder =>
+    {
+        string? name;
+        string? note = null;
+        IReadOnlyList<DecoDto?> decos;
+        IReadOnlyList<SkillGrant> skills = [];
+        switch (slot)
+        {
+            case BuildSlot.Weapon:
+                name = b.Weapon.Label;
+                note = $"{b.Weapon.SetBonus ?? "-"} / {b.Weapon.GroupSkill ?? "-"}";
+                decos = b.Weapon.Decorations;
+                break;
+            case BuildSlot.Talisman:
+                name = b.Talisman?.Name;
+                note = b.Talisman is { Source: TalismanSource.Crafted } ? "craftable charm" : null;
+                decos = b.Talisman?.Decorations ?? [];
+                skills = b.Talisman?.Skills ?? [];
+                break;
+            default:
+                var a = b.Armor.FirstOrDefault(x => x.Kind == BuildDiff.ArmorSlots[slot]);
+                name = a is null ? null : a.Name + (a.Transcended ? " (transcended)" : "");
+                decos = a?.Decorations ?? [];
+                skills = a?.Skills ?? [];
+                break;
+        }
+        if (name is null)
+        {
+            <span class="muted">nothing</span>
+            return;
+        }
+        <div class="swap-piece">
+            <span class="@(other ? "muted" : "swap-name")">@name</span>
+            @if (other)
+            {
+                <span class="muted tiny">other decorations</span>
+            }
+            @if (note is not null)
+            {
+                <span class="muted tiny">@note</span>
+            }
+            @if (skills.Count > 0 && !other)
+            {
+                <span class="muted tiny">@string.Join(", ", skills.Select(s => $"{s.Skill} {s.Level}"))</span>
+            }
+            <span class="equipview-decos">
+                @foreach (var d in decos.Where(d => d is not null))
+                {
+                    <DecoIcon Deco="d" Size="20" />
+                }
+            </span>
+        </div>
+    };
+}

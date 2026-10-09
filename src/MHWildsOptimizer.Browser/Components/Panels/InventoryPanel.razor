@@ -9,12 +9,10 @@
     var running = App.Batch.Values.Any(r => r.Status is BatchStatus.Running or BatchStatus.Queued);
     var stale = (entries ?? []).Where(e => (e.Stale || e.LastRun is null) && e.Errors.Count == 0).ToList();
     var compared = compare.Select(n => entries?.FirstOrDefault(e => e.Name == n)).OfType<InventoryEntryDto>().ToList();
-    var ca = compared.Count > 0 ? Representative(compared[0]) : null;
-    var cb = compared.Count > 1 ? Representative(compared[1]) : null;
 
     <div class="panel">
         <Section Key="inventory" Title="@($"Weapons of {profile}")"
-                 Hint="Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile. A weapon is compared by its picked build (★, scored with today's conditions and talismans) or else by the best build of its last run.">
+                 Hint="Each weapon keeps its own targets, builds and last optimizer run; talismans and the weapon-type condition presets are shared by the whole profile. The chart puts every weapon of a type on one damage scale: your builds, its pick and the best build of its last run, all scored now.">
             <Actions>
                 <div class="btn-row">
                     @if (running)
@@ -52,173 +50,69 @@
                 @foreach (var group in groups)
                 {
                     var list = group.ToList();
-                    var scored = list.Select(e => Representative(e)?.Build.Score).ToList();
-                    var top = scored.Max(x => x ?? double.NegativeInfinity);
+                    var points = list.ToDictionary(e => e.Name, Points);
+                    var all = points.Values.SelectMany(p => p.Values()).ToList();
+                    var damage = points.Values.All(p => p.Damage);
+                    var (lo, hi) = Scale(all);
+                    var unit = points.Values.Select(p => p.Unit).FirstOrDefault(u => u is not null) ?? "score";
                     <div @key="group.Key" class="inv-group">
-                        <h3 class="with-icon"><img src="@GameIcons.Weapon(group.Key)" alt="" width="22" height="22" />@TypeLabel(group.Key) <span class="muted small">· @list.Count weapon@(list.Count > 1 ? "s" : "")</span></h3>
-                        <div class="inv-scroll">
-                            <table class="table inv-table">
-                                <thead>
-                                    <tr>
-                                        <th title="Pick two to compare">⇄</th>
-                                        <th>Weapon</th>
-                                        <th>Picked build (scored now)</th>
-                                        <th class="num">Score</th>
-                                        <th>Last run</th>
-                                        <th class="num" title="Best build of the last run minus the picked build">Run vs pick</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (var i = 0; i < list.Count; i++)
+                        <div class="inv-group-head">
+                            <h3 class="with-icon"><img src="@GameIcons.Weapon(group.Key)" alt="" width="22" height="22" />@TypeLabel(group.Key) <span class="muted small">· @list.Count weapon@(list.Count > 1 ? "s" : "") · @(damage ? unit : "score per 100 MV"), scored now</span></h3>
+                            <span class="inv-legend">
+                                <span><span class="lg-dot"></span>your builds</span>
+                                <span><span class="pickstar">★</span> pick</span>
+                                <span><span class="lg-dia"></span>best of the last run</span>
+                                <span><span class="lg-dia stale"></span>… stale run, scored now</span>
+                            </span>
+                        </div>
+                        <div class="inv-rows">
+                            <div class="inv-row inv-row-head">
+                                <span title="Tick two weapons for a head to head, more to compare them in the Compare tab">⇄</span>
+                                <span>Weapon</span>
+                                <div class="inv-track ticks">
+                                    @foreach (var t in Ticks(lo, hi))
                                     {
-                                        var e = list[i];
-                                        var rep = Representative(e);
-                                        var pickedBuild = e.Picked?.Build;
-                                        var runBuild = e.LastRun?.Build;
-                                        var mark = App.Batch.GetValueOrDefault(e.Name);
-                                        var unmet = e.Picked?.Targets.Count(t => !t.Met) ?? 0;
-                                        var element = e.Weapon?.Element ?? Element.None;
-                                        var isCompared = compare.Contains(e.Name);
-                                        var isTop = scored[i] == top && list.Count > 1;
-                                        <tr @key="e.Name" class="@((e.Name == App.Name ? "inv-open " : "") + (isCompared ? "inv-compared" : ""))">
-                                            <td><input type="checkbox" checked="@isCompared" @onchange="() => ToggleCompare(e.Name)" disabled="@(rep is null)" aria-label="@($"Compare {e.Name}")" /></td>
-                                            <td>
-                                                <button type="button" class="linklike inv-name" @onclick="() => Open(e.Name)">@e.Name</button>
-                                                @if (unsaved.Contains(e.Name))
-                                                {
-                                                    <span class="unsaved-badge" title="Opened with changes that are not saved yet; the numbers here are from the version saved in this browser">unsaved</span>
-                                                }
-                                                @if (element != Element.None)
-                                                {
-                                                    <span class="elem-dot" style="background: @GameIcons.ElementCss[element]" title="@Fmt.TitleCase(element)"></span>
-                                                }
-                                                <div class="muted small">@(e.Weapon is { } w ? $"{w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}" : "")</div>
-                                                <div class="muted tiny">@TargetsText(e)</div>
-                                                @foreach (var x in e.Errors)
-                                                {
-                                                    <div @key="x" class="err small">@x</div>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (e.Picked is { } picked)
-                                                {
-                                                    <span class="pickstar">★</span> @picked.Name
-                                                    @if (unmet > 0)
-                                                    {
-                                                        <div class="warn small">@unmet target@(unmet > 1 ? "s" : "") not met</div>
-                                                    }
-                                                    @foreach (var x in picked.Errors)
-                                                    {
-                                                        <div @key="x" class="err small">@x</div>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <span class="muted small">@(e.Builds > 0 ? $"{e.Builds} build{(e.Builds > 1 ? "s" : "")}, none picked" : "none")</span>
-                                                }
-                                            </td>
-                                            <td class="num">
-                                                @if (rep is not null)
-                                                {
-                                                    <b class="@(isTop ? "ok" : null)">@Fmt.N(rep.Build.Score)</b>
-                                                    <div class="muted tiny">EFR @Fmt.N(rep.Build.Efr, 0) + EFE @Fmt.N(rep.Build.Efe, 0)@(rep.Build.Procs > 0 ? $" + {Fmt.N(rep.Build.Procs, 0)}" : "")@(rep.FromRun ? " (run)" : "")</div>
-                                                }
-                                                else
-                                                {
-                                                    <span class="muted">—</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (mark is not null && mark.Status != BatchStatus.Done)
-                                                {
-                                                    <span class="@(mark.Status == BatchStatus.Error ? "err small" : "small")">
-                                                        @if (mark.Status == BatchStatus.Queued)
-                                                        {
-                                                            @("queued")
-                                                        }
-                                                        else if (mark.Status == BatchStatus.Running)
-                                                        {
-                                                            <span class="spinner"></span>@(" " + (mark.Message ?? "running…"))
-                                                        }
-                                                        else
-                                                        {
-                                                            @mark.Message
-                                                        }
-                                                    </span>
-                                                }
-                                                else if (e.LastRun is { } last)
-                                                {
-                                                    <b>@Fmt.N(last.Build.Score)</b> <span class="muted small">@Ago(last.CompletedAt)</span>
-                                                    @if (e.Stale)
-                                                    {
-                                                        <span class="stale-badge" title="The request or the talismans changed since this run">stale</span>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <span class="muted small">never run</span>
-                                                }
-                                            </td>
-                                            <td class="num">
-                                                @if (pickedBuild is not null && runBuild is not null)
-                                                {
-                                                    <Delta Value="@(runBuild.Score - pickedBuild.Score)" />
-                                                }
-                                                else
-                                                {
-                                                    <span class="muted">—</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <div class="btn-row nowrap">
-                                                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => Open(e.Name, Tab.Builds)">Builds</MudButton>
-                                                    @if (e.LastRun is not null)
-                                                    {
-                                                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Open(e.Name, Tab.Results)">Results</MudButton>
-                                                    }
-                                                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.RunWeaponsAsync([e.Name])" Disabled="@(running || e.Errors.Count > 0 || App.Solver?.Problem is not null)"
-                                                               title="Run the optimizer for this weapon (saved setup)">▶</MudButton>
-                                                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(e.Name)"
-                                                               Disabled="@(mark?.Status is BatchStatus.Running or BatchStatus.Queued)" title="@($"Delete {e.Name} with its builds and last run")">✕</MudButton>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <span style="left: @Pos(t, lo, hi)">@Fmt.N(t, damage ? 0 : 1)</span>
                                     }
-                                </tbody>
-                            </table>
+                                </div>
+                                <span>Numbers</span>
+                                <span></span>
+                            </div>
+                            @foreach (var e in list)
+                            {
+                                @Row(e, points[e.Name], lo, hi, damage, compare.Contains(e.Name), unsaved.Contains(e.Name), running)
+                            }
                         </div>
                     </div>
                 }
                 @if (groups.Count > 1)
                 {
                     <p class="muted small">
-                        Scores are damage per 100 motion value, so they rank weapons of the same type. Across types they ignore attack speed and motion values,
-                        so compare a Great Sword with a Bow by their builds, not by the number.
+                        Each weapon type has its own scale: damage depends on the type's attacks, so compare a Great Sword with a Bow by their builds, not by the number.
                     </p>
                 }
             </ChildContent>
         </Section>
 
-        @if (compared.Count > 0)
+        @if (compared.Count == 1)
         {
-            <Section Title="Compare weapons" Hint="Each side is the weapon's picked build, or the best build of its last run when nothing is picked. Differences are left minus right.">
+            <p class="muted small">Tick a second weapon to put it head to head with @compared[0].Name.</p>
+        }
+        else if (compared.Count == 2)
+        {
+            @HeadToHead(compared[0], compared[1])
+        }
+        else if (compared.Count > 2)
+        {
+            <Section Title="@($"{compared.Count} weapons ticked")" Hint="A head to head takes two weapons; the Compare tab lines up to five side by side.">
                 <Actions>
                     <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.SetInventoryCompare(_ => [])">Clear</MudButton>
                 </Actions>
                 <ChildContent>
-                    @if (compared.Count < 2)
-                    {
-                        <p class="muted">Tick a second weapon to compare with @compared[0].Name.</p>
-                    }
-                    @if (ca is not null && cb is not null)
-                    {
-                        if (compared[0].Type != compared[1].Type)
-                        {
-                            <Alert Kind="info">@TypeLabel(compared[0].Type) vs @TypeLabel(compared[1].Type): the scores are per 100 MV, so the difference says little about real damage.</Alert>
-                        }
-                        <BuildCompare A="ca.Build" ALabel="@ca.Label" B="cb.Build" BLabel="@cb.Label" />
-                    }
+                    <div class="btn-row">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => OpenInCompare(compared)">⇄ Compare their best builds</MudButton>
+                        <span class="muted small">The best of each weapon's own builds, or of its last run when it has none.</span>
+                    </div>
                 </ChildContent>
             </Section>
         }
@@ -228,14 +122,423 @@
 @code {
     private string _newKind = "great-sword";
 
-    /// <summary>The build a weapon is compared by: its pick (scored now) or else the best build of its last run.</summary>
-    private sealed record Rep(BuildDto Build, string Label, bool FromRun);
-
-    private static Rep? Representative(InventoryEntryDto e)
+    /// <summary>Where a weapon sits on the chart: its own builds, its pick, and the best of its last run (scored now).</summary>
+    private sealed record WeaponPoints(List<(string Name, double Value)> Own, (string Name, double Value)? Pick, double? RunBest, bool RunStale, bool Damage, string? Unit)
     {
-        if (e.Picked?.Build is { } picked) return new Rep(picked, $"{e.Name}: {e.Picked.Name}", false);
-        if (e.LastRun is { } run) return new Rep(run.Build, $"{e.Name}: last run", true);
-        return null;
+        public IEnumerable<double> Values() => Own.Select(o => o.Value).Concat(Pick is { } p ? [p.Value] : []).Concat(RunBest is { } r ? [r] : []);
+    }
+
+    private WeaponPoints Points(InventoryEntryDto e)
+    {
+        var own = new List<(string, double)>();
+        (string, double)? pick = null;
+        var damage = true;
+        string? unit = null;
+        foreach (var b in App.BuildsOf(e.Name).Where(b => b.DraftOf is null))
+        {
+            if (App.ScoreRef(BuildRef.Own(e.Name, b.Name))?.Build is not { } scored) continue;
+            damage &= BuildDamage.Of(scored) is not null;
+            unit ??= BuildDamage.Of(scored) is not null ? BuildDamage.Label(scored) : null;
+            var v = BuildDamage.Of(scored) ?? scored.Score;
+            own.Add((b.Name, v));
+            if (b.Picked) pick = (b.Name, v);
+        }
+        double? run = null;
+        if (App.RunBest(e.Name) is { } best)
+        {
+            damage &= BuildDamage.Of(best.Build) is not null;
+            unit ??= BuildDamage.Of(best.Build) is not null ? BuildDamage.Label(best.Build) : null;
+            run = BuildDamage.Of(best.Build) ?? best.Build.Score;
+        }
+        return new WeaponPoints(own, pick, run, App.IsStale(e.Name), damage, unit);
+    }
+
+    private static (double Lo, double Hi) Scale(List<double> values)
+    {
+        if (values.Count == 0) return (0, 1);
+        var min = values.Min();
+        var max = values.Max();
+        var pad = Math.Max((max - min) * 0.12, max * 0.02);
+        var step = NiceStep((max - min + 2 * pad) / 5);
+        return (Math.Floor((min - pad) / step) * step, Math.Ceiling((max + pad) / step) * step);
+    }
+
+    private static double NiceStep(double raw)
+    {
+        if (raw <= 0) return 1;
+        var mag = Math.Pow(10, Math.Floor(Math.Log10(raw)));
+        var f = raw / mag;
+        return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
+    }
+
+    private static IEnumerable<double> Ticks(double lo, double hi)
+    {
+        var step = NiceStep((hi - lo) / 5);
+        for (var t = lo; t < hi - step / 2; t += step) yield return t;
+    }
+
+    private static string Pos(double v, double lo, double hi) =>
+        (Math.Clamp((v - lo) / (hi - lo), 0, 1) * 100).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+
+    private RenderFragment Row(InventoryEntryDto e, WeaponPoints p, double lo, double hi, bool damage, bool ticked, bool isUnsaved, bool running) => __builder =>
+    {
+        var mark = App.Batch.GetValueOrDefault(e.Name);
+        var unmet = e.Picked?.Targets.Count(t => !t.Met) ?? 0;
+        var element = e.Weapon?.Element ?? Element.None;
+        var values = p.Values().ToList();
+        var bestOwn = p.Own.Count > 0 ? p.Own.Max(o => o.Value) : (double?)null;
+        var digits = damage ? 0 : 1;
+        <div @key="e.Name" class="inv-row @(e.Name == App.Name ? "inv-open" : "") @(ticked ? "inv-compared" : "")">
+            <input type="checkbox" checked="@ticked" @onchange="() => ToggleCompare(e.Name)" disabled="@(values.Count == 0 && !ticked)" aria-label="@($"Compare {e.Name}")" />
+            <div class="inv-name">
+                <div>
+                    <button type="button" class="linklike inv-name-link" @onclick="() => Open(e.Name)">@e.Name</button>
+                    @if (isUnsaved)
+                    {
+                        <span class="unsaved-badge" title="Opened with changes that are not saved yet; the chart uses them">unsaved</span>
+                    }
+                    @if (element != Element.None)
+                    {
+                        <span class="elem-dot" style="background: @GameIcons.ElementCss[element]" title="@Fmt.TitleCase(element)"></span>
+                    }
+                </div>
+                <div class="muted small">@(e.Weapon is { } w ? $"{w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}" : "")</div>
+                <div class="muted tiny">@TargetsText(e)</div>
+                <div class="tiny">
+                    @if (mark is not null && mark.Status != BatchStatus.Done)
+                    {
+                        <span class="@(mark.Status == BatchStatus.Error ? "err" : "")">
+                            @if (mark.Status == BatchStatus.Running)
+                            {
+                                <span class="spinner"></span>@(" " + (mark.Message ?? "running…"))
+                            }
+                            else
+                            {
+                                @(mark.Status == BatchStatus.Queued ? "queued" : mark.Message)
+                            }
+                        </span>
+                    }
+                    else if (e.LastRun is { } last)
+                    {
+                        <span class="muted">run @Ago(last.CompletedAt)</span>
+                        @if (e.Stale)
+                        {
+                            <span class="stale-badge" title="The request or the talismans changed since this run">stale</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="muted">never run</span>
+                    }
+                </div>
+                <div class="inv-links small">
+                    <button type="button" class="linklike" @onclick="() => Open(e.Name, Tab.Builds)">Builds</button>
+                    @if (e.LastRun is not null)
+                    {
+                        <span class="muted">·</span>
+                        <button type="button" class="linklike" @onclick="() => Open(e.Name, Tab.Results)">Results</button>
+                    }
+                </div>
+                @if (unmet > 0)
+                {
+                    <div class="warn tiny">the pick misses @Fmt.Plural(unmet, "target")</div>
+                }
+                @foreach (var x in e.Errors.Concat(e.Picked?.Errors ?? []))
+                {
+                    <div @key="x" class="err tiny">@x</div>
+                }
+            </div>
+            <div class="inv-track">
+                @foreach (var t in Ticks(lo, hi).Skip(1))
+                {
+                    <span class="grid" style="left: @Pos(t, lo, hi)"></span>
+                }
+                <span class="axis"></span>
+                @if (values.Count > 1)
+                {
+                    <span class="span" style="left: @Pos(values.Min(), lo, hi); width: calc(@Pos(values.Max(), lo, hi) - @Pos(values.Min(), lo, hi))"></span>
+                }
+                @foreach (var (name, v) in p.Own)
+                {
+                    <span class="mk mine" style="left: @Pos(v, lo, hi)" title="@($"{name}: {Fmt.N(v, digits)}")"></span>
+                }
+                @if (p.Own.Count == 1)
+                {
+                    <span class="mk-tag" style="left: @Pos(p.Own[0].Value, lo, hi)">@p.Own[0].Name</span>
+                }
+                @if (p.Pick is { } pick)
+                {
+                    <span class="mk pick" style="left: @Pos(pick.Value, lo, hi)" title="@($"The pick, {pick.Name}: {Fmt.N(pick.Value, digits)}")">★</span>
+                }
+                @if (p.RunBest is { } run)
+                {
+                    <span class="mk ceil @(p.RunStale ? "stale" : "")" style="left: @Pos(run, lo, hi)" title="@($"Best of the last run{(p.RunStale ? " (stale, scored now)" : "")}: {Fmt.N(run, digits)}")"></span>
+                }
+                @if (values.Count == 0)
+                {
+                    <span class="mk-tag none">@(e.Builds > 0 ? "cannot score its builds" : "no builds yet")</span>
+                }
+            </div>
+            <dl class="inv-nums">
+                @if (bestOwn is { } own)
+                {
+                    <dt>best of yours</dt><dd>@Fmt.N(own, digits)</dd>
+                }
+                @if (p.RunBest is { } r)
+                {
+                    <dt>best of the run</dt><dd class="ok">@Fmt.N(r, digits)</dd>
+                    @if (bestOwn is { } o)
+                    {
+                        <dt title="What the best build of the last run gains over your best build">headroom</dt><dd><Delta Value="@(r - o)" Digits="digits" /></dd>
+                    }
+                }
+                else
+                {
+                    <dt class="tiny">run it to see the ceiling</dt><dd></dd>
+                }
+            </dl>
+            <div class="btn-row nowrap inv-actions">
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.RunWeaponsAsync([e.Name])" Disabled="@(running || e.Errors.Count > 0 || App.Solver?.Problem is not null)"
+                           title="Run the optimizer for this weapon (saved setup)">▶</MudButton>
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(e.Name)"
+                           Disabled="@(mark?.Status is BatchStatus.Running or BatchStatus.Queued)" title="@($"Delete {e.Name} with its builds and last run")">✕</MudButton>
+            </div>
+        </div>
+    };
+
+    // ---------------------------------------------------------------- head to head
+
+    private enum CompareBy { Run, Yours, Picks, Choose }
+
+    private static readonly IReadOnlyList<SegmentOption<CompareBy>> ByOptions =
+    [
+        new(CompareBy.Run, "Best of the run", Hint: "The best build of each weapon's last run: what each weapon can reach"),
+        new(CompareBy.Yours, "Best of yours", Hint: "Each weapon's best own build (My builds): what you have"),
+        new(CompareBy.Picks, "Picks", Hint: "Each weapon's picked build (★)"),
+        new(CompareBy.Choose, "Choose…", Hint: "Any build of each weapon"),
+    ];
+
+    private CompareBy _by = CompareBy.Run;
+    private BuildRef? _chooseA, _chooseB;
+    /// <summary>Score the right weapon's build under the left weapon's conditions.</summary>
+    private bool _sameConditions;
+
+    private BuildRef? Side(string weapon, BuildRef? chosen) => _by switch
+    {
+        CompareBy.Run => App.RunBest(weapon)?.Ref ?? App.OwnBest(weapon)?.Ref,
+        CompareBy.Yours => App.OwnBest(weapon)?.Ref,
+        CompareBy.Picks => App.BuildsOf(weapon).FirstOrDefault(b => b.Picked) is { } p ? BuildRef.Own(weapon, p.Name) : null,
+        _ => chosen is not null && chosen.Weapon == weapon ? chosen : App.OwnBest(weapon)?.Ref ?? App.RunBest(weapon)?.Ref,
+    };
+
+    private RenderFragment HeadToHead(InventoryEntryDto a, InventoryEntryDto b) => __builder =>
+    {
+        var refA = Side(a.Name, _chooseA);
+        var refB = Side(b.Name, _chooseB);
+        var sa = refA is null ? null : App.ScoreRef(refA);
+        var sameType = a.Type == b.Type;
+        var sb = refB is null ? null : _sameConditions && sameType && sa is not null ? App.ScoreRef(refB, CompareBasis.Baseline, sa) : App.ScoreRef(refB);
+        var ba = sa?.Build;
+        var bb = sb?.Build;
+        var differences = sameType ? ConditionDifferences(a.Name, b.Name) : [];
+        var staleOnes = new[] { a, b }.Where(x => x.Stale && x.LastRun is not null).Select(x => x.Name).ToList();
+        <Section Key="head-to-head" Title="Head to head" HintContent="@Hint(a, b)">
+            <Actions>
+                <div class="btn-row">
+                    <span class="muted small">Compare by</span>
+                    <Segmented T="CompareBy" Small="true" Value="_by" ValueChanged="v => _by = v" Options="ByOptions" />
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="@(refA is null || refB is null)" OnClick="() => App.OpenCompare(refA!, refB!)">⇄ Open in Compare</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.SetInventoryCompare(_ => [])">Clear</MudButton>
+                </div>
+            </Actions>
+            <ChildContent>
+                @if (_by == CompareBy.Choose)
+                {
+                    <div class="btn-row">
+                        <RefSelect Value="refA" ValueChanged="r => _chooseA = r" Weapons="@(new[] { a.Name })" Style="min-width: 260px" />
+                        <span class="muted">vs</span>
+                        <RefSelect Value="refB" ValueChanged="r => _chooseB = r" Weapons="@(new[] { b.Name })" Style="min-width: 260px" />
+                    </div>
+                }
+                @if (ba is null || bb is null)
+                {
+                    <Alert Kind="info">
+                        @(ba is null ? a.Name : b.Name) has no build to compare here@(_by == CompareBy.Picks ? " (no pick)" : _by == CompareBy.Run ? " (no run and no builds)" : "").
+                        Try another "Compare by".
+                    </Alert>
+                }
+                else
+                {
+                    @Verdict(a, b, sa!, sb!)
+                    <div class="h2h-layout">
+                        <div class="stack">
+                            @if (!sameType)
+                            {
+                                <Alert Kind="info">@TypeLabel(a.Type) vs @TypeLabel(b.Type): each is scored on its own attacks, so the numbers compare only roughly.</Alert>
+                            }
+                            @if (differences.Count > 0 && !_sameConditions)
+                            {
+                                <div class="cond-diff">
+                                    <span class="warn"><b>The two weapons have different conditions.</b></span>
+                                    <ul>
+                                        @foreach (var d in differences)
+                                        {
+                                            <li>@d</li>
+                                        }
+                                    </ul>
+                                    <button type="button" class="linklike small" @onclick="() => _sameConditions = true">Score @b.Name's build under @a.Name's conditions</button>
+                                </div>
+                            }
+                            else if (_sameConditions)
+                            {
+                                <p class="small"><span class="ok-badge">same conditions</span> <span class="muted">@b.Name's build is scored under @a.Name's conditions.</span> <button type="button" class="linklike small" @onclick="() => _sameConditions = false">Each its own</button></p>
+                            }
+                            else if (sameType)
+                            {
+                                <p class="small"><span class="ok-badge">✓ same conditions</span> <span class="muted">Both weapons use the same conditions and target.</span></p>
+                            }
+                            @if (staleOnes.Count > 0)
+                            {
+                                <Alert Kind="warning">
+                                    The last run of @string.Join(" and ", staleOnes) no longer matches the weapon@(staleOnes.Count > 1 ? "s" : ""); the run builds are scored again under today's conditions.
+                                    <button class="linklike" disabled="@(App.Batch.Values.Any(m => m.Status is BatchStatus.Running or BatchStatus.Queued))" @onclick="() => App.RunWeaponsAsync(staleOnes)">Run @(staleOnes.Count > 1 ? "both" : staleOnes[0]) again</button>
+                                </Alert>
+                            }
+                            @Facts(a, b, sa!, sb!)
+                        </div>
+                        <div class="stack">
+                            @AttackBars(a, b, sa!, sb!)
+                        </div>
+                    </div>
+                }
+            </ChildContent>
+        </Section>
+    };
+
+    private RenderFragment Hint(InventoryEntryDto a, InventoryEntryDto b) => __builder =>
+    {
+        <span>@a.Name vs @b.Name. Differences are left minus right.</span>
+    };
+
+    private RenderFragment Verdict(InventoryEntryDto a, InventoryEntryDto b, ScoredRef sa, ScoredRef sb) => __builder =>
+    {
+        var (va, vb, digits) = BuildDamage.Compare(sa.Build!, sb.Build!);
+        var diff = va - vb;
+        var pct = vb != 0 ? diff / vb * 100 : 0;
+        var same = Math.Abs(pct) < 0.3;
+        var winner = diff > 0 ? a.Name : b.Name;
+        var scoredOn = sa.Build!.StatsRequested.ScoredOn;
+        var runA = App.RunBest(a.Name)?.Build;
+        var runB = App.RunBest(b.Name)?.Build;
+        var ownA = App.OwnBest(a.Name)?.Build;
+        var ownB = App.OwnBest(b.Name)?.Build;
+        string N(BuildDto? x) => x is null ? "—" : BuildDamage.Text(x);
+        var sameCeiling = false;
+        if (ownA is not null && ownB is not null && runA is not null && runB is not null)
+        {
+            var (ra, rb, _) = BuildDamage.Compare(runA, runB);
+            var (oa, ob, _) = BuildDamage.Compare(ownA, ownB);
+            sameCeiling = Math.Abs(ra - rb) / Math.Max(1, rb) < 0.003 && Math.Abs(oa - ob) / Math.Max(1, ob) >= 0.003;
+        }
+        <div class="verdict @(same ? "same" : "")">
+            <span class="verdict-big">@if (same) {<span class="muted">±0</span>} else {<Delta Value="diff" Digits="digits" />}</span>
+            <div>
+                <p>
+                    @if (same)
+                    {
+                        <b>No real difference: both reach @Fmt.N(va, digits)</b>
+                    }
+                    else
+                    {
+                        <b>@winner is @Fmt.N(Math.Abs(pct), 1)% ahead</b> <span>(@Fmt.N(va, digits) vs @Fmt.N(vb, digits))</span>
+                    }
+                    <span class="muted"> · @App.RefName(sa.Ref) vs @App.RefName(sb.Ref)@(scoredOn is not null ? $", {scoredOn}" : "")</span>
+                </p>
+                <p class="small muted">
+                    Best of the run: @a.Name @N(runA), @b.Name @N(runB). Best of yours: @a.Name @N(ownA), @b.Name @N(ownB).
+                    @(sameCeiling ? " The same ceiling: the difference is in your builds, not in what the weapons can reach." : "")
+                </p>
+            </div>
+        </div>
+    };
+
+    private RenderFragment Facts(InventoryEntryDto a, InventoryEntryDto b, ScoredRef sa, ScoredRef sb) => __builder =>
+    {
+        var wa = sa.Build!.Weapon;
+        var wb = sb.Build!.Weapon;
+        var (va, vb, digits) = BuildDamage.Compare(sa.Build!, sb.Build!);
+        var rows = new List<(string Label, string A, string B)>
+        {
+            ("Set bonus roll", wa.SetBonus ?? "-", wb.SetBonus ?? "-"),
+            ("Group skill roll", wa.GroupSkill ?? "-", wb.GroupSkill ?? "-"),
+            ("Attack", wa.TrueRaw.ToString(CultureInfo.InvariantCulture), wb.TrueRaw.ToString(CultureInfo.InvariantCulture)),
+            ("Affinity", Fmt.Signed(wa.Affinity) + "%", Fmt.Signed(wb.Affinity) + "%"),
+            ("Element", wa.Element == Element.None ? "none" : $"{wa.ElementDisplay} {Fmt.TitleCase(wa.Element)}", wb.Element == Element.None ? "none" : $"{wb.ElementDisplay} {Fmt.TitleCase(wb.Element)}"),
+            ("Sharpness", wa.Sharpness is { } x ? Fmt.TitleCase(x) : "-", wb.Sharpness is { } y ? Fmt.TitleCase(y) : "-"),
+            ("Slots", string.Join(" · ", wa.Slots), string.Join(" · ", wb.Slots)),
+            ("Conditions on", ConditionsOn(a.Name), ConditionsOn(b.Name)),
+        };
+        <div class="h2h">
+            <div class="hd l">@a.Name</div><div class="hd mid"></div><div class="hd">@b.Name</div>
+            @foreach (var (label, left, right) in rows)
+            {
+                var cls = left == right ? "same" : "diffcell";
+                <div class="l @cls">@left</div><div class="mid">@label</div><div class="@cls">@right</div>
+            }
+            <div class="l">@App.RefName(sa.Ref)</div><div class="mid">Compared build</div><div>@App.RefName(sb.Ref)</div>
+            <div class="l @(va > vb ? "win" : "")">@Fmt.N(va, digits)</div><div class="mid">@(BuildDamage.Of(sa.Build!) is not null ? BuildDamage.Label(sa.Build!) : "Score")</div><div class="@(vb > va ? "win" : "")">@Fmt.N(vb, digits)</div>
+        </div>
+    };
+
+    private RenderFragment AttackBars(InventoryEntryDto a, InventoryEntryDto b, ScoredRef sa, ScoredRef sb) => __builder =>
+    {
+        var ra = App.AttackRowsOf(sa.Request, sa.Input);
+        var rb = App.AttackRowsOf(sb.Request, sb.Input).ToDictionary(x => x.Id);
+        var rows = ra.Where(x => rb.ContainsKey(x.Id)).OrderByDescending(x => x.Current).Take(8).ToList();
+        if (rows.Count == 0) return;
+        var max = rows.Max(x => Math.Max(x.DamagePerExecution, rb[x.Id].DamagePerExecution));
+        <div class="row-line small"><b>Damage per attack</b><span class="right"><span class="sw sw-a"></span>@a.Name <span class="sw sw-b"></span>@b.Name</span></div>
+        <div class="h2h-bars">
+            @foreach (var x in rows)
+            {
+                var y = rb[x.Id].DamagePerExecution;
+                <span class="small">@x.Name@if (x.Current) {<span class="scored-badge">scored on</span>}</span>
+                <span class="pairbars">
+                    <span class="bar-a" style="width: @((100 * x.DamagePerExecution / max).ToString("0.#", CultureInfo.InvariantCulture))%"></span>
+                    <span class="bar-b" style="width: @((100 * y / max).ToString("0.#", CultureInfo.InvariantCulture))%"></span>
+                </span>
+                <span class="num small nowrap">@Fmt.N(x.DamagePerExecution, 0) / @Fmt.N(y, 0) <Delta Value="@(x.DamagePerExecution - y)" Digits="0" /></span>
+            }
+        </div>
+    };
+
+    private string ConditionsOn(string weapon) => App.RequestOf(weapon) is { } r
+        ? Catalog.Conditions.Count(c => c.Group != ConditionCatalog.GroupProcs && ConditionAccess.Get(r.Conditions, c.Property)).ToString(CultureInfo.InvariantCulture) + " on"
+        : "-";
+
+    /// <summary>The conditions two weapons differ in: toggles, target, attack, meal and Omega Resonance.</summary>
+    private List<string> ConditionDifferences(string a, string b)
+    {
+        if (App.RequestOf(a)?.Conditions is not { } ca || App.RequestOf(b)?.Conditions is not { } cb) return [];
+        var lines = new List<string>();
+        foreach (var c in Catalog.Conditions)
+        {
+            var x = ConditionAccess.Get(ca, c.Property);
+            if (x != ConditionAccess.Get(cb, c.Property)) lines.Add($"{c.Label}: {(x ? "on" : "off")} for {a}, {(x ? "off" : "on")} for {b}");
+        }
+        var ta = (ca.Target ?? new Target()).Name;
+        var tb = (cb.Target ?? new Target()).Name;
+        if (ta != tb) lines.Add($"Target: {ta} for {a}, {tb} for {b}");
+        if (System.Text.Json.JsonSerializer.Serialize(ca.AttackProfile) != System.Text.Json.JsonSerializer.Serialize(cb.AttackProfile)) lines.Add("They are scored on different attacks.");
+        if (ca.MealAttack != cb.MealAttack) lines.Add($"Meal attack: {ca.MealAttack} for {a}, {cb.MealAttack} for {b}");
+        if (ca.Resonance != cb.Resonance) lines.Add($"Omega Resonance: {Fmt.TitleCase(ca.Resonance)} for {a}, {Fmt.TitleCase(cb.Resonance)} for {b}");
+        return lines;
+    }
+
+    private void OpenInCompare(List<InventoryEntryDto> weapons)
+    {
+        var refs = weapons.Select(w => App.OwnBest(w.Name)?.Ref ?? App.RunBest(w.Name)?.Ref).OfType<BuildRef>().Take(AppState.TrayLimit).ToArray();
+        if (refs.Length > 0) App.OpenCompare(refs);
     }
 
     private static string Ago(DateTimeOffset when)
@@ -257,8 +560,12 @@
         return text.Length > 0 ? text : "no targets";
     }
 
-    private void ToggleCompare(string weapon) =>
-        App.SetInventoryCompare(c => c.Contains(weapon) ? c.Where(x => x != weapon).ToList() : [.. c.TakeLast(1), weapon]);
+    private void ToggleCompare(string weapon)
+    {
+        _sameConditions = false;
+        _chooseA = _chooseB = null;
+        App.SetInventoryCompare(c => c.Contains(weapon) ? c.Where(x => x != weapon).ToList() : c.Count >= AppState.TrayLimit ? c : [.. c, weapon]);
+    }
 
     private void Open(string weapon, Tab tab = Tab.Weapon) => App.OpenWeapon(weapon, tab);
 

@@ -1,0 +1,27 @@
+@* The skills a build gains (green) or loses (red) against another, as chips, the first Max of them. *@
+@{
+    var list = (Gains ? Diff.Gains : Diff.Losses).ToList();
+}
+@foreach (var s in list.Take(Max))
+{
+    <SkillHover @key="s.Skill" Name="@s.Skill" Class="@($"chip skill tiny {(Gains ? "gain" : "loss")}")">
+        <SkillIcon Name="@s.Skill" Kind="s.Kind" Size="14" />@s.Skill <b>@(s.Delta > 0 ? "+" : "−")@Math.Abs(s.Delta)</b>
+    </SkillHover>
+}
+@if (list.Count > Max)
+{
+    <span class="muted tiny" title="@string.Join(", ", list.Skip(Max).Select(s => $"{s.Skill} {(s.Delta > 0 ? "+" : "−")}{Math.Abs(s.Delta)}"))">+@(list.Count - Max) more</span>
+}
+@if (list.Count == 0 && Empty is not null)
+{
+    <span class="muted tiny">@Empty</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public BuildDiffDto Diff { get; set; } = default!;
+    /// <summary>Gains (true) or losses (false).</summary>
+    [Parameter] public bool Gains { get; set; } = true;
+    [Parameter] public int Max { get; set; } = 3;
+    /// <summary>Shown when there is nothing to list.</summary>
+    [Parameter] public string? Empty { get; set; }
+}

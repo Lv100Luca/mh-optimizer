@@ -1,4 +1,5 @@
 @inherits AppComponent
+@inject IJSRuntime JS
 
 @* Builds entered by hand (e.g. the one you wear), scored like the optimizer's and compared with its builds or each other. *@
 @{
@@ -34,8 +35,18 @@
 @{
     var b = ev?.Build;
     var met = ev?.Targets.Count(t => t.Met) ?? 0;
+    // a draft ("Try a change") is edited next to the build it was made from
+    var baseIndex = current.DraftOf is { } draftOf ? builds.ToList().FindIndex(x => x.Name == draftOf && x.DraftOf is null) : -1;
+    var baseInput = baseIndex >= 0 ? builds[baseIndex] : null;
+    var baseEv = baseIndex >= 0 && App.Evaluated is { } evaluatedAll && baseIndex < evaluatedAll.Count ? evaluatedAll[baseIndex] : null;
+    var baseBuild = baseEv?.Build;
+    var valued = App.Resolved?.Relevance?.Skills;
+    var draftDiff = b is not null && baseBuild is not null ? BuildDiff.Between(baseBuild, b, valued) : null;
     var references = References(index);
-    var reference = references.FirstOrDefault(r => r.Key == App.CompareKey) ?? references.FirstOrDefault();
+    // unless chosen: a draft against its original, another build against the weapon's baseline, the baseline against the best optimizer build
+    var defaultKey = baseIndex >= 0 ? $"mine:{baseIndex}"
+        : App.Baseline is { IsRun: false } bl && bl.Weapon == App.ActiveKey && bl.Mine != current.Name ? $"mine:{builds.ToList().FindIndex(x => x.Name == bl.Mine)}" : null;
+    var reference = references.FirstOrDefault(r => r.Key == App.CompareKey) ?? references.FirstOrDefault(r => r.Key == defaultKey) ?? references.FirstOrDefault();
     // an optimizer build is compared under this build's conditions
     var scoredRef = reference?.Input is { } input ? Score(input with { Conditions = current.Conditions, Resonance = current.Resonance, Target = current.Target }) : null;
     var refBuild = reference is null ? null : reference.Input is not null ? scoredRef?.Build : reference.Build;
@@ -45,13 +56,22 @@
              Hint="Builds entered by hand are scored exactly like the optimizer's: same weapon (Weapon tab), conditions, skill limits and attack profile. They are saved with the weapon (in this browser); the picked one (★) represents the weapon in the inventory.">
         <Actions>
             <div class="btn-row">
-                <MudButton Size="Size.Small" Variant="@(current.Picked ? Variant.Filled : Variant.Text)" Color="@(current.Picked ? Color.Primary : Color.Default)"
-                           OnClick="() => App.PickBuild(current.Picked ? null : index)"
-                           title="@(current.Picked ? "This is the weapon's pick: the inventory compares weapons by it. Click to unpick." : "Make this the weapon's pick: the inventory compares weapons by it")">
-                    @(current.Picked ? "★ Picked" : "☆ Pick")
-                </MudButton>
+                @if (current.DraftOf is null)
+                {
+                    <MudButton Size="Size.Small" Variant="@(current.Picked ? Variant.Filled : Variant.Text)" Color="@(current.Picked ? Color.Primary : Color.Default)"
+                               OnClick="() => App.PickBuild(current.Picked ? null : index)"
+                               title="@(current.Picked ? "This is the weapon's pick: the inventory compares weapons by it. Click to unpick." : "Make this the weapon's pick: the inventory compares weapons by it")">
+                        @(current.Picked ? "★ Picked" : "☆ Pick")
+                    </MudButton>
+                }
                 <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="NewBuild">+ New</MudButton>
+                @if (current.DraftOf is null)
+                {
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="() => TryChange(current)"
+                               title="A draft of this build, edited side by side with it: apply it to this build, keep it as a build of its own or drop it">Try a change</MudButton>
+                }
                 <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="() => Duplicate(current)">Duplicate</MudButton>
+                <TrayToggle Ref="@BuildRef.Own(App.ActiveKey, current.Name)" />
                 <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="() => Remove(current, index)">Delete</MudButton>
             </div>
         </Actions>
@@ -65,6 +85,7 @@
                     <button type="button" role="tab" aria-selected="@(i == index)" class="buildtab @(i == index ? "active" : "")" @onclick="() => App.SetBuildIndex(tab)">
                         <span>@if (x.Picked) {<span class="pickstar" title="the weapon's pick">★ </span>}@(x.Name.Length > 0 ? x.Name : "(unnamed)")</span>
                         @if (e?.Build is { } eb) { <b>@BuildDamage.Text(eb)</b> } else { <span class="muted">…</span> }
+                        @if (x.DraftOf is not null) { <span class="draft-badge" title="@($"A draft of {x.DraftOf}")">draft</span> }
                         @if (x.HasOwnConditions) { <span class="ovr" title="Scored under its own conditions">own</span> }
                         @if (e is { Errors.Count: > 0 }) { <span class="err" title="@string.Join("\n", e.Errors)">!</span> }
                     </button>
@@ -90,20 +111,32 @@
                 <span class="scorebar-total"><span class="muted small">Score</span> <b>@Fmt.N(b.Score)</b></span>
                 <span class="muted small">EFR @Fmt.N(b.Efr) + EFE @Fmt.N(b.Efe)@(b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "")</span>
             }
-            <span class="statchip atk"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(b.Summary.Attack, 0)</b></span>
-            <span class="statchip aff"><img src="@GameIcons.Affinity" alt="" />AFF <b>@b.Summary.Affinity%</b></span>
+            <span class="statchip atk"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(b.Summary.Attack, 0)</b>@if (baseBuild is not null) {<Delta Value="@(b.Summary.Attack - baseBuild.Summary.Attack)" Digits="0" />}</span>
+            <span class="statchip aff"><img src="@GameIcons.Affinity" alt="" />AFF <b>@b.Summary.Affinity%</b>@if (baseBuild is not null) {<Delta Value="@(b.Summary.Affinity - baseBuild.Summary.Affinity)" Digits="0" Suffix="%" />}</span>
             @if (b.Summary.Element != Element.None)
             {
-                <span class="statchip ele" style="--tint: @GameIcons.ElementCss[b.Summary.Element]">@Fmt.TitleCase(b.Summary.Element) <b>@b.Summary.ElementDisplay</b></span>
+                <span class="statchip ele" style="--tint: @GameIcons.ElementCss[b.Summary.Element]">@Fmt.TitleCase(b.Summary.Element) <b>@b.Summary.ElementDisplay</b>@if (baseBuild is not null) {<Delta Value="@(b.Summary.ElementDisplay - baseBuild.Summary.ElementDisplay)" Digits="0" />}</span>
             }
             @if (ev is { Targets.Count: > 0 })
             {
                 <span class="tcount @(met == ev.Targets.Count ? "ok" : "warn")">targets @met/@ev.Targets.Count</span>
             }
-            @if (reference is not null && refBuild is not null)
+            @if (baseInput is not null && baseBuild is not null)
+            {
+                var (value, against, digits) = BuildDamage.Compare(b, baseBuild);
+                <ScoreDelta Score="value" Reference="against" Digits="digits" Label="@baseInput.Name" />
+                <span class="muted small">@SlotStrip.CountText(draftDiff!)</span>
+                <span class="right btn-row">
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ApplyDraft(current, baseInput)"
+                               title="@($"{baseInput.Name} takes this draft's equipment (and its conditions); the draft goes")">Apply to @baseInput.Name</MudButton>
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="KeepDraft" title="Keep it as a build of its own">Keep as a new build</MudButton>
+                    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="() => DiscardDraft(current, baseInput)">Discard</MudButton>
+                </span>
+            }
+            else if (reference is not null && refBuild is not null)
             {
                 var (value, against, digits) = BuildDamage.Compare(b, refBuild);
-                <ScoreDelta Score="value" Reference="against" Digits="digits" Label="@reference.Label" />
+                <ScoreDelta Score="value" Reference="against" Digits="digits" LabelContent="@CompareLink(reference.Label)" />
             }
         }
         else
@@ -116,8 +149,22 @@
         }
     </div>
 
-    <Section Title="Equipment" Hint="Pick each piece and the decorations in its slots. Pieces with better transcended slots (rarity 5/6) can be marked as transcended.">
-        <EquipmentEditor Build="current" Update="Update" />
+    <Section Key="Equipment" Title="@(baseInput is not null ? $"Equipment · draft of {baseInput.Name}" : "Equipment")"
+             Hint="@(baseInput is not null ? $"{baseInput.Name} is on the left as it is; change pieces and decorations on the right. Each changed row says what that change alone is worth." : "Pick each piece and the decorations in its slots. Pieces with better transcended slots (rarity 5/6) can be marked as transcended.")">
+        <EquipmentEditor Build="current" Update="Update" Baseline="baseInput" BaselineName="@baseInput?.Name" Changes="@draftDiff?.Slots"
+                         Effect="@(baseInput is not null && baseBuild is not null ? SwapEffect(baseInput, baseBuild, current) : null)" />
+        @if (baseEv is not null && ev is not null)
+        {
+            var lost = ev.Targets.Where(t => !t.Met && baseEv.Targets.Any(x => x.Skill == t.Skill && x.Met)).ToList();
+            @if (lost.Count > 0)
+            {
+                <Alert Kind="warning">The draft misses @string.Join(", ", lost.Select(t => $"{t.Label} (has {t.Actual})")), which @baseInput!.Name meets.</Alert>
+            }
+        }
+        @if (current.DraftOf is { } gone && baseInput is null)
+        {
+            <Alert Kind="info">This was a draft of @gone, which is gone. <button class="linklike" @onclick="KeepDraft">Keep it as a build of its own</button></Alert>
+        }
         @foreach (var e in ev?.Errors ?? [])
         {
             <Alert Kind="error">@e</Alert>
@@ -273,6 +320,72 @@
     }
 
     @{
+        var upgradeFor = baseInput ?? current;
+        var upgradeBuild = baseInput is not null ? baseBuild : b;
+    }
+    @if (App.Run.Result is { Pairs.Count: > 0 } && upgradeBuild is not null)
+    {
+        <Section Key="upgrades" Title="@($"One-piece upgrades for {upgradeFor.Name}")"
+                 Hint="@($"Each line swaps one slot of {upgradeFor.Name} for that slot of a build of the last run and keeps the rest. Gains are each on their own; together they can add up to more or less.")">
+            <Actions>
+                <MudButton Size="Size.Small" Variant="Variant.Outlined" Disabled="_finding" OnClick="() => FindUpgrades(upgradeFor, upgradeBuild)">
+                    @(_upgrades is null || !ReferenceEquals(_upgradesFor, upgradeFor) ? "Find them" : "Find again")
+                </MudButton>
+            </Actions>
+            <ChildContent>
+                @if (_finding)
+                {
+                    <div class="progress"><span class="spinner"></span> scoring swap @_progress of @_total…</div>
+                }
+                else if (_upgrades is null || !ReferenceEquals(_upgradesFor, upgradeFor))
+                {
+                    <p class="muted small">Scores every single swap the builds of the last run offer, one at a time.</p>
+                }
+                else if (_upgrades.Count == 0)
+                {
+                    <p class="muted">No single swap from the last run beats @upgradeFor.Name.</p>
+                }
+                else
+                {
+                    <table class="table upgrades">
+                        <tbody>
+                            @foreach (var u in _upgrades)
+                            {
+                                var inDraft = baseInput is not null && SlotKey(current, u.Slot) == SlotKey(u.Source, u.Slot);
+                                <tr @key="@($"{u.Slot}:{u.Piece}")">
+                                    <td class="nowrap"><span class="with-icon"><img class="icon" width="22" height="22" src="@SlotStrip.Icon(u.Slot, App.WeaponKind)" alt="" />@u.Slot</span></td>
+                                    <td>
+                                        <b>@u.Piece</b>
+                                        <span class="equipview-decos">
+                                            @foreach (var d in u.Decos.Where(d => d is not null))
+                                            {
+                                                <DecoIcon Deco="d" Size="20" />
+                                            }
+                                        </span>
+                                        <span class="muted tiny">from run build @u.FromRank</span>
+                                    </td>
+                                    <td class="num"><Delta Value="u.Gain" Digits="u.Digits" /></td>
+                                    <td><span class="chip-row"><SkillDeltas Diff="u.Diff" Max="3" /><SkillDeltas Diff="u.Diff" Gains="false" Max="3" /></span></td>
+                                    <td class="num">
+                                        @if (inDraft)
+                                        {
+                                            <span class="muted small">in the draft</span>
+                                        }
+                                        else
+                                        {
+                                            <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="() => TryUpgrade(upgradeFor, u, baseInput is not null)">@(baseInput is not null ? "Put it in the draft" : "Try it")</MudButton>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </ChildContent>
+        </Section>
+    }
+
+    @{
         var breakdown = Breakdown(current);
         var refInput = reference is null ? null : reference.Input ?? (reference.Key.StartsWith("mine:") && int.TryParse(reference.Key[5..], out var ri) && ri < App.Builds.Count ? App.Builds[ri] : null);
         var refBreakdown = refInput is not null ? Breakdown(refInput) : null;
@@ -359,6 +472,7 @@
         </Section>
     }
 
+    <div id="builds-compare"></div>
     <Section Title="Compare"
              Hint="@(reference?.Input is not null ? "The optimizer build is scored again under this build's conditions, so both sides use the same assumptions." : "Differences are this build minus the other one, each under its own conditions; green means this build is ahead.")">
         <Actions>
@@ -577,6 +691,141 @@
 
     private List<string> Names => App.Builds.Select(b => b.Name).ToList();
 
+    // ---------------- drafts ("Try a change")
+
+    private void TryChange(BuildInput b) =>
+        AddNew(AppState.Clone(b) with { Name = BuildHelpers.UniqueName($"{b.Name} (try)", Names), Picked = false, DraftOf = b.Name });
+
+    /// <summary>The original takes the draft's equipment and conditions (keeping its name and pick); the draft goes.</summary>
+    private void ApplyDraft(BuildInput draft, BuildInput original)
+    {
+        var applied = draft with { Name = original.Name, Picked = original.Picked, DraftOf = null };
+        var list = App.Builds.Where(x => !ReferenceEquals(x, draft)).Select(x => ReferenceEquals(x, original) ? applied : x).ToList();
+        App.SetBuilds(_ => list);
+        App.SetBuildIndex(Math.Max(0, list.FindIndex(x => x.Name == original.Name)));
+        App.Toast($"{original.Name} now has the draft's equipment");
+    }
+
+    private void KeepDraft() => Update(x => x with { DraftOf = null });
+
+    private async Task DiscardDraft(BuildInput draft, BuildInput original)
+    {
+        if (!await App.ConfirmAsync("Discard the draft", $"Drop the draft \"{draft.Name}\"? {original.Name} stays as it is.", "Discard")) return;
+        var list = App.Builds.Where(x => !ReferenceEquals(x, draft)).ToList();
+        App.SetBuilds(_ => list);
+        App.SetBuildIndex(Math.Max(0, list.FindIndex(x => x.Name == original.Name)));
+    }
+
+    /// <summary>What one changed slot of a draft is worth on its own: the original with only that slot from the draft.</summary>
+    private RenderFragment<BuildSlot> SwapEffect(BuildInput original, BuildDto originalBuild, BuildInput draft) => slot => __builder =>
+    {
+        var swapped = App.Score(App.Request!, original.WithSlotFrom(draft, slot))?.Build;
+        if (swapped is null)
+        {
+            <span class="muted small">cannot score</span>
+            return;
+        }
+        var (value, against, digits) = BuildDamage.Compare(swapped, originalBuild);
+        var diff = BuildDiff.Between(originalBuild, swapped, App.Resolved?.Relevance?.Skills);
+        <div class="effect-delta"><Delta Value="@(value - against)" Digits="digits" /> <span class="muted small">@(BuildDamage.Of(swapped) is not null ? "damage" : "score")</span></div>
+        <div class="chip-row effect-skills"><SkillDeltas Diff="diff" Max="3" /><SkillDeltas Diff="diff" Gains="false" Max="3" /></div>
+    };
+
+    private RenderFragment CompareLink(string label) => __builder =>
+    {
+        <button type="button" class="linklike" title="Go to the comparison below" @onclick="ScrollToCompare">@label</button>
+    };
+
+    private async Task ScrollToCompare()
+    {
+        try
+        {
+            await using var el = await JS.InvokeAsync<IJSObjectReference?>("document.getElementById", "builds-compare");
+            if (el is not null) await el.InvokeVoidAsync("scrollIntoView", new { behavior = "smooth" });
+        }
+        catch (JSException)
+        {
+            // the section is not shown
+        }
+    }
+
+    // ---------------- one-piece upgrades
+
+    private sealed record Upgrade(BuildSlot Slot, string Piece, IReadOnlyList<DecoDto?> Decos, BuildInput Source, int FromRank, double Gain, int Digits, BuildDiffDto Diff);
+
+    private List<Upgrade>? _upgrades;
+    private BuildInput? _upgradesFor;
+    private bool _finding;
+    private int _progress, _total;
+
+    /// <summary>A slot's contents as text, to tell the same piece and decorations apart from others.</summary>
+    private static string SlotKey(BuildInput b, BuildSlot slot) => slot switch
+    {
+        BuildSlot.Weapon => $"{b.SetBonus}|{b.GroupSkill}|{string.Join(",", b.WeaponDecorations.OfType<string>().Order())}",
+        BuildSlot.Talisman => b.Talisman is { } t ? $"{t.Name}|{string.Join(",", t.Decorations.OfType<string>().Order())}" : "-",
+        _ => b.Armor(BuildDiff.ArmorSlots[slot]) is { } a ? $"{a.Piece}|{a.Transcended}|{string.Join(",", a.Decorations.OfType<string>().Order())}" : "-",
+    };
+
+    /// <summary>Scores every single-slot swap the last run offers (a few per frame, so the page stays responsive) and keeps the best per piece.</summary>
+    private async Task FindUpgrades(BuildInput target, BuildDto targetBuild)
+    {
+        if (App.Run.Result is not { } result || App.Request is not { } request) return;
+        _finding = true;
+        _upgrades = null;
+        _upgradesFor = target;
+        var candidates = new List<(BuildSlot Slot, BuildDto Run, BuildInput Source)>();
+        var seen = new HashSet<string>();
+        foreach (var run in result.Pairs.SelectMany(p => p.Builds))
+        {
+            var source = BuildHelpers.FromBuild(run, "run");
+            foreach (var slot in BuildDiff.AllSlots)
+            {
+                var key = SlotKey(source, slot);
+                if (key != SlotKey(target, slot) && seen.Add(slot + ":" + key)) candidates.Add((slot, run, source));
+            }
+        }
+        _total = candidates.Count;
+        _progress = 0;
+        var found = new List<Upgrade>();
+        var valued = App.Resolved?.Relevance?.Skills;
+        foreach (var (slot, run, source) in candidates)
+        {
+            if (!ReferenceEquals(_upgradesFor, target)) return;
+            var swapped = App.Score(request, target.WithSlotFrom(source, slot))?.Build;
+            _progress++;
+            if (swapped is not null)
+            {
+                var (value, against, digits) = BuildDamage.Compare(swapped, targetBuild);
+                if (value - against > (digits == 0 ? 0.5 : 0.05))
+                {
+                    var (piece, decos) = SlotView(run, slot);
+                    found.Add(new Upgrade(slot, piece, decos, source, run.Rank, value - against, digits, BuildDiff.Between(targetBuild, swapped, valued)));
+                }
+            }
+            if (_progress % 2 == 0)
+            {
+                StateHasChanged();
+                await Task.Delay(1);
+            }
+        }
+        _upgrades = found.OrderByDescending(u => u.Gain).Take(12).ToList();
+        _finding = false;
+    }
+
+    private static (string Piece, IReadOnlyList<DecoDto?> Decos) SlotView(BuildDto b, BuildSlot slot) => slot switch
+    {
+        BuildSlot.Weapon => ($"{b.Weapon.SetBonus ?? "-"} / {b.Weapon.GroupSkill ?? "-"}", b.Weapon.Decorations),
+        BuildSlot.Talisman => (b.Talisman?.Name ?? "no talisman", b.Talisman?.Decorations ?? []),
+        _ => b.Armor.FirstOrDefault(a => a.Kind == BuildDiff.ArmorSlots[slot]) is { } a ? (a.Name + (a.Transcended ? " (transcended)" : ""), a.Decorations) : ("nothing", []),
+    };
+
+    /// <summary>Puts one swap into the draft, or starts a draft of the build with it.</summary>
+    private void TryUpgrade(BuildInput target, Upgrade u, bool draftOpen)
+    {
+        if (draftOpen) { Update(x => x.WithSlotFrom(u.Source, u.Slot)); return; }
+        AddNew(AppState.Clone(target).WithSlotFrom(u.Source, u.Slot) with { Name = BuildHelpers.UniqueName($"{target.Name} (try)", Names), Picked = false, DraftOf = target.Name });
+    }
+
     private void NewBuild() => AddNew(BuildHelpers.Empty(BuildHelpers.UniqueName("My build", Names)));
 
     private void StartFrom(BuildDto optimizerBuild)
@@ -587,7 +836,16 @@
 
     private void Duplicate(BuildInput current) => AddNew(AppState.Clone(current) with { Name = BuildHelpers.UniqueName(current.Name + " copy", Names), Picked = false });
 
-    private void Rename(string? name) => Update(b => b with { Name = name ?? "" });
+    private void Rename(string? name)
+    {
+        var index = Math.Max(0, Math.Min(App.BuildIndex, App.Builds.Count - 1));
+        if (index >= App.Builds.Count) return;
+        var old = App.Builds[index].Name;
+        var next = name ?? "";
+        // drafts of the build follow the new name, and so do the comparisons that point at it
+        App.SetBuilds(list => list.Select((b, i) => i == index ? b with { Name = next } : b.DraftOf == old ? b with { DraftOf = next } : b).ToList());
+        App.BuildRenamed(old, next);
+    }
 
     private void AddNew(BuildInput build)
     {
