@@ -567,9 +567,10 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .lg-dia { display: inline-block; width: 10px; height: 10px; transform: rotate(45deg); background: var(--ok); border-radius: 2px; margin-right: 5px; vertical-align: middle; }
 .lg-dia.stale { background: transparent; border: 2px dashed var(--warn); }
 .inv-rows { display: flex; flex-direction: column; }
-.inv-row { display: grid; grid-template-columns: 22px 220px minmax(160px, 1fr) 165px 76px; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--border); }
+.inv-row { display: grid; grid-template-columns: 22px 220px minmax(160px, 1fr) 190px 72px; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--border); }
 .inv-links { display: flex; gap: 6px; align-items: center; }
 .inv-actions { gap: 0; justify-content: flex-end; }
+.inv-actions .mud-button-root { min-width: 0; padding: 2px 8px; }
 .inv-row-head { padding: 4px 6px; color: var(--muted); font-size: 11.5px; border-bottom-color: var(--border-2); }
 .inv-row.inv-open { background: rgba(79, 163, 230, 0.06); }
 .inv-row.inv-compared { background: rgba(227, 182, 78, 0.08); }
@@ -591,8 +592,8 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .inv-track .mk-tag { position: absolute; top: -3px; transform: translateX(-50%); font-size: 10.5px; color: var(--muted); white-space: nowrap; }
 .inv-track .mk-tag.none { left: 50%; top: 11px; }
 .inv-nums { display: grid; grid-template-columns: auto auto; gap: 1px 10px; margin: 0; font-size: 12.5px; font-variant-numeric: tabular-nums; }
-.inv-nums dt { color: var(--muted); }
-.inv-nums dd { margin: 0; text-align: right; font-weight: 700; }
+.inv-nums dt { color: var(--muted); white-space: nowrap; }
+.inv-nums dd { margin: 0; text-align: right; font-weight: 700; white-space: nowrap; }
 @media (max-width: 900px), (pointer: fine) and (max-width: 1350px) {
   .inv-row { grid-template-columns: 22px minmax(0, 1fr) auto; }
   .inv-row > .inv-nums { grid-row: 1; grid-column: 3; }
