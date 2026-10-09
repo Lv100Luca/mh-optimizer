@@ -8,7 +8,9 @@
     <header class="card-head @(Collapsible ? "collapsible" : "")">
         @if (Collapsible)
         {
-            <button type="button" class="card-toggle" @onclick="Toggle" aria-expanded="@(!collapsed)" title="@(collapsed ? "Expand" : "Collapse")">@(collapsed ? "▸" : "▾")</button>
+            <button type="button" class="card-toggle" @onclick="Toggle" aria-expanded="@(!collapsed)" title="@(collapsed ? "Expand" : "Collapse")">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
         }
         <div class="card-title" @onclick="Toggle">
             <h2>@if (TitleContent is not null) { @TitleContent } else { @Title }</h2>

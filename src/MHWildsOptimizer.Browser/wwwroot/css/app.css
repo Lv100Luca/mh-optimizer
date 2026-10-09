@@ -101,8 +101,9 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
   .two-col { grid-template-columns: 1fr !important; }
   .statusbar .right { display: none; }
   /* narrow screens: header actions go below the title and wrap */
-  .card-head { flex-wrap: wrap; }
-  .card-actions { margin-left: 0; flex-shrink: 1; flex-wrap: wrap; min-width: 0; max-width: 100%; }
+  .card-head { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "toggle title" ". hint" ". actions"; }
+  .card-head:not(.collapsible) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "hint" "actions"; }
+  .card-actions { margin-top: 8px; flex-wrap: wrap; min-width: 0; max-width: 100%; }
   .card-body { overflow-x: auto; }
   .card-actions .btn-row { flex-wrap: wrap; }
 }
@@ -121,17 +122,26 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .two-col { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .two-col .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.card-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px 10px; border-bottom: 1px solid var(--border); }
-.card-title { flex: 1 1 280px; min-width: 0; } /* wide enough that header actions wrap below it on phones */
-.card-head.collapsible .card-title { cursor: pointer; }
-.card-head { position: relative; }
-.card-toggle { position: absolute; left: 3px; top: 15px; width: 14px; height: 20px; padding: 0; border: none; background: none; color: var(--muted); font-size: 12px; cursor: pointer; border-radius: 4px; }
-.card-toggle:hover { color: var(--text); background: var(--panel-2); }
+/* the first row (toggle, title, header actions) is centered, so a title sits level with taller buttons; the hint goes below the title */
+.card-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "toggle title actions" ". hint .";
+  align-items: center; column-gap: 8px; padding: 12px 18px 10px 8px; border-bottom: 1px solid var(--border);
+}
+.card-head:not(.collapsible) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title actions" "hint ."; padding-left: 18px; }
+.card-title { display: contents; }
+.card-head h2 { grid-area: title; font-size: 15px; }
+.card-head .hint { grid-area: hint; color: var(--muted); font-size: 12.5px; margin: 2px 0 0; }
+.card-head.collapsible h2, .card-head.collapsible .hint { cursor: pointer; }
+.card-toggle {
+  grid-area: toggle; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0;
+  border: 1px solid transparent; border-radius: 6px; background: none; color: var(--text); opacity: 0.8; cursor: pointer;
+}
+.card-toggle svg { transition: transform 0.12s; }
+.card:not(.collapsed) .card-toggle svg { transform: rotate(90deg); }
+.card-toggle:hover, .card-toggle:focus-visible { opacity: 1; background: var(--panel-2); border-color: var(--border-2); }
 .card.collapsed .card-head { border-bottom: none; padding-bottom: 12px; }
 .card.collapsed .card-head h2 { color: var(--muted); }
-.card-head h2 { font-size: 15px; }
-.card-head .hint { color: var(--muted); font-size: 12.5px; margin: 2px 0 0; }
-.card-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.card-actions { grid-area: actions; display: flex; align-items: center; gap: 8px; }
 .card-body { padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 12px; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px 24px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
@@ -501,7 +511,7 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .table.attack-damage tr.attack-row { cursor: pointer; }
 .table.attack-damage tr.attack-row:hover td { background: var(--panel-2); }
 .table.attack-damage tr.attack-row.open td { border-bottom-color: transparent; }
-.row-toggle { display: inline-block; width: 14px; color: var(--muted); font-size: 11px; }
+.row-toggle { display: inline-block; width: 18px; color: var(--text); opacity: 0.75; font-size: 14px; line-height: 1; }
 .table.attack-damage tr.attack-detail-row > td { padding: 0 8px 12px 30px; background: var(--bg-2); }
 .attack-detail { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
 .attack-detail p { margin: 0; }
