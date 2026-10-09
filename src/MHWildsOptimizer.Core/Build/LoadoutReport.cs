@@ -20,9 +20,9 @@ public static class LoadoutReport
 
         // ---------------- TL;DR ----------------
         var s = BuildSummary.Create(loadout, data, cond);
-        sb.AppendLine(string.Format(inv, "TL;DR  Attack {0:0} ({1} display)  Affinity {2}%  Crit x{3:0.00}  {4} sharpness{5}  ->  {6} = {7:0.00}  (all conditions on: {8:0.00})",
+        sb.AppendLine(string.Format(inv, "TL;DR  Attack {0:0}  Affinity {2}%  Crit x{3:0.00}  {4} sharpness{5}  ->  {6} = {7:0.00}  (all conditions on: {8:0.00})",
             s.Attack, s.DisplayAttack, s.Affinity, s.CritMultiplier, s.Sharpness?.ToString() ?? "no",
-            s.Element == Element.None ? "" : string.Format(inv, "  {0} {1:0} ({2} display)", s.Element, s.ElementTrue, s.ElementDisplay),
+            s.Element == Element.None ? "" : string.Format(inv, "  {0} {1}", s.Element, s.ElementDisplay),
             s.ScoreTerms(), s.Total, s.TotalAllConditions));
         sb.AppendLine($"       Sets: {(s.ActiveSetBonuses.Count == 0 ? "-" : string.Join(", ", s.ActiveSetBonuses))}   Groups: {(s.ActiveGroupSkills.Count == 0 ? "-" : string.Join(", ", s.ActiveGroupSkills))}");
         sb.AppendLine($"       Skills: {string.Join(", ", s.Skills.Select(x => x.Effective < x.Level ? $"{x.Skill} {x.Level} (valued at {x.Effective})" : $"{x.Skill} {x.Level}"))}");
@@ -51,7 +51,7 @@ public static class LoadoutReport
         // ---------------- equipment ----------------
         sb.AppendLine("Equipment");
         var ele = w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {w.Element}";
-        sb.AppendLine($"  Weapon    {w.Type,-26} {w.TrueRaw} raw ({w.DisplayAttack} display), {w.Affinity}% affinity, {ele}, {w.TopSharpness?.ToString() ?? "-"} sharpness");
+        sb.AppendLine($"  Weapon    {w.Type,-26} {w.TrueRaw} attack, {w.Affinity}% affinity, {ele}, {w.TopSharpness?.ToString() ?? "-"} sharpness");
         sb.AppendLine($"            rolled: {w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}");
         sb.AppendLine($"            slots {SlotText(w.Slots.Select(l => new TalismanSlot(l, SkillKind.Weapon)))}  decos: {DecoText(loadout.Weapon.Decos)}");
 
@@ -108,11 +108,11 @@ public static class LoadoutReport
     {
         sb.AppendLine();
         sb.AppendLine(header);
-        sb.AppendLine(string.Format(inv, "  Attack     {0} -> {1:0.#} true ({2:0} display)", w.TrueRaw, r.TrueRaw, r.TrueRaw * w.Type.Bloat()));
+        sb.AppendLine(string.Format(inv, "  Attack     {0} -> {1:0.#}", w.TrueRaw, r.TrueRaw));
         sb.AppendLine(string.Format(inv, "  Affinity   {0}% -> {1}%   crit x{2:0.00} (factor {3:0.###})", w.Affinity, r.Affinity, r.CriticalMultiplier, r.CriticalFactor));
         sb.AppendLine(string.Format(inv, "  Sharpness  {0} (raw x{1:0.###}, element x{2:0.####})", r.Sharpness?.ToString() ?? "-", r.SharpnessRawModifier, r.SharpnessElementModifier));
         if (w.Element != Element.None)
-            sb.AppendLine(string.Format(inv, "  Element    {0} {1:0.#} -> {2:0.#} true ({3:0} display), cap {4:0.#}, crit element x{5:0.00}", w.Element, r.BaseElementTrue, r.ElementTrue, r.ElementTrue * 10, r.ElementCap, r.CriticalElementMultiplier));
+            sb.AppendLine(string.Format(inv, "  Element    {0} {1:0} -> {2:0}, cap {3:0}, crit element x{4:0.00}", w.Element, r.BaseElementTrue * 10, r.ElementTrue * 10, r.ElementCap * 10, r.CriticalElementMultiplier));
         sb.AppendLine(string.Format(inv, "  Scored on  {0} ({1:0.#} MV), per 100 MV", r.Attack.Name, r.Attack.TotalMv));
         sb.AppendLine(string.Format(inv, "  Damage     {0:0} per {1}, {2:0} per minute ({3:0.#} hits per minute)",
             r.DamagePerExecution, r.Attack.Execution, r.DamagePerMinute, r.Attack.HitsPerMinute));

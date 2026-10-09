@@ -94,7 +94,7 @@
             <span class="statchip aff"><img src="@GameIcons.Affinity" alt="" />AFF <b>@b.Summary.Affinity%</b></span>
             @if (b.Summary.Element != Element.None)
             {
-                <span class="statchip ele" style="--tint: @GameIcons.ElementCss[b.Summary.Element]">@Fmt.TitleCase(b.Summary.Element) <b>@Fmt.N(b.Summary.ElementTrue, 0)</b></span>
+                <span class="statchip ele" style="--tint: @GameIcons.ElementCss[b.Summary.Element]">@Fmt.TitleCase(b.Summary.Element) <b>@b.Summary.ElementDisplay</b></span>
             }
             @if (ev is { Targets.Count: > 0 })
             {

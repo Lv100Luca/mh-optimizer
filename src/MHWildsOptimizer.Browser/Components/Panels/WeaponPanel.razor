@@ -18,7 +18,7 @@
                     @foreach (var t in Catalog.WeaponTypes)
                     {
                         <button type="button" disabled="@(!t.Supported)" class="type-card @(t.Kind == kind ? "active" : "")" @onclick="() => SetType(t.Kind)"
-                                title="@(t.Supported ? $"{t.Label}: base {(t.Variants.GetValueOrDefault("attack")?.Raw.ToString(CultureInfo.InvariantCulture) ?? "?")} raw (attack focus), bloat x{t.Bloat.ToString(CultureInfo.InvariantCulture)}" : $"{t.Label}: out of scope")">
+                                title="@(t.Supported ? $"{t.Label}: base attack {(t.Variants.GetValueOrDefault("attack")?.Raw.ToString(CultureInfo.InvariantCulture) ?? "?")} (attack focus)" : $"{t.Label}: out of scope")">
                             <img src="@(t.Supported ? GameIcons.Weapon(t.Kind) : GameIcons.WeaponBase(t.Kind))" alt="" />
                             <span>@t.Label</span>
                             @if (t.CoreSkills.Count > 0)
@@ -60,7 +60,7 @@
                                 </div>
                             </Field>
 
-                            <Field Label="Element infusion" Hint="@(wt is not null ? $"All three parts share the element: +{wt.InfusionBonusDisplay} display element on top of the base {wt.ElementBaseDisplay}." : null)">
+                            <Field Label="Element infusion" Hint="@(wt is not null ? $"All three parts share the element: +{wt.InfusionBonusDisplay} element on top of the base {wt.ElementBaseDisplay}." : null)">
                                 <Toggle Checked="@(spec.Infused && spec.Element != Element.None)" Disabled="@(spec.Element == Element.None)"
                                         CheckedChanged="infused => PatchSpec(s => s with { Infused = infused })" Label="Element Infusion line present" />
                             </Field>
@@ -96,8 +96,8 @@
                     @if (mode == StatsMode)
                     {
                         <div class="form-grid">
-                            <Field Label="Attack (display value)">
-                                <NumberInput T="int" Value="@(w.Attack ?? 0)" Min="1" Max="9999" ValueChanged="attack => App.PatchWeapon(x => x with { Attack = attack, AttackIsDisplay = true })" />
+                            <Field Label="Attack">
+                                <NumberInput T="int" Value="@TrueAttack(w, kind)" Min="1" Max="999" ValueChanged="attack => App.PatchWeapon(x => x with { Attack = attack, AttackIsDisplay = false })" />
                             </Field>
                             <Field Label="Affinity %">
                                 <NumberInput T="int" Value="w.Affinity" Min="-100" Max="100" ValueChanged="affinity => App.PatchWeapon(x => x with { Affinity = affinity })" />
@@ -119,7 +119,7 @@
                             </Field>
                             @if (w.Element != Element.None)
                             {
-                                <Field Label="Element value (display)">
+                                <Field Label="Element value">
                                     <NumberInput T="int" Value="w.ElementDisplay" Min="10" Max="9999" Step="10" ValueChanged="v => App.PatchWeapon(x => x with { ElementDisplay = v })" />
                                 </Field>
                             }
@@ -185,7 +185,7 @@
                         </div>
                         <dl class="stats">
                             <dt><img src="@GameIcons.Attack" alt="" /> Attack</dt>
-                            <dd><b>@rw.DisplayAttack</b> display <span class="muted">(@rw.TrueRaw true)</span></dd>
+                            <dd><b>@rw.TrueRaw</b></dd>
                             <dt><img src="@GameIcons.Affinity" alt="" /> Affinity</dt>
                             <dd><b>@(Fmt.Signed(rw.Affinity))%</b></dd>
                             <dt>
@@ -203,7 +203,6 @@
                                 else
                                 {
                                     <b style="color: @GameIcons.ElementCss[rw.Element]">@rw.ElementDisplay @Fmt.TitleCase(rw.Element)</b>
-                                    <span class="muted"> (@Fmt.N(rw.ElementTrue, 0) true)</span>
                                 }
                             </dd>
                             <dt><img src="@GameIcons.Sharpness" alt="" /> Sharpness</dt>
@@ -269,6 +268,10 @@
         return new SegmentOption<GogmaFocus>(f, Fmt.TitleCase(f), @<span>@Fmt.TitleCase(f)@if (v is not null) {<small> @v.Raw raw · @(Fmt.Signed(v.Affinity))%</small>}</span>);
     })];
 
+    /// <summary>The attack the stats form shows, true raw: weapons entered before held the bloated number.</summary>
+    private int TrueAttack(WeaponStatsInput w, string kind) =>
+        w.AttackIsDisplay && w.Attack is { } attack && Cat.WeaponTypes.GetValueOrDefault(kind) is { Bloat: > 0 } t ? (int)Math.Round(attack / t.Bloat) : w.Attack ?? 0;
+
     private void SetMode(string m)
     {
         var request = App.Request;
@@ -297,8 +300,8 @@
             {
                 Spec = null,
                 Type = kind,
-                Attack = rw?.DisplayAttack ?? variant?.DisplayAttack ?? 1000,
-                AttackIsDisplay = true,
+                Attack = rw?.TrueRaw ?? variant?.Raw ?? 200,
+                AttackIsDisplay = false,
                 Affinity = rw?.Affinity ?? variant?.Affinity ?? 0,
                 Element = x.Spec?.Element ?? Element.None,
                 ElementDisplay = rw?.ElementDisplay ?? 0,

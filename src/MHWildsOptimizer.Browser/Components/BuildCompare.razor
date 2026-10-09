@@ -14,11 +14,11 @@
     ]);
     if (A.Procs > 0 || B.Procs > 0) metrics.Add(new("Procs", A.Procs, B.Procs, 1));
     metrics.Add(new("Every condition on", sa.TotalAllConditions, sb.TotalAllConditions, 1));
-    metrics.Add(new("Attack (true)", sa.Attack, sb.Attack, 1));
+    metrics.Add(new("Attack", sa.Attack, sb.Attack, 1));
     metrics.Add(new("Affinity", sa.Affinity, sb.Affinity, 0, "%"));
     metrics.Add(new("Crit multiplier", sa.CritMultiplier, sb.CritMultiplier, 2));
     if (sa.Element != Element.None || sb.Element != Element.None)
-        metrics.Add(new($"Element (true{(sa.Element != Element.None ? ", " + Fmt.TitleCase(sa.Element) : "")})", sa.ElementTrue, sb.ElementTrue, 1));
+        metrics.Add(new(sa.Element != Element.None ? Fmt.TitleCase(sa.Element) : "Element", sa.ElementDisplay, sb.ElementDisplay, 0));
 
     var levelsA = A.Skills.ToDictionary(x => x.Skill, x => x.Level);
     var levelsB = B.Skills.ToDictionary(x => x.Skill, x => x.Level);

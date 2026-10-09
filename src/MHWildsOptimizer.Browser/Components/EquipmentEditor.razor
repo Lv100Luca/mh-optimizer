@@ -24,7 +24,7 @@
                 {
                     <b>@rw.Label</b> <span class="muted small">from the <button class="linklike" @onclick="() => App.SetTab(Tab.Weapon)">Weapon tab</button></span>
                     <div class="muted small">
-                        @rw.DisplayAttack attack, @rw.Affinity% affinity, @(rw.Element == Element.None ? "no element" : $"{rw.ElementDisplay} {Fmt.TitleCase(rw.Element)}")@(rw.Sharpness is { } sh ? $", {Fmt.TitleCase(sh)} sharpness" : "")
+                        @rw.TrueRaw attack, @rw.Affinity% affinity, @(rw.Element == Element.None ? "no element" : $"{rw.ElementDisplay} {Fmt.TitleCase(rw.Element)}")@(rw.Sharpness is { } sh ? $", {Fmt.TitleCase(sh)} sharpness" : "")
                     </div>
                 }
                 else

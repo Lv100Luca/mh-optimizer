@@ -47,7 +47,7 @@
             @Delta
         </div>
         <div class="statchips">
-            <span class="statchip atk" title="@($"base {s.BaseAttack} true")"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b> <small>@s.DisplayAttack display</small></span>
+            <span class="statchip atk" title="@($"weapon {s.BaseAttack}")"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b></span>
             <span class="statchip aff" title="@($"base {s.BaseAffinity}%")"><img src="@GameIcons.Affinity" alt="" />AFF <b>@(s.Affinity)%</b></span>
             <span class="statchip crit">CRIT <b>x@(Fmt.N(s.CritMultiplier, 2))</b></span>
             @if (s.Sharpness is { } sharp)
@@ -62,7 +62,7 @@
                     {
                         <img src="@icon" alt="" />
                     }
-                    @Fmt.TitleCase(s.Element) <b>@Fmt.N(s.ElementTrue, 0)</b> <small>@s.ElementDisplay display</small>
+                    @Fmt.TitleCase(s.Element) <b>@s.ElementDisplay</b>
                 </span>
             }
         </div>
@@ -122,7 +122,7 @@
                         <td class="piece">Weapon</td>
                         <td class="name">
                             <b>@w.Label</b>
-                            <div class="muted small">@w.TrueRaw raw (@w.DisplayAttack display), @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @(w.Sharpness is { } ws ? Fmt.TitleCase(ws) : "-") sharpness</div>
+                            <div class="muted small">@w.TrueRaw attack, @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @(w.Sharpness is { } ws ? Fmt.TitleCase(ws) : "-") sharpness</div>
                         </td>
                         <td class="skills"><span class="muted small">rolled: @(w.SetBonus ?? "-") / @(w.GroupSkill ?? "-")</span></td>
                         <td class="decos">@SlotDecos(w.Decorations, numbers: w.Slots)</td>
@@ -318,12 +318,12 @@
         <div class="statsblock">
             <h4>@title</h4>
             <dl>
-                <dt>Attack</dt><dd>@Fmt.N(r.TrueRaw, 1) true <span class="muted">(@r.DisplayAttack display)</span></dd>
+                <dt>Attack</dt><dd>@Fmt.N(r.TrueRaw, 1)</dd>
                 <dt>Affinity</dt><dd>@(r.Affinity)% <span class="muted">crit x@(Fmt.N(r.CritMultiplier, 2)), factor @Fmt.N(r.CritFactor, 3)</span></dd>
                 <dt>Sharpness</dt><dd>@(r.Sharpness is { } sh ? Fmt.TitleCase(sh) : "-") <span class="muted">raw x@(Fmt.N(r.SharpnessRaw, 3)), element x@(Fmt.N(r.SharpnessElement, 4))</span></dd>
                 @if (r.ElementTrue > 0)
                 {
-                    <dt>Element</dt><dd>@Fmt.N(r.ElementTrue, 1) true <span class="muted">(@r.ElementDisplay display, cap @Fmt.N(r.ElementCap, 1), crit element x@(Fmt.N(r.CritElement, 2)))</span></dd>
+                    <dt>Element</dt><dd>@r.ElementDisplay <span class="muted">(cap @Fmt.N(r.ElementCap * 10, 0), crit element x@(Fmt.N(r.CritElement, 2)))</span></dd>
                 }
                 @if (r.ScoredOn is { } scoredOn)
                 {

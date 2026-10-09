@@ -122,8 +122,8 @@
     private string Label(string key) => App.Catalog.Conditions.FirstOrDefault(c => c.Key == key)?.Label ?? key;
 
     private string StatsText(AttackStepDamageDto s) =>
-        $"raw {Fmt.N(s.TrueRaw, 0)} · affinity {s.Affinity}% (crit ×{Fmt.N(s.CritMultiplier, 2)})"
-        + (Element != Element.None ? $" · {Fmt.TitleCase(Element)} {Fmt.N(s.ElementTrue, 0)} (crit ×{Fmt.N(s.CritElementMultiplier, 2)})" : "");
+        $"attack {Fmt.N(s.TrueRaw, 0)} · affinity {s.Affinity}% (crit ×{Fmt.N(s.CritMultiplier, 2)})"
+        + (Element != Element.None ? $" · {Fmt.TitleCase(Element)} {Fmt.N(s.ElementTrue * 10, 0)} (crit ×{Fmt.N(s.CritElementMultiplier, 2)})" : "");
 
     /// <summary>The empty cells between a label and the total, matching the hit rows (MV hides on phones).</summary>
     private static RenderFragment Gap() => __builder =>

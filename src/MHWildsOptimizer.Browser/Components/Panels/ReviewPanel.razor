@@ -56,7 +56,7 @@
                                         }
                                     </div>
                                     <div class="small">
-                                        <b>@w.DisplayAttack</b> attack <span class="muted">(@w.TrueRaw true)</span> · <b>@Fmt.Signed(w.Affinity)%</b> affinity
+                                        <b>@w.TrueRaw</b> attack · <b>@Fmt.Signed(w.Affinity)%</b> affinity
                                         @if (w.Element != Element.None)
                                         {
                                             @(" · ")<b style="color: @GameIcons.ElementCss[w.Element]">@w.ElementDisplay @Fmt.TitleCase(w.Element)</b>
