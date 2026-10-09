@@ -27,5 +27,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
 
+class Server(http.server.ThreadingHTTPServer):
+    # a page load asks for dozens of files at once; the default backlog of 5 refuses some of them ("Failed to fetch")
+    request_queue_size = 128
+
+
 port, directory = int(sys.argv[1]), sys.argv[2]
-http.server.ThreadingHTTPServer(("127.0.0.1", port), partial(Handler, directory=directory)).serve_forever()
+Server(("127.0.0.1", port), partial(Handler, directory=directory)).serve_forever()
