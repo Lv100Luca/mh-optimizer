@@ -77,9 +77,10 @@
         {
             <button @key="s.Name" type="button" class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")" @onclick="() => Add(s)"
                     title="@(s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "")">
-                <SkillIcon Name="@s.Name" Size="22" />
+                @* plain markup rather than SkillIcon / KindTag: the list has a few hundred rows *@
+                <img class="icon" width="22" height="22" src="@GameIcons.Skill(s.Icon, s.Kind)" alt="" />
                 <span class="name">@s.Name</span>
-                <KindTag Kind="s.Kind" />
+                <span class="kindtag @s.Kind.ToString().ToLowerInvariant()">@s.Kind.ToString().ToLowerInvariant()</span>
                 <span class="muted">@(IsBonus(s) ? PiecesText(s) : $"max {s.MaxLevel}")</span>
                 <span class="desc muted">@(s.Description ?? s.Ranks.FirstOrDefault()?.Description)</span>
             </button>

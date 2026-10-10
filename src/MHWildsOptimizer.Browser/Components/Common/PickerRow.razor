@@ -1,0 +1,27 @@
+@typeparam T
+@* One entry of a Picker's list. It renders again only when its option or its highlight changes, so typing or moving the
+   mouse over a long list (hundreds of decorations or armor pieces) touches two or three rows instead of all of them. *@
+<button type="button" role="option" aria-selected="@Active" class="picker-opt @(Active ? "active" : "")"
+        @onmouseenter="() => OnHover.InvokeAsync()" @onclick="() => OnPick.InvokeAsync()">
+    @Option.Render
+</button>
+
+@code {
+    [Parameter, EditorRequired] public PickerOption<T> Option { get; set; } = default!;
+    [Parameter] public bool Active { get; set; }
+    [Parameter] public EventCallback OnPick { get; set; }
+    [Parameter] public EventCallback OnHover { get; set; }
+
+    private PickerOption<T>? _shown;
+    private bool _shownActive;
+    private bool _changed = true;
+
+    protected override void OnParametersSet()
+    {
+        _changed = !ReferenceEquals(_shown, Option) || _shownActive != Active;
+        _shown = Option;
+        _shownActive = Active;
+    }
+
+    protected override bool ShouldRender() => _changed;
+}

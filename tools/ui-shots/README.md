@@ -19,3 +19,26 @@ SHOTS_DIR=shots python tools/ui-shots/compare.py shots/compare   # reads shots/b
   port with its own state).
 - The extra steps run in order in one browser and leave state behind (a changed target, a dirty weapon), which is the
   same in a before and an after run.
+
+## Responsiveness
+
+`perf.mjs` measures how long the page's thread is blocked (long tasks, gaps between frames) in the same setup: `gems`
+types into a decoration slot picker on My builds, `run` starts a run and prints its log, `check` drives the pickers and
+prints what they show. Compare a published build before and after a change, served on two ports.
+
+```bash
+node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca Current gems
+node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca "the best" run
+```
+
+`dropdowns.mjs` opens every dropdown (pickers, selects, search selects, the profile menu) on every tab and reports any
+popover with more than one scrolling element; run it at a few `SIZE`s (e.g. `1600,1000`, `1366,650`, `412,850`).
+
+`interact.mjs` times everyday edits: tab switches (each visited twice), weapon reinforcements, condition toggles, skill
+limits, and duplicating and editing a build. Per step it prints the long tasks until the page is quiet again (debounced
+validation and draft saving included), the browser's script / style / layout time, and how many popovers the page holds
+(MudBlazor registers each one; a few hundred made every re-render slow). `REPEAT=3` runs everything three times,
+`PROFILE=<step>` prints a CPU profile of that step.
+
+Serve each build on its own port and check who answers there: `serve.py` binds with address reuse, so another session's
+server on the same port can take your requests.

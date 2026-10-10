@@ -538,8 +538,11 @@
         return refs;
     }
 
+    // The caches below are static: the panel is created again on every visit of the tab, and working all of this out again
+    // made opening My builds slow. They hold only what matches the current request and talismans.
+
     // the optimizer build being compared, scored under the current request (cached until the request, talismans or build change)
-    private (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans, string Key, EvaluatedBuildDto? Result) _scored;
+    private static (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans, string Key, EvaluatedBuildDto? Result) _scored;
 
     private EvaluatedBuildDto? Score(BuildInput input)
     {
@@ -560,8 +563,8 @@
     }
 
     // per-attack damage of a build, cached until the request, talismans or build change
-    private readonly Dictionary<string, IReadOnlyList<AttackRowDto>> _breakdowns = new();
-    private (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans) _breakdownBasis;
+    private static readonly Dictionary<string, IReadOnlyList<AttackRowDto>> _breakdowns = new();
+    private static (OptimizationRequest? Request, IReadOnlyList<TalismanInput>? Talismans) _breakdownBasis;
 
     // rows of the damage-per-attack table that are open, and their details (cached like the rows)
     private readonly HashSet<string> _expanded = [];
@@ -569,7 +572,7 @@
 
     private static readonly IReadOnlyList<SegmentOption<DamageMode>> ModeOptions =
         [new(DamageMode.NonCrit, "Non-crit"), new(DamageMode.Crit, "Crit"), new(DamageMode.Average, "Average", Hint: "Averaged over the affinity: what the score counts")];
-    private readonly Dictionary<string, AttackDetailDto?> _details = new();
+    private static readonly Dictionary<string, AttackDetailDto?> _details = new();
 
     private void ToggleAttack(string id)
     {

@@ -37,6 +37,9 @@ window.mhwo = {
 
   copyText: async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } },
 
+  /** Resolves once the browser has painted the page's latest changes (after 100 ms at most: a background tab paints nothing). */
+  nextPaint: () => new Promise((resolve) => { requestAnimationFrame(() => setTimeout(resolve, 0)); setTimeout(resolve, 100); }),
+
   /** Warns before leaving the page while there are unsaved edits or a run is going. */
   setLeaveWarning: (on) => { window.onbeforeunload = on ? (e) => { e.preventDefault(); return ''; } : null; },
 };

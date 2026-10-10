@@ -4,38 +4,41 @@
     <button type="button" class="picker-btn @Class @(_open ? "open" : "")" title="@Title" @onclick="Toggle" aria-haspopup="listbox" aria-expanded="@_open">
         @Trigger
     </button>
-    <MudPopover Open="_open" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="picker-pop" MaxHeight="460" Fixed="false">
-        <div class="picker-pop-body" @onkeydown="OnKey">
-            <MudTextField T="string" @ref="_search" Value="_query" ValueChanged="OnQuery" Immediate="true" Placeholder="@(Placeholder ?? "Search…")"
-                          Variant="Variant.Outlined" Margin="Margin.Dense" AutoFocus="true" />
-            <div class="picker-list" role="listbox">
-                @if (OnClear.HasDelegate && _query.Length == 0)
-                {
-                    <button type="button" class="picker-opt clear" @onclick="Clear">@(ClearLabel ?? "— none —")</button>
-                }
-                @if (Filtered.Count == 0)
-                {
-                    <div class="muted picker-empty">Nothing matches “@_query”.</div>
-                }
-                @{ string? group = null; }
-                @for (var i = 0; i < Filtered.Count; i++)
-                {
-                    var o = Filtered[i];
-                    var index = i;
-                    if (o.Group is not null && o.Group != group)
+    @if (_open)
+    {
+        @* only while open: an editor has a few dozen pickers, and a popover each made every change to it slow. No MaxHeight:
+           the body and its list are limited in app.css and only the list scrolls (a limit here scrolled the popover too) *@
+        <MudPopover Open="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="picker-pop" Fixed="false">
+            <div class="picker-pop-body" @onkeydown="OnKey">
+                <MudTextField T="string" @ref="_search" Value="_query" ValueChanged="OnQuery" Immediate="true" Placeholder="@(Placeholder ?? "Search…")"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" AutoFocus="true" />
+                <div class="picker-list" role="listbox">
+                    @if (OnClear.HasDelegate && _query.Length == 0)
                     {
-                        group = o.Group;
-                        <div class="picker-group">@o.Group</div>
+                        <button type="button" class="picker-opt clear" @onclick="Clear">@(ClearLabel ?? "— none —")</button>
                     }
-                    <button type="button" role="option" aria-selected="@(index == _active)" class="picker-opt @(index == _active ? "active" : "")"
-                            @onmouseenter="() => _active = index" @onclick="() => Pick(o)">
-                        @o.Render
-                    </button>
-                }
+                    @if (_filtered.Count == 0)
+                    {
+                        <div class="muted picker-empty">Nothing matches “@_query”.</div>
+                    }
+                    @{ string? group = null; }
+                    @for (var i = 0; i < _filtered.Count; i++)
+                    {
+                        var o = Options[_filtered[i]];
+                        var index = i;
+                        if (o.Group is not null && o.Group != group)
+                        {
+                            group = o.Group;
+                            <div class="picker-group">@o.Group</div>
+                        }
+                        @* keyed by the position in Options: rows that stay while the query changes are kept as they are *@
+                        <PickerRow @key="_filtered[i]" T="T" Option="o" Active="index == _active" OnHover="() => _active = index" OnPick="() => Pick(o)" />
+                    }
+                </div>
             </div>
-        </div>
-    </MudPopover>
-    <MudOverlay Visible="_open" OnClick="Close" LockScroll="false" />
+        </MudPopover>
+        <MudOverlay Visible="true" OnClick="Close" LockScroll="false" />
+    }
 </div>
 
 @code {
@@ -56,14 +59,22 @@
     private string _query = "";
     private int _active;
     private MudTextField<string>? _search;
+    /// <summary>Indexes into <see cref="Options"/> of the entries that match the query, worked out when either changes.</summary>
+    private List<int> _filtered = [];
+    private IReadOnlyList<PickerOption<T>>? _filteredOptions;
 
-    private IReadOnlyList<PickerOption<T>> Filtered
+    protected override void OnParametersSet()
     {
-        get
-        {
-            var words = _query.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            return words.Length == 0 ? Options : Options.Where(o => words.All(w => o.Search.Contains(w))).ToList();
-        }
+        if (!ReferenceEquals(_filteredOptions, Options)) Filter();
+    }
+
+    private void Filter()
+    {
+        _filteredOptions = Options;
+        var words = _query.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        _filtered = [];
+        for (var i = 0; i < Options.Count; i++)
+            if (words.All(w => Options[i].Search.Contains(w, StringComparison.Ordinal))) _filtered.Add(i);
     }
 
     private void Toggle()
@@ -75,14 +86,17 @@
     private void Close()
     {
         _open = false;
-        _query = "";
         _active = 0;
+        if (_query.Length == 0) return;
+        _query = "";
+        Filter();
     }
 
     private void OnQuery(string value)
     {
         _query = value ?? "";
         _active = 0;
+        Filter();
     }
 
     private async Task Pick(PickerOption<T> o)
@@ -99,12 +113,11 @@
 
     private async Task OnKey(KeyboardEventArgs e)
     {
-        var list = Filtered;
         switch (e.Key)
         {
-            case "ArrowDown": _active = Math.Min(_active + 1, list.Count - 1); break;
+            case "ArrowDown": _active = Math.Min(_active + 1, _filtered.Count - 1); break;
             case "ArrowUp": _active = Math.Max(_active - 1, 0); break;
-            case "Enter" when _active < list.Count: await Pick(list[_active]); break;
+            case "Enter" when _active < _filtered.Count: await Pick(Options[_filtered[_active]]); break;
             case "Escape": Close(); break;
         }
     }

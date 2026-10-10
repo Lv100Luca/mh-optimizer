@@ -279,10 +279,11 @@
 
     private static string GrantsText(IEnumerable<SkillGrant> grants) => string.Join(", ", grants.Select(g => $"{g.Skill} {g.Level}"));
 
-    // option lists, built once per catalog / talisman pool
-    private Dictionary<ArmorPieceKind, List<PickerOption<string>>>? _armorOptions;
-    private IReadOnlyList<TalismanInput>? _talismanSource;
-    private List<PickerOption<string>>? _talismanOptions;
+    // option lists, built once per catalog / talisman pool; static because the editor is created again on every visit of
+    // My builds, and building a few hundred armor options each time made opening it slow
+    private static Dictionary<ArmorPieceKind, List<PickerOption<string>>>? _armorOptions;
+    private static IReadOnlyList<TalismanInput>? _talismanSource;
+    private static List<PickerOption<string>>? _talismanOptions;
 
     private List<PickerOption<string>> ArmorOptions(ArmorPieceKind kind)
     {

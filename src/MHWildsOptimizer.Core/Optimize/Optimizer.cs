@@ -239,6 +239,10 @@ public sealed class Optimizer
     private async Task<ClassSearch> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, ScoreDecompositionCache scores,
         IProgress<string>? progress, CancellationToken ct)
     {
+        // the candidates and the model are synchronous work: a single-threaded host (the browser, where this shares the page's
+        // thread) gets to update the page between one class's setup and the next; natively the lanes' setups run in parallel
+        await Task.Yield();
+        ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
         var c = CandidatesFor(cls.Weapon);
         var candidatesTime = sw.Elapsed;

@@ -37,6 +37,11 @@ public sealed partial class AppState : IDisposable
     /// <summary>Validation and scores per session, shown at once when switching back to a weapon.</summary>
     private readonly Dictionary<string, ResolveDto> _resolvedCache = new();
     private readonly Dictionary<string, IReadOnlyList<EvaluatedBuildDto>> _evaluatedCache = new();
+    /// <summary>
+    /// Each session's build scores by build (the same instance), for one request and talisman pool: an edit to one build
+    /// scores only that build again. Builds, requests and talisman lists are replaced, never changed, on every edit.
+    /// </summary>
+    private readonly Dictionary<string, (OptimizationRequest Request, IReadOnlyList<TalismanInput> Talismans, Dictionary<BuildInput, EvaluatedBuildDto> Scores)> _buildScores = new();
     private int _validationVersion, _draftVersion, _inventoryVersion;
     private bool _pushNext;
     private string? _lastUrl;
@@ -265,6 +270,7 @@ public sealed partial class AppState : IDisposable
         _writtenDrafts = written;
         _resolvedCache.Clear();
         _evaluatedCache.Clear();
+        _buildScores.Clear();
         _storage.SetString(ProfileKey, p.Name);
         _sessions = restored;
         _activeKey = NewWeapon;
@@ -363,7 +369,9 @@ public sealed partial class AppState : IDisposable
     {
         if (tab != Tab) _pushNext = true;
         Tab = tab;
-        Moved();
+        // only the view changes: validating again (and re-rendering with the same result) only made switching slower
+        SyncUrl();
+        Notify();
     }
 
     /// <summary>Leaves the inventory for a weapon tab; any other tab stays (switching weapons keeps the view).</summary>
@@ -653,7 +661,7 @@ public sealed partial class AppState : IDisposable
         {
             var resolved = MHWildsOptimizer.Api.Resolving.Resolve(payload, Data, _store.Directory);
             Resolved = MHWildsOptimizer.Api.Resolving.Describe(resolved, s.Request.TargetSkills, Data);
-            Evaluated = s.Builds.Count == 0 ? [] : BuildEvaluation.Evaluate(payload, resolved, Data);
+            Evaluated = s.Builds.Count == 0 ? [] : EvaluateBuilds(s, resolved);
         }
         catch (Exception e)
         {
@@ -664,6 +672,21 @@ public sealed partial class AppState : IDisposable
         _evaluatedCache[key] = Evaluated;
         Resolving = false;
         Notify();
+    }
+
+    /// <summary>Scores the session's builds, reusing the scores of builds that did not change since the last time.</summary>
+    private IReadOnlyList<EvaluatedBuildDto> EvaluateBuilds(WeaponSession s, ResolvedRequest resolved)
+    {
+        var known = _buildScores.TryGetValue(s.Key, out var last) && ReferenceEquals(last.Request, s.Request) && ReferenceEquals(last.Talismans, Talismans)
+            ? last.Scores : null;
+        var missing = s.Builds.Where(b => known?.ContainsKey(b) != true).ToList();
+        var fresh = missing.Count == 0 ? [] : BuildEvaluation.Evaluate(new ConfigPayload(s.Request, Talismans.ToList(), missing), resolved, Data);
+        var scores = new Dictionary<BuildInput, EvaluatedBuildDto>(ReferenceEqualityComparer.Instance);
+        for (var i = 0; i < missing.Count; i++) scores[missing[i]] = fresh[i];
+        foreach (var b in s.Builds)
+            if (!scores.ContainsKey(b)) scores[b] = known![b];
+        _buildScores[s.Key] = (s.Request, Talismans, scores);
+        return s.Builds.Select(b => scores[b]).ToList();
     }
 
     /// <summary>Unsaved edits go to browser storage (debounced); saved or dropped weapons leave it.</summary>
@@ -728,6 +751,8 @@ public sealed partial class AppState : IDisposable
         var clock = System.Diagnostics.Stopwatch.StartNew();
         try
         {
+            await NextPaintAsync();
+            cts.Token.ThrowIfCancellationRequested();
             await Optimization.RunAsync(payload, Profile, s.Name, Data, _store, _solver, e =>
             {
                 if (cts.IsCancellationRequested) return;
@@ -783,6 +808,8 @@ public sealed partial class AppState : IDisposable
             Mark(weapon, new BatchMark(BatchStatus.Running));
             try
             {
+                await NextPaintAsync();
+                cts.Token.ThrowIfCancellationRequested();
                 var file = _store.LoadWeapon(profile, weapon) ?? throw new IOException($"There is no weapon {weapon}.");
                 var outcome = new BatchMark(BatchStatus.Error, "The run ended without a result.");
                 await Optimization.RunAsync(new ConfigPayload(file.Request, Talismans.ToList()), profile, weapon, Data, _store, _solver, e =>
@@ -816,6 +843,13 @@ public sealed partial class AppState : IDisposable
             Toast(failed > 0 ? $"{failed} of {names.Count} runs failed" : $"Ran {names.Count} weapon{(names.Count > 1 ? "s" : "")}", failed > 0 ? Severity.Error : Severity.Info);
         Notify();
     }
+
+    /// <summary>
+    /// Waits until the browser has painted. .NET runs on the page's only thread, and a run starts with a stretch of work that
+    /// does not yield (resolving the request, the first skill pair classes' models): without this the click shows nothing
+    /// until that is done.
+    /// </summary>
+    private async Task NextPaintAsync() => await _js.InvokeVoidAsync("mhwo.nextPaint");
 
     public void StopWeapons()
     {
