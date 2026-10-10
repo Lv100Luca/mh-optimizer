@@ -1,4 +1,5 @@
 @inherits AppComponent
+@inject IDialogService Dialogs
 @if (App.Profile is { } profile)
 {
     var entries = App.Inventory;
@@ -301,6 +302,8 @@
             <div class="btn-row nowrap inv-actions">
                 <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.RunWeaponsAsync([e.Name])" Disabled="@(running || e.Errors.Count > 0 || App.Solver?.Problem is not null)"
                            title="Run the optimizer for this weapon (saved setup)">▶</MudButton>
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Duplicate(e.Name)" title="@($"Duplicate {e.Name} with its builds and last run")"
+                           aria-label="@($"Duplicate {e.Name}")"><MudIcon Icon="@Icons.Material.Outlined.ContentCopy" Class="inv-dup-icon" /></MudButton>
                 <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(e.Name)"
                            Disabled="@(mark?.Status is BatchStatus.Running or BatchStatus.Queued)" title="@($"Delete {e.Name} with its builds and last run")">✕</MudButton>
             </div>
@@ -573,6 +576,17 @@
     }
 
     private void Open(string weapon, Tab tab = Tab.Weapon) => App.OpenWeapon(weapon, tab);
+
+    private async Task Duplicate(string weapon)
+    {
+        var taken = App.Weapons.Select(w => w.Name).ToList();
+        var kept = App.Unsaved.Contains(weapon) ? $" The copy starts from the saved version; the unsaved changes stay with {weapon}." : "";
+        var name = await NameDialog.AskAsync(Dialogs, "Duplicate weapon", "Name of the copy", BuildHelpers.UniqueName($"{weapon} copy", taken), "Duplicate",
+            message: $"Copies {weapon} with its builds and last run into a new weapon of {App.Profile}.{kept}",
+            validate: n => !ProfileRules.IsValidName(n) ? ProfileRules.NameRules
+                : taken.Any(t => t.Equals(n, StringComparison.OrdinalIgnoreCase)) ? "There is a weapon with that name already." : null);
+        if (name is not null) App.DuplicateWeapon(weapon, name);
+    }
 
     private async Task Delete(string weapon)
     {

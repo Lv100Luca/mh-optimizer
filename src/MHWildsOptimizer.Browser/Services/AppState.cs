@@ -487,6 +487,37 @@ public sealed partial class AppState : IDisposable
         Moved();
     }
 
+    /// <summary>Saves a copy of a saved weapon (request, builds and last run) under a new name and opens it; unsaved edits stay with the original.</summary>
+    public void DuplicateWeapon(string weaponName, string copyName)
+    {
+        if (Profile is null) return;
+        if (!ProfileRules.IsValidName(copyName)) { Toast(ProfileRules.NameRules, Severity.Error); return; }
+        if (Weapons.Any(w => w.Name.Equals(copyName, StringComparison.OrdinalIgnoreCase))) { Toast($"There is a weapon {copyName} already", Severity.Error); return; }
+        var note = "";
+        try
+        {
+            var file = _store.LoadWeapon(Profile, weaponName);
+            if (file is null) { Toast($"There is no weapon {weaponName}", Severity.Error); return; }
+            _store.SaveWeapon(Profile, copyName, file.Request, file.Builds);
+            if (file.HasResults && TryLoadResults(Profile, weaponName) is { } results)
+            {
+                // the copy works without its last run, so a full storage only drops that
+                try { _store.SaveResults(Profile, copyName, results.Text, results); }
+                catch (StorageFullException) { note = " without its last run (the browser storage is full)"; }
+            }
+        }
+        catch (Exception e) when (e is JsonException or IOException)
+        {
+            _store.DeleteWeapon(Profile, copyName); // no half-written copy
+            Toast($"Could not duplicate {weaponName}: {e.Message}", Severity.Error);
+            return;
+        }
+        Toast($"Duplicated {weaponName} as {copyName}{note}");
+        RefreshWeapons();
+        TouchSaved();
+        OpenWeapon(copyName);
+    }
+
     /// <summary>Changes the open weapon's request; a new weapon type brings its own preset (the conditions the weapon overrides stay).</summary>
     public void PatchRequest(Func<OptimizationRequest, OptimizationRequest> fn) => UpdateActive(s =>
     {
