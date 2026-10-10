@@ -710,6 +710,10 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .mud-tooltip.skilltip-pop { background: transparent; padding: 0; box-shadow: none; max-width: none; }
 .skilltip-pop .skilltip { position: static; pointer-events: auto; }
 .skillhover { display: inline-flex; }
+.decohover { display: inline-flex; }
+.decotip { display: flex; flex-direction: column; gap: 6px; width: 320px; }
+.decotip-head { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); font-size: 12.5px; }
+.decotip .skilltip { width: auto; }
 /* the scored attack or sequence (ScoredAttack) */
 .attack-chip {
   display: inline-flex; align-items: center; vertical-align: middle; max-width: 100%; padding: 1px 5px 1px 9px; border: 1px solid var(--border-2);
@@ -842,6 +846,9 @@ button.pathcard:hover { border-color: var(--accent); }
 .draft-badge { margin-left: 6px; padding: 0 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; color: #ff9ecb; border: 1px dashed rgba(255, 122, 182, 0.7); }
 .cond-diff { padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(232, 176, 75, 0.5); background: rgba(232, 176, 75, 0.06); font-size: 13px; }
 .cond-diff ul { margin: 4px 0 6px; padding-left: 18px; color: var(--muted); }
+.target-diff { margin: 4px 0 6px; padding-left: 18px; }
+.cmp-controls { column-gap: 24px; }
+.cmp-control { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .difflist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
 .difflist li { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
 .difflist .k { color: var(--muted); min-width: 52px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }

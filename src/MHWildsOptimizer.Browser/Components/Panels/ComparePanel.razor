@@ -4,7 +4,7 @@
     var refs = App.Tray;
     var baseRef = App.TrayBaseline;
     var basis = App.Basis;
-    var cols = Columns(refs, baseRef, basis);
+    var cols = Columns(refs, baseRef, basis, App.TargetMode);
     var baseCol = cols.FirstOrDefault(c => c.IsBase);
     var oneWeapon = cols.Select(c => c.Ref.Weapon).Distinct().Count() == 1;
 }
@@ -12,14 +12,10 @@
     <Section Key="compare" Collapsible="false" Title="Compare"
              Hint="@($"Builds from any weapon of {App.Profile}, side by side. Differences are against the baseline (★); green means better than the baseline.")">
         <Actions>
-            <div class="btn-row">
-                <span class="muted small">Score every column under</span>
-                <Segmented T="CompareBasis" Small="true" Value="basis" ValueChanged="App.SetBasis" Options="BasisOptions" />
-                @if (refs.Count > 0)
-                {
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="App.ClearTray">Clear</MudButton>
-                }
-            </div>
+            @if (refs.Count > 0)
+            {
+                <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="App.ClearTray">Clear</MudButton>
+            }
         </Actions>
         <ChildContent>
             @if (refs.Count == 0)
@@ -31,6 +27,16 @@
             }
             else
             {
+                <div class="btn-row cmp-controls">
+                    <span class="cmp-control">
+                        <span class="muted small">Score every column under</span>
+                        <Segmented T="CompareBasis" Small="true" Value="basis" ValueChanged="App.SetBasis" Options="BasisOptions" />
+                    </span>
+                    <span class="cmp-control">
+                        <span class="muted small">Target</span>
+                        <Segmented T="CompareTarget" Small="true" Value="App.TargetMode" ValueChanged="App.SetTargetMode" Options="TargetOptions" />
+                    </span>
+                </div>
                 @Checks(cols, baseCol, basis)
                 <div class="btn-row">
                     @if (refs.Count < AppState.TrayLimit)
@@ -78,15 +84,36 @@
         new(CompareBasis.AllOn, "Every condition on", Hint: "Every hunt condition on, the ceiling of each build"),
     ];
 
+    private static readonly IReadOnlyList<SegmentOption<CompareTarget>> TargetOptions =
+    [
+        new(CompareTarget.Own, "Its own", Hint: "Each build hits the target its conditions give it"),
+        new(CompareTarget.Dummy, "Training dummy", Hint: $"Every build hits the training dummy's weak point (raw {Target.DummyParts[0].RawHitzone:0}, element {Target.DummyParts[0].ElementHitzone:0})"),
+        new(CompareTarget.Baseline, "The baseline's", Hint: "Every build hits the baseline's target; a monster part at the hitzone its weapon type deals (slash, blunt or shot)"),
+    ];
+
     // the attack table shows the first rows until opened; skills and bonuses show their differences when opened
     private bool _allAttacks;
     private bool _skillDiffs;
     private bool _bonusDiffs;
 
-    private List<Col> Columns(IReadOnlyList<BuildRef> refs, BuildRef? baseRef, CompareBasis basis)
+    private List<Col> Columns(IReadOnlyList<BuildRef> refs, BuildRef? baseRef, CompareBasis basis, CompareTarget mode)
     {
         var baseScored = baseRef is null ? null : App.ScoreRef(baseRef, basis == CompareBasis.AllOn ? CompareBasis.AllOn : CompareBasis.Own);
-        return refs.Select(r => r == baseRef ? new Col(r, baseScored, true) : new Col(r, App.ScoreRef(r, basis, baseScored), false)).ToList();
+        var target = AppState.UnifiedTarget(mode, baseScored);
+        ScoredRef? On(ScoredRef? s) => s is null ? null : App.OnTarget(s, target);
+        return refs.Select(r => r == baseRef ? new Col(r, On(baseScored), true) : new Col(r, On(App.ScoreRef(r, basis, baseScored)), false)).ToList();
+    }
+
+    /// <summary>Targets that are the same place: a monster part is one target at every weapon type's hitzone.</summary>
+    private static string TargetKey(Target t) => t.Kind == TargetKind.Custom ? $"custom {t.RawHitzone} {t.ElementHitzone}" : t.Name;
+
+    /// <summary>"Arkveld, Head (raw 45)", "Custom (raw 70, element 28)"; raw hitzones of several weapon types as "raw 45 / 50".</summary>
+    private static string TargetLabel(IEnumerable<Target> same)
+    {
+        var list = same.ToList();
+        var t = list[0];
+        var raw = string.Join(" / ", list.Select(x => x.RawHitzone).Distinct().Select(x => Fmt.N(x, 0)));
+        return t.Kind == TargetKind.Custom ? $"Custom (raw {raw}, element {Fmt.N(t.ElementHitzone, 0)})" : $"{t.Name} (raw {raw})";
     }
 
     // a new picker after every pick, so it shows its placeholder again
@@ -171,6 +198,33 @@
                 so the damage compares only roughly and the attack table lists each type's own attacks.
             </Alert>
         }
+        // the target first: conditions may differ on purpose (they steer a build), a different hitzone only skews the damage
+        var targets = scored.Select(c => (Col: c, Target: AppState.TargetOf(c.Scored!))).ToList();
+        var byTarget = targets.GroupBy(x => TargetKey(x.Target)).ToList();
+        if (byTarget.Count > 1)
+        {
+            var baseTarget = baseCol?.Scored is { } bs ? AppState.TargetOf(bs) : null;
+            <Alert Kind="warning">
+                <b>The columns hit different targets.</b> Damage scales with the hitzone, so their numbers do not compare.
+                <ul class="target-diff">
+                    @foreach (var g in byTarget)
+                    {
+                        <li><b>@TargetLabel(g.Select(x => x.Target))</b>: @string.Join(", ", g.Select(x => ColName(x.Col, oneWeapon)))</li>
+                    }
+                </ul>
+                Put every column on <button type="button" class="linklike" @onclick="() => App.SetTargetMode(CompareTarget.Dummy)">the training dummy</button>
+                @if (baseTarget is not null)
+                {
+                    @(" or ")<button type="button" class="linklike" @onclick="() => App.SetTargetMode(CompareTarget.Baseline)">the baseline's target (@TargetLabel([baseTarget]))</button>
+                }
+            </Alert>
+        }
+        else if (App.TargetMode != CompareTarget.Own && targets.Count > 0)
+        {
+            <p class="small muted">
+                Every column hits @TargetLabel(targets.Select(x => x.Target))@(App.TargetMode == CompareTarget.Baseline ? ", the baseline's target" : "").
+            </p>
+        }
         var differences = ConditionDifferences(scored, oneWeapon);
         if (basis == CompareBasis.Own && differences.Count > 0)
         {
@@ -188,7 +242,7 @@
                 }
             </div>
         }
-        else if (basis == CompareBasis.Own)
+        else if (basis == CompareBasis.Own && byTarget.Count <= 1)
         {
             <p class="small"><span class="ok-badge">✓ same conditions</span> <span class="muted">Every column uses the same conditions, target and attack, so the numbers compare directly.</span></p>
         }
@@ -238,11 +292,10 @@
             if (on.Count == 0 || on.Count == eff.Count) continue;
             lines.Add($"{cd.Label}: on for {Names(on)}, off for {Names(eff.Select(x => x.Col).Except(on))}");
         }
-        if (eff.Select(x => (x.C.Target ?? new Target()).Name).Distinct().Count() > 1)
-            lines.Add("Target: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {(x.C.Target ?? new Target()).Name}")));
-        var scoredOn = eff.Select(x => x.Col.Build?.StatsRequested.ScoredOn).ToList();
-        if (scoredOn.All(s => s is not null) && scoredOn.Distinct().Count() > 1)
-            lines.Add("Scored on: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {App.ScoredOnLabel(x.Col.Build!.StatsRequested.ScoredOn!, x.Col.Build.Weapon.Type)}")));
+        // the target has its own warning; the attack is compared without it
+        var attacks = eff.Select(x => x.Col.Build?.StatsRequested.ScoredOn is { } on ? App.ScoredOnLabel(on, x.Col.Build.Weapon.Type, withTarget: false) : null).ToList();
+        if (attacks.All(s => s is not null) && attacks.Distinct().Count() > 1)
+            lines.Add("Scored on: " + string.Join("; ", eff.Select((x, i) => $"{ColName(x.Col, oneWeapon)} {attacks[i]}")));
         if (eff.Select(x => x.C.MealAttack).Distinct().Count() > 1)
             lines.Add("Meal attack: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.C.MealAttack}")));
         if (eff.Select(x => x.C.Resonance).Distinct().Count() > 1)
@@ -309,7 +362,7 @@
                     <td @key="c.Ref.Key" class="@(c.IsBase ? "basecol" : "") @(change == SlotChange.Piece ? "changed" : change == SlotChange.Decorations ? "regem" : "")">
                         @if (c.Build is { } b)
                         {
-                            @Piece(b, slot, change)
+                            @Piece(b, slot, change, c.IsBase ? null : bb)
                         }
                     </td>
                 }
@@ -680,31 +733,39 @@
         return (armor.OrderByDescending(x => x).ToList(), weapon.OrderByDescending(x => x).ToList());
     }
 
-    private static RenderFragment Piece(BuildDto b, BuildSlot slot, SlotChange change) => __builder =>
+    /// <summary>What a build wears in a slot: the piece's name (the weapon by its skill pair) and its decorations.</summary>
+    private static (string? Name, IReadOnlyList<DecoDto?> Decos) PieceOf(BuildDto b, BuildSlot slot)
     {
-        string? name;
-        IReadOnlyList<DecoDto?> decos;
         switch (slot)
         {
             case BuildSlot.Weapon:
-                name = $"{b.Weapon.SetBonus ?? "-"} / {b.Weapon.GroupSkill ?? "-"}";
-                decos = b.Weapon.Decorations;
-                break;
+                return ($"{b.Weapon.SetBonus ?? "-"} / {b.Weapon.GroupSkill ?? "-"}", b.Weapon.Decorations);
             case BuildSlot.Talisman:
-                name = b.Talisman?.Name;
-                decos = b.Talisman?.Decorations ?? [];
-                break;
+                return (b.Talisman?.Name, b.Talisman?.Decorations ?? []);
             default:
                 var a = b.Armor.FirstOrDefault(x => x.Kind == BuildDiff.ArmorSlots[slot]);
-                name = a is null ? null : a.Name + (a.Transcended ? " (T)" : "");
-                decos = a?.Decorations ?? [];
-                break;
+                return (a is null ? null : a.Name + (a.Transcended ? " (T)" : ""), a?.Decorations ?? []);
         }
+    }
+
+    /// <summary>"Udra Mirebraces β with Attack Jewel [1], Expert Jewel [1]" / "nothing".</summary>
+    private static string PieceText((string? Name, IReadOnlyList<DecoDto?> Decos) p)
+    {
+        if (p.Name is null) return "nothing";
+        var decos = p.Decos.OfType<DecoDto>().Select(d => d.Name).ToList();
+        return decos.Count == 0 ? $"{p.Name} without decorations" : $"{p.Name} with {string.Join(", ", decos)}";
+    }
+
+    /// <param name="baseline">The baseline build, which <paramref name="change"/> is measured against.</param>
+    private static RenderFragment Piece(BuildDto b, BuildSlot slot, SlotChange change, BuildDto? baseline) => __builder =>
+    {
+        var (name, decos) = PieceOf(b, slot);
         if (name is null)
         {
             <span class="muted">–</span>
             return;
         }
+        var was = baseline is null ? "" : $"The baseline wears {PieceText(PieceOf(baseline, slot))} here.";
         <div class="equipview">
             <span class="@(change == SlotChange.Same ? "" : "swap-name")">@name</span>
             <span class="equipview-decos">
@@ -715,11 +776,11 @@
             </span>
             @if (change == SlotChange.Piece)
             {
-                <span class="tiny warn">another piece</span>
+                <span class="tiny warn" title="@was">other piece than the baseline</span>
             }
             else if (change == SlotChange.Decorations)
             {
-                <span class="tiny muted">other decorations</span>
+                <span class="tiny muted" title="@was">baseline's piece, other decorations</span>
             }
         </div>
     };

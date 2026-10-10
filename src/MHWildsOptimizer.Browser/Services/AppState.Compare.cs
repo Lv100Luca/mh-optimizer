@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using MHWildsOptimizer.Api;
 using MHWildsOptimizer.Core.Damage;
+using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Inputs;
 
 namespace MHWildsOptimizer.Browser.Services;
@@ -25,10 +26,12 @@ public sealed partial class AppState
 
     public CompareBasis Basis { get; private set; } = CompareBasis.Own;
 
+    public CompareTarget TargetMode { get; private set; } = CompareTarget.Own;
+
     private BuildRef? _trayBaseline;
 
     /// <summary>The tray as kept in browser storage, per profile.</summary>
-    public sealed record TrayState(List<BuildRef> Refs, BuildRef? Baseline, CompareBasis Basis);
+    public sealed record TrayState(List<BuildRef> Refs, BuildRef? Baseline, CompareBasis Basis, CompareTarget TargetMode = CompareTarget.Own);
 
     private static string TrayKey(string profile) => $"mhwo.compare:{profile}";
 
@@ -40,6 +43,7 @@ public sealed partial class AppState
         Tray = state?.Refs ?? [];
         _trayBaseline = state?.Baseline;
         Basis = state?.Basis ?? CompareBasis.Own;
+        TargetMode = state?.TargetMode ?? CompareTarget.Own;
     }
 
     private void SaveTray()
@@ -48,7 +52,7 @@ public sealed partial class AppState
         try
         {
             if (Tray.Count == 0) _storage.Remove(TrayKey(Profile));
-            else _storage.Set(TrayKey(Profile), new TrayState(Tray.ToList(), _trayBaseline, Basis), BrowserProfileStore.Json);
+            else _storage.Set(TrayKey(Profile), new TrayState(Tray.ToList(), _trayBaseline, Basis, TargetMode), BrowserProfileStore.Json);
         }
         catch (StorageFullException)
         {
@@ -102,6 +106,13 @@ public sealed partial class AppState
     public void SetBasis(CompareBasis basis)
     {
         Basis = basis;
+        SaveTray();
+        Notify();
+    }
+
+    public void SetTargetMode(CompareTarget mode)
+    {
+        TargetMode = mode;
         SaveTray();
         Notify();
     }
@@ -399,6 +410,57 @@ public sealed partial class AppState
                 break;
         }
         return new ScoredRef(r, RefName(r), WeaponTitle(r.Weapon), type, request, input, Score(request, input), !r.IsRun && input.Picked, runScore, runAt, stale, applied);
+    }
+
+    // ---------------------------------------------------------------- one target for every column
+
+    /// <summary>Where a scored build's hits land: its own target, else its weapon's.</summary>
+    public static Target TargetOf(ScoredRef s) => s.Input.Target ?? s.Request.Conditions.Target ?? DefaultTarget;
+
+    private static readonly Target DefaultTarget = Target.Default;
+
+    /// <summary>The target every column hits under <paramref name="mode"/>; null = each its own.</summary>
+    public static Target? UnifiedTarget(CompareTarget mode, ScoredRef? baseline) => mode switch
+    {
+        CompareTarget.Dummy => Target.DummyParts[0],
+        CompareTarget.Baseline when baseline is not null => TargetOf(baseline),
+        _ => null,
+    };
+
+    private readonly ConditionalWeakTable<Conditions, ConditionalWeakTable<Target, Conditions>> _withTarget = new();
+    private readonly ConditionalWeakTable<BuildInput, BuildInput> _withoutTarget = new();
+    private readonly ConditionalWeakTable<Target, Dictionary<string, Target>> _forType = new();
+
+    /// <summary>The build scored again with its hits on <paramref name="target"/> (null: unchanged).</summary>
+    public ScoredRef OnTarget(ScoredRef s, Target? target)
+    {
+        if (target is null) return s;
+        var t = ForWeaponType(target, s.WeaponType);
+        if (TargetOf(s) == t) return s;
+        var request = WithConditions(s.Request, _withTarget.GetOrCreateValue(s.Request.Conditions).GetValue(t, x => s.Request.Conditions with { Target = x }));
+        var input = s.Input.Target is null ? s.Input : _withoutTarget.GetValue(s.Input, i => i with { Target = null });
+        return s with { Request = request, Input = input, Evaluated = Score(request, input) };
+    }
+
+    /// <summary>A monster part at the raw hitzone (slash, blunt or shot) of another weapon type; other targets as they are.</summary>
+    private Target ForWeaponType(Target t, string kind)
+    {
+        if (t.Kind != TargetKind.Monster) return t;
+        var byKind = _forType.GetOrCreateValue(t);
+        if (byKind.TryGetValue(kind, out var known)) return known;
+        var result = t;
+        try
+        {
+            var monster = Data.Monsters.FirstOrDefault(m => m.Name == t.Monster);
+            if (monster?.Parts.FirstOrDefault(p => p.Name == t.Part) is { } part
+                && Target.ForMonster(monster, part, WeaponTypeInfo.FromApiKind(kind)) is var other && other != t)
+                result = other;
+        }
+        catch (ArgumentException)
+        {
+            // a weapon of unknown type keeps the numbers
+        }
+        return byKind[kind] = result;
     }
 
     /// <summary>

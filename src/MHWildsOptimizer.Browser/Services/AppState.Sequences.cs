@@ -34,11 +34,11 @@ public sealed partial class AppState
     }
 
     /// <summary>"Offset TCS against Rey Dau, Head (raw hitzone 70)": a scored-on text with its sequence by name, for plain text.</summary>
-    public string ScoredOnLabel(string scoredOn, string kind)
+    public string ScoredOnLabel(string scoredOn, string kind, bool withTarget = true)
     {
         var p = ScoredOnText.Parse(scoredOn);
         var name = p.IsSequence ? SequenceNameOf(kind, p.StepList!) ?? "Custom sequence" : p.Attack;
-        return p.Target is { } target ? $"{name} against {target}" : name;
+        return withTarget && p.Target is { } target ? $"{name} against {target}" : name;
     }
 
     /// <summary>The name of a per-attack table row: the request's own sequence ("Your sequence") by its saved name.</summary>

@@ -21,7 +21,7 @@ else
                     ClearLabel="— empty slot —" Placeholder="@($"Level {slot.Level} {slot.Kind.ToString().ToLowerInvariant()} slot: search jewels or skills…")">
                 <Trigger>
                     <span class="slot @(slot.Kind == SkillKind.Weapon ? "weapon" : "")"><img class="slot-kind" src="@(slot.Kind == SkillKind.Weapon ? GameIcons.SlotWeapon : GameIcons.SlotArmor)" alt="" />@slot.Level</span>
-                    <DecoIcon Decoration="deco" SlotLevel="slot.Level" Size="22" />
+                    <DecoIcon Decoration="deco" SlotLevel="slot.Level" Size="22" Card="false" />
                     <span class="slotpick-name">@(deco?.Name ?? (name is not null ? $"{name} (unknown)" : "empty"))</span>
                 </Trigger>
             </Picker>
@@ -44,7 +44,7 @@ else
             .OrderByDescending(d => d.Slot).ThenBy(d => d.Name)
             .Select(d => new PickerOption<string>(d.Name, d.Name, string.Join(' ', [d.Name, .. d.Skills.Select(g => g.Skill)]).ToLowerInvariant(),
                 @<text>
-                    <DecoIcon Decoration="d" Size="22" />
+                    <DecoIcon Decoration="d" Size="22" Card="false" />
                     <span class="opt-main"><span class="opt-name">@d.Name</span><span class="muted small">@string.Join(", ", d.Skills.Select(g => $"{g.Skill} {g.Level}"))</span></span>
                 </text>,
                 $"Level {d.Slot}"))

@@ -17,6 +17,17 @@ Before / after: `mockups/build-comparison/changes-before-after.html`. Screenshot
   (the tracked icon source; the browser app copies it into wwwroot on build). The wiki has no separate slot icons.
 - The Landed hits per minute input is gone; a value set earlier still counts and shows with a "Use the attack's pace" link.
 
+2026-10-10, asked by the user ("conditions may vary to steer the build, but a different target will skew the results"):
+the Compare tab has a **Target** switch next to the basis (its own / training dummy weak point / the baseline's), kept in
+the tray state (`CompareTarget`, `AppState.OnTarget`, a monster part re-read for each column's weapon type), and a warning
+of its own whenever the columns hit different targets, on every basis. The target left the condition-difference list and
+"Scored on" there compares the attack only. Both switches moved from the card header into a row of their own. Before/after:
+`mockups/build-comparison/target-switch-before-after.html`.
+Same day: hovering a jewel shows its skill cards (`DecoIcon` builds the tooltip on the first hover, `Card="false"` in the
+pickers), Compare's slot labels say they are against the baseline ("other piece than the baseline", "baseline's piece, other
+decorations", with what the baseline wears in the tooltip), see `jewel-hover-before-after.html`; and the Inventory can
+duplicate a weapon (request, builds and last run, opened right away). Merged into main by the user's request.
+
 ## Handoff (state on 2026-10-09)
 
 - Branch `claude/build-comparison-ux-d98b9e`, on top of main `b274ddc`: d1d64ac (attack as true raw, element as in game),

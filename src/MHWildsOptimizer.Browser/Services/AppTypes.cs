@@ -129,6 +129,17 @@ public enum CompareBasis
     AllOn,
 }
 
+/// <summary>Where the hits of a comparison's columns land, on top of <see cref="CompareBasis"/>.</summary>
+public enum CompareTarget
+{
+    /// <summary>Each column's target as its conditions give it.</summary>
+    Own,
+    /// <summary>Every column on the training dummy's weak point.</summary>
+    Dummy,
+    /// <summary>Every column on the baseline's target (a monster part at the hitzone of each column's weapon type).</summary>
+    Baseline,
+}
+
 /// <summary>
 /// A build of the profile looked up and scored now. <paramref name="Request"/> and <paramref name="Input"/> are what it was
 /// scored with (after the comparison basis), so its damage per attack can be worked out the same way.
