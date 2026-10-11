@@ -68,6 +68,8 @@ public sealed record WeaponStatsInput
     public int ElementDisplay { get; init; }
     /// <summary>Sharpness color the weapon attacks at. Defaults to white (all Gogma GS/LS variants top out at white).</summary>
     public SharpnessColor Sharpness { get; init; } = SharpnessColor.White;
+    /// <summary>Bows only: the bow's damage coating (every bow has one of the three). Defaults to Power. A spec takes it from the focus.</summary>
+    public BowCoating? Coating { get; init; }
     public List<int> Slots { get; init; } = [3, 3, 3];
     public string? SetBonus { get; init; }
     public string? GroupSkill { get; init; }
@@ -83,7 +85,7 @@ public sealed record WeaponStatsInput
             if (spec is not null)
             {
                 errors.AddRange(spec.Validate(data).Select(e => "Weapon spec: " + e));
-                if (spec.Type.IsGunner()) errors.Add("Weapon: gunner weapons are out of scope for now.");
+                if (spec.Type.IsBowgun()) errors.Add("Weapon: bowguns are out of scope for now.");
             }
         }
         else
@@ -97,7 +99,8 @@ public sealed record WeaponStatsInput
             if (Affinity is < -100 or > 100) errors.Add("Weapon: affinity must be within -100..100.");
             if (Element != Element.None && ElementDisplay <= 0) errors.Add("Weapon: element set but element_display is 0.");
             if (Element == Element.None && ElementDisplay > 0) errors.Add("Weapon: element_display given but element is none.");
-            if (type.IsGunner()) errors.Add("Weapon: gunner weapons are out of scope for now.");
+            if (type.IsBowgun()) errors.Add("Weapon: bowguns are out of scope for now.");
+            if (Coating is not null && type != WeaponType.Bow) errors.Add("Weapon: only bows carry a coating.");
         }
 
         if (Slots.Any(l => l is < 1 or > 3)) errors.Add("Weapon: slot levels must be 1..3.");
@@ -124,6 +127,7 @@ public sealed record WeaponStatsInput
         var trueRaw = AttackIsDisplay ? (int)Math.Round(attack / type.Bloat()) : attack;
         return new GogmaWeaponStats(
             type, null, trueRaw, Affinity, Element, Element == Element.None ? 0 : ElementDisplay,
-            type.HasSharpness() ? Sharpness : null, null, 0, Slots, SetBonus, GroupSkill);
+            type.HasSharpness() ? Sharpness : null, null, 0, Slots, SetBonus, GroupSkill,
+            type == WeaponType.Bow ? Coating ?? BowCoating.Power : null);
     }
 }

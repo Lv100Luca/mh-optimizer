@@ -22,7 +22,10 @@ public sealed record SharpnessBarDto(int Red, int Orange, int Yellow, int Green,
 public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, int Affinity, SharpnessBarDto? Sharpness, IReadOnlyList<int> Slots);
 
 /// <summary>One hit of an attack; <paramref name="PowerMv"/> is the power True Charged Slash finisher that replaces it on a weak spot.</summary>
-public sealed record AttackHitDto(string Name, double Mv, double Element, int Count, double? ElementPhialElement, bool SwordMode, SharpnessColor? FixedSharpness, double? PowerMv);
+/// <param name="Shot">Bow arrows: the kind, which decides the shot skill that boosts it.</param>
+/// <param name="Coated">Bow arrows that take the coating; <paramref name="PierceMv"/> / <paramref name="PierceElement"/> are the pierce arrow's.</param>
+public sealed record AttackHitDto(string Name, double Mv, double Element, int Count, double? ElementPhialElement, bool SwordMode, SharpnessColor? FixedSharpness, double? PowerMv,
+    BowShot? Shot = null, bool Coated = false, double? PierceMv = null, double? PierceElement = null);
 
 /// <param name="Combo">A combo of several inputs; the others are single moves (the sequence editor lists both).</param>
 public sealed record AttackDto(string Id, string Name, string Description, double Seconds, bool Combo, IReadOnlyList<AttackHitDto> Hits);
@@ -111,7 +114,7 @@ public sealed record Catalog(
                 t.ApiKind(),
                 WeaponLabel(t),
                 t.IsGunner(),
-                !t.IsGunner() && data.GogmaWeapons.ContainsKey(t),
+                !t.IsBowgun() && data.GogmaWeapons.ContainsKey(t),
                 t.Bloat(),
                 WeaponCoreSkills.For(t).Select(c => new SkillGrantDto(c.Skill, c.Level)).ToList(),
                 GogmaConstants.ElementBaseDisplay(t),
@@ -187,7 +190,8 @@ public sealed record Catalog(
         var p = AttackProfile.Preset(type);
         var attacks = Attacks.For(type)
             .Select(a => new AttackDto(a.Id, a.Name, a.Description, a.Seconds, a.Combo,
-                a.Hits.Select(h => new AttackHitDto(h.Name, h.Mv, h.Element, h.Count, h.ElementPhialElement, h.SwordMode, h.FixedSharpness, h.Power?.Mv)).ToList()))
+                a.Hits.Select(h => new AttackHitDto(h.Name, h.Mv, h.Element, h.Count, h.ElementPhialElement, h.SwordMode, h.FixedSharpness, h.Power?.Mv,
+                    h.Shot, h.Coated, h.Pierce?.Mv, h.Pierce?.Element)).ToList()))
             .ToList();
         return new AttackProfileDto(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, Attacks.DefaultFor(type), attacks, Attacks.SequencePresetsFor(type));
     }

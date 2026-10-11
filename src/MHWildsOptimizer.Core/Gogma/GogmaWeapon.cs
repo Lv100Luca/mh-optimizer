@@ -101,11 +101,15 @@ public sealed record GogmaWeaponSpec
 
         return new GogmaWeaponStats(
             Type, Focus, raw, affinity, Element, elementDisplay,
-            variant.Sharpness?.TopColor, variant.Sharpness, sharpnessBonus, variant.Slots, SetBonus, GroupSkill);
+            variant.Sharpness?.TopColor, variant.Sharpness, sharpnessBonus, variant.Slots, SetBonus, GroupSkill,
+            Type == WeaponType.Bow ? GogmaConstants.BowCoatingOf(Focus) : null);
     }
 }
 
-/// <summary>Final weapon stats before skills. Focus is null when the stats were entered directly instead of resolved from a spec.</summary>
+/// <summary>
+/// Final weapon stats before skills. Focus is null when the stats were entered directly instead of resolved from a spec.
+/// <paramref name="Coating"/> is the bow's damage coating (bows only).
+/// </summary>
 public sealed record GogmaWeaponStats(
     WeaponType Type,
     GogmaFocus? Focus,
@@ -118,7 +122,8 @@ public sealed record GogmaWeaponStats(
     int SharpnessBonus,
     IReadOnlyList<int> Slots,
     string? SetBonus,
-    string? GroupSkill)
+    string? GroupSkill,
+    BowCoating? Coating = null)
 {
     public double ElementTrue => ElementDisplay / 10.0;
     public int DisplayAttack => (int)Math.Round(TrueRaw * Type.Bloat());

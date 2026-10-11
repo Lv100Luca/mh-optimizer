@@ -29,6 +29,9 @@ public enum SharpnessColor { Red, Orange, Yellow, Green, Blue, White, Purple }
 
 public enum GogmaFocus { Attack, Affinity, Element }
 
+/// <summary>The damage coating a bow carries; every bow has exactly one (Artian bows by focus: attack Close-range, affinity Power, element Pierce).</summary>
+public enum BowCoating { CloseRange, Power, Pierce }
+
 public enum ReinforcementType { Attack, Affinity, Element, Sharpness, Ammo }
 
 public enum ReinforcementTier { I, II, III, EX }

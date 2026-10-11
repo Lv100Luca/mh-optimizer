@@ -29,6 +29,10 @@ public static class SkillNames
     public const string Coalescence = "Coalescence";
     public const string ChargeMaster = "Charge Master";
     public const string ElementalAbsorption = "Elemental Absorption";
+    public const string NormalShots = "Normal Shots";
+    public const string SpreadPowerShots = "Spread/Power Shots";
+    public const string PiercingShots = "Piercing Shots";
+    public const string SpecialAmmoBoost = "Special Ammo Boost";
 
     public const string GoreMagalasTyranny = "Gore Magala's Tyranny";
     public const string LeviathansFury = "Leviathan's Fury";
@@ -81,6 +85,12 @@ public sealed record DamageResult(
     ResolvedAttackProfile Attack,
     IReadOnlyList<string> Breakdown)
 {
+    /// <summary>Bow: the shot skills' raw multiplier per kind of arrow; every hit's raw is multiplied by the one for its kind.</summary>
+    public ShotBoosts Shots { get; init; } = ShotBoosts.None;
+
+    /// <summary>The attack's raw multiplier from the shot skills (<see cref="ShotShares.Multiplier"/>); part of <see cref="EffectiveRaw"/>, 1 for melee.</summary>
+    public double ShotMultiplier { get; init; } = 1.0;
+
     /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value of the attack, on the raw-hitzone-100 scale.</summary>
     public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
 
@@ -394,7 +404,11 @@ public static class DamageCalculator
         var sharpRaw = weapon.TopSharpness is { } s ? DamageConstants.SharpnessRaw(s) : 1.0;
         var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
         var profile = cond.Attack(weapon);
-        var efr = trueRaw * critFactor * profile.RawFactor;
+        // bow shot skills: each boosts the raw of the arrows it names
+        var shots = profile.Shots.Any ? ShotBoostsOf(L) : ShotBoosts.None;
+        var shotMult = profile.Shots.Multiplier(shots);
+        if (trace && shotMult != 1.0) notes.Add(Inv($"Shot skills: raw x{shotMult:0.####} over the attack (normal arrows x{shots.Normal:0.##}, power shots x{shots.Power:0.##}, Dragon Piercer / Thousand Dragons x{shots.Dragon:0.###}, Tracer x{shots.Tracer:0.##})"));
+        var efr = trueRaw * critFactor * profile.RawFactor * shotMult;
 
         var baseEle = weapon.ElementTrue;
         double ele = 0, cap = 0, critEleMult = 1.0, critEleFactor = 1.0;
@@ -438,7 +452,22 @@ public static class DamageCalculator
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
-            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes) { ScoredAt = cond, ProcParts = procParts ?? [] };
+            baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes)
+        {
+            ScoredAt = cond, ProcParts = procParts ?? [], Shots = shots, ShotMultiplier = shotMult,
+        };
+    }
+
+    /// <summary>
+    /// The bow's shot skills by kind of arrow: Normal Shots on normal arrows, Spread/Power Shots on power shots, Piercing Shots and
+    /// Special Ammo Boost on Dragon Piercer and Thousand Dragons, Special Ammo Boost on the Tracer.
+    /// </summary>
+    private static ShotBoosts ShotBoostsOf(Func<string, int> level)
+    {
+        static double Shot(int lv) => lv > 0 ? DamageConstants.ShotSkillMultiplier : 1.0;
+        var special = DamageConstants.SpecialAmmoBoost(level(SkillNames.SpecialAmmoBoost));
+        return new ShotBoosts(Shot(level(SkillNames.NormalShots)), Shot(level(SkillNames.SpreadPowerShots)),
+            Shot(level(SkillNames.PiercingShots)) * special, special);
     }
 
     /// <summary>
@@ -459,18 +488,18 @@ public static class DamageCalculator
                 .Where(x => x.Def is not null && x.Step.Repeat > 0)
                 .Select(x =>
                 {
-                    var stepCond = ConditionToggles.With(at, x.Step.Conditions) with { AttackProfile = new AttackProfile { Attack = x.Def!.Id, HitsPerMinute = hitsPerMinute } };
+                    var stepCond = ConditionToggles.With(at, x.Step.Conditions) with { AttackProfile = new AttackProfile { Attack = x.Def!.Id, HitsPerMinute = hitsPerMinute, PierceHits = profile.PierceHits } };
                     var changes = ConditionToggles.StepKeys.Where(k => ConditionToggles.Get(stepCond, k) != ConditionToggles.Get(at, k))
                         .ToDictionary(k => k, k => ConditionToggles.Get(stepCond, k));
                     var r = CalculateAt(weapon, skills, stepCond, trace: true);
-                    return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits));
+                    return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits, profile.PierceHits));
                 })
                 .ToList();
         }
 
         var single = CalculateAt(weapon, skills, at, trace: true);
         IEnumerable<ResolvedHit> hits = profile.AttackFor(weapon.Type) is { } attack
-            ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits)
+            ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits, profile.PierceHits)
             : [new ResolvedHit(single.Attack.Name, 1, single.Attack.TotalMv, single.SharpnessRawModifier, single.SharpnessElementModifier, false, [])];
         return [AttackDamageOf(single.Attack.Name, 1, new Dictionary<string, bool>(), single, hits)];
     }
@@ -484,7 +513,7 @@ public static class DamageCalculator
         var critEleFactor = r.Affinity > 0 ? 1.0 + r.Affinity / 100.0 * (r.CriticalElementMultiplier - 1.0) : 1.0;
         var list = hits.Select(h =>
         {
-            var raw = r.TrueRaw * h.Mv / 100.0 * h.RawModifier * rawHitzone;
+            var raw = r.TrueRaw * h.Mv / 100.0 * h.RawModifier * r.Shots.For(h.Shot) * rawHitzone;
             var ele = r.ElementTrue * h.ElementModifier * elementHitzone;
             return new HitDamage(h.Name, h.Count, h.Mv, raw + ele, raw * critRaw + ele * critEle, raw * r.CriticalFactor + ele * critEleFactor);
         }).ToList();

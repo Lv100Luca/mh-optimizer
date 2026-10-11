@@ -16,7 +16,9 @@ public sealed record Feature(FeatureKind Kind, int Index, string Name, int Max);
 /// <summary>What one combination of feature values puts into each term of the damage formula (see <see cref="DamageCalculator"/>).</summary>
 /// <param name="Procs">Proc damage per 100 MV that does not depend on the hit (Bad Blood).</param>
 /// <param name="Shockwave">The Dark Arts shockwave fires; its damage follows EFR, so it is added on top of the composed terms.</param>
-public readonly record struct Channels(double RawPct, double RawFlat, double Affinity, double ElePct, double EleFlat, double CritMult, double CritEleMult, double Procs, bool Shockwave);
+/// <param name="RawMult">Multiplies EFR after the flat bonuses: the bow's shot skills over the attack (<see cref="DamageResult.ShotMultiplier"/>).</param>
+public readonly record struct Channels(double RawPct, double RawFlat, double Affinity, double ElePct, double EleFlat, double CritMult, double CritEleMult, double Procs, bool Shockwave,
+    double RawMult = 1);
 
 /// <summary>Features whose contributions interact and are therefore tabulated jointly.</summary>
 public sealed class ScoreUnit
@@ -48,7 +50,7 @@ public sealed record ScoreSide(Conditions Conditions, int Health, double Weight,
 
 /// <summary>
 /// The damage formula as seen by an exact solver:
-/// raw = (B * prod rawPct + base flat + sum rawFlat) * rawFactor * critFactor(clamp(affinity), critMult),
+/// raw = (B * prod rawPct + base flat + sum rawFlat) * prod rawMult * rawFactor * critFactor(clamp(affinity), critMult),
 /// element = min(E * prod elePct + sum eleFlat, cap) * critElementFactor * <see cref="ScoreSide.ElementScale"/>, plus procs;
 /// per health side the segments of a sequence add up weighted by their share of the motion value, and the best health side wins.
 /// The per-feature contributions are not re-implemented: they are probed from <see cref="DamageCalculator"/> with two
@@ -175,7 +177,7 @@ public sealed class ScoreDecomposition
         var trueRaw = _weapon.TrueRaw * ch.RawPct + ch.RawFlat + side.BaseRawFlat;
         var aff = Math.Clamp(_weapon.Affinity + ch.Affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);
         var critFactor = aff >= 0 ? 1.0 + aff / 100.0 * (ch.CritMult - 1.0) : 1.0 + -aff / 100.0 * (DamageConstants.NegativeCriticalMultiplier - 1.0);
-        var efr = trueRaw * side.RawFactor * critFactor;
+        var efr = trueRaw * side.RawFactor * ch.RawMult * critFactor;
         double efe = 0;
         if (HasElement)
         {
@@ -219,14 +221,14 @@ public sealed class ScoreDecomposition
         return new ActiveSkills(levels, levels, sets, groups);
     }
 
-    internal static Channels Base(ScoreSide side) => new(1, 0, 0, 1, 0, side.BaseCritMult, side.BaseCritEleMult, 0, false);
+    internal static Channels Base(ScoreSide side) => new(1, 0, 0, 1, 0, side.BaseCritMult, side.BaseCritEleMult, 0, false, 1);
 
     /// <summary>Combines two contributions the way the calculator does; null when both change the same critical multiplier.</summary>
     internal static Channels? Compose(Channels a, Channels b, ScoreSide side)
     {
         if (!Pick(a.CritMult, b.CritMult, side.BaseCritMult, out var crit) || !Pick(a.CritEleMult, b.CritEleMult, side.BaseCritEleMult, out var critEle)) return null;
         return new Channels(a.RawPct * b.RawPct, a.RawFlat + b.RawFlat, a.Affinity + b.Affinity, a.ElePct * b.ElePct, a.EleFlat + b.EleFlat,
-            crit, critEle, a.Procs + b.Procs, a.Shockwave || b.Shockwave);
+            crit, critEle, a.Procs + b.Procs, a.Shockwave || b.Shockwave, a.RawMult * b.RawMult);
 
         static bool Pick(double x, double y, double baseValue, out double value)
         {
@@ -238,7 +240,7 @@ public sealed class ScoreDecomposition
 
     internal static bool Same(Channels a, Channels b) =>
         Near(a.RawPct, b.RawPct) && Near(a.RawFlat, b.RawFlat) && Near(a.Affinity, b.Affinity) && Near(a.ElePct, b.ElePct) && Near(a.EleFlat, b.EleFlat)
-        && Near(a.CritMult, b.CritMult) && Near(a.CritEleMult, b.CritEleMult) && Near(a.Procs, b.Procs) && a.Shockwave == b.Shockwave;
+        && Near(a.CritMult, b.CritMult) && Near(a.CritEleMult, b.CritEleMult) && Near(a.Procs, b.Procs) && a.Shockwave == b.Shockwave && Near(a.RawMult, b.RawMult);
 
     private static bool Near(double a, double b) => Math.Abs(a - b) <= 1e-9 * Math.Max(1.0, Math.Max(Math.Abs(a), Math.Abs(b)));
 
@@ -298,7 +300,8 @@ public sealed class ScoreDecomposition
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
             // the conditions' own flat raw is the side's base, not part of any unit
             var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct - sides[side].BaseRawFlat, r1.Affinity - ProbeAffinity, elePct,
-                _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock, shockwave);
+                _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock, shockwave,
+                r1.ShotMultiplier);
             _cache[key] = ch;
             return ch;
         }

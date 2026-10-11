@@ -74,10 +74,10 @@ public static class BuildEvaluation
             string.Equals(id, currentId, StringComparison.OrdinalIgnoreCase) ? new(id, name, group, true, profile) : new(id, name, group, false, attack);
 
         var rows = new List<AttackRow>();
-        rows.AddRange(attacks.Where(a => !a.Combo).Select(a => Row(a.Id, a.Name, GroupMoves, new AttackProfile { Attack = a.Id })));
-        rows.AddRange(attacks.Where(a => a.Combo).Select(a => Row(a.Id, a.Name, GroupCombos, new AttackProfile { Attack = a.Id })));
+        rows.AddRange(attacks.Where(a => !a.Combo).Select(a => Row(a.Id, a.Name, GroupMoves, new AttackProfile { Attack = a.Id, PierceHits = profile.PierceHits })));
+        rows.AddRange(attacks.Where(a => a.Combo).Select(a => Row(a.Id, a.Name, GroupCombos, new AttackProfile { Attack = a.Id, PierceHits = profile.PierceHits })));
         rows.AddRange(Attacks.SequencePresetsFor(type).Select(s =>
-            Row("preset:" + s.Id, s.Name, GroupSequences, new AttackProfile { Attack = Attacks.Sequence, Sequence = s.Steps })));
+            Row("preset:" + s.Id, s.Name, GroupSequences, new AttackProfile { Attack = Attacks.Sequence, Sequence = s.Steps, PierceHits = profile.PierceHits })));
         if (profile.IsSequence && profile.Sequence is { Count: > 0 })
             rows.Add(Row(Attacks.Sequence, "Your sequence", GroupSequences, profile));
         return rows;
@@ -143,7 +143,7 @@ public static class BuildEvaluation
             // a step scored on its own, at the pace of the whole attack (cooldown-limited procs per hit stay the same)
             var stepConditions = ConditionToggles.With(conditions, changed) with
             {
-                AttackProfile = new AttackProfile { Attack = attack.Id, HitsPerMinute = hitsPerMinute },
+                AttackProfile = new AttackProfile { Attack = attack.Id, HitsPerMinute = hitsPerMinute, PierceHits = row.Profile.PierceHits },
             };
             var d = DamageCalculator.Calculate(weapon, skills, stepConditions, trace: true);
             var critFactor = d.CriticalFactor;
@@ -153,9 +153,9 @@ public static class BuildEvaluation
             waveRaw *= target.RawHitzone / 100.0;
             waveEle *= target.RawHitzone / 100.0;
             var hits = new List<HitDetailDto>();
-            foreach (var h in AttackProfile.ResolveHits(weapon, target, attack.Hits))
+            foreach (var h in AttackProfile.ResolveHits(weapon, target, attack.Hits, row.Profile.PierceHits))
             {
-                var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * target.RawHitzone / 100.0;
+                var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * d.Shots.For(h.Shot) * target.RawHitzone / 100.0;
                 var ele = d.ElementTrue * h.ElementModifier * eleHitzone / 100.0;
                 hits.Add(new HitDetailDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
                     raw * critFactor + ele * critEleFactor, h.Notes, RawAverage: raw * critFactor, ElementAverage: ele * critEleFactor));

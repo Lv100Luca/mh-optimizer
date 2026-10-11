@@ -26,6 +26,8 @@ public sealed record AttackProfile
     public double? AverageMv { get; init; }
     /// <summary>Average-hit model only: share of landed hits that are Lv3 charged slashes other than the Rising Slash (Great Sword, Dark Arts shockwave).</summary>
     public double? ChargedLv3Share { get; init; }
+    /// <summary>Bow with the Pierce coating: hits each arrow lands as it passes through the monster (1..8; more on big monsters). Default <see cref="DamageConstants.DefaultPierceHits"/>.</summary>
+    public int? PierceHits { get; init; }
 
     public bool IsSequence => string.Equals(Attack, Attacks.Sequence, StringComparison.OrdinalIgnoreCase);
 
@@ -66,7 +68,8 @@ public sealed record AttackProfile
 
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
         double hits = 0, totalMv = 0, raw = 0, ele = 0, shockwaves = 0;
-        foreach (var h in ResolveHits(weapon, target, attack.Hits))
+        var resolved = ResolveHits(weapon, target, attack.Hits, PierceHits);
+        foreach (var h in resolved)
         {
             hits += h.Count;
             totalMv += h.Mv * h.Count;
@@ -75,22 +78,34 @@ public sealed record AttackProfile
             if (h.ChargedLv3) shockwaves += h.Count;
         }
 
-        var name = phial is { } ph ? $"{attack.Name} ({ph} phial)" : attack.Name;
+        var name = phial is { } ph ? $"{attack.Name} ({ph} phial)"
+            : weapon.Type == WeaponType.Bow && weapon.Coating is { } coating ? $"{attack.Name} ({CoatingName(coating)} coating)"
+            : attack.Name;
         return new ResolvedAttackProfile(name, HitsPerMinute ?? hits * 60.0 / attack.Seconds, hits, totalMv, raw / totalMv, ele * ratio * 100.0 / totalMv,
-            shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack");
+            shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack", ShotShares.Of(resolved));
     }
+
+    /// <summary>"Close-range" / "Power" / "Pierce", as the game names the coatings.</summary>
+    public static string CoatingName(BowCoating coating) => coating switch
+    {
+        BowCoating.CloseRange => "Close-range",
+        BowCoating.Power => "Power",
+        _ => "Pierce",
+    };
 
     /// <summary>
     /// The hits as they land on <paramref name="target"/> with <paramref name="weapon"/>: the power True Charged Slash finisher on a
-    /// weak spot (raw hitzone x sharpness of 45 or more), fixed sharpness (the tackle) and the Switch Axe phial. Raw damage of a hit
-    /// is true raw x MV / 100 x <see cref="ResolvedHit.RawModifier"/>, element damage true element x <see cref="ResolvedHit.ElementModifier"/>,
-    /// both before hitzones and crits.
+    /// weak spot (raw hitzone x sharpness of 45 or more), fixed sharpness (the tackle), the Switch Axe phial and the bow's coating
+    /// (with the Pierce coating every arrow lands <paramref name="pierceHits"/> times, each hit weaker than the one before). Raw
+    /// damage of a hit is true raw x MV / 100 x <see cref="ResolvedHit.RawModifier"/>, element damage true element x
+    /// <see cref="ResolvedHit.ElementModifier"/>, both before hitzones, crits and shot skills.
     /// </summary>
-    public static IReadOnlyList<ResolvedHit> ResolveHits(GogmaWeaponStats weapon, Target target, IEnumerable<AttackHit> hits)
+    public static IReadOnlyList<ResolvedHit> ResolveHits(GogmaWeaponStats weapon, Target target, IEnumerable<AttackHit> hits, int? pierceHits = null)
     {
         var sharpRaw = weapon.TopSharpness is { } s ? DamageConstants.SharpnessRaw(s) : 1.0;
         var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
+        BowCoating? coating = weapon.Type == WeaponType.Bow ? weapon.Coating : null;
         var weakSpot = target.RawHitzone * sharpRaw >= DamageConstants.WeakPointHitzone;
         var result = new List<ResolvedHit>();
         foreach (var hit in hits)
@@ -106,15 +121,44 @@ public sealed record AttackProfile
                 se = DamageConstants.SharpnessElement(fixedSharpness);
                 notes.Add($"{fixedSharpness.ToString().ToLowerInvariant()} sharpness");
             }
+            var count = h.Count;
             var rawMult = phial == SwitchAxePhial.Power && h.SwordMode ? DamageConstants.PowerPhialRaw : 1.0;
             var eleMult = phial == SwitchAxePhial.Element && h.SwordMode ? DamageConstants.ElementPhialElement : 1.0;
             var eleMod = phial == SwitchAxePhial.Element && h.ElementPhialElement is { } ep ? ep : h.Element;
             if (rawMult != 1.0) notes.Add(FormattableString.Invariant($"Power phial raw x{rawMult}"));
             if (eleMult != 1.0) notes.Add(FormattableString.Invariant($"Element phial element x{eleMult}"));
+            if (h.Coated && coating is { } c)
+                (h, count, rawMult, eleMult, eleMod) = Coat(h, c, pierceHits ?? DamageConstants.DefaultPierceHits, notes);
             if (h.ChargedLv3) notes.Add("Lv3 charged slash");
-            result.Add(new ResolvedHit(h.Name, h.Count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes));
+            result.Add(new ResolvedHit(h.Name, count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes, h.Shot));
         }
         return result;
+    }
+
+    /// <summary>
+    /// A coated bow arrow: Close-range and Power coatings multiply it; with the Pierce coating it becomes the pierce arrow, which
+    /// lands <paramref name="pierceHits"/> times per arrow, the raw of each hit decaying (<see cref="DamageConstants.PierceHitMultipliers"/>).
+    /// </summary>
+    private static (AttackHit Hit, int Count, double RawMult, double EleMult, double EleMod) Coat(AttackHit h, BowCoating coating, int pierceHits, List<string> notes)
+    {
+        switch (coating)
+        {
+            case BowCoating.Pierce when h.Pierce is { } p:
+            {
+                var n = Math.Clamp(pierceHits, 1, DamageConstants.PierceHitMultipliers.Length);
+                var raw = DamageConstants.PierceHitMultipliers.Take(n).Average();
+                notes.Add(FormattableString.Invariant($"Pierce coating: {n} hits per arrow, raw x{raw:0.###} on average"));
+                return (p, p.Count * n, raw, 1.0, p.Element);
+            }
+            case BowCoating.CloseRange:
+                notes.Add(FormattableString.Invariant($"Close-range coating raw x{DamageConstants.CloseRangeCoatingRaw}"));
+                return (h, h.Count, DamageConstants.CloseRangeCoatingRaw, 1.0, h.Element);
+            case BowCoating.Power:
+                notes.Add(FormattableString.Invariant($"Power coating raw x{DamageConstants.PowerCoatingRaw}"));
+                return (h, h.Count, DamageConstants.PowerCoatingRaw, 1.0, h.Element);
+            default:
+                return (h, h.Count, 1.0, 1.0, h.Element);
+        }
     }
 
     /// <summary>
@@ -134,6 +178,7 @@ public sealed record AttackProfile
         var errors = new List<string>();
         if (Attack is { } id && !IsSequence && !string.Equals(id, Attacks.Average, StringComparison.OrdinalIgnoreCase) && Attacks.Find(type, id) is null)
             errors.Add($"conditions.attack_profile.attack '{id}' is not a {type} attack (known: {string.Join(", ", Attacks.For(type).Select(x => x.Id).Append(Attacks.Average).Append(Attacks.Sequence))}).");
+        if (PierceHits is < 1 or > 8) errors.Add($"conditions.attack_profile.pierce_hits must be 1..{DamageConstants.PierceHitMultipliers.Length}.");
         if (!IsSequence) return errors;
         if (Sequence is not { Count: > 0 } steps)
         {
@@ -154,9 +199,9 @@ public sealed record AttackProfile
 
     public bool Equals(AttackProfile? other) =>
         other is not null && Attack == other.Attack && HitsPerMinute == other.HitsPerMinute && AverageMv == other.AverageMv
-        && ChargedLv3Share == other.ChargedLv3Share && (Sequence ?? []).SequenceEqual(other.Sequence ?? []);
+        && ChargedLv3Share == other.ChargedLv3Share && PierceHits == other.PierceHits && (Sequence ?? []).SequenceEqual(other.Sequence ?? []);
 
-    public override int GetHashCode() => HashCode.Combine(Attack, HitsPerMinute, AverageMv, ChargedLv3Share, (Sequence ?? []).Count);
+    public override int GetHashCode() => HashCode.Combine(Attack, HitsPerMinute, AverageMv, ChargedLv3Share, PierceHits, (Sequence ?? []).Count);
 }
 
 /// <summary>
@@ -222,11 +267,55 @@ public static class ConditionToggles
 
 public readonly record struct AveragePreset(double HitsPerMinute, double AverageMv, double ChargedLv3Share);
 
+/// <summary>Raw multipliers of the bow's shot skills per kind of arrow (1 where no skill applies); see <see cref="BowShot"/>.</summary>
+public readonly record struct ShotBoosts(double Normal, double Power, double Dragon, double Tracer)
+{
+    public static ShotBoosts None => new(1, 1, 1, 1);
+
+    public double For(BowShot? shot) => shot switch
+    {
+        BowShot.Normal => Normal,
+        BowShot.Power => Power,
+        BowShot.Dragon => Dragon,
+        BowShot.Tracer => Tracer,
+        _ => 1.0,
+    };
+}
+
+/// <summary>Share of an attack's raw (MV x raw modifier) per kind of bow arrow; the rest gets no shot skill. All zero for melee attacks.</summary>
+public readonly record struct ShotShares(double Normal, double Power, double Dragon, double Tracer)
+{
+    public bool Any => Normal > 0 || Power > 0 || Dragon > 0 || Tracer > 0;
+
+    /// <summary>The attack's raw multiplier from the shot skills: each kind's share at its boost, the rest at 1.</summary>
+    public double Multiplier(ShotBoosts b) => 1.0 + Normal * (b.Normal - 1) + Power * (b.Power - 1) + Dragon * (b.Dragon - 1) + Tracer * (b.Tracer - 1);
+
+    public static ShotShares Of(IEnumerable<ResolvedHit> hits)
+    {
+        double total = 0, normal = 0, power = 0, dragon = 0, tracer = 0;
+        foreach (var h in hits)
+        {
+            var raw = h.Mv * h.Count * h.RawModifier;
+            total += raw;
+            switch (h.Shot)
+            {
+                case BowShot.Normal: normal += raw; break;
+                case BowShot.Power: power += raw; break;
+                case BowShot.Dragon: dragon += raw; break;
+                case BowShot.Tracer: tracer += raw; break;
+            }
+        }
+        return total > 0 ? new ShotShares(normal / total, power / total, dragon / total, tracer / total) : default;
+    }
+}
+
 /// <summary>One hit of an attack as it lands (<see cref="AttackProfile.ResolveHits"/>).</summary>
-/// <param name="RawModifier">Raw sharpness modifier x phial (multiplies true raw x MV / 100).</param>
+/// <param name="RawModifier">Raw sharpness modifier x phial or coating (multiplies true raw x MV / 100).</param>
 /// <param name="ElementModifier">Element modifier x element sharpness x phial (multiplies true element).</param>
-/// <param name="Notes">What changed the hit: power version, fixed sharpness, phial, Lv3 charged slash.</param>
-public sealed record ResolvedHit(string Name, int Count, double Mv, double RawModifier, double ElementModifier, bool ChargedLv3, IReadOnlyList<string> Notes);
+/// <param name="Notes">What changed the hit: power version, fixed sharpness, phial, coating, Lv3 charged slash.</param>
+/// <param name="Shot">Bow arrows: the kind, which decides the shot skill that boosts its raw (<see cref="ShotBoosts"/>).</param>
+public sealed record ResolvedHit(string Name, int Count, double Mv, double RawModifier, double ElementModifier, bool ChargedLv3, IReadOnlyList<string> Notes,
+    BowShot? Shot = null);
 
 /// <summary>
 /// The attack as the calculator uses it, per execution of the attack:
@@ -240,9 +329,10 @@ public sealed record ResolvedHit(string Name, int Count, double Mv, double RawMo
 /// <param name="ElementHitzoneRatio">The target's element hitzone / raw hitzone for the weapon's element.</param>
 /// <param name="RawHitzone">The target's raw hitzone: takes a score off the raw-hitzone-100 scale (<see cref="DamagePerExecution"/>).</param>
 /// <param name="Execution">What one execution is: "attack", "sequence" or "hit" (average-hit model).</param>
+/// <param name="Shots">Bow attacks: the share of their raw per kind of arrow, for the shot skills.</param>
 public readonly record struct ResolvedAttackProfile(
     string Name, double HitsPerMinute, double Hits, double TotalMv, double RawFactor, double ElementFactor, double Shockwaves, double ElementHitzoneRatio,
-    double RawHitzone = 100, string Execution = "attack")
+    double RawHitzone = 100, string Execution = "attack", ShotShares Shots = default)
 {
     public double SecondsPerHit => 60.0 / HitsPerMinute;
 

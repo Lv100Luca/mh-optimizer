@@ -5,6 +5,13 @@ namespace MHWildsOptimizer.Core.Damage;
 public enum SwitchAxePhial { Power, Element }
 
 /// <summary>
+/// The kind of a bow arrow, which decides the shot skill that boosts it: Normal Shots (charged shots, Flying Swallow Shot),
+/// Spread/Power Shots (Quick Shot, Power Shot, Power Volley), Piercing Shots and Special Ammo Boost (Dragon Piercer, Thousand
+/// Dragons), Special Ammo Boost alone (Tracer). Other arrows (Arc Shot, Focus Strike, melee) get no shot skill.
+/// </summary>
+public enum BowShot { Normal, Power, Dragon, Tracer, Other }
+
+/// <summary>
 /// One hit of an attack: motion value (multiplies true raw, percent) and element modifier (multiplies true element), from the
 /// motion value datamine for game version 1.040 (notes/motion_values.md). Every hit can crit; a hit uses the weapon's sharpness
 /// unless it has a <see cref="FixedSharpness"/>.
@@ -23,6 +30,12 @@ public sealed record AttackHit(string Name, double Mv, double Element = 1.0)
     public bool ChargedLv3 { get; init; }
     /// <summary>Great Sword True Charged Slash finisher: this hit replaces it when the first hit lands on a weak spot (raw hitzone x sharpness >= 45).</summary>
     public AttackHit? Power { get; init; }
+    /// <summary>Bow arrow: the shot skill that boosts it; null for hits that are not bow arrows.</summary>
+    public BowShot? Shot { get; init; }
+    /// <summary>Bow arrow that takes the bow's coating (Close-range or Power multiply it, Pierce swaps in <see cref="Pierce"/>).</summary>
+    public bool Coated { get; init; }
+    /// <summary>Bow arrow with the Pierce coating: lower MV per hit, and it hits several times (<see cref="DamageConstants.PierceHitMultipliers"/>).</summary>
+    public AttackHit? Pierce { get; init; }
 }
 
 /// <summary>A single input (<see cref="Combo"/> false) or a short combo of inputs the score can be computed for.</summary>
@@ -66,6 +79,25 @@ public static class Attacks
         [.. slashes.Select(s => Sword(s.Name, s.Mv)), AmpedExplosion(slashes.Length)];
 
     private const string AmpedNote = " Amped: every slash sets off an amped explosion (12 MV, element x1 with an Element phial, x0.35 otherwise).";
+
+    // ---------------- Bow (1.040) ----------------
+    /// <summary><paramref name="count"/> arrows of one shot that take the coating; with the Pierce coating each arrow is the pierce version.</summary>
+    private static AttackHit Arrows(string name, BowShot shot, int count, double mv, double element, double pierceMv, double pierceElement) =>
+        new(name, mv, element)
+        {
+            Count = count, Shot = shot, Coated = true,
+            Pierce = new AttackHit(name + " (Pierce)", pierceMv, pierceElement) { Count = count, Shot = shot, Coated = true },
+        };
+
+    private static readonly AttackHit ChargedShot1 = Arrows("Charged Shot Lv1", BowShot.Normal, 1, 10, 0.4, 4, 0.2);
+    private static readonly AttackHit ChargedShot2 = Arrows("Charged Shot Lv2", BowShot.Normal, 2, 11, 0.7, 5, 0.3);
+    private static readonly AttackHit ChargedShot3 = Arrows("Charged Shot Lv3", BowShot.Normal, 3, 12, 1.0, 6, 0.4);
+    private static readonly AttackHit QuickShot = Arrows("Quick Shot", BowShot.Power, 3, 10, 0.4, 4, 0.13);
+    private static readonly AttackHit PowerShot2 = Arrows("Power Shot Lv2", BowShot.Power, 4, 11, 0.67, 5, 0.2);
+    private static readonly AttackHit PowerShot3 = Arrows("Power Shot Lv3", BowShot.Power, 5, 12, 0.8, 6, 0.27);
+    private static readonly AttackHit PowerVolley1 = Arrows("Power Volley Lv1", BowShot.Power, 4, 13, 0.6, 5, 0.2);
+    private static readonly AttackHit PowerVolley2 = Arrows("Power Volley Lv2", BowShot.Power, 5, 14, 0.87, 6, 0.27);
+    private static readonly AttackHit PowerVolley3 = Arrows("Power Volley Lv3", BowShot.Power, 6, 15, 1.0, 7, 0.34);
 
     public static readonly IReadOnlyList<AttackDefinition> All =
     [
@@ -193,7 +225,20 @@ public static class Attacks
             "Axe Follow-up Heavy Slam, then Follow-up Morph Slash and its explosion (element x0.8 with an Element phial). Axe mode: no phial boost; Power Axe is not counted.",
             4, [new AttackHit("Axe Follow-up Heavy Slam 1", 32), new AttackHit("Axe Follow-up Heavy Slam 2", 90),
                 new AttackHit("Axe Follow-up Morph Slash", 123), Explosion("Follow-up Morph Slash Explosion", 120, 0.8)]) { Combo = true },
+
+        // Bow moves: every arrow of a shot is one hit; coated arrows take the bow's coating
+        new("charged-shot-1", WeaponType.Bow, "Charged Shot Lv1", "One arrow (10 MV, element x0.4)." + CoatingNote, 0.6, [ChargedShot1]),
+        new("charged-shot-2", WeaponType.Bow, "Charged Shot Lv2", "Two arrows of 11 MV (element x0.7 each)." + CoatingNote, 1.0, [ChargedShot2]),
+        new("charged-shot-3", WeaponType.Bow, "Charged Shot Lv3", "Three arrows of 12 MV (element x1 each)." + CoatingNote, 1.4, [ChargedShot3]),
+        new("quick-shot", WeaponType.Bow, "Quick Shot", "The Power Shot at charge Lv1: three arrows of 10 MV (element x0.4)." + CoatingNote, 0.8, [QuickShot]),
+        new("power-shot-2", WeaponType.Bow, "Power Shot Lv2", "Four arrows of 11 MV (element x0.67)." + CoatingNote, 1.0, [PowerShot2]),
+        new("power-shot-3", WeaponType.Bow, "Power Shot Lv3", "Five arrows of 12 MV (element x0.8)." + CoatingNote, 1.0, [PowerShot3]),
+        new("power-volley-1", WeaponType.Bow, "Power Volley Lv1", "Four arrows of 13 MV (element x0.6)." + CoatingNote, 1.2, [PowerVolley1]),
+        new("power-volley-2", WeaponType.Bow, "Power Volley Lv2", "Five arrows of 14 MV (element x0.87)." + CoatingNote, 1.2, [PowerVolley2]),
+        new("power-volley-3", WeaponType.Bow, "Power Volley Lv3", "Six arrows of 15 MV (element x1)." + CoatingNote, 1.2, [PowerVolley3]),
     ];
+
+    private const string CoatingNote = " Close-range and Power coatings multiply the arrows' raw; with the Pierce coating every arrow is a weaker pierce arrow that hits several times.";
 
     /// <summary>Example sequences to start the editor from; they are starting points, not measured optimal rotations.</summary>
     public static readonly IReadOnlyList<SequencePreset> SequencePresets =
@@ -241,6 +286,7 @@ public static class Attacks
     {
         WeaponType.GreatSword => "true-charged-slash",
         WeaponType.SwitchAxe => "full-release-slash",
+        WeaponType.Bow => "charged-shot-3",
         _ => null,
     };
 

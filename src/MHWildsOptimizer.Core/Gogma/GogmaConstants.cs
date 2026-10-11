@@ -128,6 +128,14 @@ public static class GogmaConstants
         _ => throw new ArgumentException("Sharpness reinforcements only come in tiers I and EX.", nameof(tier)),
     };
 
+    /// <summary>The Artian bow's coating follows the focus (data/gogma_mechanics.json focus_mechanic_changes, the API variants).</summary>
+    public static BowCoating BowCoatingOf(GogmaFocus focus) => focus switch
+    {
+        GogmaFocus.Attack => BowCoating.CloseRange,
+        GogmaFocus.Affinity => BowCoating.Power,
+        _ => BowCoating.Pierce,
+    };
+
     public static int AmmoReinforcement(ReinforcementTier tier) => tier switch
     {
         ReinforcementTier.I => 1,

@@ -330,6 +330,17 @@ internal sealed class CpSatSearch
         var efr = NewVar(m, Math.Min(trcf.Lb * sharp / 100_000_000, 0), trcf.Ub * sharp / 100_000_000 + 1, $"efr{side}");
         m.AddDivisionEquality(efr.Var, LinearExpr.Term(trcf.Var, sharp), 100_000_000);
 
+        // bow shot skills multiply EFR after the flat bonuses (1e-4)
+        var rawMults = All(c => (long)Math.Round(c.RawMult * S), "rmult");
+        if (rawMults.Count > 0)
+        {
+            var mult = Product(rawMults, $"rawMult{side}");
+            var boosted = NewVar(m, Math.Min(efr.Lb * mult.Lb, 0), efr.Ub * mult.Ub, $"efrMultx{side}");
+            m.AddMultiplicationEquality(boosted.Var, efr.Var, mult.Var);
+            efr = NewVar(m, Math.Min(boosted.Lb / S, 0), boosted.Ub / S + 1, $"efrMult{side}");
+            m.AddDivisionEquality(efr.Var, boosted.Var, S);
+        }
+
         var terms = new List<LinearExpr> { efr.Var };
         long lb = efr.Lb, ub = efr.Ub;
 

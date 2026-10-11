@@ -102,6 +102,12 @@ public sealed class Relevance
         Add(SkillNames.Coalescence, hasElement && c.CoalescenceActive && c.FrenzyOvercome); // only with the Gore set bonus
         Add(SkillNames.ChargeMaster, hasElement && c.ChargedAttack);
         Add(SkillNames.ElementalAbsorption, hasElement && c.ElementalAbsorptionActive);
+        // bow shot skills, for the kinds of arrows the attack shoots
+        var shots = c.Attack(weapon).Shots;
+        Add(SkillNames.NormalShots, shots.Normal > 0);
+        Add(SkillNames.SpreadPowerShots, shots.Power > 0);
+        Add(SkillNames.PiercingShots, shots.Dragon > 0);
+        Add(SkillNames.SpecialAmmoBoost, shots.Dragon > 0 || shots.Tracer > 0);
 
         var sets = new List<string>();
         void Set(string name, bool when = true) { if (when && !sets.Contains(name)) sets.Add(name); }

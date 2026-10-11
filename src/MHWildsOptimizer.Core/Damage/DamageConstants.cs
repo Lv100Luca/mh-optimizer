@@ -124,6 +124,27 @@ public static class DamageConstants
     public const double PowerPhialRaw = 1.17;
     public const double ElementPhialElement = 1.45;
 
+    // ---------------- bow ----------------
+
+    /// <summary>Close-range coating: raw multiplier on coated arrows. PENDING research.</summary>
+    public const double CloseRangeCoatingRaw = 1.2;
+    /// <summary>Power coating: raw multiplier on coated arrows. PENDING research.</summary>
+    public const double PowerCoatingRaw = 1.35;
+
+    /// <summary>
+    /// Pierce coating: raw multiplier of an arrow's 1st, 2nd, ... 8th hit as it passes through the monster (MV sheet 1.040 notes,
+    /// datamine Wp11PenetrateBottle multi-hit curve). How many hits land depends on the monster's size and the angle.
+    /// </summary>
+    public static readonly double[] PierceHitMultipliers = [1.2, 1.2, 0.9, 0.5, 0.3, 0.15, 0.1, 0.05];
+    /// <summary>Pierce hits per arrow when the attack profile names none.</summary>
+    public const int DefaultPierceHits = 3;
+
+    /// <summary>Normal Shots, Spread/Power Shots, Piercing Shots: x1.05 on the arrows they name (kiranico 105/105).</summary>
+    public const double ShotSkillMultiplier = 1.05;
+
+    /// <summary>Special Ammo Boost on Dragon Piercer, Thousand Dragons and the Tracer: x1.10 / x1.20 (kiranico 110/120).</summary>
+    public static double SpecialAmmoBoost(int level) => level switch { <= 0 => 1.0, 1 => 1.10, _ => 1.20 };
+
     // ---------------- proc damage (extra damage instances), see notes/skill_values_set_group.md ----------------
 
     // Azure Bolt bursts (Leviathan's Fury) and Scorcher (Rathalos's Flare) are deliberately not scored; their values are in the notes.

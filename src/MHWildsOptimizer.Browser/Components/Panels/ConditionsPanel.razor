@@ -163,6 +163,16 @@
                                 </Field>
                             </div>
                         }
+                        @if (weapon is { Type: WeaponType.Bow, Coating: BowCoating.Pierce })
+                        {
+                            <div class="form-grid profile">
+                                <Field Label="Pierce hits per arrow"
+                                       Hint="@($"With the Pierce coating every arrow passes through the monster and hits again, each hit weaker: x1.2, x1.2, x0.9, x0.5, then next to nothing. Big monsters and shots along the body take more hits. Default {DamageConstants.DefaultPierceHits}.")">
+                                    <OptionalNumberInput Value="@(profile.PierceHits is { } ph ? ph : (double?)null)" Preset="DamageConstants.DefaultPierceHits" Min="1" Max="8"
+                                                         ValueChanged="n => SetProfile(p => p with { PierceHits = n is { } v ? (int)Math.Round(v) : null })" />
+                                </Field>
+                            </div>
+                        }
                         @if (profile.HitsPerMinute is { } hitsPerMinute)
                         {
                             @* the input is gone; a value set before still counts for proc cooldowns, so it shows until dropped *@
@@ -219,7 +229,7 @@
                 {
                     <p class="small attack-summary">
                         <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
-                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (sharpness@(type == WeaponType.SwitchAxe ? ", phial" : "")),
+                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : "sharpness")),
                         element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
                     </p>
@@ -260,7 +270,7 @@
 
     private static string Kind(OptimizationRequest r) => r.Weapon.Spec?.Type ?? r.Weapon.Type ?? "great-sword";
 
-    private static bool IsCustom(AttackProfile p) => p.Attack is not null || p.HitsPerMinute is not null || p.AverageMv is not null || p.ChargedLv3Share is not null;
+    private static bool IsCustom(AttackProfile p) => p.Attack is not null || p.HitsPerMinute is not null || p.AverageMv is not null || p.ChargedLv3Share is not null || p.PierceHits is not null;
 
     private static WeaponType TypeOf(OptimizationRequest r)
     {
@@ -347,6 +357,7 @@
     private static RenderFragment HitTable(AttackDto attack, Core.Gogma.GogmaWeaponStats? weapon) => __builder =>
     {
         var phial = weapon?.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : (SwitchAxePhial?)null;
+        var coating = weapon?.Type == WeaponType.Bow ? weapon.Coating : null;
         <table class="table hits">
             <thead><tr><th>Hit</th><th class="num">MV</th><th class="num">Element</th><th>Notes</th></tr></thead>
             <tbody>
@@ -358,6 +369,14 @@
                     if (h.FixedSharpness is { } fs) notes.Add($"{Fmt.Slug(fs)} sharpness");
                     if (h.SwordMode && phial is { } ph) notes.Add(ph == SwitchAxePhial.Power ? $"raw ×{Num(DamageConstants.PowerPhialRaw)} (Power phial)" : $"element ×{Num(DamageConstants.ElementPhialElement)} (Element phial)");
                     if (h.ElementPhialElement is { } epx && phial is null) notes.Add($"element ×{Num(epx)} with an Element phial");
+                    if (h.Coated && coating is { } co)
+                        notes.Add(co switch
+                        {
+                            BowCoating.CloseRange => $"raw ×{Num(DamageConstants.CloseRangeCoatingRaw)} (Close-range coating)",
+                            BowCoating.Power => $"raw ×{Num(DamageConstants.PowerCoatingRaw)} (Power coating)",
+                            _ => $"Pierce coating: {Num(h.PierceMv ?? h.Mv)} MV, element ×{Num(h.PierceElement ?? h.Element)} per hit, several hits per arrow",
+                        });
+                    if (h.Shot is { } shot && ShotSkill(shot) is { } skill) notes.Add(skill);
                     <tr>
                         <td>@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")</td>
                         <td class="num">@Num(h.Mv)</td>
@@ -370,6 +389,16 @@
     };
 
     private static string Num(double n) => n.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>The shot skills that boost a kind of bow arrow.</summary>
+    private static string? ShotSkill(BowShot shot) => shot switch
+    {
+        BowShot.Normal => "Normal Shots",
+        BowShot.Power => "Spread/Power Shots",
+        BowShot.Dragon => "Piercing Shots, Special Ammo Boost",
+        BowShot.Tracer => "Special Ammo Boost",
+        _ => null,
+    };
 
     private static string Percent(double share) => Math.Round(share * 100, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
 

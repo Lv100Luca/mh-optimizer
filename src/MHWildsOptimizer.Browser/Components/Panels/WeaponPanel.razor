@@ -10,10 +10,11 @@
     var resolved = App.Resolved;
     var weaponErrors = resolved?.Errors.Where(e => e.StartsWith("Weapon", StringComparison.Ordinal)).ToList() ?? [];
     var rw = resolved?.Weapon;
+    var isBow = kind == "bow";
 
     <div class="panel two-col">
         <div class="col">
-            <Section Title="Weapon type" Hint="Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills; gunner weapons are out of scope.">
+            <Section Title="Weapon type" Hint="Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills. The Bow scores charged shots, Power Shots and its coating; bowguns are out of scope.">
                 <div class="type-grid">
                     @foreach (var t in Catalog.WeaponTypes)
                     {
@@ -41,8 +42,12 @@
                     @if (mode == SpecMode && spec is not null)
                     {
                         <div class="form-grid">
-                            <Field Label="Focus" Hint="The Artian focus decides the base raw / affinity variant.">
+                            <Field Label="Focus" Hint="@(isBow ? "The Artian focus decides the base raw / affinity variant and the bow's coating: attack Close-range, affinity Power, element Pierce." : "The Artian focus decides the base raw / affinity variant.")">
                                 <Segmented T="GogmaFocus" Value="spec.Focus" ValueChanged="focus => PatchSpec(s => s with { Focus = focus })" Options="FocusOptions(wt)" />
+                                @if (isBow)
+                                {
+                                    <p class="muted small">Coating: <b>@AttackProfile.CoatingName(Core.Gogma.GogmaConstants.BowCoatingOf(spec.Focus))</b> (from the @Fmt.TitleCase(spec.Focus) focus)</p>
+                                }
                             </Field>
 
                             <Field Label="Element">
@@ -73,7 +78,7 @@
                                 @{
                                     var slots = ReinforcementSlots(spec);
                                     var options = Catalog.Reinforcements
-                                        .Where(r => !r.GunnerOnly && (!r.NeedsElement || spec.Element != Element.None))
+                                        .Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None))
                                         .Select(r => new SelectOption(r.Value, r.Label, Fmt.TitleCase(r.Type)))
                                         .ToList();
                                 }
@@ -123,9 +128,18 @@
                                     <NumberInput T="int" Value="w.ElementDisplay" Min="10" Max="9999" Step="10" ValueChanged="v => App.PatchWeapon(x => x with { ElementDisplay = v })" />
                                 </Field>
                             }
-                            <Field Label="Sharpness the weapon attacks at">
-                                <Segmented T="SharpnessColor" Value="w.Sharpness" ValueChanged="c => App.PatchWeapon(x => x with { Sharpness = c })" Options="SharpnessOptions" />
-                            </Field>
+                            @if (isBow)
+                            {
+                                <Field Label="Coating" Hint="The bow's damage coating, as the equipment screen lists it: every bow has one of Close-range, Power and Pierce.">
+                                    <Segmented T="BowCoating" Value="@(w.Coating ?? BowCoating.Power)" ValueChanged="c => App.PatchWeapon(x => x with { Coating = c })" Options="CoatingOptions" />
+                                </Field>
+                            }
+                            else
+                            {
+                                <Field Label="Sharpness the weapon attacks at">
+                                    <Segmented T="SharpnessColor" Value="w.Sharpness" ValueChanged="c => App.PatchWeapon(x => x with { Sharpness = c })" Options="SharpnessOptions" />
+                                </Field>
+                            }
                             <Field Label="Decoration slots" Hint="Gogma weapons have three level-3 slots.">
                                 <div class="chip-row">
                                     @for (var i = 0; i < 3; i++)
@@ -205,14 +219,22 @@
                                     <b style="color: @GameIcons.ElementCss[rw.Element]">@rw.ElementDisplay @Fmt.TitleCase(rw.Element)</b>
                                 }
                             </dd>
-                            <dt><img src="@GameIcons.Sharpness" alt="" /> Sharpness</dt>
-                            <dd>
-                                <b>@(rw.Sharpness is { } sharp ? Fmt.TitleCase(sharp) : "-")</b>
-                                @if (rw.SharpnessBar is { } bar)
-                                {
-                                    <SharpnessBar Bar="bar" Bonus="rw.SharpnessBonus" />
-                                }
-                            </dd>
+                            @if (rw.Coating is { } coating)
+                            {
+                                <dt>Coating</dt>
+                                <dd><b>@AttackProfile.CoatingName(coating)</b></dd>
+                            }
+                            else
+                            {
+                                <dt><img src="@GameIcons.Sharpness" alt="" /> Sharpness</dt>
+                                <dd>
+                                    <b>@(rw.Sharpness is { } sharp ? Fmt.TitleCase(sharp) : "-")</b>
+                                    @if (rw.SharpnessBar is { } bar)
+                                    {
+                                        <SharpnessBar Bar="bar" Bonus="rw.SharpnessBonus" />
+                                    }
+                                </dd>
+                            }
                             <dt>Slots</dt>
                             <dd><Slots Numbers="rw.Slots" Kind="weapon" /></dd>
                             <dt>Rolled pair</dt>
@@ -252,6 +274,9 @@
 
     private static readonly IReadOnlyList<SegmentOption<int>> AttackPartOptions = [.. Enumerable.Range(0, 4).Select(n =>
         new SegmentOption<int>(n, n.ToString(CultureInfo.InvariantCulture), @<span>@n<small> +@(n * 5) atk · +@((3 - n) * 5)% aff</small></span>))];
+
+    private static readonly IReadOnlyList<SegmentOption<BowCoating>> CoatingOptions =
+        [.. Enum.GetValues<BowCoating>().Select(c => new SegmentOption<BowCoating>(c, AttackProfile.CoatingName(c)))];
 
     private static readonly IReadOnlyList<SegmentOption<int>> SlotOptions = [.. Enumerable.Range(0, 4).Select(n =>
         new SegmentOption<int>(n, n == 0 ? "—" : n.ToString(CultureInfo.InvariantCulture)))];
@@ -306,6 +331,7 @@
                 Element = x.Spec?.Element ?? Element.None,
                 ElementDisplay = rw?.ElementDisplay ?? 0,
                 Sharpness = SharpnessColor.White,
+                Coating = kind == "bow" ? rw?.Coating ?? BowCoating.Power : null,
             });
         }
     }
@@ -316,7 +342,7 @@
     private void SetType(string kind)
     {
         if (App.Request?.Weapon.Spec is not null) PatchSpec(s => s with { Type = kind });
-        else App.PatchWeapon(w => w with { Type = kind });
+        else App.PatchWeapon(w => w with { Type = kind, Coating = kind == "bow" ? w.Coating : null });
     }
 
     /// <summary>Element "none" drops the infusion and the element reinforcements.</summary>
