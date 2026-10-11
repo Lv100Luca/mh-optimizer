@@ -1,7 +1,8 @@
-@* The hover card of a skill: description and the ranks (the current one highlighted). *@
+@* The hover card of a skill: description and every rank, the current one highlighted. *@
 @{
     var bonus = Skill.Kind is SkillKind.Set or SkillKind.Group;
-    var current = Level is { } lv && !bonus ? Skill.Ranks.FirstOrDefault(r => r.Level == lv) : null;
+    // a level past the cap still has the top rank's effect
+    var current = Level is { } lv && !bonus ? Math.Min(lv, Skill.MaxLevel) : Level;
 }
 <div class="skilltip @Slug(Skill.Kind)">
     <div class="skilltip-head">
@@ -17,12 +18,12 @@
     {
         <p>@description</p>
     }
-    @if (bonus)
-    {
-        <ul>
-            @foreach (var r in Skill.Ranks)
-            {
-                <li class="@(r.Level == Level ? "current" : "")">
+    <ul>
+        @foreach (var r in Skill.Ranks)
+        {
+            <li class="@(r.Level == current ? "current" : "")">
+                @if (bonus)
+                {
                     <b>@(r.Name ?? $"Tier {r.Level}")</b>
                     @if (r.PiecesRequired is { } pieces)
                     {
@@ -32,23 +33,14 @@
                     {
                         <span class="muted"> · @d</span>
                     }
-                </li>
-            }
-        </ul>
-    }
-    else if (current is not null)
-    {
-        <p class="current"><b>Lv @current.Level:</b> @current.Description</p>
-    }
-    else
-    {
-        <ul>
-            @foreach (var r in Skill.Ranks)
-            {
-                <li><b>Lv @r.Level:</b> <span class="muted">@r.Description</span></li>
-            }
-        </ul>
-    }
+                }
+                else
+                {
+                    <b>Lv @r.Level:</b> <span class="muted">@r.Description</span>
+                }
+            </li>
+        }
+    </ul>
 </div>
 
 @code {

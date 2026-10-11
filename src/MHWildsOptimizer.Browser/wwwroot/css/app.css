@@ -232,7 +232,7 @@ button.chip:hover { border-color: var(--accent); }
 .skilltip p { margin: 6px 0 0; }
 .skilltip ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; }
 .skilltip .current { color: var(--accent); }
-.skilltip .current .muted { color: var(--text); }
+.skilltip .current .muted { color: inherit; }
 .kindtag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 5px; border-radius: 4px; background: var(--border); color: var(--muted); }
 .kindtag.weapon { color: var(--weapon); }
 .kindtag.armor { color: var(--armor); }
