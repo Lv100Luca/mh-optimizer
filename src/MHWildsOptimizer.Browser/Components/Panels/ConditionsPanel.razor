@@ -67,7 +67,7 @@
             <Actions>
                 <div class="btn-row">
                     <span class="muted small">@onCount of @hunt.Count on</span>
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsDefault)">Defaults</MudButton>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Conditions.DefaultFor(kind))">Defaults</MudButton>
                     <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOn)">All on</MudButton>
                     <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOff)">All off</MudButton>
                 </div>
@@ -376,6 +376,7 @@
                             BowCoating.Power => $"raw ×{Num(DamageConstants.PowerCoatingRaw)} (Power coating)",
                             _ => $"Pierce coating: {Num(h.PierceMv ?? h.Mv)} MV, element ×{Num(h.PierceElement ?? h.Element)} per hit, several hits per arrow",
                         });
+                    if (h.CriticalDistance) notes.Add($"raw ×{Num(DamageConstants.CriticalDistanceRaw)} at critical distance");
                     if (h.Shot is { } shot && ShotSkill(shot) is { } skill) notes.Add(skill);
                     <tr>
                         <td>@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")</td>

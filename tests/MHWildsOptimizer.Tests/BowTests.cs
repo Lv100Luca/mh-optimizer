@@ -57,7 +57,7 @@ public class BowTests
         var p = Attack("charged-shot-3").Attack(bow);
         Assert.Equal(3, p.Hits);
         Assert.Equal(36, p.TotalMv, Tol);
-        Assert.Equal(DamageConstants.PowerCoatingRaw, p.RawFactor, Tol);
+        Assert.Equal(DamageConstants.PowerCoatingRaw * DamageConstants.CriticalDistanceRaw, p.RawFactor, Tol);
         Assert.Equal(3 * 1.0 * 0.5 * 100 / 36, p.ElementFactor, Tol);
         Assert.Equal(1.0, p.Shots.Normal, Tol);
         Assert.Contains("Power coating", p.Name);
@@ -68,18 +68,19 @@ public class BowTests
     {
         var bow = Bow(GogmaFocus.Element, Element.Fire);
         var three = Attack("charged-shot-3").Attack(bow);
-        // three pierce arrows of 6 MV, each landing 3 times at x1.2, x1.2, x0.9
+        // three pierce arrows of 6 MV, each landing 3 times at x1.2, x1.2, x0.9 (x1.1 on average), raw x1.1 at critical distance
+        const double cd = DamageConstants.CriticalDistanceRaw;
         Assert.Equal(9, three.Hits);
         Assert.Equal(54, three.TotalMv, Tol);
-        Assert.Equal(1.1, three.RawFactor, Tol);
-        Assert.Equal(9 * 0.4 * 0.5 * 100 / 54, three.ElementFactor, Tol);
+        Assert.Equal(1.1 * cd, three.RawFactor, Tol);
+        Assert.Equal(9 * 0.4 * 1.1 * 0.5 * 100 / 54, three.ElementFactor, Tol);
 
         var one = Attack("charged-shot-3", pierceHits: 1).Attack(bow);
         Assert.Equal((3, 18), (one.Hits, one.TotalMv));
-        Assert.Equal(1.2, one.RawFactor, Tol);
+        Assert.Equal(1.2 * cd, one.RawFactor, Tol);
         // the eighth hit and beyond add next to nothing
         var eight = Attack("charged-shot-3", pierceHits: 8).Attack(bow);
-        Assert.Equal(DamageConstants.PierceHitMultipliers.Sum() * 18, eight.RawFactor * eight.TotalMv, Tol);
+        Assert.Equal(DamageConstants.PierceHitMultipliers.Sum() * 18 * cd, eight.RawFactor * eight.TotalMv, Tol);
     }
 
     [Fact]
@@ -128,6 +129,47 @@ public class BowTests
         Assert.DoesNotContain("Special Ammo Boost", charged);
         var gs = new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }.Resolve(TestData.Data);
         Assert.DoesNotContain("Normal Shots", Relevance.Build(gs, targets, Conditions.AllOn, TestData.Data).Skills);
+    }
+
+    [Fact]
+    public void DashDanceIsTheDefaultAttack()
+    {
+        var bow = Bow(GogmaFocus.Attack, Element.Dragon);
+        var p = (Conditions.DefaultFor("bow") with { Target = new Target { RawHitzone = 50, ElementHitzone = 25 } }).Attack(bow);
+        // Charged Shot Lv3 (3 x 12), Power Shot Lv3 (5 x 12), Power Volley Lv3 (6 x 15), Close-range coating and critical distance on every arrow
+        Assert.StartsWith("Dash dance", p.Name);
+        Assert.Contains("Close-range coating", p.Name);
+        Assert.Equal(14, p.Hits);
+        Assert.Equal(186, p.TotalMv, Tol);
+        Assert.Equal(DamageConstants.CloseRangeCoatingRaw * DamageConstants.CriticalDistanceRaw, p.RawFactor, Tol);
+        Assert.Equal((3 * 1.0 + 5 * 0.8 + 6 * 1.0) * 0.5 * 100 / 186, p.ElementFactor, Tol);
+        Assert.Equal(36.0 / 186, p.Shots.Normal, Tol);
+        Assert.Equal(150.0 / 186, p.Shots.Power, Tol);
+        Assert.Equal(14 * 60 / 3.11, p.HitsPerMinute, 1e-6);
+    }
+
+    [Fact]
+    public void BowDefaultsLeaveOutMaximumMightAndCountChargeMaster()
+    {
+        var d = Conditions.DefaultFor("bow");
+        Assert.False(d.StaminaFull);
+        Assert.True(d.ChargedAttack);
+        Assert.Equal((true, false), (Conditions.DefaultFor("great-sword").StaminaFull, Conditions.DefaultFor("great-sword").ChargedAttack));
+        // a profile without a bow preset starts bows from these defaults
+        Assert.Equal((false, true), (new ProfileSettings().PresetFor("bow").StaminaFull, new ProfileSettings().PresetFor("bow").ChargedAttack));
+    }
+
+    [Fact]
+    public void BowSequencePresetsUseBowAttacks()
+    {
+        var presets = Attacks.SequencePresetsFor(WeaponType.Bow);
+        Assert.Contains(presets, s => s.Id == "ten-shot-combo");
+        foreach (var preset in presets)
+            Assert.Empty(new AttackProfile { Attack = Attacks.Sequence, Sequence = preset.Steps }.Validate(WeaponType.Bow));
+        // ramp-up, then the dash dance twice: 42 arrows in about 10.2 s
+        var ten = new AttackProfile { Attack = Attacks.Sequence, Sequence = presets.Single(s => s.Id == "ten-shot-combo").Steps }.Resolve(Bow(GogmaFocus.Attack), new Target());
+        Assert.Equal(42, ten.Hits);
+        Assert.Equal(42 * 60 / 10.16, ten.HitsPerMinute, 1e-6);
     }
 
     /// <summary>The CP model's composition of the shot skills matches the calculator, alone and on a sequence of both kinds of arrows.</summary>

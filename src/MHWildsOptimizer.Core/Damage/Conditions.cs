@@ -129,6 +129,17 @@ public sealed record Conditions
 
     public static Conditions Default => new();
 
+    /// <summary>
+    /// The defaults for a weapon type (API kind), where they differ from <see cref="Default"/>. Bow: charging and the Charging
+    /// Sidestep cost stamina, so the dash dance never has full stamina (Maximum Might); its charged shots, Power Shots and Power
+    /// Volleys are charged attacks (Charge Master).
+    /// </summary>
+    public static Conditions DefaultFor(string weaponKind) => weaponKind switch
+    {
+        "bow" => Default with { StaminaFull = false, ChargedAttack = true },
+        _ => Default,
+    };
+
     /// <summary>Every conditional skill counted as active (a theoretical maximum: the better of full and red/low health, Resonance on its Local phase).</summary>
     public static Conditions AllOn => new()
     {

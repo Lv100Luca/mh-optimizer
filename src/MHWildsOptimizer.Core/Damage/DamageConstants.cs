@@ -126,17 +126,31 @@ public static class DamageConstants
 
     // ---------------- bow ----------------
 
-    /// <summary>Close-range coating: raw multiplier on coated arrows. PENDING research.</summary>
-    public const double CloseRangeCoatingRaw = 1.2;
-    /// <summary>Power coating: raw multiplier on coated arrows. PENDING research.</summary>
+    /// <summary>
+    /// Close-range coating: raw x1.4 on coated arrows, at every charge level (datamine Wp11 GlobalActionParam
+    /// CloseBottleAttackUpRate 1.4, unchanged since launch). It also shortens the arrows' range (x0.6). Raw only: the field is an
+    /// attack rate and no element field exists (VERIFY in game).
+    /// </summary>
+    public const double CloseRangeCoatingRaw = 1.4;
+    /// <summary>Power coating: raw x1.35 on coated arrows (StrongBottleAttackUpRate, 1.30 until TU4 / 1.040). Raw only, like Close-range.</summary>
     public const double PowerCoatingRaw = 1.35;
+    /// <summary>
+    /// Critical distance: arrows inside their sweet spot deal raw x1.1 (datamine shell params; x0.8 too close, x0.2 too far,
+    /// x0.5 too far for Thousand Dragons). Arrows without a window (Tracer, Arc Shot) and Tracer-guided shots stay at 1.0.
+    /// The model assumes every shot lands inside the window. Raw only (an attack rate; VERIFY).
+    /// </summary>
+    public const double CriticalDistanceRaw = 1.1;
 
     /// <summary>
-    /// Pierce coating: raw multiplier of an arrow's 1st, 2nd, ... 8th hit as it passes through the monster (MV sheet 1.040 notes,
-    /// datamine Wp11PenetrateBottle multi-hit curve). How many hits land depends on the monster's size and the angle.
+    /// Pierce coating: damage multiplier of an arrow's 1st, 2nd, ... 8th hit as it passes through the monster (datamine
+    /// Wp11PenetrateBottle_MultiHitCurve; status buildup has a curve of its own). How many hits land depends on the monster's size
+    /// and the angle. Applied to raw and element alike: a "damage" curve next to a separate status curve suggests so (VERIFY).
     /// </summary>
     public static readonly double[] PierceHitMultipliers = [1.2, 1.2, 0.9, 0.5, 0.3, 0.15, 0.1, 0.05];
-    /// <summary>Pierce hits per arrow when the attack profile names none.</summary>
+    /// <summary>
+    /// Pierce hits per arrow when the attack profile names none: a large monster. The one count found (Steam, pre-TU1) was about
+    /// 1.9 hits per arrow on Nerscylla, a mid-sized monster; small monsters take 1-2.
+    /// </summary>
     public const int DefaultPierceHits = 3;
 
     /// <summary>Normal Shots, Spread/Power Shots, Piercing Shots: x1.05 on the arrows they name (kiranico 105/105).</summary>

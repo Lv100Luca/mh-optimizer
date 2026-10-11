@@ -127,8 +127,8 @@ public sealed partial class AppState : IDisposable
 
     public string WeaponKind => Request is { } r ? ProfileRules.WeaponKind(r) : "great-sword";
 
-    /// <summary>The condition preset of a weapon type (the catalog defaults when the profile has none).</summary>
-    public Conditions PresetFor(string kind) => Presets.GetValueOrDefault(kind) ?? Catalog.ConditionsDefault;
+    /// <summary>The condition preset of a weapon type (the type's defaults when the profile has none).</summary>
+    public Conditions PresetFor(string kind) => Presets.GetValueOrDefault(kind) ?? Conditions.DefaultFor(kind);
 
     // ---------------------------------------------------------------- start-up and routing
 

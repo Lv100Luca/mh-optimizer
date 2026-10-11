@@ -36,6 +36,8 @@ public sealed record AttackHit(string Name, double Mv, double Element = 1.0)
     public bool Coated { get; init; }
     /// <summary>Bow arrow with the Pierce coating: lower MV per hit, and it hits several times (<see cref="DamageConstants.PierceHitMultipliers"/>).</summary>
     public AttackHit? Pierce { get; init; }
+    /// <summary>Bow arrow with a critical distance window: raw x<see cref="DamageConstants.CriticalDistanceRaw"/> inside it (every shot is assumed inside).</summary>
+    public bool CriticalDistance { get; init; }
 }
 
 /// <summary>A single input (<see cref="Combo"/> false) or a short combo of inputs the score can be computed for.</summary>
@@ -49,7 +51,7 @@ public sealed record AttackDefinition(string Id, WeaponType Type, string Name, s
 /// <summary>A ready-made attack sequence to start from (the sequence editor loads its steps).</summary>
 public sealed record SequencePreset(string Id, WeaponType Type, string Name, string Description, IReadOnlyList<SequenceStep> Steps);
 
-/// <summary>The attacks the attack picker and the sequence editor offer (Great Sword and Switch Axe for now).</summary>
+/// <summary>The attacks the attack picker and the sequence editor offer (Great Sword, Switch Axe and Bow for now).</summary>
 public static class Attacks
 {
     /// <summary>The attack id of the average-hit model: every hit is one element hit of the profile's average MV.</summary>
@@ -85,8 +87,8 @@ public static class Attacks
     private static AttackHit Arrows(string name, BowShot shot, int count, double mv, double element, double pierceMv, double pierceElement) =>
         new(name, mv, element)
         {
-            Count = count, Shot = shot, Coated = true,
-            Pierce = new AttackHit(name + " (Pierce)", pierceMv, pierceElement) { Count = count, Shot = shot, Coated = true },
+            Count = count, Shot = shot, Coated = true, CriticalDistance = true,
+            Pierce = new AttackHit(name + " (Pierce)", pierceMv, pierceElement) { Count = count, Shot = shot, Coated = true, CriticalDistance = true },
         };
 
     private static readonly AttackHit ChargedShot1 = Arrows("Charged Shot Lv1", BowShot.Normal, 1, 10, 0.4, 4, 0.2);
@@ -95,9 +97,13 @@ public static class Attacks
     private static readonly AttackHit QuickShot = Arrows("Quick Shot", BowShot.Power, 3, 10, 0.4, 4, 0.13);
     private static readonly AttackHit PowerShot2 = Arrows("Power Shot Lv2", BowShot.Power, 4, 11, 0.67, 5, 0.2);
     private static readonly AttackHit PowerShot3 = Arrows("Power Shot Lv3", BowShot.Power, 5, 12, 0.8, 6, 0.27);
-    private static readonly AttackHit PowerVolley1 = Arrows("Power Volley Lv1", BowShot.Power, 4, 13, 0.6, 5, 0.2);
     private static readonly AttackHit PowerVolley2 = Arrows("Power Volley Lv2", BowShot.Power, 5, 14, 0.87, 6, 0.27);
     private static readonly AttackHit PowerVolley3 = Arrows("Power Volley Lv3", BowShot.Power, 6, 15, 1.0, 7, 0.34);
+    // Flying Swallow Shot fires the Power Shot arrows (3 / 4 / 5 by charge level) but counts as normal arrows for Normal Shots
+    private static readonly AttackHit FlyingSwallow1 = Arrows("Flying Swallow Shot Lv1", BowShot.Normal, 3, 10, 0.4, 4, 0.13);
+    private static readonly AttackHit FlyingSwallow2 = Arrows("Flying Swallow Shot Lv2", BowShot.Normal, 4, 11, 0.67, 5, 0.2);
+    private static readonly AttackHit FlyingSwallow3 = Arrows("Flying Swallow Shot Lv3", BowShot.Normal, 5, 12, 0.8, 6, 0.27);
+    private static readonly AttackHit ThousandDragons = Arrows("Thousand Dragons", BowShot.Dragon, 6, 25, 0.5, 13, 0.5);
 
     public static readonly IReadOnlyList<AttackDefinition> All =
     [
@@ -226,19 +232,33 @@ public static class Attacks
             4, [new AttackHit("Axe Follow-up Heavy Slam 1", 32), new AttackHit("Axe Follow-up Heavy Slam 2", 90),
                 new AttackHit("Axe Follow-up Morph Slash", 123), Explosion("Follow-up Morph Slash Explosion", 120, 0.8)]) { Combo = true },
 
-        // Bow moves: every arrow of a shot is one hit; coated arrows take the bow's coating
-        new("charged-shot-1", WeaponType.Bow, "Charged Shot Lv1", "One arrow (10 MV, element x0.4)." + CoatingNote, 0.6, [ChargedShot1]),
-        new("charged-shot-2", WeaponType.Bow, "Charged Shot Lv2", "Two arrows of 11 MV (element x0.7 each)." + CoatingNote, 1.0, [ChargedShot2]),
-        new("charged-shot-3", WeaponType.Bow, "Charged Shot Lv3", "Three arrows of 12 MV (element x1 each)." + CoatingNote, 1.4, [ChargedShot3]),
-        new("quick-shot", WeaponType.Bow, "Quick Shot", "The Power Shot at charge Lv1: three arrows of 10 MV (element x0.4)." + CoatingNote, 0.8, [QuickShot]),
-        new("power-shot-2", WeaponType.Bow, "Power Shot Lv2", "Four arrows of 11 MV (element x0.67)." + CoatingNote, 1.0, [PowerShot2]),
-        new("power-shot-3", WeaponType.Bow, "Power Shot Lv3", "Five arrows of 12 MV (element x0.8)." + CoatingNote, 1.0, [PowerShot3]),
-        new("power-volley-1", WeaponType.Bow, "Power Volley Lv1", "Four arrows of 13 MV (element x0.6)." + CoatingNote, 1.2, [PowerVolley1]),
-        new("power-volley-2", WeaponType.Bow, "Power Volley Lv2", "Five arrows of 14 MV (element x0.87)." + CoatingNote, 1.2, [PowerVolley2]),
-        new("power-volley-3", WeaponType.Bow, "Power Volley Lv3", "Six arrows of 15 MV (element x1)." + CoatingNote, 1.2, [PowerVolley3]),
+        // Bow moves: every arrow of a shot is one hit. Charge levels as the game counts them internally: Lv1 (no glow) to Lv3.
+        // Power Shot and Power Volley fire one level above the charge they follow (capped at Lv3): Lv2 after a Lv1 shot.
+        new("charged-shot-1", WeaponType.Bow, "Charged Shot Lv1", "One arrow of 10 MV (element x0.4)." + ArrowNote, 0.8, [ChargedShot1]),
+        new("charged-shot-2", WeaponType.Bow, "Charged Shot Lv2", "Two arrows of 11 MV (element x0.7 each)." + ArrowNote, 0.8, [ChargedShot2]),
+        new("charged-shot-3", WeaponType.Bow, "Charged Shot Lv3", "Three arrows of 12 MV (element x1 each)." + ArrowNote, 0.8, [ChargedShot3]),
+        new("quick-shot", WeaponType.Bow, "Quick Shot", "The Power Shot without a shot before it: three arrows of 10 MV (element x0.4)." + ArrowNote, 0.7, [QuickShot]),
+        new("power-shot-2", WeaponType.Bow, "Power Shot Lv2", "After a Lv1 shot: four arrows of 11 MV (element x0.67), fanned out, so stay close for all to hit." + ArrowNote, 0.75, [PowerShot2]),
+        new("power-shot-3", WeaponType.Bow, "Power Shot Lv3", "After a Lv2 or Lv3 shot: five arrows of 12 MV (element x0.8), fanned out, so stay close for all to hit." + ArrowNote, 0.75, [PowerShot3]),
+        new("power-volley-2", WeaponType.Bow, "Power Volley Lv2", "After a Power Shot Lv2: five arrows of 14 MV (element x0.87)." + ArrowNote, 1.6, [PowerVolley2]),
+        new("power-volley-3", WeaponType.Bow, "Power Volley Lv3", "After a Power Shot Lv3: six arrows of 15 MV (element x1)." + ArrowNote, 1.6, [PowerVolley3]),
+        new("flying-swallow-shot-1", WeaponType.Bow, "Flying Swallow Shot Lv1", "After a Charging Sidestep: three arrows of 10 MV (element x0.4). Normal Shots boosts it." + ArrowNote, 1.2, [FlyingSwallow1]),
+        new("flying-swallow-shot-2", WeaponType.Bow, "Flying Swallow Shot Lv2", "After a Charging Sidestep: four arrows of 11 MV (element x0.67). Normal Shots boosts it." + ArrowNote, 1.2, [FlyingSwallow2]),
+        new("flying-swallow-shot-3", WeaponType.Bow, "Flying Swallow Shot Lv3", "After a Charging Sidestep: five arrows of 12 MV (element x0.8). Normal Shots boosts it." + ArrowNote, 1.2, [FlyingSwallow3]),
+        new("thousand-dragons", WeaponType.Bow, "Thousand Dragons", "Six arrows of 25 MV (element x0.5) at point blank (critical distance only to 10 m); costs stamina, no gauge. Piercing Shots and Special Ammo Boost boost it." + ArrowNote, 2.0, [ThousandDragons]),
+        // Bow combos (loop times from the Math Hunter calculator presets)
+        new("dash-dance", WeaponType.Bow, "Dash dance: Charged Shot, Power Shot, Power Volley",
+            "The standard loop at full charge: Charging Sidestep, Charged Shot Lv3, Power Shot Lv3, Power Volley Lv3 (14 arrows, about 3.1 s); the sidestep keeps the charge. All arrows are assumed to hit (stay close for the fanned-out Power Shot and Volley)." + ArrowNote,
+            3.11, [ChargedShot3, PowerShot3, PowerVolley3]) { Combo = true },
+        new("shot-power-shot", WeaponType.Bow, "Charged Shot into Power Shot",
+            "The short-window loop: Charging Sidestep, Charged Shot Lv3, Power Shot Lv3, skipping the Power Volley's long recovery." + ArrowNote,
+            1.5, [ChargedShot3, PowerShot3]) { Combo = true },
+        new("ramp-up", WeaponType.Bow, "Ramp-up from no charge",
+            "Charged Shot Lv1, Charged Shot Lv2, Power Shot Lv3, Power Volley Lv3: every shot raises the next one's charge (a Discerning Dodge skips this, going straight to Lv3)." + ArrowNote,
+            3.94, [ChargedShot1, ChargedShot2, PowerShot3, PowerVolley3]) { Combo = true },
     ];
 
-    private const string CoatingNote = " Close-range and Power coatings multiply the arrows' raw; with the Pierce coating every arrow is a weaker pierce arrow that hits several times.";
+    private const string ArrowNote = " Raw x1.1 at critical distance; Close-range (x1.4) and Power (x1.35) coatings multiply the raw, with the Pierce coating every arrow is a weaker pierce arrow that hits several times.";
 
     /// <summary>Example sequences to start the editor from; they are starting points, not measured optimal rotations.</summary>
     public static readonly IReadOnlyList<SequencePreset> SequencePresets =
@@ -259,6 +279,18 @@ public static class Attacks
                 new SequenceStep { Attack = "full-release-slash" },
                 new SequenceStep { Attack = "axe-spiral-burst-slash" },
                 new SequenceStep { Attack = "sword-morph-double-slash", Repeat = 2 },
+            ]),
+        new("ten-shot-combo", WeaponType.Bow, "Ten-shot combo",
+            "Ramp-up from no charge, then the dash dance twice: 10 shots, 42 arrows. The benchmark combo of community bow build comparisons (Math Hunter, Grand Sky Ace).",
+            [
+                new SequenceStep { Attack = "ramp-up" },
+                new SequenceStep { Attack = "dash-dance", Repeat = 2 },
+            ]),
+        new("dash-dance-thousand-dragons", WeaponType.Bow, "Dash dance into Thousand Dragons",
+            "A burst on a downed monster: the dash dance, then Thousand Dragons at point blank (not a charged attack, so no Charge Master).",
+            [
+                new SequenceStep { Attack = "dash-dance" },
+                new SequenceStep { Attack = "thousand-dragons", Conditions = new() { ["charged_attack"] = false } },
             ]),
         new("sword-uptime-loop", WeaponType.SwitchAxe, "Sword uptime into Full Release",
             "Amped sword combo twice, Full Release Slash, then Follow-up Heavy Slam into Follow-up Morph Slash back to sword.",
@@ -286,7 +318,7 @@ public static class Attacks
     {
         WeaponType.GreatSword => "true-charged-slash",
         WeaponType.SwitchAxe => "full-release-slash",
-        WeaponType.Bow => "charged-shot-3",
+        WeaponType.Bow => "dash-dance",
         _ => null,
     };
 

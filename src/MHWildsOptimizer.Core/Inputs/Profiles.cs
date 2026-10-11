@@ -17,7 +17,7 @@ public sealed record ProfileSettings
     /// <summary>Named custom sequences per weapon type (API kind), in the order they were saved.</summary>
     public Dictionary<string, List<SavedSequence>> Sequences { get; init; } = new();
 
-    public Conditions PresetFor(string weaponKind) => ConditionPresets.TryGetValue(weaponKind, out var c) ? c : Conditions.Default;
+    public Conditions PresetFor(string weaponKind) => ConditionPresets.TryGetValue(weaponKind, out var c) ? c : Conditions.DefaultFor(weaponKind);
 }
 
 /// <summary>

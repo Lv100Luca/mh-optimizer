@@ -46,6 +46,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
     [Theory]
     [InlineData("long sword")]
     [InlineData("great sword sequence")]
+    [InlineData("bow dash dance")]
     public void CpSatMatchesAnExhaustiveEnumeration(string name)
     {
         var data = TestData.Data;
@@ -70,6 +71,12 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
                     ],
                 },
             };
+        }
+        if (name == "bow dash dance")
+        {
+            // Spread/Power Shots (a 3-slot weapon jewel) boosts the Power Shot and Volley share of the loop: the shot-skill multiplier in the CP model
+            weapon = weapon with { Type = "bow", Attack = 264, Slots = [3], Coating = BowCoating.Power };
+            conditions = conditions with { AttackProfile = new AttackProfile { Attack = "dash-dance" } };
         }
         var excluded = data.Armor.Where(a => a.Rarity >= 7 && a.Set is not null && !KeptSets.Contains(a.Set)).Select(a => a.Set!).Distinct().ToList();
         var request = new OptimizationRequest

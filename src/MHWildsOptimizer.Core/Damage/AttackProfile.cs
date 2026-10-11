@@ -129,6 +129,11 @@ public sealed record AttackProfile
             if (eleMult != 1.0) notes.Add(FormattableString.Invariant($"Element phial element x{eleMult}"));
             if (h.Coated && coating is { } c)
                 (h, count, rawMult, eleMult, eleMod) = Coat(h, c, pierceHits ?? DamageConstants.DefaultPierceHits, notes);
+            if (h.CriticalDistance)
+            {
+                rawMult *= DamageConstants.CriticalDistanceRaw;
+                notes.Add(FormattableString.Invariant($"critical distance raw x{DamageConstants.CriticalDistanceRaw}"));
+            }
             if (h.ChargedLv3) notes.Add("Lv3 charged slash");
             result.Add(new ResolvedHit(h.Name, count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes, h.Shot));
         }
@@ -136,8 +141,8 @@ public sealed record AttackProfile
     }
 
     /// <summary>
-    /// A coated bow arrow: Close-range and Power coatings multiply it; with the Pierce coating it becomes the pierce arrow, which
-    /// lands <paramref name="pierceHits"/> times per arrow, the raw of each hit decaying (<see cref="DamageConstants.PierceHitMultipliers"/>).
+    /// A coated bow arrow: Close-range and Power coatings multiply its raw; with the Pierce coating it becomes the pierce arrow, which
+    /// lands <paramref name="pierceHits"/> times per arrow, each hit weaker (<see cref="DamageConstants.PierceHitMultipliers"/>).
     /// </summary>
     private static (AttackHit Hit, int Count, double RawMult, double EleMult, double EleMod) Coat(AttackHit h, BowCoating coating, int pierceHits, List<string> notes)
     {
@@ -146,9 +151,9 @@ public sealed record AttackProfile
             case BowCoating.Pierce when h.Pierce is { } p:
             {
                 var n = Math.Clamp(pierceHits, 1, DamageConstants.PierceHitMultipliers.Length);
-                var raw = DamageConstants.PierceHitMultipliers.Take(n).Average();
-                notes.Add(FormattableString.Invariant($"Pierce coating: {n} hits per arrow, raw x{raw:0.###} on average"));
-                return (p, p.Count * n, raw, 1.0, p.Element);
+                var curve = DamageConstants.PierceHitMultipliers.Take(n).Average();
+                notes.Add(FormattableString.Invariant($"Pierce coating: {n} hits per arrow, x{curve:0.###} on average"));
+                return (p, p.Count * n, curve, curve, p.Element);
             }
             case BowCoating.CloseRange:
                 notes.Add(FormattableString.Invariant($"Close-range coating raw x{DamageConstants.CloseRangeCoatingRaw}"));
