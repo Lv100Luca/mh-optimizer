@@ -138,4 +138,33 @@ public class RequestTests
         Assert.Contains(RequestLoader.Resolve(excluded, TestData.Data, RepoRoot).Errors, e => e.Contains("'Blangonga's Spirit' needs 2 pieces but only 1 can carry it"));
         Assert.Empty(RequestLoader.Resolve(excluded with { Options = new OptimizerOptions() }, TestData.Data, RepoRoot).Errors);
     }
+
+    [Fact]
+    public void AllowedArmorRestrictsOnlyTheKindsItLists()
+    {
+        var data = TestData.Data;
+        var blango = data.Armor.Where(a => a.Set == "Blango α").ToList();
+        var head = blango.Single(a => a.Piece == ArmorPieceKind.Head);
+        var chest = blango.Single(a => a.Piece == ArmorPieceKind.Chest);
+        var options = new OptimizerOptions { MinRarity = 5, IncludeArmor = [head.Name, chest.Name] };
+
+        var allowed = options.AllowedArmor(data.Armor);
+        Assert.Equal([head], allowed.Where(a => a.Piece == ArmorPieceKind.Head));
+        Assert.Equal([chest], allowed.Where(a => a.Piece == ArmorPieceKind.Chest));
+        Assert.Equal(new OptimizerOptions { MinRarity = 5 }.AllowedArmor(data.Armor).Count(a => a.Piece == ArmorPieceKind.Legs),
+                     allowed.Count(a => a.Piece == ArmorPieceKind.Legs));
+
+        // the excluded sets still apply: excluding the set leaves no head, which is an error
+        var request = new OptimizationRequest
+        {
+            Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000 },
+            Talismans = new TalismanSettings { IncludeCraftable = false },
+            Options = options with { ExcludeSets = ["Blango α"], IncludeArmor = [head.Name, "Imaginary Helm"] },
+        };
+        var r = RequestLoader.Resolve(request, data, RepoRoot);
+        Assert.Contains(r.Warnings, w => w.Contains($"'{head.Name}' is in an excluded set"));
+        Assert.Contains(r.Warnings, w => w.Contains("no armor piece named 'Imaginary Helm'"));
+        Assert.Contains(r.Errors, e => e.Contains("No head armor is left"));
+        Assert.Empty(RequestLoader.Resolve(request with { Options = options }, data, RepoRoot).Errors);
+    }
 }

@@ -21,6 +21,14 @@
         .Where(s => q == "" || s.Name.ToLowerInvariant().Contains(q) || s.SetBonus.Any(b => b.ToLowerInvariant().Contains(q)) || (s.GroupSkill ?? "").ToLowerInvariant().Contains(q))
         .ToList();
     var used = Store.StorageUsed();
+    var included = o.IncludeArmor.ToHashSet();
+    var armorWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.include_armor")).ToList() ?? [];
+    var pq = _pieceQuery.Trim().ToLowerInvariant();
+    List<ArmorEntry> matches = pq == "" ? [] : Cat.ArmorByName.Values
+        .Where(p => p.Rarity >= o.MinRarity && (p.Name.ToLowerInvariant().Contains(pq) || p.Set.ToLowerInvariant().Contains(pq)))
+        .OrderBy(p => p.Set).ThenBy(p => p.Kind)
+        .Take(60)
+        .ToList();
 
     <div class="panel two-col">
         <div class="col">
@@ -76,6 +84,76 @@
         </div>
 
         <div class="col">
+            <Section Key="allowed-armor" Title="@($"Allowed armor ({o.IncludeArmor.Count})")"
+                     Hint="Optimize around armor you own or wear: an armor kind with pieces listed here only uses those, kinds without stay open. The minimum rarity and the excluded sets below still apply.">
+                <Actions>
+                    @if (o.IncludeArmor.Count > 0)
+                    {
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Patch(x => x with { IncludeArmor = [] })">Clear</MudButton>
+                    }
+                </Actions>
+                <ChildContent>
+                    @foreach (var w in armorWarnings)
+                    {
+                        <p @key="w" class="warn small">@w</p>
+                    }
+                    @if (App.Builds.Count > 0)
+                    {
+                        <div class="chip-row allow-from">
+                            <span class="muted small">Use the armor of</span>
+                            @foreach (var b in App.Builds)
+                            {
+                                <button @key="b" class="chip" title="Allow exactly the armor pieces of this build" @onclick="() => AllowBuild(b)">@b.Name</button>
+                            }
+                        </div>
+                    }
+                    <div class="allow-kinds">
+                        @foreach (var k in Enum.GetValues<ArmorPieceKind>())
+                        {
+                            var pieces = o.IncludeArmor.Where(n => Cat.ArmorByName.TryGetValue(n, out var e) && e.Kind == k).ToList();
+                            <div @key="k" class="allow-kind">
+                                <span class="muted small allow-kind-name">@k</span>
+                                <span class="chip-row">
+                                    @if (pieces.Count == 0)
+                                    {
+                                        <span class="muted small">any</span>
+                                    }
+                                    @foreach (var n in pieces)
+                                    {
+                                        var e = Cat.ArmorByName[n];
+                                        <span @key="n" class="chip">
+                                            <img src="@GameIcons.Armor(k, e.Rarity)" alt="" width="18" height="18" />@n
+                                            <button class="linklike" title="Remove" @onclick="() => TogglePiece(n)">×</button>
+                                        </span>
+                                    }
+                                </span>
+                            </div>
+                        }
+                    </div>
+                    <SearchBox Value="@_pieceQuery" ValueChanged="v => _pieceQuery = v ?? string.Empty" Placeholder="Search armor pieces or sets to allow…" />
+                    @if (pq != "")
+                    {
+                        <div class="setlist">
+                            @foreach (var p in matches)
+                            {
+                                <label @key="p.Name" class="setrow allow">
+                                    <input type="checkbox" checked="@included.Contains(p.Name)" @onchange="() => TogglePiece(p.Name)" />
+                                    <img class="icon" src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" width="22" height="22" />
+                                    <span class="setmain">
+                                        <span class="setname">@p.Name <RarityBadge Rarity="p.Rarity" /></span>
+                                        <span class="muted small">@p.Kind · @p.Set</span>
+                                    </span>
+                                </label>
+                            }
+                            @if (matches.Count == 0)
+                            {
+                                <p class="muted small allow-none">No pieces match.</p>
+                            }
+                        </div>
+                    }
+                </ChildContent>
+            </Section>
+
             <Section Key="excluded-sets" Title="@($"Excluded armor sets ({o.ExcludeSets.Count})")"
                      Hint="Leave out sets you do not own, e.g. event or collaboration gear. Only sets at or above the minimum rarity are listed.">
                 <Actions>
@@ -138,6 +216,19 @@
         chars < 1024 * 1024 ? $"{Math.Ceiling(chars / 1024.0)} KB" : $"{(chars / (1024.0 * 1024)).ToString("0.0", CultureInfo.InvariantCulture)} MB";
 
     private void Patch(Func<OptimizerOptions, OptimizerOptions> fn) => App.PatchOptions(fn);
+
+    private string _pieceQuery = "";
+
+    private void TogglePiece(string name) => Patch(o => o with
+    {
+        IncludeArmor = o.IncludeArmor.Contains(name) ? o.IncludeArmor.Where(n => n != name).ToList() : [.. o.IncludeArmor, name],
+    });
+
+    /// <summary>Allows exactly the build's armor: every kind it wears is restricted to that piece.</summary>
+    private void AllowBuild(BuildInput b) => Patch(o => o with
+    {
+        IncludeArmor = new[] { b.Head, b.Chest, b.Arms, b.Waist, b.Legs }.Where(a => a is not null).Select(a => a!.Piece).ToList(),
+    });
 
     private void ToggleSet(string name) => Patch(o => o with
     {

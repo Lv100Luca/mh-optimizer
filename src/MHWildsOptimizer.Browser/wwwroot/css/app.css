@@ -332,6 +332,13 @@ dl.stats dd { margin: 0; }
 .setrow:hover { background: var(--panel-2); }
 .setrow.excluded { opacity: 0.55; text-decoration: line-through; }
 .setrow input { accent-color: var(--err); }
+.setrow.allow input { accent-color: var(--ok); }
+.allow-from { margin-bottom: 10px; }
+.allow-kinds { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.allow-kind { display: flex; align-items: center; gap: 10px; }
+.allow-kind-name { width: 48px; flex: none; }
+.allow-kind .chip .linklike { padding: 0 2px; line-height: 1; }
+.allow-none { padding: 6px 10px; margin: 0; }
 .setmain { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
 .setname { font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .setinfo { display: flex; flex-wrap: wrap; gap: 4px 10px; }

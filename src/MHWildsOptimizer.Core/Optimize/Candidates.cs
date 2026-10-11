@@ -26,12 +26,12 @@ public static class Candidates
 
     public static Dictionary<ArmorPieceKind, List<ArmorCandidate>> Armor(GameData data, Relevance rel, OptimizerOptions options)
     {
-        var excluded = options.ExcludeSets.ToHashSet();
+        var allowed = options.AllowedArmor(data.Armor);
         var result = new Dictionary<ArmorPieceKind, List<ArmorCandidate>>();
         foreach (var kind in Enum.GetValues<ArmorPieceKind>())
         {
-            var all = data.Armor
-                .Where(a => a.Piece == kind && a.Rarity >= options.MinRarity && (a.Set is null || !excluded.Contains(a.Set)))
+            var all = allowed
+                .Where(a => a.Piece == kind)
                 .Select(a => Project(a, rel, options.AllowTranscendence))
                 .ToList();
             result[kind] = Prune(all, Dominates, a => a.Piece.DefenseMax);

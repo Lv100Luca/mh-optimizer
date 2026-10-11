@@ -47,6 +47,11 @@ public sealed record OptimizerOptions
     public int MinRarity { get; init; } = 5;
     /// <summary>Armor set names to leave out (e.g. event sets you do not own).</summary>
     public List<string> ExcludeSets { get; init; } = [];
+    /// <summary>
+    /// Armor pieces to allow, by name (e.g. the set you wear): an armor kind with listed pieces only uses those, kinds without
+    /// stay open. <see cref="MinRarity"/> and <see cref="ExcludeSets"/> still apply to the listed pieces.
+    /// </summary>
+    public List<string> IncludeArmor { get; init; } = [];
     /// <summary>Add the weapon's core skills to the targets (Great Sword: Focus 3, Long Sword: Quick Sheathe 3).</summary>
     public bool RequireWeaponCoreSkills { get; init; } = true;
     /// <summary>Search beam: partial builds kept per armor slot. Larger is closer to exhaustive but slower (default 100000).</summary>
@@ -57,6 +62,17 @@ public sealed record OptimizerOptions
     public OptimizerEngine Engine { get; init; } = OptimizerEngine.Beam;
     /// <summary>CP-SAT only: time limit per solve in seconds; the best build found so far is used when it runs out.</summary>
     public double CpSatTimeLimitSeconds { get; init; } = 120;
+
+    /// <summary>The armor the search may use: at least <see cref="MinRarity"/>, outside <see cref="ExcludeSets"/>, and the listed pieces of a kind <see cref="IncludeArmor"/> restricts.</summary>
+    public List<ArmorPiece> AllowedArmor(IEnumerable<ArmorPiece> armor)
+    {
+        var excluded = ExcludeSets.ToHashSet();
+        var included = IncludeArmor.ToHashSet();
+        var all = armor.ToList();
+        var restricted = all.Where(a => included.Contains(a.Name)).Select(a => a.Piece).ToHashSet();
+        return all.Where(a => a.Rarity >= MinRarity && (a.Set is null || !excluded.Contains(a.Set))
+                              && (!restricted.Contains(a.Piece) || included.Contains(a.Name))).ToList();
+    }
 
     /// <summary>The thread count actually used: <see cref="MaxThreads"/> resolved against this machine.</summary>
     public int EffectiveThreads => MaxThreads <= 0 ? ProcessorCount : Math.Min(MaxThreads, ProcessorCount);
@@ -235,10 +251,19 @@ public static class RequestLoader
         if (request.Options.CpSatTimeLimitSeconds <= 0) errors.Add("options.cp_sat_time_limit_seconds must be above 0.");
         foreach (var set in request.Options.ExcludeSets)
             if (!data.Armor.Any(a => a.Set == set)) warnings.Add($"options.exclude_sets: no armor set named '{set}'.");
+        var allowedArmor = request.Options.AllowedArmor(data.Armor);
+        foreach (var name in request.Options.IncludeArmor)
+        {
+            if (!data.ArmorByName.TryGetValue(name, out var piece))
+                warnings.Add($"options.include_armor: no armor piece named '{name}'.");
+            else if (!allowedArmor.Contains(piece))
+                warnings.Add($"options.include_armor: '{name}' is {(piece.Rarity < request.Options.MinRarity ? $"below rarity {request.Options.MinRarity}" : "in an excluded set")} and is left out.");
+        }
+        foreach (var kind in Enum.GetValues<ArmorPieceKind>())
+            if (!allowedArmor.Any(a => a.Piece == kind))
+                errors.Add($"No {kind.ToString().ToLowerInvariant()} armor is left: every allowed piece is below the minimum rarity or in an excluded set.");
 
         // required set bonuses / group skills must be reachable with the armor the options allow, plus the weapon's roll
-        var excluded = request.Options.ExcludeSets.ToHashSet();
-        var allowedArmor = data.Armor.Where(a => a.Rarity >= request.Options.MinRarity && (a.Set is null || !excluded.Contains(a.Set))).ToList();
         bool WeaponCanRoll(Func<GogmaSkillPair, string> part, string? rolled, string name) =>
             request.SkillPair.Mode == SkillPairMode.Fixed ? rolled == name : candidates.Any(p => p is not null && part(p) == name);
         foreach (var (name, pieces) in setTargets)
@@ -251,7 +276,7 @@ public static class RequestLoader
             var available = kinds + (weaponPiece ? 1 : 0);
             if (available < pieces)
                 errors.Add($"Target '{name}' needs {pieces} pieces but only {available} can carry it " +
-                           $"({kinds} armor kinds at rarity {request.Options.MinRarity}+ outside the excluded sets{(weaponPiece ? ", plus the weapon" : "")}).");
+                           $"({kinds} armor kinds among the allowed armor{(weaponPiece ? ", plus the weapon" : "")}).");
         }
 
         return new ResolvedRequest(

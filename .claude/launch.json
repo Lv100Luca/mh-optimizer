@@ -16,6 +16,13 @@
       "autoPort": false
     },
     {
+      "name": "browser-bow",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", ".claude/worktrees/bow-support/src/MHWildsOptimizer.Browser", "--launch-profile", "http", "-p:BuildSolver=false", "--no-launch-browser"],
+      "port": 5240,
+      "autoPort": false
+    },
+    {
       "name": "wasm-speedtest",
       "runtimeExecutable": "python",
       "runtimeArgs": ["spikes/WasmSpeedTest/serve.py", "5231", "spikes/WasmSpeedTest/out"],

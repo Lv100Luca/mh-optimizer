@@ -494,7 +494,7 @@ public sealed class ConfigEditor
         foreach (var s in o.ExcludeSets.Where(sets.Contains)) prompt.Select(s);
         var excluded = AnsiConsole.Prompt(prompt).ToList();
 
-        _request = _request with { Options = new OptimizerOptions { AllowTranscendence = transcendence, RequireWeaponCoreSkills = core, TopN = topN, MinRarity = minRarity, ExcludeSets = excluded } };
+        _request = _request with { Options = o with { AllowTranscendence = transcendence, RequireWeaponCoreSkills = core, TopN = topN, MinRarity = minRarity, ExcludeSets = excluded } };
         _dirty = true;
     }
 
