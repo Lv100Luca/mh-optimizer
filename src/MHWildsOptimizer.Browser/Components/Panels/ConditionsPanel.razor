@@ -229,7 +229,7 @@
                 {
                     <p class="small attack-summary">
                         <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
-                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : "sharpness")),
+                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : "sharpness")),
                         element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
                     </p>

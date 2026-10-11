@@ -74,7 +74,7 @@
                                 <Segmented T="int" Value="spec.AttackParts" ValueChanged="n => PatchSpec(s => s with { AttackParts = n })" Options="AttackPartOptions" />
                             </Field>
 
-                            <Field Label="Reinforcement bonuses" Hint="Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.">
+                            <Field Label="Reinforcement bonuses" Hint="@(isBow ? "Up to five; at most two identical lines, ammo at most twice. Element lines need an element." : "Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.")">
                                 @{
                                     var slots = ReinforcementSlots(spec);
                                     var options = Catalog.Reinforcements
