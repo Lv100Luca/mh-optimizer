@@ -159,6 +159,15 @@ public static class DamageConstants
     /// <summary>Special Ammo Boost on Dragon Piercer, Thousand Dragons and the Tracer: x1.10 / x1.20 (kiranico 110/120).</summary>
     public static double SpecialAmmoBoost(int level) => level switch { <= 0 => 1.0, 1 => 1.10, _ => 1.20 };
 
+    /// <summary>Long Sword Spirit Gauge: raw x1.02 / x1.04 / x1.1 at white / yellow / red (Game8, Icy Veins; not datamined).</summary>
+    public static double SpiritGaugeRaw(SpiritGauge gauge) => gauge switch
+    {
+        SpiritGauge.White => 1.02,
+        SpiritGauge.Yellow => 1.04,
+        SpiritGauge.Red => 1.1,
+        _ => 1.0,
+    };
+
     // ---------------- uptime of timed skills without taking damage, see notes/skill_values_vague_skills.md (Latent Power) and
     // notes/skill_values_set_group.md (Azure Bolt, Thunderous Roar) ----------------
 

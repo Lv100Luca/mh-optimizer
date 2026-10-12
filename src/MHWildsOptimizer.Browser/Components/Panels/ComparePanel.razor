@@ -303,6 +303,8 @@
             lines.Add("Latent Power uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.LatentPowerUptime)}")));
         if (eff.Select(x => x.C.AzureBoltUptime).Distinct().Count() > 1)
             lines.Add("Azure Bolt uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.AzureBoltUptime)}")));
+        if (eff.All(x => x.Col.Build?.Weapon.Type == "long-sword") && eff.Select(x => x.C.SpiritGauge).Distinct().Count() > 1)
+            lines.Add("Spirit Gauge: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.C.SpiritGauge}")));
         if (eff.Select(x => x.C.Resonance).Distinct().Count() > 1)
             lines.Add("Omega Resonance: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Fmt.TitleCase(x.C.Resonance)}")));
         return lines;

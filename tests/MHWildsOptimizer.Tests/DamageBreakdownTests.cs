@@ -93,11 +93,11 @@ public class DamageBreakdownTests
     [Fact]
     public void TheAverageHitModelIsOneHit()
     {
-        var ls = Weapon(WeaponType.LongSword, GogmaFocus.Element, Element.Fire);
+        var hammer = Weapon(WeaponType.Hammer, GogmaFocus.Element, Element.Fire);
         var cond = Conditions.Default;
         var skills = Skills(null, (SkillNames.AttackBoost, 3));
-        var attack = Assert.Single(DamageCalculator.Breakdown(ls, skills, cond));
+        var attack = Assert.Single(DamageCalculator.Breakdown(hammer, skills, cond));
         Assert.Equal("Average hit", Assert.Single(attack.Hits).Name);
-        Assert.Equal(DamageCalculator.Calculate(ls, skills, cond).DamagePerExecution, attack.Average, 1e-6);
+        Assert.Equal(DamageCalculator.Calculate(hammer, skills, cond).DamagePerExecution, attack.Average, 1e-6);
     }
 }

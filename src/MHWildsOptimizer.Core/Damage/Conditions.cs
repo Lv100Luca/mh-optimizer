@@ -68,6 +68,8 @@ public sealed record Conditions
     [JsonIgnore] public int AzureBoltMinTier { get; init; }
     /// <summary>Omega Resonance alternates Local (affinity) and Remote (attack) every 90 s.</summary>
     public ResonanceMode Resonance { get; init; } = ResonanceMode.Local;
+    /// <summary>Long Sword Spirit Gauge level: raw x<see cref="DamageConstants.SpiritGaugeRaw"/> on hits that use it (<see cref="AttackHit.Spirit"/>).</summary>
+    public SpiritGauge SpiritGauge { get; init; } = SpiritGauge.Red;
     /// <summary>Powerhouse (Doshaguma's Might): after a Power Clash / Offset.</summary>
     public bool PowerhouseActive { get; init; } = false;
     /// <summary>Protein Fiend (Xu Wu's Vigor): after eating a steak.</summary>
@@ -104,7 +106,7 @@ public sealed record Conditions
     public Target Target { get; init; } = new();
 
     /// <summary>The attack profile resolved for <paramref name="weapon"/> against the <see cref="Target"/> (a whole sequence, ignoring step overrides).</summary>
-    public ResolvedAttackProfile Attack(GogmaWeaponStats weapon) => AttackProfile.Resolve(weapon, Target);
+    public ResolvedAttackProfile Attack(GogmaWeaponStats weapon) => AttackProfile.Resolve(weapon, Target, SpiritGauge);
 
     /// <summary>
     /// The parts of the attack scored under different conditions: one per distinct set of sequence step overrides (steps with the

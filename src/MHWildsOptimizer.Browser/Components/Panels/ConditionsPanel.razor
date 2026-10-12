@@ -91,6 +91,16 @@
                                         <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
                                     </span>
                                 </div>
+                                @if (type == WeaponType.LongSword)
+                                {
+                                    <div class="cond resonance">
+                                        <span class="cond-text">
+                                            <b>Spirit Gauge</b>
+                                            <span class="muted small">The Long Sword's gauge level: raw ×1.02 white, ×1.04 yellow, ×1.1 red. Crimson moves are always red; Helm Breaker and Release Slash use a lower level.</span>
+                                            <Segmented T="SpiritGauge" Small="true" Value="c.SpiritGauge" Options="SpiritOptions" ValueChanged="g => App.PatchConditions(x => x with { SpiritGauge = g })" />
+                                        </span>
+                                    </div>
+                                }
                             }
                             @if (group == ConditionCatalog.GroupBonuses)
                             {
@@ -229,7 +239,7 @@
                 {
                     <p class="small attack-summary">
                         <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
-                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : "sharpness")),
+                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : type == WeaponType.LongSword ? "sharpness, Spirit Gauge" : "sharpness")),
                         element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                         (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
                     </p>
@@ -258,6 +268,7 @@
     {
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
         [nameof(Conditions.MealAttack)] = "Meal attack",
+        [nameof(Conditions.SpiritGauge)] = "Spirit Gauge",
         [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
         [nameof(Conditions.AzureBoltUptime)] = "Azure Bolt uptime",
         [nameof(Conditions.AttackProfile)] = "Attack",
@@ -380,6 +391,7 @@
                         });
                     if (h.CriticalDistance) notes.Add($"raw ×{Num(DamageConstants.CriticalDistanceRaw)} at critical distance");
                     if (h.Shot is { } shot && ShotSkill(shot) is { } skill) notes.Add(skill);
+                    if (h.Spirit is { } sg) notes.Add(sg == SpiritGauge.None ? "no Spirit Gauge multiplier" : $"always the {Fmt.Slug(sg)} gauge: raw ×{Num(DamageConstants.SpiritGaugeRaw(sg))}");
                     <tr>
                         <td>@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")</td>
                         <td class="num">@Num(h.Mv)</td>
@@ -474,6 +486,8 @@
             $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
     };
 
+    private static readonly IReadOnlyList<SegmentOption<SpiritGauge>> SpiritOptions =
+        Enum.GetValues<SpiritGauge>().Select(g => new SegmentOption<SpiritGauge>(g, g == SpiritGauge.None ? "None" : $"{g} ×{Num(DamageConstants.SpiritGaugeRaw(g))}")).ToList();
 
     private static readonly IReadOnlyList<SegmentOption<double?>> UptimeOptions =
         [new(null, "Auto", Hint: "The default for the build's set bonus tier"), .. new double?[] { 0.25, 0.5, 0.67, 0.85, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value)))];

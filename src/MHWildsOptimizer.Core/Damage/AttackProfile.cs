@@ -52,7 +52,8 @@ public sealed record AttackProfile
         return AttackFor(type) is { } a ? (a.Name, a.Seconds, a.Hits.ToList()) : null;
     }
 
-    public ResolvedAttackProfile Resolve(GogmaWeaponStats weapon, Target target)
+    /// <param name="gauge">Long Sword: the Spirit Gauge of the conditions, for hits without their own (<see cref="AttackHit.Spirit"/>).</param>
+    public ResolvedAttackProfile Resolve(GogmaWeaponStats weapon, Target target, SpiritGauge gauge = SpiritGauge.None)
     {
         var p = Preset(weapon.Type);
         var ratio = target.ElementRatio(weapon.Element);
@@ -68,7 +69,7 @@ public sealed record AttackProfile
 
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
         double hits = 0, totalMv = 0, raw = 0, ele = 0, shockwaves = 0;
-        var resolved = ResolveHits(weapon, target, attack.Hits, PierceHits);
+        var resolved = ResolveHits(weapon, target, attack.Hits, PierceHits, gauge);
         foreach (var h in resolved)
         {
             hits += h.Count;
@@ -96,11 +97,12 @@ public sealed record AttackProfile
     /// <summary>
     /// The hits as they land on <paramref name="target"/> with <paramref name="weapon"/>: the power True Charged Slash finisher on a
     /// weak spot (raw hitzone x sharpness of 45 or more), fixed sharpness (the tackle), the Switch Axe phial and the bow's coating
-    /// (with the Pierce coating every arrow lands <paramref name="pierceHits"/> times, each hit weaker than the one before). Raw
+    /// (with the Pierce coating every arrow lands <paramref name="pierceHits"/> times, each hit weaker than the one before) and the Long Sword's
+    /// Spirit Gauge (the hit's own or <paramref name="gauge"/>). Raw
     /// damage of a hit is true raw x MV / 100 x <see cref="ResolvedHit.RawModifier"/>, element damage true element x
     /// <see cref="ResolvedHit.ElementModifier"/>, both before hitzones, crits and shot skills.
     /// </summary>
-    public static IReadOnlyList<ResolvedHit> ResolveHits(GogmaWeaponStats weapon, Target target, IEnumerable<AttackHit> hits, int? pierceHits = null)
+    public static IReadOnlyList<ResolvedHit> ResolveHits(GogmaWeaponStats weapon, Target target, IEnumerable<AttackHit> hits, int? pierceHits = null, SpiritGauge gauge = SpiritGauge.None)
     {
         var sharpRaw = weapon.TopSharpness is { } s ? DamageConstants.SharpnessRaw(s) : 1.0;
         var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
@@ -133,6 +135,11 @@ public sealed record AttackProfile
             {
                 rawMult *= DamageConstants.CriticalDistanceRaw;
                 notes.Add(FormattableString.Invariant($"critical distance raw x{DamageConstants.CriticalDistanceRaw}"));
+            }
+            if (weapon.Type == WeaponType.LongSword && DamageConstants.SpiritGaugeRaw(h.Spirit ?? gauge) is var spirit && spirit != 1.0)
+            {
+                rawMult *= spirit;
+                notes.Add(FormattableString.Invariant($"{(h.Spirit ?? gauge).ToString().ToLowerInvariant()} Spirit Gauge raw x{spirit}"));
             }
             if (h.ChargedLv3) notes.Add("Lv3 charged slash");
             result.Add(new ResolvedHit(h.Name, count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes, h.Shot));

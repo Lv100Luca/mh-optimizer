@@ -8,7 +8,7 @@ https://docs.google.com/spreadsheets/d/1Bine6S9MD6hjM85keFNyj9WbaeVb1ZVHYnhs93U3
 * Numbers 1 / 2 in a name are hits within one input; "Power" is the damage under the attack's special condition.
 * **Update (2026-10-07):** the author published a sheet for game version 1.040 (datamine 1.02.0, no balance changes in 1.030):
   https://docs.google.com/spreadsheets/d/1F_bOwQT6A6mFtCN7WCetnZDrmvLYu-ne4y97IsG6Fkk. The attack picker (`src/MHWildsOptimizer.Core/Damage/Attacks.cs`)
-  uses its numbers; the Great Sword and Long Sword tables below are still the 1.0.11 ones. Great Sword changes in 1.040 that the attacks use:
+  uses its numbers; the Great Sword table below is still the 1.0.11 one (Long Sword is 1.040). Great Sword changes in 1.040 that the attacks use:
   Charged Slash Lv3 176 MV / element x1.5, Strong Charged Slash Lv3 187 / x1.8, True Charged Slash 2 Lv3 209 / x2.5 (power 267 / x2.5),
   Tackle Lv3 48 (no element, green). The Switch Axe table below is the 1.040 one: TU2 raised the element modifier of the Element-phial
   explosions from 0.35 to 0.8 (amped explosion 1.0).
@@ -121,104 +121,112 @@ https://docs.google.com/spreadsheets/d/1Bine6S9MD6hjM85keFNyj9WbaeVb1ZVHYnhs93U3
 | Sneak Attack | 106 | 0 | 0 | 1 | 1 | 0.1 | 1 | Deals hitzone-ignoring damage |
 | Aerial Sneak Attack | 106 | 0 | 0 | 1 | 1 | 0.1 | 1 | Deals hitzone-ignoring damage |
 
-## Long Sword
+## Long Sword (1.040)
 
-| Attack | Motion Value | Element | Status | Sharpness | Part Break | Notes |
-|---|---|---|---|---|---|---|
-| Overhead Slash I | 24 | 1 | 1 | 1 | 1 |  |
-| Overhead Slash II | 18 | 1 | 1 | 1 | 1 |  |
-| Crescent Slash | 32 | 1 | 1 | 1 | 1 |  |
-| Crimson Slash I 1 | 33 | 0.7 | 0.7 | 0.5 | 1 |  |
-| Crimson Slash I 2 | 16 | 0.7 | 0.7 | 0.5 | 1 |  |
-| Crimson Slash II 1 | 9 | 0.7 | 0.7 | 0.5 | 1 |  |
-| Crimson Slash II 2 | 18 | 0.7 | 0.7 | 0.5 | 1 |  |
-| Crimson Slash III 1 | 28 | 0.7 | 0.7 | 0.3 | 1 |  |
-| Crimson Slash III 2 | 16 | 0.7 | 0.7 | 0.3 | 1 |  |
-| Crimson Slash III 3 | 49 | 0.7 | 0.7 | 0.3 | 1 |  |
-| Thrust | 18 | 1 | 1 | 1 | 1 |  |
-| Rising Slash | 18 | 1 | 1 | 1 | 1 |  |
-| Fade Slash | 22 | 1 | 1 | 1 | 1 |  |
-| Spirit Blade I | 31 | 1 | 1 | 1 | 1 |  |
-| Spirit Blade I (No Gauge) | 14 | 1 | 1 | 1 | 1 |  |
-| Directional Spirit Blade I 1 | 31 | 1 | 1 | 1 | 1 |  |
-| Directional Spirit Blade I 1 (No Gauge) | 14 | 1 | 1 | 1 | 1 |  |
-| Spirit Blade II | 30 | 1 | 1 | 1 | 1 |  |
-| Spirit Blade II (No Gauge) | 14 | 1 | 1 | 1 | 1 |  |
-| Directional Spirit Blade II 1 | 14 | 1 | 1 | 0.5 | 1 |  |
-| Directional Spirit Blade II 2 | 26 | 1 | 1 | 0.5 | 1 |  |
-| Directional Spirit Blade II 1 (No Gauge) | 8 | 1 | 1 | 0.5 | 1 |  |
-| Directional Spirit Blade II 2 (No Gauge) | 18 | 1 | 1 | 0.5 | 1 |  |
-| Spirit Blade III 1 | 14 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Blade III 2 | 19 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Blade III 3 | 34 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Blade III 1 (No Gauge) | 8 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Blade III 2 (No Gauge) | 11 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Blade III 3 (No Gauge) | 19 | 1 | 1 | 0.3 | 1 |  |
-| Spirit Roundslash | 38 | 1 | 1 | 1 | 1 | Raises Spirit Gauge level by 1. In Red, Gauge generation depends on how many times it has been used during this Red Spirit Gauge period |
-| Spirit Roundslash (No Gauge) | 19 | 1 | 1 | 1 | 1 | Raises Spirit Gauge level by 1. In Red, Gauge generation depends on how many times it has been used during this Red Spirit Gauge period |
-| Spinning Crimson Slash | 55 | 1 | 1 | 1 | 1 | In Red, Gauge generation depends on how many times it has been used during this Red Spirit Gauge period |
-| Spirit Step Slash | 28 | 1 | 1 | 1 | 1 |  |
-| Spirit Step Slash (No Gauge) | 18 | 1 | 1 | 1 | 1 |  |
-| Jumping Slash | 26 | 1 | 1 | 1 | 1 |  |
-| Jumping Spirit Blade I | 30 | 1 | 1 | 1 | 1 |  |
-| Jumping Spirit Blade I (No Gauge) | 16 | 1 | 1 | 1 | 1 |  |
-| Jumping Spirit Blade II 1 | 12 | 1 | 1 | 0.5 | 1 |  |
-| Jumping Spirit Blade II 2 | 26 | 1 | 1 | 0.5 | 1 |  |
-| Jumping Spirit Blade II 1 (No Gauge) | 8 | 1 | 1 | 0.5 | 1 |  |
-| Jumping Spirit Blade II 2 (No Gauge) | 15 | 1 | 1 | 0.5 | 1 |  |
-| Jumping Spirit Blade III 1 | 12 | 1 | 1 | 0.3 | 1 |  |
-| Jumping Spirit Blade III 2 | 22 | 1 | 1 | 0.3 | 1 |  |
-| Jumping Spirit Blade III 3 (Not used?) | 24 | 1 | 1 | 0.3 | 1 |  |
-| Jumping Spirit Blade III 1 (No Gauge) | 7 | 1 | 1 | 0.3 | 1 | Not available |
-| Jumping Spirit Blade III 2 (No Gauge) | 13 | 1 | 1 | 0.3 | 1 | Not available |
-| Jumping Spirit Blade III 3 (No Gauge) | 13 | 1 | 1 | 0.3 | 1 | Used even when you have gauge? |
-| Jumping Rising Slash | 20 | 1 | 1 | 1 | 1 |  |
-| Aerial Draw Spirit Blade | 48 | 1 | 1 | 1 | 1 |  |
-| Aerial Draw Spirit Blade (No Gauge) | 26 | 1 | 1 | 1 | 1 |  |
-| Foresight Slash | 18 | 1 | 1 | 1 | 1 |  |
-| Foresight Slash (No Gauge) | 11 | 1 | 1 | 1 | 1 |  |
-| Foresight Slash (Success) | 23.4 | 1 | 1 | 1 | 1 | Actually just a 1.3x multiplier. |
-| Foresight Whirl Slash 1 | 22 | 1 | 1 | 0.5 | 1 |  |
-| Foresight Whirl Slash 2 | 13 | 1 | 1 | 0.5 | 1 |  |
-| Foresight Whirl Slash 1 (Sucessful) | 28.6 | 1 | 1 | 0.5 | 1 | Actually just a 1.3x multiplier |
-| Foresight Whirl Slash 2 (Successful) | 16.9 | 1 | 1 | 0.5 | 1 | Actually just a 1.3x multiplier |
-| Iai Slash 1 | 18 | 1 | 1 | 0.5 | 1 |  |
-| Iai Slash 2 | 13 | 1 | 1 | 0.5 | 1 |  |
-| Iai Spirit Slash 1 (None) | 17 | 1 | 1 | 1 | 1.5 | Increases Spirit Gauge level by 1 on a successful counter |
-| Iai Spirit Slash 1 (White) | 19 | 1 | 1 | 1 | 1.5 | Increases Spirit Gauge level by 1 on a successful counter |
-| Iai Spirit Slash 2 (White) | 55 | 1 | 1 | 0 | 1.5 | Only on a successful counter |
-| Iai Spirit Slash 1 (Yellow) | 31 | 1 | 1 | 1 | 1.5 | Increases Spirit Gauge level by 1 on a successful counter |
-| Iai Spirit Slash 2 (Yellow) | 72 | 1 | 1 | 0 | 1.5 | Only on a successful counter |
-| Iai Spirit Slash 1 (Red) | 39 | 1 | 1 | 1 | 1.5 |  |
-| Iai Spirit Slash 2 (Red) | 86 | 1 | 1 | 0 | 1.5 | Only on a successful counter |
-| Spirit Thrust | 19 | 1 | 1 | 1 | 1 |  |
-| Spirit Helmbreaker (White) | 15 | 0.2 | 0.2 | 0 | 0.9 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses no gauge multiplier. |
-| Spirit Helmbreaker (Yellow) | 20 | 0.2 | 0.2 | 0 | 0.9 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses White gauge multiplier. |
-| Spirit Helmbreaker (Red) | 23 | 0.2 | 0.2 | 0 | 0.9 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses Yellow gauge multiplier. |
-| Spirit Release Slash 1 (x2) | 5 | 1 | 1 | 0.3 | 1 | Uses Yellow Gauge multiplier |
-| Spirit Release Slash 2 (x3) | 9 | 0.1 | 0.1 | 0 | 1.5 | Uses White Gauge multiplier |
-| Spirit Release Slash 3 (x3) | 14 | 0.1 | 0.1 | 0 | 1.5 | Uses White Gauge multiplier |
-| Spirit Release Slash 4 (x3) | 20 | 0.1 | 0.1 | 0 | 1.5 | Uses White Gauge multiplier |
-| Spirit Release Slash 5 (x3) | 32 | 0.1 | 0.1 | 0 | 3 | Uses White Gauge multiplier |
-| Seikret Attack I 1 | 15 | 1 | 1 | 0.5 | 1 |  |
-| Seikret Attack I 2 | 10 | 1 | 1 | 0.5 | 1 |  |
-| Seikret Attack II | 20 | 1 | 1 | 1 | 1 |  |
-| Dismount Attack 1 | 30 | 1 | 1 | 1 | 1 | Increases Spirit Gauge level by 1 on a successful counter |
-| Dismount Attack 2 | 15 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust 1 | 26 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust Extra Hit | 26 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust 2 | 10 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust 3 | 40 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust 4 | 40 | 1 | 1 | 1 | 1 |  |
-| Focus Strike: Unbound Thrust 5 | 40 | 1 | 1 | 0 | 1 | Applies once per wound. Increases Spirit Gauge level by 1. Uses post-level up modifiers |
-| Mount Attack 1 | 23 | 1 | 1 | 0.1 | 1 |  |
-| Mount Attack 2 | 20 | 1 | 1 | 0.1 | 1 |  |
-| Mount Finisher 1 | 70 | 1 | 1 | 0.1 | 1 |  |
-| Mount Finisher 2 | 100 | 1 | 1 | 0.1 | 1 |  |
-| Sneak Attack 1 | 50 | 1 | 1 | 0.5 | 1 | Deals hitzone-ignoring damage |
-| Sneak Attack 2 | 56 | 1 | 1 | 0.5 | 1 | Deals hitzone-ignoring damage |
-| Aerial Sneak Attack 1 | 50 | 1 | 1 | 0.5 | 1 | Deals hitzone-ignoring damage |
-| Aerial Sneak Attack 2 | 56 | 1 | 1 | 0.5 | 1 | Deals hitzone-ignoring damage |
+From the 1.040 sheet (gid 646073038). The Spirit Gauge multiplies raw: x1.02 white, x1.04 yellow, x1.1 red (Game8, Icy Veins; not datamined).
+Crimson moves only exist at a red gauge; the notes say which hits use a lower gauge multiplier (Helm Breaker, Spirit Release Slash).
+The red-gauge loops (Game8): Crimson Slash I into Rising Slash (left click, right click), or into Spirit Blade I (left click, R).
+
+| Attack | Motion Value | Mount | Element | Status | Sharpness | Part Break | Gauge generation | Gauge cost | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Overhead Slash I | 24 | 0 | 1 | 1 | 1 | 1 | 26 | 0 |  |
+| Overhead Slash II | 18 | 0 | 1 | 1 | 1 | 1 | 30 | 0 |  |
+| Crescent Slash | 32 | 0 | 1 | 1 | 1 | 1 | 23 | 0 |  |
+| Crimson Slash I 1 | 33 | 0 | 0.5 | 0.5 | 0.5 | 1 | 10 | 0 |  |
+| Crimson Slash I 2 | 16 | 0 | 0.5 | 0.5 | 0.5 | 1 | 16 | 0 |  |
+| Crimson Slash II 1 | 11 | 0 | 1.05 | 0.7 | 0.5 | 1 | 10 | 0 |  |
+| Crimson Slash II 2 | 22 | 0 | 1.05 | 0.7 | 0.5 | 1 | 20 | 0 |  |
+| Crimson Slash III 1 | 30 | 0 | 1.1 | 0.8 | 0.3 | 1 | 5 | 0 |  |
+| Crimson Slash III 2 | 18 | 0 | 1.1 | 0.8 | 0.3 | 1 | 8 | 0 |  |
+| Crimson Slash III 3 | 55 | 0 | 1.1 | 0.8 | 0.3 | 1 | 10 | 0 |  |
+| Thrust | 18 | 0 | 1 | 1 | 1 | 1 | 23 | 0 |  |
+| Rising Slash | 18 | 0 | 1 | 1 | 1 | 1 | 23 | 0 |  |
+| Fade Slash | 22 | 0 | 1 | 1 | 1 | 1 | 50 | 0 |  |
+| Spirit Blade I | 31 | 0 | 1 | 1 | 1 | 1 | 0 | 10 |  |
+| Spirit Blade I (No Gauge) | 14 | 0 | 1 | 1 | 1 | 1 | 10 | 0 |  |
+| Directional Spirit Blade I 1 | 31 | 0 | 1 | 1 | 1 | 1 | 0 | 10 |  |
+| Directional Spirit Blade I 1 (No Gauge) | 14 | 0 | 1 | 1 | 1 | 1 | 10 | 0 |  |
+| Spirit Blade II | 30 | 0 | 1 | 1 | 1 | 1 | 0 | 15 |  |
+| Spirit Blade II (No Gauge) | 14 | 0 | 1 | 1 | 1 | 1 | 0 | 15 |  |
+| Directional Spirit Blade II 1 | 14 | 0 | 1 | 1 | 0.5 | 1 | 0 | 15 |  |
+| Directional Spirit Blade II 2 | 26 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Directional Spirit Blade II 1 (No Gauge) | 8 | 0 | 1 | 1 | 0.5 | 1 | 0 | 15 |  |
+| Directional Spirit Blade II 2 (No Gauge) | 18 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Spirit Blade III 1 | 14 | 0 | 1 | 1 | 0.3 | 1 | 0 | 25 |  |
+| Spirit Blade III 2 | 19 | 0 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Spirit Blade III 3 | 34 | 0 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Spirit Blade III 1 (No Gauge) | 8 | 0 | 1 | 1 | 0.3 | 1 | 0 | 25 |  |
+| Spirit Blade III 2 (No Gauge) | 11 | 0 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Spirit Blade III 3 (No Gauge) | 19 | 0 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Spirit Roundslash | 38 | 0 | 1 | 1 | 1 | 1 | 0 | 20 | Raises Spirit Gauge level by 1. |
+| Spirit Roundslash (No Gauge) | 19 | 0 | 1 | 1 | 1 | 1 | 0 | 20 | Raises Spirit Gauge level by 1. |
+| Spirit Roundslash (Red) | 42 | 0 | 1 | 1 | 1 | 1 | 10/5/3/0 | 0 | Gauge generation depends on how many times it has been used during this Red Spirit Gauge period |
+| Spinning Crimson Slash | 60 | 0 | 1 | 1 | 1 | 1 | 10/5/3/0 | 0 | Gauge generation depends on how many times it has been used during this Red Spirit Gauge period |
+| Spirit Step Slash | 28 | 0 | 1 | 1 | 1 | 1 | 0 | 20 |  |
+| Spirit Step Slash (No Gauge) | 18 | 0 | 1 | 1 | 1 | 1 | 10 | 0 |  |
+| Jumping Slash | 26 | 30 | 1 | 1 | 1 | 1 | 30 | 0 |  |
+| Jumping Spirit Blade I | 30 | 40 | 1 | 1 | 1 | 1 | 0 | 15 |  |
+| Jumping Spirit Blade I (No Gauge) | 16 | 40 | 1 | 1 | 1 | 1 | 0 | 15 |  |
+| Jumping Spirit Blade II 1 | 12 | 30 | 1 | 1 | 0.5 | 1 | 0 | 20 |  |
+| Jumping Spirit Blade II 2 | 26 | 30 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Jumping Spirit Blade II 1 (No Gauge) | 8 | 30 | 1 | 1 | 0.5 | 1 | 0 | 20 |  |
+| Jumping Spirit Blade II 2 (No Gauge) | 15 | 30 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Jumping Spirit Blade III 1 | 12 | 30 | 1 | 1 | 0.3 | 1 | 0 | 20 |  |
+| Jumping Spirit Blade III 2 | 22 | 30 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Jumping Spirit Blade III 3 (Not used?) | 24 | 20 | 1 | 1 | 0.3 | 1 | 0 | 0 |  |
+| Jumping Spirit Blade III 1 (No Gauge) | 7 | 30 | 1 | 1 | 0.3 | 1 | 0 | 20 | Not available |
+| Jumping Spirit Blade III 2 (No Gauge) | 13 | 30 | 1 | 1 | 0.3 | 1 | 0 | 0 | Not available |
+| Jumping Spirit Blade III 3 (No Gauge) | 13 | 20 | 1 | 1 | 0.3 | 1 | 0 | 0 | Used even when you have gauge? |
+| Jumping Rising Slash | 20 | 30 | 1 | 1 | 1 | 1 | 30 | 0 |  |
+| Aerial Draw Spirit Blade | 48 | 65 | 1 | 1 | 1 | 1 | 0 | 20 |  |
+| Aerial Draw Spirit Blade (No Gauge) | 26 | 65 | 1 | 1 | 1 | 1 | 35 | 20 |  |
+| Foresight Slash | 18 | 0 | 1 | 1 | 1 | 1 | 0 | 100 |  |
+| Foresight Slash (No Gauge) | 11 | 0 | 1 | 1 | 1 | 1 | 10 | 100 |  |
+| Foresight Slash (Success) | 23.4 | 0 | 1 | 1 | 1 | 1 | 100 | 100 | Actually just a 1.3x multiplier. |
+| Foresight Whirl Slash 1 | 22 | 0 | 1 | 1 | 0.5 | 1 | 0 | 8 |  |
+| Foresight Whirl Slash 2 | 13 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Foresight Whirl Slash 1 (Sucessful) | 28.6 | 0 | 1 | 1 | 0.5 | 1 | 4 | 8 | Actually just a 1.3x multiplier |
+| Foresight Whirl Slash 2 (Successful) | 16.9 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 | Actually just a 1.3x multiplier |
+| Iai Slash 1 | 18 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Iai Slash 2 | 13 | 0 | 1 | 1 | 0.5 | 1 | 0 | 0 |  |
+| Iai Spirit Slash 1 (None) | 17 | 0 | 1 | 1 | 1 | 1.5 | 0 | 0 | Increases Spirit Gauge level by 1 on a successful counter |
+| Iai Spirit Slash 1 (White) | 19 | 0 | 1 | 1 | 1 | 1.5 | 0 | 0 | Increases Spirit Gauge level by 1 on a successful counter |
+| Iai Spirit Slash 2 (White) | 55 | 0 | 1 | 1 | 0 | 1.5 | 0 | 0 | Only on a successful counter |
+| Iai Spirit Slash 1 (Yellow) | 31 | 0 | 1 | 1 | 1 | 1.5 | 0 | 0 | Increases Spirit Gauge level by 1 on a successful counter |
+| Iai Spirit Slash 2 (Yellow) | 72 | 0 | 1 | 1 | 0 | 1.5 | 0 | 0 | Only on a successful counter |
+| Iai Spirit Slash 1 (Red) | 39 | 0 | 1 | 1 | 1 | 1.5 | 0 | 0 |  |
+| Iai Spirit Slash 2 (Red) | 86 | 0 | 1 | 1 | 0 | 1.5 | 0 | 0 | Only on a successful counter |
+| Spirit Thrust | 19 | 0 | 1 | 1 | 1 | 1 | 0 | 0 |  |
+| Spirit Helmbreaker (White) | 15 | 0 | 0.2 | 0.2 | 0 | 0.9 | 0 | 0 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses no gauge multiplier. |
+| Spirit Helmbreaker (Yellow) | 20 | 0 | 0.2 | 0.2 | 0 | 0.9 | 0 | 0 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses White gauge multiplier. |
+| Spirit Helmbreaker (Red) | 23 | 0 | 0.2 | 0.2 | 0 | 0.9 | 0 | 0 | Hits 7 times. Last hit has a Part Break multiplier of 1. Uses Yellow gauge multiplier. |
+| Spirit Release Slash 1 (x2) | 5 | 0 | 1 | 1 | 0.3 | 1 | 0 | 0 | Uses Yellow Gauge multiplier |
+| Spirit Release Slash 2 (x3) | 10 | 0 | 0.1 | 0.1 | 0 | 1.5 | 10 | 0 | Uses White Gauge multiplier |
+| Spirit Release Slash 3 (x3) | 15 | 0 | 0.1 | 0.1 | 0 | 1.5 | 10 | 0 | Uses White Gauge multiplier |
+| Spirit Release Slash 4 (x3) | 22 | 0 | 0.1 | 0.1 | 0 | 1.5 | 10 | 0 | Uses White Gauge multiplier |
+| Spirit Release Slash 5 (x3) | 35 | 0 | 0.1 | 0.1 | 0 | 3 | 10 | 0 | Uses White Gauge multiplier |
+| Seikret Attack I 1 | 15 | 0 | 1 | 1 | 0.5 | 1 | 10 | 0 |  |
+| Seikret Attack I 2 | 10 | 0 | 1 | 1 | 0.5 | 1 | 5 | 0 |  |
+| Seikret Attack II | 20 | 0 | 1 | 1 | 1 | 1 | 20 | 0 |  |
+| Dismount Attack 1 | 30 | 30 | 1 | 1 | 1 | 1 | 25 | 0 | Increases Spirit Gauge level by 1 on a successful counter |
+| Dismount Attack 2 | 15 | 0 | 1 | 1 | 1 | 1 | 10 | 0 |  |
+| Focus Strike: Unbound Thrust 1 | 26 | 0 | 1 | 1 | 1 | 1 | 10 | 0 |  |
+| Focus Strike: Unbound Thrust Extra Hit | 26 | 0 | 1 | 1 | 1 | 1 | 0 | 0 |  |
+| Focus Strike: Unbound Thrust 2 | 10 | 0 | 1 | 1 | 1 | 1 | 0 | 0 |  |
+| Focus Strike: Unbound Thrust 3 | 40 | 0 | 1 | 1 | 1 | 1 | 0 | 0 |  |
+| Focus Strike: Unbound Thrust 4 | 40 | 0 | 1 | 1 | 1 | 1 | 0 | 0 |  |
+| Focus Strike: Unbound Thrust 5 | 40 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | Applies once per wound. Increases Spirit Gauge level by 1. Uses post-level up modifiers |
+| Mount Attack 1 | 23 | 0 | 1 | 1 | 0.1 | 1 | 5 | 0 |  |
+| Mount Attack 2 | 20 | 0 | 1 | 1 | 0.1 | 1 | 5 | 0 |  |
+| Mount Finisher 1 | 70 | 0 | 1 | 1 | 0.1 | 1 | 10 | 0 |  |
+| Mount Finisher 2 | 100 | 0 | 1 | 1 | 0.1 | 1 | 10 | 0 |  |
+| Sneak Attack 1 | 50 | 0 | 1 | 1 | 0.5 | 1 | 10 | 0 | Deals hitzone-ignoring damage |
+| Sneak Attack 2 | 56 | 0 | 1 | 1 | 0.5 | 1 | 10 | 0 | Deals hitzone-ignoring damage |
+| Aerial Sneak Attack 1 | 50 | 0 | 1 | 1 | 0.5 | 1 | 10 | 0 | Deals hitzone-ignoring damage |
+| Aerial Sneak Attack 2 | 56 | 0 | 1 | 1 | 0.5 | 1 | 10 | 0 | Deals hitzone-ignoring damage |
+| Underwater Attack 1 | 40 | 0 | 0.7 | 0.7 | 1 | 1 | 5 | 0 |  |
+| Underwater Attack 2 | 42 | 0 | 0.7 | 0.7 | 1 | 1 | 5 | 0 |  |
+| Underwater Attack 3 | 60 | 0 | 0.7 | 0.7 | 1 | 1 | 10 | 0 |  |
 
 ## Switch Axe (1.040)
 

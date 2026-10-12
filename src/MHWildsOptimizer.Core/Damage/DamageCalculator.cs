@@ -536,14 +536,14 @@ public static class DamageCalculator
                     var changes = ConditionToggles.StepKeys.Where(k => ConditionToggles.Get(stepCond, k) != ConditionToggles.Get(at, k))
                         .ToDictionary(k => k, k => ConditionToggles.Get(stepCond, k));
                     var r = CalculateTimed(weapon, skills, stepCond, trace: true);
-                    return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits, profile.PierceHits));
+                    return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits, profile.PierceHits, at.SpiritGauge));
                 })
                 .ToList();
         }
 
         var single = CalculateTimed(weapon, skills, at, trace: true);
         IEnumerable<ResolvedHit> hits = profile.AttackFor(weapon.Type) is { } attack
-            ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits, profile.PierceHits)
+            ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits, profile.PierceHits, at.SpiritGauge)
             : [new ResolvedHit(single.Attack.Name, 1, single.Attack.TotalMv, single.SharpnessRawModifier, single.SharpnessElementModifier, false, [])];
         return [AttackDamageOf(single.Attack.Name, 1, new Dictionary<string, bool>(), single, hits)];
     }

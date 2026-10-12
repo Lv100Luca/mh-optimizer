@@ -11,6 +11,9 @@ public enum SwitchAxePhial { Power, Element }
 /// </summary>
 public enum BowShot { Normal, Power, Dragon, Tracer, Other }
 
+/// <summary>Long Sword Spirit Gauge level: each one multiplies raw (<see cref="DamageConstants.SpiritGaugeRaw"/>).</summary>
+public enum SpiritGauge { None, White, Yellow, Red }
+
 /// <summary>
 /// One hit of an attack: motion value (multiplies true raw, percent) and element modifier (multiplies true element), from the
 /// motion value datamine for game version 1.040 (notes/motion_values.md). Every hit can crit; a hit uses the weapon's sharpness
@@ -38,6 +41,11 @@ public sealed record AttackHit(string Name, double Mv, double Element = 1.0)
     public AttackHit? Pierce { get; init; }
     /// <summary>Bow arrow with a critical distance window: raw x<see cref="DamageConstants.CriticalDistanceRaw"/> inside it (every shot is assumed inside).</summary>
     public bool CriticalDistance { get; init; }
+    /// <summary>
+    /// Long Sword: the Spirit Gauge multiplier this hit always uses (Crimson moves only exist at red; Spirit Helm Breaker and Spirit
+    /// Release Slash use a lower one); null: the gauge of the conditions (<see cref="Conditions.SpiritGauge"/>).
+    /// </summary>
+    public SpiritGauge? Spirit { get; init; }
 }
 
 /// <summary>A single input (<see cref="Combo"/> false) or a short combo of inputs the score can be computed for.</summary>
@@ -51,7 +59,7 @@ public sealed record AttackDefinition(string Id, WeaponType Type, string Name, s
 /// <summary>A ready-made attack sequence to start from (the sequence editor loads its steps).</summary>
 public sealed record SequencePreset(string Id, WeaponType Type, string Name, string Description, IReadOnlyList<SequenceStep> Steps);
 
-/// <summary>The attacks the attack picker and the sequence editor offer (Great Sword, Switch Axe and Bow for now).</summary>
+/// <summary>The attacks the attack picker and the sequence editor offer (Great Sword, Long Sword, Switch Axe and Bow for now).</summary>
 public static class Attacks
 {
     /// <summary>The attack id of the average-hit model: every hit is one element hit of the profile's average MV.</summary>
@@ -104,6 +112,29 @@ public static class Attacks
     private static readonly AttackHit FlyingSwallow2 = Arrows("Flying Swallow Shot Lv2", BowShot.Normal, 4, 11, 0.67, 5, 0.2);
     private static readonly AttackHit FlyingSwallow3 = Arrows("Flying Swallow Shot Lv3", BowShot.Normal, 5, 12, 0.8, 6, 0.27);
     private static readonly AttackHit ThousandDragons = Arrows("Thousand Dragons", BowShot.Dragon, 6, 25, 0.5, 13, 0.5);
+
+    // ---------------- Long Sword (1.040) ----------------
+    private static AttackHit Red(string name, double mv, double element = 1.0) => new(name, mv, element) { Spirit = SpiritGauge.Red };
+    private static readonly AttackHit[] CrimsonSlash1 = [Red("Crimson Slash I 1", 33, 0.5), Red("Crimson Slash I 2", 16, 0.5)];
+    private static readonly AttackHit LsRisingSlash = new("Rising Slash", 18);
+    private static readonly AttackHit SpiritBlade1 = new("Spirit Blade I", 31);
+    private static readonly AttackHit SpiritBlade2 = new("Spirit Blade II", 30);
+    private static readonly AttackHit[] SpiritBlade3 = [new("Spirit Blade III 1", 14), new("Spirit Blade III 2", 19), new("Spirit Blade III 3", 34)];
+    private static readonly AttackHit SpiritRoundslashRed = Red("Spirit Roundslash (Red)", 42);
+    private static readonly AttackHit SpinningCrimsonSlash = Red("Spinning Crimson Slash", 60);
+    private static readonly AttackHit SpiritThrust = new("Spirit Thrust", 19);
+    private static readonly AttackHit HelmBreakerRed = new("Spirit Helm Breaker (Red)", 23, 0.2) { Count = 7, Spirit = SpiritGauge.Yellow };
+    private static readonly AttackHit[] SpiritReleaseSlash =
+    [
+        new("Spirit Release Slash 1", 5) { Count = 2, Spirit = SpiritGauge.Yellow },
+        new("Spirit Release Slash 2", 10, 0.1) { Count = 3, Spirit = SpiritGauge.White },
+        new("Spirit Release Slash 3", 15, 0.1) { Count = 3, Spirit = SpiritGauge.White },
+        new("Spirit Release Slash 4", 22, 0.1) { Count = 3, Spirit = SpiritGauge.White },
+        new("Spirit Release Slash 5", 35, 0.1) { Count = 3, Spirit = SpiritGauge.White },
+    ];
+    private static readonly AttackHit[] IaiSpiritSlashRed = [Red("Iai Spirit Slash 1 (Red)", 39), Red("Iai Spirit Slash 2 (Red)", 86)];
+
+    private const string GaugeNote = " Raw x the Spirit Gauge multiplier of the conditions (red x1.1).";
 
     public static readonly IReadOnlyList<AttackDefinition> All =
     [
@@ -232,6 +263,64 @@ public static class Attacks
             4, [new AttackHit("Axe Follow-up Heavy Slam 1", 32), new AttackHit("Axe Follow-up Heavy Slam 2", 90),
                 new AttackHit("Axe Follow-up Morph Slash", 123), Explosion("Follow-up Morph Slash Explosion", 120, 0.8)]) { Combo = true },
 
+        // Long Sword moves (seconds are rough)
+        new("ls-overhead-slash", WeaponType.LongSword, "Overhead Slash", "The first overhead slash (left click / Triangle); at a red gauge it is Crimson Slash I instead." + GaugeNote, 0.9,
+            [new AttackHit("Overhead Slash I", 24)]),
+        new("ls-overhead-slash-ii", WeaponType.LongSword, "Overhead Slash II", "The second overhead slash." + GaugeNote, 0.9, [new AttackHit("Overhead Slash II", 18)]),
+        new("ls-crescent-slash", WeaponType.LongSword, "Crescent Slash", "The third overhead slash." + GaugeNote, 1, [new AttackHit("Crescent Slash", 32)]),
+        new("ls-thrust", WeaponType.LongSword, "Thrust", "A thrust (right click / Circle)." + GaugeNote, 0.8, [new AttackHit("Thrust", 18)]),
+        new("ls-rising-slash", WeaponType.LongSword, "Rising Slash", "The rising slash after a thrust or a Crimson Slash (right click / Circle)." + GaugeNote, 0.8, [LsRisingSlash]),
+        new("ls-fade-slash", WeaponType.LongSword, "Fade Slash", "A backward fade slash." + GaugeNote, 1.2, [new AttackHit("Fade Slash", 22)]),
+        new("crimson-slash-i", WeaponType.LongSword, "Crimson Slash I", "Both hits (element x0.5). Only at a red gauge, so always at the red multiplier (raw x1.1).", 1.1, CrimsonSlash1),
+        new("crimson-slash-ii", WeaponType.LongSword, "Crimson Slash II", "Both hits (element x1.05). Only at a red gauge, so always at the red multiplier (raw x1.1).", 1,
+            [Red("Crimson Slash II 1", 11, 1.05), Red("Crimson Slash II 2", 22, 1.05)]),
+        new("crimson-slash-iii", WeaponType.LongSword, "Crimson Slash III", "All three hits (element x1.1). Only at a red gauge, so always at the red multiplier (raw x1.1).", 1.6,
+            [Red("Crimson Slash III 1", 30, 1.1), Red("Crimson Slash III 2", 18, 1.1), Red("Crimson Slash III 3", 55, 1.1)]),
+        new("spirit-blade-i", WeaponType.LongSword, "Spirit Blade I", "With gauge (R / R2)." + GaugeNote, 0.9, [SpiritBlade1]),
+        new("spirit-blade-ii", WeaponType.LongSword, "Spirit Blade II", "With gauge." + GaugeNote, 0.9, [SpiritBlade2]),
+        new("spirit-blade-iii", WeaponType.LongSword, "Spirit Blade III", "All three hits, with gauge." + GaugeNote, 1.4, SpiritBlade3),
+        new("spirit-roundslash", WeaponType.LongSword, "Spirit Roundslash", "With gauge; raises the gauge one level." + GaugeNote, 1.5, [new AttackHit("Spirit Roundslash", 38)]),
+        new("spirit-roundslash-red", WeaponType.LongSword, "Spirit Roundslash (red)", "The red-gauge version (42 MV), at the red multiplier.", 1.5, [SpiritRoundslashRed]),
+        new("spinning-crimson-slash", WeaponType.LongSword, "Spinning Crimson Slash", "The follow-up to a red Spirit Roundslash (60 MV), at the red multiplier.", 1.5, [SpinningCrimsonSlash]),
+        new("spirit-thrust", WeaponType.LongSword, "Spirit Thrust", "The thrust into Spirit Helm Breaker." + GaugeNote, 0.8, [SpiritThrust]),
+        new("spirit-helm-breaker-red", WeaponType.LongSword, "Spirit Helm Breaker (red)",
+            "Seven hits of 23 MV (element x0.2) at a red gauge; drops the gauge a level and uses the yellow multiplier (raw x1.04).", 3, [HelmBreakerRed]),
+        new("spirit-helm-breaker-yellow", WeaponType.LongSword, "Spirit Helm Breaker (yellow)",
+            "Seven hits of 20 MV (element x0.2) at a yellow gauge; uses the white multiplier (raw x1.02).", 3,
+            [new AttackHit("Spirit Helm Breaker (Yellow)", 20, 0.2) { Count = 7, Spirit = SpiritGauge.White }]),
+        new("spirit-helm-breaker-white", WeaponType.LongSword, "Spirit Helm Breaker (white)",
+            "Seven hits of 15 MV (element x0.2) at a white gauge; no gauge multiplier.", 3,
+            [new AttackHit("Spirit Helm Breaker (White)", 15, 0.2) { Count = 7, Spirit = SpiritGauge.None }]),
+        new("spirit-release-slash", WeaponType.LongSword, "Spirit Release Slash",
+            "Every hit of the follow-up to a red Helm Breaker (14 hits; element x0.1 after the first two), at the yellow and white multipliers.", 3.5, SpiritReleaseSlash),
+        new("iai-slash", WeaponType.LongSword, "Iai Slash", "Both hits of the draw from Special Sheathe." + GaugeNote, 1.2,
+            [new AttackHit("Iai Slash 1", 18), new AttackHit("Iai Slash 2", 13)]),
+        new("iai-spirit-slash-red", WeaponType.LongSword, "Iai Spirit Slash (red, countered)",
+            "Both hits of a successful counter from Special Sheathe at a red gauge (the second only on a counter), at the red multiplier.", 2, IaiSpiritSlashRed),
+        new("iai-spirit-slash-yellow", WeaponType.LongSword, "Iai Spirit Slash (yellow, countered)",
+            "Both hits of a successful counter at a yellow gauge; it raises the gauge to red. At the yellow multiplier (raw x1.04).", 2,
+            [new AttackHit("Iai Spirit Slash 1 (Yellow)", 31) { Spirit = SpiritGauge.Yellow }, new AttackHit("Iai Spirit Slash 2 (Yellow)", 72) { Spirit = SpiritGauge.Yellow }]),
+        new("foresight-slash", WeaponType.LongSword, "Foresight Slash into Whirl Slash (countered)",
+            "A successful Foresight Slash (x1.3: 23.4 MV) and both hits of the successful Foresight Whirl Slash; costs the gauge." + GaugeNote, 2.5,
+            [new AttackHit("Foresight Slash (Success)", 23.4), new AttackHit("Foresight Whirl Slash 1 (Success)", 28.6), new AttackHit("Foresight Whirl Slash 2 (Success)", 16.9)]),
+        new("unbound-thrust", WeaponType.LongSword, "Focus Strike: Unbound Thrust",
+            "Every hit, the last one on a wound (once per wound, raises the gauge a level)." + GaugeNote, 3,
+            [new AttackHit("Unbound Thrust 1", 26), new AttackHit("Unbound Thrust Extra Hit", 26), new AttackHit("Unbound Thrust 2", 10),
+             new AttackHit("Unbound Thrust 3", 40), new AttackHit("Unbound Thrust 4", 40), new AttackHit("Unbound Thrust 5", 40)]),
+        // Long Sword combos
+        new("crimson-rising-loop", WeaponType.LongSword, "Crimson Slash into Rising Slash",
+            "The steady red-gauge loop (left click, right click): Crimson Slash I (raw x1.1) and a Rising Slash at the gauge of the conditions; it can cancel into Foresight Slash.",
+            1.9, [.. CrimsonSlash1, LsRisingSlash]) { Combo = true },
+        new("crimson-spirit-loop", WeaponType.LongSword, "Crimson Slash into Spirit Blade I",
+            "The harder-hitting red-gauge loop (left click, R): Crimson Slash I (raw x1.1) and Spirit Blade I at the gauge of the conditions; slower to cancel into a counter.",
+            2, [.. CrimsonSlash1, SpiritBlade1]) { Combo = true },
+        new("red-spirit-combo", WeaponType.LongSword, "Spirit Blade combo into Spinning Crimson Slash",
+            "Spirit Blade I, II and III, the red Spirit Roundslash and Spinning Crimson Slash." + GaugeNote, 6,
+            [SpiritBlade1, SpiritBlade2, .. SpiritBlade3, SpiritRoundslashRed, SpinningCrimsonSlash]) { Combo = true },
+        new("helm-breaker-release", WeaponType.LongSword, "Spirit Thrust, Helm Breaker and Release Slash",
+            "The red-gauge finisher: Spirit Thrust, Spirit Helm Breaker (yellow multiplier) and Spirit Release Slash (yellow and white); drops the gauge two levels.", 7,
+            [SpiritThrust, HelmBreakerRed, .. SpiritReleaseSlash]) { Combo = true },
+
         // Bow moves: every arrow of a shot is one hit. Charge levels as the game counts them internally: Lv1 (no glow) to Lv3.
         // Power Shot and Power Volley fire one level above the charge they follow (capped at Lv3): Lv2 after a Lv1 shot.
         new("charged-shot-1", WeaponType.Bow, "Charged Shot Lv1", "One arrow of 10 MV (element x0.4)." + ArrowNote, 0.8, [ChargedShot1]),
@@ -292,6 +381,12 @@ public static class Attacks
                 new SequenceStep { Attack = "dash-dance" },
                 new SequenceStep { Attack = "thousand-dragons", Conditions = new() { ["charged_attack"] = false } },
             ]),
+        new("iai-counter-crimson-loop", WeaponType.LongSword, "Iai counter into Crimson Slash loop",
+            "A red-gauge Iai Spirit Slash counter (the parry), then Crimson Slash into Rising Slash four times. Timings are rough; edit it to your rotation.",
+            [
+                new SequenceStep { Attack = "iai-spirit-slash-red" },
+                new SequenceStep { Attack = "crimson-rising-loop", Repeat = 4 },
+            ]),
         new("sword-uptime-loop", WeaponType.SwitchAxe, "Sword uptime into Full Release",
             "Amped sword combo twice, Full Release Slash, then Follow-up Heavy Slam into Follow-up Morph Slash back to sword.",
             [
@@ -319,6 +414,7 @@ public static class Attacks
         WeaponType.GreatSword => "true-charged-slash",
         WeaponType.SwitchAxe => "full-release-slash",
         WeaponType.Bow => "dash-dance",
+        WeaponType.LongSword => "crimson-rising-loop",
         _ => null,
     };
 

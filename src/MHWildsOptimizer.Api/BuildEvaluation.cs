@@ -153,7 +153,7 @@ public static class BuildEvaluation
             waveRaw *= target.RawHitzone / 100.0;
             waveEle *= target.RawHitzone / 100.0;
             var hits = new List<HitDetailDto>();
-            foreach (var h in AttackProfile.ResolveHits(weapon, target, attack.Hits, row.Profile.PierceHits))
+            foreach (var h in AttackProfile.ResolveHits(weapon, target, attack.Hits, row.Profile.PierceHits, conditions.SpiritGauge))
             {
                 var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * d.Shots.For(h.Shot) * target.RawHitzone / 100.0;
                 var ele = d.ElementTrue * h.ElementModifier * eleHitzone / 100.0;

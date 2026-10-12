@@ -35,7 +35,7 @@ public class DamageCalculatorTests
                 [crit, crit, data.Decoration("Expert Jewel III [3]")]),
         };
         // raw 180, affinity 15 + 15 (parts) + 12 (Critical Eye 3) = 42, Critical Boost capped at 5 -> 1.40
-        var r = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
+        var r = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { AttackProfile = new AttackProfile { Attack = Attacks.Average } });
         Assert.Equal(180, r.BaseTrueRaw);
         Assert.Equal(42, r.Affinity);
         Assert.Equal(1.40, r.CriticalMultiplier);
