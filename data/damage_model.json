@@ -615,7 +615,7 @@
      "ele_flat_true_by_group": {
       "great-sword/hunting-horn": 5,
       "medium": 4,
-      "dual-blades/bow": 3
+      "dual-blades/bow/bowguns": 3
      },
      "resistance": 4
     },
@@ -624,7 +624,7 @@
      "ele_flat_true_by_group": {
       "great-sword/hunting-horn": 8,
       "medium": 5,
-      "dual-blades/bow": 4
+      "dual-blades/bow/bowguns": 4
      },
      "resistance": 6
     },
@@ -633,12 +633,12 @@
      "ele_flat_true_by_group": {
       "great-sword/hunting-horn": 10,
       "medium": 6,
-      "dual-blades/bow": 5
+      "dual-blades/bow/bowguns": 5
      },
      "resistance": 8
     }
    },
-   "source": "SkillData [5,5]/[10,8]/[15,12] + game8 flat values (+50/80/100 GS, +40/50/60 medium, +30/40/50 DB/Bow display); confidence medium"
+   "source": "PlayerSkillParam _ElementConvertCommonData [120 s, 60 s cooldown, res 4/6/8] and _ElementConvertWp??Data (first of three values per level: GS/HH 5/8/10, DB/Bow/HBG/LBG 3/4/5, others 4/5/6 true; the other two, +1/+2 true, have no known trigger) = game8 +50/80/100, +30/40/50, +40/50/60 display; ele_pct from SkillData [5]/[10]/[15]"
   },
   "Convert Element": {
    "kind": "armor",
@@ -667,26 +667,27 @@
    "levels": {
     "1": {
      "wound_pct": 105,
-     "burst": 100
+     "burst": 140
     },
     "2": {
      "wound_pct": 110,
-     "burst": 120
+     "burst": 160
     },
     "3": {
      "wound_pct": 115,
-     "burst": 160
+     "burst": 220
     },
     "4": {
      "wound_pct": 120,
-     "burst": 200
+     "burst": 300
     },
     "5": {
      "wound_pct": 130,
-     "burst": 250
+     "burst": 400
     }
    },
-   "note": "game8 quotes bursts 140/160/220/300/400 vs game data 100..250 - unresolved; ~50% proc chance"
+   "proc_pct": 50,
+   "source": "PlayerSkillParam _StabbingData [140,160,220,300,400,50,0.5]: fixed bursts and 50 % chance, matching game8 (post-TU4); last value 0.5 not identified; wound_pct from SkillData _value[0]. SkillData _value[1] = 100..250 is superseded. Not scored."
   },
   "Critical Status": {
    "kind": "weapon",
@@ -794,7 +795,7 @@
   "Burst": {
    "kind": "armor",
    "condition": "5 hits inside the window activate the full boost; the first hit gives the small boost; the buff lasts duration_s after the last hit",
-   "source": "PlayerSkillParam _ContinuousAttackWp??Data decoded as [first_attack, first_ele, duration_s, (attack, ele) x Lv1..5] (bowguns: [first_attack, duration_s, attack x Lv1..5]); matches game8/kiranico values exactly",
+   "source": "PlayerSkillParam _ContinuousAttackWp??Data decoded as [duration_s, first_attack, first_ele, (attack, ele) x Lv1..5] (bowguns: [duration_s, first_attack, attack x Lv1..5]); matches game8 501644 exactly (first hit +5 / +50, DB and Bow +30; window GS/HH/GL 5 s, DB and ranged 3 s, others 4 s)",
    "units": "attack = true raw, ele = true element (x10 for display)",
    "per_weapon": {
     "great-sword": {
@@ -828,10 +829,10 @@
     },
     "sword-shield": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -857,8 +858,8 @@
     },
     "dual-blades": {
      "first_hit": {
-      "attack": 3,
-      "ele": 5
+      "attack": 5,
+      "ele": 3
      },
      "duration_s": 3,
      "levels": {
@@ -886,10 +887,10 @@
     },
     "long-sword": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -915,10 +916,10 @@
     },
     "hammer": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -973,10 +974,10 @@
     },
     "lance": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -1031,10 +1032,10 @@
     },
     "switch-axe": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -1060,10 +1061,10 @@
     },
     "charge-blade": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -1089,10 +1090,10 @@
     },
     "insect-glaive": {
      "first_hit": {
-      "attack": 4,
+      "attack": 5,
       "ele": 5
      },
-     "duration_s": 5,
+     "duration_s": 4,
      "levels": {
       "1": {
        "attack": 8,
@@ -1118,8 +1119,8 @@
     },
     "bow": {
      "first_hit": {
-      "attack": 3,
-      "ele": 5
+      "attack": 5,
+      "ele": 3
      },
      "duration_s": 3,
      "levels": {
@@ -1147,9 +1148,9 @@
     },
     "heavy-bowgun": {
      "first_hit": {
-      "attack": 3
+      "attack": 5
      },
-     "duration_s": 5,
+     "duration_s": 3,
      "levels": {
       "1": {
        "attack": 6
@@ -1170,9 +1171,9 @@
     },
     "light-bowgun": {
      "first_hit": {
-      "attack": 3
+      "attack": 5
      },
-     "duration_s": 5,
+     "duration_s": 3,
      "levels": {
       "1": {
        "attack": 6

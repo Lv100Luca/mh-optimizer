@@ -68,7 +68,7 @@ element = min(TrueEle, Cap) * SharpEle * CritEle
 * Critical Element: 1.05/1.10/1.15 for fast weapons (LS, SnS, DB, Lance, IG, LBG, Bow), 1.07/1.14/1.21 for GS, Hammer, HH.
 * Sharpness (community table): raw green 1.05, blue 1.20, white 1.32, purple 1.39; element green 1.00, blue 1.0625, white 1.15, purple 1.25.
 * Element attack skills: ×1.00 +4, ×1.10 +5, ×1.20 +6 true. Coalescence ×1.10/1.20/1.30, Charge Master ×1.15/1.20/1.25 (charged attacks), Gogmapocalypse ×1.2 +2 / ×1.3 +4 when enraged.
-* Burst is per weapon type: GS Lv1..5 = +10/+12/+14/+16/+18 attack and +80/+100/+120/+160/+200 display element (5 s window), LS = +8/+10/+12/+15/+18 and +60/+80/+100/+120/+140 (5 s); first hit +5/+50 (GS) or +4/+50 (LS).
+* Burst is per weapon type: GS Lv1..5 = +10/+12/+14/+16/+18 attack and +80/+100/+120/+160/+200 display element (5 s window), LS = +8/+10/+12/+15/+18 and +60/+80/+100/+120/+140 (4 s window; DB and ranged 3 s); first hit +5 attack / +50 element (DB/Bow +30) on every weapon. Arrays read as [duration, first attack, first element, (attack, element) x Lv1..5], confirmed by game8 (2026-10-13).
 
 Optimizer metric: **Effective Raw + Effective Element per 100 MV of the chosen attack, plus proc damage per 100 MV** (below), on the raw-hitzone-100 scale (damage / (raw hitzone / 100)), so EFR keeps its usual meaning and element counts at element hitzone / raw hitzone.
 
@@ -117,7 +117,7 @@ Decided (2026-10-06):
 
 Still open:
 1. Transcendence slot rule for rarity-5 pieces with fewer than 3 slots (assumed: new level-1 slots appear).
-2. Resolved: Burst arrays decoded (GS Lv5 = +18 attack / +200 display element, LS Lv5 = +18 / +140), Critical Element GS 1.07/1.14/1.21 vs LS 1.05/1.10/1.15, Coalescence GS x1.10-1.30 vs LS x1.05-1.15. Still fuzzy: Elemental Absorption flat values, Flayer burst size, Charge Master grouping.
+2. Resolved: Burst arrays decoded (GS Lv5 = +18 attack / +200 display element, LS Lv5 = +18 / +140), Critical Element GS 1.07/1.14/1.21 vs LS 1.05/1.10/1.15, Coalescence GS x1.10-1.30 vs LS x1.05-1.15. Still fuzzy: Charge Master grouping. Settled 2026-10-13 from PlayerSkillParam: Elemental Absorption flats (_ElementConvertWp??Data: GS/HH +50/80/100, DB/Bow/bowguns +30/40/50, others +40/50/60 display) and Flayer bursts (_StabbingData 140/160/220/300/400, 50 %).
 3. Exact Wilds element sharpness multipliers (blue 1.0625 vs 1.05, purple 1.25 vs 1.27).
 4. Attacks exist for Great Sword and Switch Axe only; other weapon types still use the average-hit model. A sequence step cannot yet say "not amped" (Switch Axe sword moves always carry their amped explosion) or count Power Axe.
 5. Switch Axe: every move of the 1.040 MV sheet is in `Damage/Attacks.cs`. Still open:

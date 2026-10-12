@@ -279,6 +279,30 @@ public class DamageCalculatorTests
         Assert.Equal(new DamageConstants.BurstBoost(10, 8), DamageConstants.Burst(WeaponType.GreatSword, 1));
         Assert.Equal(5, DamageConstants.BurstDurationSeconds(WeaponType.GreatSword));
         Assert.Equal(3, DamageConstants.BurstDurationSeconds(WeaponType.DualBlades));
+        // game8: first hit +5 / +50 display (DB and Bow +30); window 5 s GS/HH/GL, 3 s DB and ranged, 4 s otherwise
+        Assert.Equal(new DamageConstants.BurstBoost(5, 5), DamageConstants.BurstFirstHit(WeaponType.LongSword));
+        Assert.Equal(new DamageConstants.BurstBoost(5, 3), DamageConstants.BurstFirstHit(WeaponType.DualBlades));
+        Assert.Equal(new DamageConstants.BurstBoost(5, 3), DamageConstants.BurstFirstHit(WeaponType.Bow));
+        Assert.Equal(new DamageConstants.BurstBoost(5, 0), DamageConstants.BurstFirstHit(WeaponType.HeavyBowgun));
+        Assert.Equal(new DamageConstants.BurstBoost(6, 0), DamageConstants.Burst(WeaponType.HeavyBowgun, 1));
+        Assert.Equal(5, DamageConstants.BurstDurationSeconds(WeaponType.Gunlance));
+        Assert.Equal(4, DamageConstants.BurstDurationSeconds(WeaponType.LongSword));
+        Assert.Equal(3, DamageConstants.BurstDurationSeconds(WeaponType.Bow));
+        Assert.Equal(3, DamageConstants.BurstDurationSeconds(WeaponType.LightBowgun));
+    }
+
+    [Theory]
+    [InlineData(WeaponType.GreatSword, 5, 8, 10)]
+    [InlineData(WeaponType.HuntingHorn, 5, 8, 10)]
+    [InlineData(WeaponType.LongSword, 4, 5, 6)]
+    [InlineData(WeaponType.DualBlades, 3, 4, 5)]
+    [InlineData(WeaponType.Bow, 3, 4, 5)]
+    [InlineData(WeaponType.HeavyBowgun, 3, 4, 5)]
+    [InlineData(WeaponType.LightBowgun, 3, 4, 5)]
+    public void ElementalAbsorptionFlatMatchesGameData(WeaponType type, int lv1, int lv2, int lv3)
+    {
+        // PlayerSkillParam _ElementConvertWp??Data, first value per level
+        Assert.Equal([lv1, lv2, lv3], new[] { 1, 2, 3 }.Select(l => DamageConstants.ElementalAbsorptionFlat(type, l)));
     }
 
     [Fact]

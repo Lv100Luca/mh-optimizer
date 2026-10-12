@@ -91,7 +91,10 @@ public static class DamageConstants
 
     public static double ElementalAbsorptionPercent(int level) => level switch { <= 0 => 1.0, 1 => 1.05, 2 => 1.10, _ => 1.15 };
 
-    /// <summary>Flat true element from Elemental Absorption (community values, confidence medium).</summary>
+    /// <summary>
+    /// Flat true element from Elemental Absorption: first value per level of PlayerSkillParam _ElementConvertWp??Data
+    /// (matches game8's +50/80/100, +30/40/50, +40/50/60 display; the two higher values per level have no known trigger).
+    /// </summary>
     public static int ElementalAbsorptionFlat(WeaponType type, int level)
     {
         if (level <= 0) return 0;
@@ -99,7 +102,7 @@ public static class DamageConstants
         return type switch
         {
             WeaponType.GreatSword or WeaponType.HuntingHorn => lv switch { 1 => 5, 2 => 8, _ => 10 },
-            WeaponType.DualBlades or WeaponType.Bow => lv switch { 1 => 3, 2 => 4, _ => 5 },
+            WeaponType.DualBlades or WeaponType.Bow or WeaponType.HeavyBowgun or WeaponType.LightBowgun => lv switch { 1 => 3, 2 => 4, _ => 5 },
             _ => lv switch { 1 => 4, 2 => 5, _ => 6 },
         };
     }
@@ -207,7 +210,8 @@ public static class DamageConstants
     public readonly record struct BurstBoost(int Attack, int Element);
 
     // PlayerSkillParam _ContinuousAttackWp??Data in Wp index order.
-    // Melee/bow: [first_attack, first_element, duration_s, (attack, element) x Lv1..5]; bowguns: [first_attack, duration_s, attack x Lv1..5].
+    // Melee/bow: [duration_s, first_attack, first_element, (attack, element) x Lv1..5]; bowguns: [duration_s, first_attack, attack x Lv1..5].
+    // Confirmed by game8: first hit +5 attack / +50 element (DB and Bow +30), window 5 s (GS/HH/GL), 3 s (DB and ranged), 4 s otherwise.
     private static readonly int[][] BurstArrays =
     [
         [5, 5, 5, 10, 8, 12, 10, 14, 12, 16, 16, 18, 20], // GS
@@ -241,12 +245,8 @@ public static class DamageConstants
     public static BurstBoost BurstFirstHit(WeaponType type)
     {
         var a = BurstArrays[(int)type];
-        return a.Length == 13 ? new BurstBoost(a[0], a[1]) : new BurstBoost(a[0], 0);
+        return a.Length == 13 ? new BurstBoost(a[1], a[2]) : new BurstBoost(a[1], 0);
     }
 
-    public static int BurstDurationSeconds(WeaponType type)
-    {
-        var a = BurstArrays[(int)type];
-        return a.Length == 13 ? a[2] : a[1];
-    }
+    public static int BurstDurationSeconds(WeaponType type) => BurstArrays[(int)type][0];
 }
