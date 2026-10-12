@@ -307,9 +307,10 @@
         var kind = w.Spec?.Type ?? w.Type ?? "great-sword";
         if (m == SpecMode)
         {
+            var kept = App.TakeSetAsideSpec();
             App.PatchWeapon(x => x with
             {
-                Spec = new GogmaWeaponSpecInput
+                Spec = kept is not null && kept.Type == kind ? kept : new GogmaWeaponSpecInput
                 {
                     Type = kind, Focus = GogmaFocus.Attack, Element = x.Element, Infused = x.Element != Element.None, AttackParts = 3, Reinforcements = [],
                 },
@@ -321,6 +322,7 @@
         {
             var rw = App.Resolved?.Weapon;
             var variant = Cat.WeaponTypes.GetValueOrDefault(kind)?.Variants.GetValueOrDefault(Fmt.Slug(w.Spec?.Focus ?? GogmaFocus.Attack));
+            if (w.Spec is not null) App.SetAsideSpec(w.Spec);
             App.PatchWeapon(x => x with
             {
                 Spec = null,

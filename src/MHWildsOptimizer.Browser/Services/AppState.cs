@@ -31,6 +31,8 @@ public sealed partial class AppState : IDisposable
     private Dictionary<string, WeaponSession> _sessions = new();
     private string _activeKey = NewWeapon;
     private readonly Dictionary<string, CancellationTokenSource> _runs = new();
+    /// <summary>The described weapon per session while it is entered as stats, restored when switching back.</summary>
+    private readonly Dictionary<string, GogmaWeaponSpecInput> _setAsideSpecs = new();
     private CancellationTokenSource? _batchRun;
     /// <summary>Drafts in browser storage as last written (session key -> JSON), for the current profile.</summary>
     private Dictionary<string, string> _writtenDrafts = new();
@@ -537,6 +539,12 @@ public sealed partial class AppState : IDisposable
     });
 
     public void PatchWeapon(Func<WeaponStatsInput, WeaponStatsInput> fn) => PatchRequest(r => r with { Weapon = fn(r.Weapon) });
+
+    /// <summary>Keeps the described weapon of the active session while it is entered as stats.</summary>
+    public void SetAsideSpec(GogmaWeaponSpecInput spec) => _setAsideSpecs[_activeKey] = spec;
+
+    /// <summary>The described weapon set aside for the active session, if any; it is handed out once.</summary>
+    public GogmaWeaponSpecInput? TakeSetAsideSpec() => _setAsideSpecs.Remove(_activeKey, out var spec) ? spec : null;
 
     public void PatchConditions(Func<Conditions, Conditions> fn) => PatchRequest(r => r with { Conditions = fn(r.Conditions) });
 
