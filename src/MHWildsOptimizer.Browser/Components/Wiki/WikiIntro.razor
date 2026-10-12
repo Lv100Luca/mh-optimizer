@@ -1,0 +1,75 @@
+@inject AppState App
+@* What a wiki section holds, shown until an entry is picked from the list. *@
+<div class="panel wiki-page">
+    @if (Missing is not null)
+    {
+        <Alert Kind="warning">There is no “@Missing” in the @Name. Pick one from the list.</Alert>
+    }
+    <Section Title="@Title" Key="wiki-intro" Collapsible="false">
+        @switch (Section)
+        {
+            case Tab.WikiArmor:
+                <p>
+                    Every armor set, high and low rank: each piece's skills, decoration slots (and what Armor Transcendence makes of them),
+                    defense and resistances, the totals for the full set, and what its set bonus and group skill do.
+                </p>
+                <p class="muted small">
+                    @Fmt.Plural(Wiki.Data.ArmorSets.Count(s => s.Rank == "high"), "high rank set") ·
+                    @Fmt.Plural(Wiki.Data.ArmorSets.Count(s => s.Rank == "low"), "low rank set")
+                </p>
+                break;
+            case Tab.WikiBonuses:
+                <p>
+                    Set bonuses (two tiers, at 2 and 4 pieces of the same set bonus) and group skills (3 pieces with the same group skill,
+                    from any sets), with what each tier does in numbers and the sets that carry them. A Gogma Artian weapon that rolled one counts as a piece.
+                </p>
+                <div class="chip-row">
+                    @foreach (var s in Wiki.Data.Skills.Where(s => s.Kind is SkillKind.Set or SkillKind.Group).OrderBy(s => s.Kind).ThenBy(s => s.Name))
+                    {
+                        <button class="chip skill @s.Kind.ToString().ToLowerInvariant()" @onclick="() => App.OpenWiki(Section, s.Name)">
+                            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="18" />@s.Name
+                        </button>
+                    }
+                </div>
+                break;
+            default:
+                var weaponOnly = Wiki.Data.Skills.Where(s => s.WeaponOnly).ToList();
+                <p>
+                    Every armor and weapon skill in the game, with what each level actually does in numbers (the game's own texts are often
+                    vague), and where to get it: decorations, charms, armor pieces and weapons with it built in.
+                </p>
+                <p class="muted small">
+                    @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Armor), "armor skill") ·
+                    @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Weapon), "weapon skill") ·
+                    numbers from the game data (dtlnor/MHWs-in-json), kiranico and community tests, each rated by confidence.
+                </p>
+                <h3 class="wiki-subhead">Only on weapons</h3>
+                <p class="muted small">No decoration, armor piece or charm carries these: only certain weapons have them built in.</p>
+                <div class="chip-row">
+                    @foreach (var s in weaponOnly)
+                    {
+                        <button class="chip skill weapon" @onclick="() => App.OpenWiki(Section, s.Name)">
+                            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="18" />@s.Name
+                        </button>
+                    }
+                </div>
+                break;
+        }
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Tab Section { get; set; }
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+    /// <summary>The entry the URL named that does not exist.</summary>
+    [Parameter] public string? Missing { get; set; }
+
+    private string Title => Section switch
+    {
+        Tab.WikiArmor => "Armor sets",
+        Tab.WikiBonuses => "Set & group bonuses",
+        _ => "Skills",
+    };
+
+    private string Name => Title.ToLowerInvariant();
+}

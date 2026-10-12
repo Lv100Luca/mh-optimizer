@@ -117,6 +117,9 @@ public sealed partial class AppState : IDisposable
 
     public Tab Tab { get; private set; } = Tab.Inventory;
 
+    /// <summary>The skill or armor set the wiki shows; null = its list.</summary>
+    public string? WikiEntry { get; private set; }
+
     /// <summary>The profile's weapons with picked build and last run; null while loading.</summary>
     public IReadOnlyList<InventoryEntryDto>? Inventory { get; private set; }
     public string? InventoryError { get; private set; }
@@ -197,6 +200,7 @@ public sealed partial class AppState : IDisposable
         }
         else if (target.WeaponGiven) _activeKey = NewWeapon;
         Tab = target.Tab ?? (profileName != currentProfile ? Tab.Inventory : Tab);
+        WikiEntry = target.WikiEntry;
         await Task.CompletedTask;
     }
 
@@ -204,7 +208,7 @@ public sealed partial class AppState : IDisposable
     private void SyncUrl()
     {
         if (!Ready || Profile is null) return;
-        var url = Route.Url(Profile, _activeKey == NewWeapon ? null : _activeKey, Tab);
+        var url = Route.Url(Profile, _activeKey == NewWeapon ? null : _activeKey, Tab, WikiEntry);
         if (url != _nav.ToBaseRelativePath(_nav.Uri))
         {
             _lastUrl = url;
@@ -369,9 +373,24 @@ public sealed partial class AppState : IDisposable
 
     public void SetTab(Tab tab)
     {
-        if (tab != Tab) _pushNext = true;
+        if (tab != Tab)
+        {
+            _pushNext = true;
+            WikiEntry = null;
+        }
         Tab = tab;
         // only the view changes: validating again (and re-rendering with the same result) only made switching slower
+        SyncUrl();
+        Notify();
+    }
+
+    /// <summary>Shows a wiki page: a section's list, or one skill or armor set in it.</summary>
+    public void OpenWiki(Tab section, string? entry = null)
+    {
+        if (section == Tab && entry == WikiEntry) return;
+        _pushNext = true;
+        Tab = section;
+        WikiEntry = entry;
         SyncUrl();
         Notify();
     }

@@ -1,0 +1,184 @@
+@inherits AppComponent
+@inject WikiService Wiki
+@* The game reference: a searchable list of the section's entries next to the open entry (on phones one or the other).
+   Sections: skills, set and group bonuses, armor sets; the URL names the open entry, so pages can be linked. *@
+
+@if (_error is not null)
+{
+    <div class="panel">
+        <Alert Kind="error">The wiki data could not be loaded: @_error</Alert>
+        <div><button class="btn" @onclick="LoadAsync">Try again</button></div>
+    </div>
+}
+else if (_wiki is not { } wiki)
+{
+    <div class="progress"><span class="spinner"></span>Loading the wiki…</div>
+}
+else
+{
+    var section = App.Tab;
+    var entry = App.WikiEntry;
+    <div class="wiki @(entry is null ? "" : "has-entry")">
+        <aside class="wiki-side card">
+            <div class="wiki-tools">
+                <SearchBox Value="@Query(section)" ValueChanged="@(q => _queries[section] = q ?? string.Empty)" Placeholder="@SearchHint(section)" />
+                @if (section == Tab.WikiArmor)
+                {
+                    <Segmented T="string" Small="true" Value="_rank" ValueChanged="v => _rank = v" Options="RankOptions" />
+                }
+                else
+                {
+                    <Segmented T="string" Small="true" Value="Filter(section)" ValueChanged="v => _filters[section] = v"
+                               Options="@(section == Tab.WikiSkills ? SkillFilters : BonusFilters)" />
+                }
+            </div>
+            <div class="wiki-list" role="list">
+                @if (section == Tab.WikiArmor)
+                {
+                    var sets = Sets(wiki).ToList();
+                    <div class="wiki-count muted tiny">@Fmt.Plural(sets.Count, "set")</div>
+                    @foreach (var s in sets)
+                    {
+                        <button @key="s.Name" role="listitem" class="wiki-row @(s.Name == entry ? "active" : "")" @onclick="() => App.OpenWiki(section, s.Name)">
+                            <img class="icon" width="22" height="22" src="@GameIcons.Armor(s.Pieces[0].Piece, s.Rarity)" alt="" />
+                            <span class="wiki-row-name">@s.Name</span>
+                            <RarityBadge Rarity="s.Rarity" />
+                        </button>
+                    }
+                }
+                else
+                {
+                    var skills = Skills(wiki, section).ToList();
+                    <div class="wiki-count muted tiny">@Fmt.Plural(skills.Count, section == Tab.WikiSkills ? "skill" : "bonus", section == Tab.WikiSkills ? null : "bonuses")</div>
+                    @foreach (var s in skills)
+                    {
+                        <button @key="s.Name" role="listitem" class="wiki-row @(s.Name == entry ? "active" : "")" @onclick="() => App.OpenWiki(section, s.Name)">
+                            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="22" />
+                            <span class="wiki-row-name">@s.Name</span>
+                            @if (s.WeaponOnly)
+                            {
+                                <span class="wiki-flag" title="Only on weapons: no decoration, armor piece or charm has it">weapon only</span>
+                            }
+                            @if (section == Tab.WikiSkills)
+                            {
+                                <span class="muted tiny">Lv @s.MaxLevel</span>
+                            }
+                            else
+                            {
+                                <KindTag Kind="s.Kind" />
+                            }
+                        </button>
+                    }
+                }
+            </div>
+        </aside>
+        <div class="wiki-main">
+            @if (entry is not null)
+            {
+                <button class="linklike wiki-back" @onclick="() => App.OpenWiki(section)">← all @(section == Tab.WikiArmor ? "armor sets" : section == Tab.WikiSkills ? "skills" : "set & group bonuses")</button>
+            }
+            @if (section == Tab.WikiArmor)
+            {
+                if (entry is not null && wiki.Sets.TryGetValue(entry, out var set))
+                {
+                    <WikiArmorPage Set="set" Wiki="wiki" />
+                }
+                else
+                {
+                    <WikiIntro Section="section" Wiki="wiki" Missing="entry" />
+                }
+            }
+            else if (entry is not null && wiki.Skills.TryGetValue(entry, out var skill))
+            {
+                <WikiSkillPage Skill="skill" Wiki="wiki" />
+            }
+            else
+            {
+                <WikiIntro Section="section" Wiki="wiki" Missing="entry" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private WikiIndex? _wiki;
+    private string? _error;
+    private readonly Dictionary<Tab, string> _queries = [];
+    private readonly Dictionary<Tab, string> _filters = [];
+    private string _rank = "high";
+
+    private static readonly IReadOnlyList<SegmentOption<string>> SkillFilters =
+    [
+        new("all", "All"), new("armor", "Armor"), new("weapon", "Weapon"),
+        new("weapon-only", "Weapon only", Hint: "Skills no decoration, armor piece or charm has: only certain weapons carry them"),
+    ];
+
+    private static readonly IReadOnlyList<SegmentOption<string>> BonusFilters =
+    [
+        new("all", "All"), new("set", "Set bonuses"), new("group", "Group skills"),
+        new("gogma", "Gogma", Hint: "Can be rolled on a Gogma Artian weapon"),
+    ];
+
+    private static readonly IReadOnlyList<SegmentOption<string>> RankOptions = [new("high", "High rank"), new("low", "Low rank")];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _error = null;
+        try
+        {
+            _wiki = await Wiki.LoadAsync();
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
+    }
+
+    private string Query(Tab section) => _queries.GetValueOrDefault(section, "");
+
+    private string Filter(Tab section) => _filters.GetValueOrDefault(section, "all");
+
+    private static string SearchHint(Tab section) => section switch
+    {
+        Tab.WikiArmor => "Set, piece or skill…",
+        Tab.WikiBonuses => "Bonus, tier or effect…",
+        _ => "Skill, text or effect…",
+    };
+
+    private static bool Matches(string text, string query) =>
+        query.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(w => text.Contains(w, StringComparison.OrdinalIgnoreCase));
+
+    private IEnumerable<WikiSkill> Skills(WikiIndex wiki, Tab section)
+    {
+        var query = Query(section);
+        var filter = Filter(section);
+        return wiki.Data.Skills.Where(s => section == Tab.WikiSkills
+                ? s.Kind is SkillKind.Armor or SkillKind.Weapon && filter switch
+                {
+                    "armor" => s.Kind == SkillKind.Armor,
+                    "weapon" => s.Kind == SkillKind.Weapon,
+                    "weapon-only" => s.WeaponOnly,
+                    _ => true,
+                }
+                : s.Kind is SkillKind.Set or SkillKind.Group && filter switch
+                {
+                    "set" => s.Kind == SkillKind.Set,
+                    "group" => s.Kind == SkillKind.Group,
+                    "gogma" => s.GogmaPool,
+                    _ => true,
+                })
+            .Where(s => query.Length == 0 || Matches(wiki.SkillText[s.Name], query))
+            .OrderBy(s => s.Kind is SkillKind.Set or SkillKind.Group ? (int)s.Kind : 0).ThenBy(s => s.Name);
+    }
+
+    private IEnumerable<WikiArmorSet> Sets(WikiIndex wiki)
+    {
+        var query = Query(Tab.WikiArmor);
+        return wiki.Data.ArmorSets.Where(s => s.Rank == _rank && (query.Length == 0 || Matches(wiki.SetText[s.Name], query)));
+    }
+}

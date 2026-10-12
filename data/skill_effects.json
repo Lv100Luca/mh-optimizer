@@ -1,0 +1,3613 @@
+{
+ "_about": "What each skill level does in numbers, shown by the wiki (tools/build_wiki.py folds it into data/wiki.json). Curated 2026-10-12 from the game data (data/datamine, notes/skill_params_datamine.md), data/damage_model.json, notes/skill_values_*.md, kiranico and community tests. Units as the game words them: attack as in skill texts, element in display units. confidence: high = data and an independent check agree, medium = one source or inferred meaning, low = single secondary source.",
+ "Adaptability": {
+  "levels": {
+   "1": [
+    "Negates heat and cold effects"
+   ],
+   "2": [
+    "Also negates environmental damage"
+   ]
+  },
+  "source": "In-game text; SkillData has no numeric values for this skill.",
+  "confidence": "high"
+ },
+ "Adrenaline Rush": {
+  "trigger": "After a perfectly-timed evade",
+  "levels": {
+   "1": [
+    "Attack +10",
+    "Duration 30 s"
+   ],
+   "2": [
+    "Attack +15",
+    "Duration 30 s"
+   ],
+   "3": [
+    "Attack +20",
+    "Duration 30 s"
+   ],
+   "4": [
+    "Attack +25",
+    "Duration 30 s"
+   ],
+   "5": [
+    "Attack +30",
+    "Duration 30 s"
+   ]
+  },
+  "notes": [
+   "Does not refresh or stack while active.",
+   "Seregios set bonus extends it (+15 s) and allows a re-activation."
+  ],
+  "source": "Datamine SkillData _value[0] = attack, matches game text; duration from game8 and gamepedia.jp.",
+  "confidence": "high"
+ },
+ "Agitator": {
+  "trigger": "While the large monster is enraged",
+  "levels": {
+   "1": [
+    "Attack +4",
+    "Affinity +3%"
+   ],
+   "2": [
+    "Attack +8",
+    "Affinity +5%"
+   ],
+   "3": [
+    "Attack +12",
+    "Affinity +7%"
+   ],
+   "4": [
+    "Attack +16",
+    "Affinity +10%"
+   ],
+   "5": [
+    "Attack +20",
+    "Affinity +15%"
+   ]
+  },
+  "notes": [
+   "Becomes active about 3 s after the monster enrages."
+  ],
+  "source": "Datamine SkillData _value[0] = attack, [1] = affinity; matches game text, kiranico and game8.",
+  "confidence": "high"
+ },
+ "Airborne": {
+  "trigger": "Jumping attacks",
+  "levels": {
+   "1": [
+    "Jumping attack damage ×1.10"
+   ]
+  },
+  "source": "Datamine SkillData _value[0] = 110; in-game text says +10%; kiranico agrees.",
+  "confidence": "high"
+ },
+ "Alluring Pelt": {
+  "trigger": "When attacking a monster",
+  "levels": {
+   "1": [
+    "Aggro (threat) from your attacks ×2"
+   ]
+  },
+  "source": "Datamine SkillData [200], read as a ×2.0 threat multiplier; Wycademy agrees.",
+  "confidence": "medium"
+ },
+ "Ambush": {
+  "trigger": "After a successful Sneak Attack on a large monster",
+  "levels": {
+   "1": [
+    "Attack ×1.05",
+    "Duration 30 s"
+   ],
+   "2": [
+    "Attack ×1.10",
+    "Duration 30 s"
+   ],
+   "3": [
+    "Attack ×1.15",
+    "Duration 30 s"
+   ]
+  },
+  "notes": [
+   "Applies against large monsters only.",
+   "A Ghillie Mantle makes Sneak Attacks easy to set up."
+  ],
+  "source": "Datamine SkillData _value[0] = attack %, [1] = 30 s duration; game text and game8 (30 s) agree.",
+  "confidence": "high"
+ },
+ "Antivirus": {
+  "trigger": "After contracting / overcoming the Frenzy",
+  "levels": {
+   "1": [
+    "Frenzy recovery +10%",
+    "Affinity +3% after overcoming it"
+   ],
+   "2": [
+    "Frenzy recovery +20%",
+    "Affinity +6% after overcoming it"
+   ],
+   "3": [
+    "Frenzy recovery +30%",
+    "Affinity +10% after overcoming it"
+   ]
+  },
+  "notes": [
+   "Stacks with the base +15% affinity every hunter gets for overcoming the Frenzy."
+  ],
+  "source": "Datamine SkillData _value[0] = recovery rate %, [1] = affinity; matches game text and game8.",
+  "confidence": "high"
+ },
+ "Aquatic/Oilsilt Mobility": {
+  "levels": {
+   "1": [
+    "Negates muddy streams",
+    "No slowdown in water and oilsilt",
+    "Less slowdown in drakesbone oil"
+   ],
+   "2": [
+    "Also negates waves"
+   ]
+  },
+  "source": "In-game text; SkillData has no numeric values for this skill.",
+  "confidence": "high"
+ },
+ "Arkveld's Hunger": {
+  "trigger": "While continually landing hits (about 5 hits in a few seconds)",
+  "levels": {
+   "1": [
+    "Heals 3 / 6 / 14 HP per trigger (by weapon class)"
+   ],
+   "2": [
+    "Heals 5 / 10 / 20 HP per trigger (by weapon class)"
+   ]
+  },
+  "tables": [
+   {
+    "title": "HP healed per trigger",
+    "columns": [
+     "Weapon class",
+     "I",
+     "II"
+    ],
+    "rows": [
+     [
+      "Light Bowgun, Heavy Bowgun, Bow",
+      "3",
+      "5"
+     ],
+     [
+      "Long Sword, Sword and Shield, Dual Blades, Lance, Switch Axe, Charge Blade, Insect Glaive",
+      "6",
+      "10"
+     ],
+     [
+      "Great Sword, Hammer, Hunting Horn, Gunlance",
+      "14",
+      "20"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Boosted by Recovery Up.",
+   "game8 lists 15 instead of 14 for the heavy class at tier I."
+  ],
+  "source": "Datamine SkillData [3, 6, 14] / [5, 10, 20] per weapon class; matches kiranico and game8.",
+  "confidence": "high"
+ },
+ "Artillery": {
+  "trigger": "Shelling, Wyvern's Fire, Charge Blade impact phials, Sticky Ammo",
+  "levels": {
+   "1": [
+    "Shelling fire attack +30",
+    "Impact phial / Sticky Ammo damage ×1.10",
+    "Wyvern's Fire fires faster"
+   ],
+   "2": [
+    "Shelling fire attack +60",
+    "Impact phial / Sticky Ammo damage ×1.20",
+    "Wyvern's Fire fires faster"
+   ],
+   "3": [
+    "Shelling fire attack +90",
+    "Impact phial / Sticky Ammo damage ×1.30",
+    "Wyvern's Fire fires faster"
+   ]
+  },
+  "notes": [
+   "Gunlance, Charge Blade (impact phials) and bowgun Sticky Ammo only; Switch Axe phials, element-phial CB and Bow are not affected.",
+   "Datamine slots [0] 5/10/15 and [1] 120/150/200 are most likely Wyvern's Fire speed factors (unconfirmed); game8 measured Wyvern's Fire 76 -> 80 -> 84 -> 89 damage at Lv0-3."
+  ],
+  "source": "Datamine SkillData [2] = shelling fire true 3/6/9, [3] = explosive ×1.10/1.20/1.30; in-game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Attack Boost": {
+  "levels": {
+   "1": [
+    "Attack +3"
+   ],
+   "2": [
+    "Attack +5"
+   ],
+   "3": [
+    "Attack +7"
+   ],
+   "4": [
+    "Attack ×1.02, then +8"
+   ],
+   "5": [
+    "Attack ×1.04, then +9"
+   ]
+  },
+  "source": "Datamine SkillData [0] = attack %, [1] = flat attack; matches in-game text and kiranico.",
+  "confidence": "high"
+ },
+ "Ballistics": {
+  "trigger": "Bow, Light and Heavy Bowgun",
+  "levels": {
+   "1": [
+    "Critical range: start ×0.9, end ×1.1 (most ammo)"
+   ],
+   "2": [
+    "Critical range: start ×0.85, end ×1.15 (most ammo)",
+    "Heavy Bowgun Normal/Spread: critical range from point-blank"
+   ],
+   "3": [
+    "Critical range: start ×0.75, end ×1.25 (most ammo)",
+    "Attack +5 on shots inside critical range"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Critical range distance multipliers (start / end of the range)",
+    "columns": [
+     "Ammo",
+     "Lv1",
+     "Lv2",
+     "Lv3"
+    ],
+    "rows": [
+     [
+      "Most bowgun ammo",
+      "×0.9 / ×1.1",
+      "×0.85 / ×1.15",
+      "×0.75 / ×1.25"
+     ],
+     [
+      "Heavy Bowgun Normal",
+      "×0.55 / ×1.1",
+      "point-blank / ×1.15",
+      "point-blank / ×1.25"
+     ],
+     [
+      "Bowgun Pierce",
+      "×0.83 / ×1.05",
+      "×0.65 / ×1.15",
+      "×0.5 / ×1.2"
+     ],
+     [
+      "Heavy Bowgun Spread",
+      "×0.6 / ×1.15",
+      "point-blank / ×1.25",
+      "point-blank / ×1.35"
+     ],
+     [
+      "Light Bowgun Spread",
+      "×0.8 / ×1.15",
+      "point-blank / ×1.25",
+      "point-blank / ×1.35"
+     ],
+     [
+      "Bow arrows",
+      "×0.9 / ×1.05-1.1",
+      "×0.8-0.85 / ×1.1-1.15",
+      "×0.65-0.75 / ×1.15-1.25"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Lv3 bonus added in TU4 (Ver 1.040); game8 measured it as about +2% damage, which fits +5 attack on a typical gunner weapon.",
+   "Ammo labels for the per-type rows are read from the game's enum order (Normal, Pierce, Spread); treat the row names as likely, not certain."
+  ],
+  "source": "PlayerSkillParam _Ballistic_Wp11/12/13Data (start/end multipliers per level) and _Ballistic_WpXXAttackAdd = 5; game8 range tests agree.",
+  "confidence": "medium"
+ },
+ "Bind Resistance": {
+  "levels": {
+   "1": [
+    "Webbed / frostblight duration ×0.70 (about 6 s -> 4 s)"
+   ],
+   "2": [
+    "Webbed / frostblight duration ×0.40 (about 6 s -> 2 s)"
+   ],
+   "3": [
+    "Prevents webbed status and frostblight"
+   ]
+  },
+  "notes": [
+   "Teammates or your Palico hitting you also frees you sooner."
+  ],
+  "source": "Datamine SkillData _value[0..1] = webbed / frostblight duration % (70 / 40 / 0); game8 tested approx. 6 / 4 / 2 s on Nerscylla.",
+  "confidence": "high"
+ },
+ "Bladescale Honing": {
+  "trigger": "Narrowly evading a monster attack with the weapon drawn",
+  "levels": {
+   "1": [
+    "Grants a special sharpness gauge: raw ×1.40, element ×1.25",
+    "Normal sharpness is not used while it lasts"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Special sharpness gauge size (game data units)",
+    "columns": [
+     "Weapon",
+     "Amount"
+    ],
+    "rows": [
+     [
+      "Sword & Shield, Dual Blades",
+      "60"
+     ],
+     [
+      "Lance, Gunlance",
+      "50"
+     ],
+     [
+      "Great Sword, Long Sword, Hammer, Hunting Horn, Switch Axe, Charge Blade, Insect Glaive",
+      "40"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Innate on the Seregios Tree melee weapons (e.g. Khanga Rebellion, Impudent Cheda, Feral Fangs, Terrible Twins, Rebellious Charger).",
+   "A new gauge cannot be earned until the current one is used up (game8: lasts a few attacks); game data also lists a 300 s limit.",
+   "Trigger moves include LS Foresight Slash, DB demon dodge, Hammer charged step, SnS backstep, Lance/GL steps, IG back jump."
+  ],
+  "source": "PlayerSkillParam _SkillBladeToishiDamage 1.4 / _SkillBladeToishiElem 1.25 / _Skill218or217AddDataPack; game8.jp measured raw ×1.40 vs yellow.",
+  "confidence": "medium"
+ },
+ "Bladescale Loading": {
+  "trigger": "Narrowly evading a monster attack with the weapon drawn",
+  "levels": {
+   "1": [
+    "Loads 3 special rounds / coatings",
+    "Bowgun ammo damage ×1.40",
+    "Bow coating shots damage ×1.25",
+    "Regular ammo is not used while they last"
+   ]
+  },
+  "notes": [
+   "Innate on the Seregios Tree ranged weapons: Insurgent Bow / Shalya Bow I, Insurrection Cannon / Sayyad Cannon I (HBG), Rebel Stopper / Rasasa Bowgun I (LBG).",
+   "Evading again while special rounds remain adds nothing; empty them first."
+  ],
+  "source": "PlayerSkillParam _Skill218AttackRate_Gun 1.4 / _Bow 1.25, 3 shots per weapon; game8.jp measured 1.40 (Normal/Spread Lv3) and 1.25 (coatings).",
+  "confidence": "high"
+ },
+ "Blangonga's Spirit": {
+  "trigger": "Using the To Victory! gesture near allies",
+  "levels": {
+   "1": [
+    "Attack +3 for you and nearby hunters",
+    "Attack +10 for Palicoes and Support Hunters (likely)",
+    "Duration 90 s"
+   ],
+   "2": [
+    "Attack +6 for you and nearby hunters",
+    "Attack +20 for Palicoes and Support Hunters (likely)",
+    "Duration 90 s"
+   ]
+  },
+  "notes": [
+   "game8 measured the +3 / +6 and quotes 60 s; the datamine holds 90 s.",
+   "The 10 / 20 per-level values most likely are the Palico / Support Hunter bonus (unverified)."
+  ],
+  "source": "Common-effect _MoraleData [20, 3, 6] and SkillData [90, 10] / [90, 20]; +3 / +6 tested by game8.",
+  "confidence": "medium"
+ },
+ "Blast Attack": {
+  "levels": {
+   "1": [
+    "Blast buildup ×1.05, then +10"
+   ],
+   "2": [
+    "Blast buildup ×1.10, then +20"
+   ],
+   "3": [
+    "Blast buildup ×1.20, then +50"
+   ]
+  },
+  "notes": [
+   "Capped by the status maximum."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = flat true 1/2/5 (= display 10/20/50); matches in-game text.",
+  "confidence": "high"
+ },
+ "Blast Functionality": {
+  "trigger": "Bow only",
+  "levels": {
+   "1": [
+    "Lets the bow load Blast Coatings"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Blast Resistance": {
+  "levels": {
+   "1": [
+    "Blast countdown +25 s (about 25 s -> 50 s)",
+    "Blast damage ×0.66"
+   ],
+   "2": [
+    "Blast countdown +50 s (about 25 s -> 75 s)",
+    "Blast damage ×0.50"
+   ],
+   "3": [
+    "Prevents blastblight"
+   ]
+  },
+  "notes": [
+   "game8 measured the blast at about 50% / 33% damage instead of the datamine 66% / 50%.",
+   "Blastblight can also be removed by rolling."
+  ],
+  "source": "Datamine SkillData _value[0] = extra countdown s, [1] = damage %; game8 timers (50 / 75 s) agree, its damage test differs.",
+  "confidence": "medium"
+ },
+ "Bleeding Resistance": {
+  "levels": {
+   "1": [
+    "Bleeding damage ×0.50"
+   ],
+   "2": [
+    "Bleeding damage ×0.25"
+   ],
+   "3": [
+    "Prevents bleeding"
+   ]
+  },
+  "source": "Datamine SkillData _value[0] = 50 / 25 / 0, read as % of bleed damage taken; fits the game text (reduces / greatly reduces / prevents).",
+  "confidence": "medium"
+ },
+ "Blight Resistance": {
+  "levels": {
+   "1": [
+    "Elemental blight duration -50%"
+   ],
+   "2": [
+    "Elemental blight duration -75%"
+   ],
+   "3": [
+    "Nullifies elemental blights"
+   ]
+  },
+  "notes": [
+   "Covers fire, water, thunder, ice and dragon blights."
+  ],
+  "source": "Game text states the percentages; datamine SkillData _value[0] = 50 / 25 / 0 (% of duration left) agrees.",
+  "confidence": "high"
+ },
+ "Blindsider": {
+  "levels": {
+   "1": [
+    "Improves flash attacks and items"
+   ]
+  },
+  "notes": [
+   "Datamine value 200 (likely ×2 effect or range); meaning not confirmed.",
+   "game8: the flash is brighter (wider reach) but does not last longer, and the flash tolerance limit is unchanged."
+  ],
+  "source": "In-game text; SkillData _value[0] = 200 uninterpreted; game8 observations.",
+  "confidence": "low"
+ },
+ "Blossomdance Prayer": {
+  "trigger": "Only while the Blossomdance festival is running",
+  "levels": {
+   "1": [
+    "Special items added to quest rewards"
+   ],
+   "2": [
+    "Special items added to quest rewards",
+    "Attack ×1.09",
+    "Defense +50"
+   ]
+  },
+  "notes": [
+   "No effect outside the festival or when joining mid-quest.",
+   "Identical to the other festival Prayers."
+  ],
+  "source": "Datamine SkillData [100] / [109, 50]; game8 states 9% attack and 50 defense.",
+  "confidence": "high"
+ },
+ "Bludgeoner": {
+  "levels": {
+   "1": [
+    "Damage ×1.05 at yellow sharpness or lower"
+   ],
+   "2": [
+    "Damage ×1.10 at yellow sharpness or lower"
+   ],
+   "3": [
+    "Damage ×1.10 at green sharpness or lower"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 105/110/110; in-game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Bombardier": {
+  "levels": {
+   "1": [
+    "Explosive item damage +10%"
+   ],
+   "2": [
+    "Explosive item damage +20%"
+   ],
+   "3": [
+    "Explosive item damage +30%"
+   ]
+  },
+  "source": "Game text; PlayerSkillParam _BombMasterData = 1.1 / 1.2 / 1.3 agrees.",
+  "confidence": "high"
+ },
+ "Botanist": {
+  "levels": {
+   "1": [
+    "+1 consumable herb per gather"
+   ],
+   "2": [
+    "+1 herb",
+    "+1 fruit, nut or seed"
+   ],
+   "3": [
+    "+1 herb",
+    "+1 fruit, nut or seed",
+    "+1 insect"
+   ],
+   "4": [
+    "+1 herb",
+    "+1 fruit, nut or seed",
+    "+1 insect",
+    "+1 mushroom"
+   ]
+  },
+  "source": "Game text; datamine SkillData flags (1 per item group) agree.",
+  "confidence": "high"
+ },
+ "Burst": {
+  "trigger": "First hit gives a small boost; 5 consecutive hits give the full boost",
+  "levels": {
+   "1": [
+    "First hit: Attack +5, element +50 (DB/Bow +30)",
+    "After 5 hits: Attack +6 to +10, element +40 to +80 (see table)"
+   ],
+   "2": [
+    "First hit: Attack +5, element +50 (DB/Bow +30)",
+    "After 5 hits: Attack +7 to +12, element +60 to +100 (see table)"
+   ],
+   "3": [
+    "First hit: Attack +5, element +50 (DB/Bow +30)",
+    "After 5 hits: Attack +8 to +14, element +80 to +120 (see table)"
+   ],
+   "4": [
+    "First hit: Attack +5, element +50 (DB/Bow +30)",
+    "After 5 hits: Attack +9 to +16, element +100 to +160 (see table)"
+   ],
+   "5": [
+    "First hit: Attack +5, element +50 (DB/Bow +30)",
+    "After 5 hits: Attack +10 to +18, element +120 to +200 (see table)"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Burst after 5 hits per weapon (attack / element display)",
+    "columns": [
+     "Weapon",
+     "Lv1",
+     "Lv2",
+     "Lv3",
+     "Lv4",
+     "Lv5",
+     "First hit",
+     "Duration"
+    ],
+    "rows": [
+     [
+      "Great Sword",
+      "+10 / +80",
+      "+12 / +100",
+      "+14 / +120",
+      "+16 / +160",
+      "+18 / +200",
+      "+5 / +50",
+      "5 s"
+     ],
+     [
+      "Hunting Horn",
+      "+10 / +80",
+      "+12 / +100",
+      "+14 / +120",
+      "+16 / +160",
+      "+18 / +200",
+      "+5 / +50",
+      "5 s"
+     ],
+     [
+      "Gunlance",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "5 s"
+     ],
+     [
+      "Long Sword",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Sword & Shield",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Hammer",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Lance",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Switch Axe",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Charge Blade",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Insect Glaive",
+      "+8 / +60",
+      "+10 / +80",
+      "+12 / +100",
+      "+15 / +120",
+      "+18 / +140",
+      "+5 / +50",
+      "4 s"
+     ],
+     [
+      "Dual Blades",
+      "+8 / +40",
+      "+10 / +60",
+      "+12 / +80",
+      "+15 / +100",
+      "+18 / +120",
+      "+5 / +30",
+      "3 s"
+     ],
+     [
+      "Bow",
+      "+6 / +40",
+      "+7 / +60",
+      "+8 / +80",
+      "+9 / +100",
+      "+10 / +120",
+      "+5 / +30",
+      "3 s"
+     ],
+     [
+      "Light Bowgun",
+      "+6 / -",
+      "+7 / -",
+      "+8 / -",
+      "+9 / -",
+      "+10 / -",
+      "+5 / -",
+      "3 s"
+     ],
+     [
+      "Heavy Bowgun",
+      "+6 / -",
+      "+7 / -",
+      "+8 / -",
+      "+9 / -",
+      "+10 / -",
+      "+5 / -",
+      "3 s"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "The boost ends when no hit lands within the duration; each hit refreshes it.",
+   "Bowguns get no element boost (no element entry in the data).",
+   "Burst Boost (Ebony Odogaron's Power): +8 / +18 attack and +1 / +2 s while Burst is active."
+  ],
+  "source": "PlayerSkillParam _ContinuousAttackWp00..13Data read as [duration s, first-hit attack, first-hit element, (attack, element) x Lv1..5] (bowguns: no element slots); element ×10 for display; matches game8 per-weapon table exactly.",
+  "confidence": "high"
+ },
+ "Buttery Leathercraft": {
+  "trigger": "After sliding down terrain for at least 1 s",
+  "levels": {
+   "1": [
+    "Affinity +30%",
+    "Duration 60 s"
+   ]
+  },
+  "source": "Datamine SkillData [60, 30] and _SlidingPowerUpBeginTime 1.0; game8 agrees.",
+  "confidence": "high"
+ },
+ "Catburglar": {
+  "trigger": "Critical hits",
+  "levels": {
+   "1": [
+    "4% chance per critical hit to obtain an item",
+    "At most one roll every 3 s"
+   ]
+  },
+  "notes": [
+   "Innate on the Felyne Tree Sword & Shield (Catspaw, Catburglar).",
+   "Items include herbs, barrel bombs, armor spheres, Might Seeds and rarely a Silver Amulet Ticket; game8 measured about 3-4%."
+  ],
+  "source": "PlayerSkillParam _CatStickRandProb 4 and _CatStickCoolTimeSec 3; game8.jp drop test agrees.",
+  "confidence": "medium"
+ },
+ "Charge Master": {
+  "trigger": "Charged attacks only",
+  "levels": {
+   "1": [
+    "Element ×1.15 on charged attacks",
+    "Status buildup ×1.05"
+   ],
+   "2": [
+    "Element ×1.20 on charged attacks",
+    "Status buildup ×1.10"
+   ],
+   "3": [
+    "Element ×1.25 on charged attacks",
+    "Status buildup ×1.15"
+   ]
+  },
+  "notes": [
+   "Which weapons use which of the four data slots is not documented; game8 measured different per-weapon ratios (e.g. SnS 1.05/1.10/1.15, Bow about 1.02).",
+   "Affects GS/Hammer charges, Bow charged shots, IG descending slashes, SnS charged chop, CB charged double slash, Lance charge counter, GL charged shelling."
+  ],
+  "source": "Datamine SkillData [115,105,105,105] .. [125,115,115,115]; slot meaning inferred, conflicts with game8 per-weapon tests.",
+  "confidence": "medium"
+ },
+ "Charge Up": {
+  "trigger": "Hammer charged attacks",
+  "levels": {
+   "1": [
+    "Stun ×1.30 on charged attacks",
+    "Damage ×1.03 on charged attacks"
+   ]
+  },
+  "notes": [
+   "Hammer only. The damage part was added in TU4; uncharged attacks get nothing."
+  ],
+  "source": "Datamine SkillData [0] = 130 (stun), [1] = 103 (damage); game8.jp measured about ×1.25-1.3 stun and ×1.03 damage.",
+  "confidence": "high"
+ },
+ "Cliffhanger": {
+  "levels": {
+   "1": [
+    "Stamina use while climbing vines -50%"
+   ]
+  },
+  "source": "Game text; datamine SkillData _value[0] = 50 agrees.",
+  "confidence": "high"
+ },
+ "Coalescence": {
+  "trigger": "After recovering naturally from a blight or abnormal status",
+  "levels": {
+   "1": [
+    "Element ×1.10 (heavy weapons) / ×1.05 (others)",
+    "Status buildup ×1.05",
+    "Duration 30 s"
+   ],
+   "2": [
+    "Element ×1.20 (heavy weapons) / ×1.10 (others)",
+    "Status buildup ×1.10",
+    "Duration 30 s"
+   ],
+   "3": [
+    "Element ×1.30 (heavy weapons) / ×1.15 (others)",
+    "Status buildup ×1.15",
+    "Duration 30 s"
+   ]
+  },
+  "notes": [
+   "Heavy weapons: Great Sword, Hammer, Hunting Horn, Gunlance, Switch Axe, Charge Blade; all others use the lower value.",
+   "Curing with an item (e.g. Nulberry) does not trigger it; the Frenzy auto-cure does.",
+   "No raw attack bonus in Wilds."
+  ],
+  "source": "Datamine SkillData [heavy element %, other element %, status %] = 110/105/105, 120/110/110, 130/115/115; weapon grouping and 30 s from game8.",
+  "confidence": "medium"
+ },
+ "Constitution": {
+  "levels": {
+   "1": [
+    "Fixed stamina costs -10%"
+   ],
+   "2": [
+    "Fixed stamina costs -20%"
+   ],
+   "3": [
+    "Fixed stamina costs -30%"
+   ],
+   "4": [
+    "Fixed stamina costs -40%"
+   ],
+   "5": [
+    "Fixed stamina costs -50%"
+   ]
+  },
+  "notes": [
+   "Affects fixed costs (evades, some attacks), not stamina drain over time such as sprinting."
+  ],
+  "source": "Game text; datamine SkillData _value[0] = 10..50 agrees.",
+  "confidence": "high"
+ },
+ "Convert Element": {
+  "trigger": "After taking elemental damage; 120 s, then 90 s cooldown",
+  "levels": {
+   "1": [
+    "Dragon attack +80 and ×1.10",
+    "Dragon burst 150 base damage after enough element dealt"
+   ],
+   "2": [
+    "Dragon attack +120 and ×1.15",
+    "Dragon burst 200 base damage"
+   ],
+   "3": [
+    "Dragon attack +180 and ×1.20",
+    "Dragon burst 280 base damage"
+   ]
+  },
+  "notes": [
+   "The burst needs an elemental weapon; the element threshold (scalar 60 / 80 / 100) rises after each burst.",
+   "game8 measured bursts of 168 / 224 / 310 on the training dummy.",
+   "Weapon element is not converted to dragon."
+  ],
+  "source": "Datamine SkillData [dragon flat (true), dragon %, burst, threshold] and PlayerSkillParam _RyukilData (120 s, 90 s cooldown); dragon-attack slot meaning inferred.",
+  "confidence": "medium"
+ },
+ "Convert Thunder Resistance": {
+  "trigger": "Thunder-element weapon",
+  "levels": {
+   "1": [
+    "Thunder +5 per point of thunder resistance (GS, Hammer, HH)",
+    "Thunder +4 per point (other melee)",
+    "+2 per point on bowguns"
+   ]
+  },
+  "notes": [
+   "Innate on the whole Lagiacrus Tree (e.g. High Lagia Blade, Heaven's Thunder, Thundacrus Rex, High Voltsender).",
+   "game8 verified up to resistance 53 (GS 500 -> 765); the normal element cap still applies.",
+   "Bow is assumed to use the +4 rate; the +2 bowgun rate comes from the game data only."
+  ],
+  "source": "PlayerSkillParam _SkillAttrConvertElec heavy 0.5 / light 0.4 / bowgun 0.2 (true, ×10 display); game8.jp tests agree for melee.",
+  "confidence": "high"
+ },
+ "Convert Water Resistance": {
+  "trigger": "Water-element weapon",
+  "levels": {
+   "1": [
+    "Water +4 per point of water resistance (Long Sword, Bow)"
+   ]
+  },
+  "notes": [
+   "Innate on the Azure Star Long Swords (Azure Star Blade, Azure Star \"Dragon Dance\") and Azure Era Bows (Azure Era Wyrmbow, Azure Era \"Soaring Dragon\").",
+   "Same data rates as the thunder version (heavy weapons +5, bowguns +2), but only LS and Bow carry it.",
+   "No cap stated besides the normal element cap."
+  ],
+  "source": "PlayerSkillParam _SkillAttrConvertWater rates 0.5 / 0.4 / 0.2; game8.jp states +4 per point for both weapons.",
+  "confidence": "high"
+ },
+ "Counterstrike": {
+  "trigger": "After being knocked back",
+  "levels": {
+   "1": [
+    "Attack +10",
+    "Duration 30 s"
+   ],
+   "2": [
+    "Attack +15",
+    "Duration 35 s"
+   ],
+   "3": [
+    "Attack +25",
+    "Duration 45 s"
+   ]
+  },
+  "notes": [
+   "Also triggers from knockbacks absorbed by hyper armor, successful offsets and Rocksteady."
+  ],
+  "source": "Datamine SkillData _value[0] = attack, matches game text; durations from game8 and gamepedia.jp.",
+  "confidence": "high"
+ },
+ "Crackling Cornpopper": {
+  "trigger": "While Wyvern's Fire is reloading (gauge blinking red)",
+  "levels": {
+   "1": [
+    "Shelling damage ×1.35",
+    "Shelling fire attack +30"
+   ]
+  },
+  "notes": [
+   "Innate on the Workshop Gunlances Cornpopper and Mighty Cornpopper.",
+   "game8 measured shelling 49.8 -> 66.0 (about ×1.32)."
+  ],
+  "source": "PlayerSkillParam _RoastCorn_SootAttackRate 1.35 and _RoastCorn_SootFireAdd 3 (true); game8.jp test agrees.",
+  "confidence": "high"
+ },
+ "Critical Boost": {
+  "levels": {
+   "1": [
+    "Critical hit damage ×1.28 (base ×1.25)"
+   ],
+   "2": [
+    "Critical hit damage ×1.31"
+   ],
+   "3": [
+    "Critical hit damage ×1.34"
+   ],
+   "4": [
+    "Critical hit damage ×1.37"
+   ],
+   "5": [
+    "Critical hit damage ×1.40"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 128..140; in-game text and kiranico agree.",
+  "confidence": "high"
+ },
+ "Critical Draw": {
+  "trigger": "Draw attacks (not while riding)",
+  "levels": {
+   "1": [
+    "Affinity +50%"
+   ],
+   "2": [
+    "Affinity +75%"
+   ],
+   "3": [
+    "Affinity +100%"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 50/75/100; in-game text.",
+  "confidence": "high"
+ },
+ "Critical Element": {
+  "trigger": "Critical hits (element part of the hit)",
+  "levels": {
+   "1": [
+    "Element ×1.05 (fast weapons) / ×1.07 (heavy weapons) on crits"
+   ],
+   "2": [
+    "Element ×1.10 / ×1.14 on crits"
+   ],
+   "3": [
+    "Element ×1.15 / ×1.21 on crits"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Element multiplier on critical hits",
+    "columns": [
+     "Weapon group",
+     "Lv1",
+     "Lv2",
+     "Lv3"
+    ],
+    "rows": [
+     [
+      "LS, SnS, DB, Lance, IG, LBG, Bow",
+      "×1.05",
+      "×1.10",
+      "×1.15"
+     ],
+     [
+      "GS, Hammer, Hunting Horn",
+      "×1.07",
+      "×1.14",
+      "×1.21"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Gunlance, Switch Axe, Charge Blade and Heavy Bowgun: game8 puts GL/SA/CB in the heavy group and HBG in the fast group, gamewith.jp the opposite."
+  ],
+  "source": "PlayerSkillParam _AttrPowerRateData [1.05,1.10,1.15 | 1.07,1.14,1.21]; game8/gamewith measured the same within rounding.",
+  "confidence": "high"
+ },
+ "Critical Eye": {
+  "levels": {
+   "1": [
+    "Affinity +4%"
+   ],
+   "2": [
+    "Affinity +8%"
+   ],
+   "3": [
+    "Affinity +12%"
+   ],
+   "4": [
+    "Affinity +16%"
+   ],
+   "5": [
+    "Affinity +20%"
+   ]
+  },
+  "source": "Datamine SkillData [0]; in-game text.",
+  "confidence": "high"
+ },
+ "Critical Status": {
+  "trigger": "Critical hits (status part of the hit)",
+  "levels": {
+   "1": [
+    "Status buildup ×1.10 on crits (×1.05 for the second weapon group)"
+   ],
+   "2": [
+    "Status buildup ×1.20 on crits (×1.10)"
+   ],
+   "3": [
+    "Status buildup ×1.40 on crits (×1.20)"
+   ]
+  },
+  "notes": [
+   "Two data slots, probably a weapon-group split like Critical Element; which weapons use which is not documented."
+  ],
+  "source": "Datamine SkillData [110,105] / [120,110] / [140,120]; meaning of the second slot inferred.",
+  "confidence": "medium"
+ },
+ "Darkside": {
+  "trigger": "Certain charged slashes at charge level 2 or higher",
+  "levels": {
+   "1": [
+    "Attack ×1.10 for 30 s",
+    "Costs some health per triggering slash",
+    "About 15 s cooldown after the buff ends"
+   ]
+  },
+  "notes": [
+   "Innate on the Dark Knight Tree Great Swords (Shadowbringer, True Shadowbringer).",
+   "During the cooldown charged slashes do not trigger it; the in-game text says they still cost health. Power Prolonger does not extend it.",
+   "Game data also holds 45 and 20 (likely the cooldown from activation and the health cost; unconfirmed)."
+  ],
+  "source": "PlayerSkillParam _DarkBladeData [1.1, 30, 45, 20]; game8.jp states about ×1.1 for 30 s and about 15 s cooldown.",
+  "confidence": "high"
+ },
+ "Defense Boost": {
+  "levels": {
+   "1": [
+    "Defense +5"
+   ],
+   "2": [
+    "Defense +10"
+   ],
+   "3": [
+    "Defense ×1.05, then +10"
+   ],
+   "4": [
+    "Defense ×1.05, then +20",
+    "All elemental resistances +3"
+   ],
+   "5": [
+    "Defense ×1.08, then +20",
+    "All elemental resistances +3"
+   ],
+   "6": [
+    "Defense ×1.08, then +35",
+    "All elemental resistances +5"
+   ],
+   "7": [
+    "Defense ×1.10, then +35",
+    "All elemental resistances +5"
+   ]
+  },
+  "source": "Game text; datamine SkillData [defense %, flat defense, resistances] agrees.",
+  "confidence": "high"
+ },
+ "Divine Blessing": {
+  "trigger": "Random chance when taking damage",
+  "levels": {
+   "1": [
+    "Damage taken -15% when it procs",
+    "Proc chance about 25%"
+   ],
+   "2": [
+    "Damage taken -30% when it procs",
+    "Proc chance about 25%"
+   ],
+   "3": [
+    "Damage taken -50% when it procs",
+    "Proc chance about 25%"
+   ]
+  },
+  "notes": [
+   "Chance does not rise with level.",
+   "game8 measured 101 procs in 291 hits (about 35%); other guides quote 20%."
+  ],
+  "source": "Datamine SkillData _value[0] = 25 (chance %), [1] = damage taken % (85 / 70 / 50); reduction matches game text, chance unverified.",
+  "confidence": "medium"
+ },
+ "Doshaguma's Might": {
+  "trigger": "After a successful Power Clash or Offset attack",
+  "levels": {
+   "1": [
+    "Attack +10",
+    "Duration 180 s"
+   ],
+   "2": [
+    "Attack +25",
+    "Duration 180 s"
+   ]
+  },
+  "notes": [
+   "Refreshed on each trigger."
+  ],
+  "source": "Datamine SkillData [10, 180] / [25, 180]; game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Dragon Attack": {
+  "levels": {
+   "1": [
+    "Dragon attack +40"
+   ],
+   "2": [
+    "Dragon attack ×1.10, then +50"
+   ],
+   "3": [
+    "Dragon attack ×1.20, then +60"
+   ]
+  },
+  "notes": [
+   "Capped by the element cap: the larger of base + 400 and base × 2.3 (since TU4)."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = true 4/5/6 (display 40/50/60); in-game text.",
+  "confidence": "high"
+ },
+ "Dragon Resistance": {
+  "levels": {
+   "1": [
+    "Dragon resistance +6"
+   ],
+   "2": [
+    "Dragon resistance +12"
+   ],
+   "3": [
+    "Dragon resistance +20",
+    "Defense +10"
+   ]
+  },
+  "source": "Game text; datamine SkillData agrees.",
+  "confidence": "high"
+ },
+ "Dreamspell Prayer": {
+  "trigger": "Only while the Dreamspell festival is running",
+  "levels": {
+   "1": [
+    "Special items added to quest rewards"
+   ],
+   "2": [
+    "Special items added to quest rewards",
+    "Attack ×1.09",
+    "Defense +50"
+   ]
+  },
+  "notes": [
+   "No effect outside the festival or when joining mid-quest.",
+   "Identical to the other festival Prayers."
+  ],
+  "source": "Datamine SkillData [100] / [109, 50]; game8 states 9% attack and 50 defense.",
+  "confidence": "high"
+ },
+ "Earplugs": {
+  "levels": {
+   "1": [
+    "Weak roars: reaction cut to about 20%",
+    "Strong roars: unchanged"
+   ],
+   "2": [
+    "Weak roars: nullified",
+    "Strong roars: reaction cut to about 10%"
+   ],
+   "3": [
+    "Weak and strong roars nullified"
+   ]
+  },
+  "source": "Game text; datamine SkillData [weak roar %, strong roar %] = 20/100, 0/10, 0/0, read as % of the roar reaction left.",
+  "confidence": "medium"
+ },
+ "Ebony Odogaron's Power": {
+  "trigger": "While the Burst skill is active",
+  "levels": {
+   "1": [
+    "Attack +8 while Burst is active",
+    "Burst duration +1 s"
+   ],
+   "2": [
+    "Attack +18 while Burst is active",
+    "Burst duration +2 s"
+   ]
+  },
+  "notes": [
+   "Requires the Burst skill.",
+   "With II, Burst lasts 7 s on GS/HH/GL, 5 s on DB and ranged, 6 s on the rest."
+  ],
+  "source": "Datamine SkillData [1, 8] / [2, 18]; game text states the attack values; game8 agrees.",
+  "confidence": "high"
+ },
+ "Elemental Absorption": {
+  "trigger": "After taking elemental damage; 120 s, then 60 s cooldown",
+  "levels": {
+   "1": [
+    "Element ×1.05 plus +30 to +50 flat (see table)",
+    "Resistance to the absorbed element +4"
+   ],
+   "2": [
+    "Element ×1.10 plus +40 to +80 flat (see table)",
+    "Resistance to the absorbed element +6"
+   ],
+   "3": [
+    "Element ×1.15 plus +50 to +100 flat (see table)",
+    "Resistance to the absorbed element +8"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Flat element bonus per weapon (display)",
+    "columns": [
+     "Weapon",
+     "Lv1",
+     "Lv2",
+     "Lv3"
+    ],
+    "rows": [
+     [
+      "Great Sword, Hunting Horn",
+      "+50",
+      "+80",
+      "+100"
+     ],
+     [
+      "Dual Blades, Bow, Light Bowgun, Heavy Bowgun",
+      "+30",
+      "+40",
+      "+50"
+     ],
+     [
+      "All other weapons",
+      "+40",
+      "+50",
+      "+60"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Cooldown was cut from 90 s to 60 s in Title Update 4.",
+   "Each level has two more values per weapon (+10 and +20 above these) whose trigger is unknown."
+  ],
+  "source": "PlayerSkillParam _ElementConvertCommonData (120 s, 60 s, res 4/6/8) and _ElementConvertWp??Data (first value per level) match game8's measured flats; the ×1.05..1.15 multiplier is read from SkillData _value[0] = 5/10/15.",
+  "confidence": "medium"
+ },
+ "Entomologist": {
+  "levels": {
+   "1": [
+    "Small insect monsters keep their bodies and can be carved (most)"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Evade Extender": {
+  "levels": {
+   "1": [
+    "Evade distance ×1.10"
+   ],
+   "2": [
+    "Evade distance ×1.25"
+   ],
+   "3": [
+    "Evade distance ×1.40"
+   ]
+  },
+  "notes": [
+   "Insect Glaive midair evade only ×1.05 / ×1.10 / ×1.15; Long Sword Foresight (red gauge) is unaffected."
+  ],
+  "source": "PlayerSkillParam _DodgeDist*Data multipliers (same for rolls, steps and weapon-specific evades).",
+  "confidence": "high"
+ },
+ "Evade Window": {
+  "levels": {
+   "1": [
+    "Roll invulnerability 15 frames",
+    "Step evades 12 frames"
+   ],
+   "2": [
+    "Roll invulnerability 17 frames",
+    "Step evades 14 frames"
+   ],
+   "3": [
+    "Roll invulnerability 19 frames",
+    "Step evades 16 frames"
+   ],
+   "4": [
+    "Roll invulnerability 22 frames",
+    "Step evades 19 frames"
+   ],
+   "5": [
+    "Roll invulnerability 25 frames",
+    "Step evades 22 frames"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Invulnerable frames per evade type",
+    "columns": [
+     "Evade",
+     "Lv1",
+     "Lv2",
+     "Lv3",
+     "Lv4",
+     "Lv5"
+    ],
+    "rows": [
+     [
+      "Roll",
+      "15",
+      "17",
+      "19",
+      "22",
+      "25"
+     ],
+     [
+      "Step evades",
+      "12",
+      "14",
+      "16",
+      "19",
+      "22"
+     ],
+     [
+      "Sword & Shield backstep",
+      "42",
+      "44",
+      "46",
+      "48",
+      "50"
+     ],
+     [
+      "Dual Blades demon / perfect dodge",
+      "16",
+      "18",
+      "20",
+      "23",
+      "26"
+     ],
+     [
+      "Long Sword Foresight Slash",
+      "47",
+      "49",
+      "51",
+      "53",
+      "55"
+     ],
+     [
+      "Hammer charge dodge",
+      "26",
+      "28",
+      "30",
+      "32",
+      "34"
+     ],
+     [
+      "Hunting Horn offset parry",
+      "32",
+      "34",
+      "36",
+      "38",
+      "40"
+     ],
+     [
+      "Insect Glaive jump back",
+      "26",
+      "28",
+      "32",
+      "36",
+      "40"
+     ],
+     [
+      "Bow charge step",
+      "15",
+      "17",
+      "19",
+      "22",
+      "25"
+     ],
+     [
+      "Heavy Bowgun dodge",
+      "15",
+      "17",
+      "19",
+      "22",
+      "25"
+     ],
+     [
+      "Light Bowgun sliding",
+      "15",
+      "17",
+      "19",
+      "22",
+      "25"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Frame counts as stored in the game data; the frame rate unit and the no-skill base values are not in the data, so seconds are not given."
+  ],
+  "source": "PlayerSkillParam _DodgeNotHit*/_DodgeNoHit*Data per level (weapon order Wp00 GS .. Wp13 LBG); no independent frame test found.",
+  "confidence": "medium"
+ },
+ "Evading Reload": {
+  "trigger": "Evading with a bowgun",
+  "levels": {
+   "1": [
+    "Each evade loads 1 round of the selected ammo"
+   ]
+  },
+  "notes": [
+   "Innate on the Seregios Tree bowguns: Insurrection Cannon / Sayyad Cannon I (HBG) and Rebel Stopper / Rasasa Bowgun I (LBG).",
+   "Normal dodges, steps, perfect-guard steps and sliding dodges count; dodge shots do not."
+  ],
+  "source": "PlayerSkillParam _DodgeReload_* point values (1 per dodge type, 0 for dodge shot); game8.jp confirms one round per evade.",
+  "confidence": "high"
+ },
+ "Exhaust Functionality": {
+  "trigger": "Bow only",
+  "levels": {
+   "1": [
+    "Lets the bow load Exhaust Coatings"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Festival Spirit": {
+  "levels": {
+   "1": [
+    "+1 carve from large monster carcasses"
+   ]
+  },
+  "notes": [
+   "No effect when joining mid-quest."
+  ],
+  "source": "Game text and game8.",
+  "confidence": "high"
+ },
+ "Fire Attack": {
+  "levels": {
+   "1": [
+    "Fire attack +40"
+   ],
+   "2": [
+    "Fire attack ×1.10, then +50"
+   ],
+   "3": [
+    "Fire attack ×1.20, then +60"
+   ]
+  },
+  "notes": [
+   "Capped by the element cap: the larger of base + 400 and base × 2.3 (since TU4)."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = true 4/5/6 (display 40/50/60); in-game text.",
+  "confidence": "high"
+ },
+ "Fire Resistance": {
+  "levels": {
+   "1": [
+    "Fire resistance +6"
+   ],
+   "2": [
+    "Fire resistance +12"
+   ],
+   "3": [
+    "Fire resistance +20",
+    "Defense +10"
+   ]
+  },
+  "source": "Game text; datamine SkillData agrees.",
+  "confidence": "high"
+ },
+ "Flamefete Prayer": {
+  "trigger": "Only while the Flamefete festival is running",
+  "levels": {
+   "1": [
+    "Special items added to quest rewards"
+   ],
+   "2": [
+    "Special items added to quest rewards",
+    "Attack ×1.09",
+    "Defense +50"
+   ]
+  },
+  "notes": [
+   "No effect outside the festival or when joining mid-quest.",
+   "Identical to the other festival Prayers."
+  ],
+  "source": "Datamine SkillData [100] / [109, 50]; game8 states 9% attack and 50 defense.",
+  "confidence": "high"
+ },
+ "Flayer": {
+  "trigger": "On hits that build up wounds (excludes some attacks)",
+  "levels": {
+   "1": [
+    "Wound buildup ×1.05",
+    "Extra non-elemental burst 140 damage"
+   ],
+   "2": [
+    "Wound buildup ×1.10",
+    "Extra non-elemental burst 160 damage"
+   ],
+   "3": [
+    "Wound buildup ×1.15",
+    "Extra non-elemental burst 220 damage"
+   ],
+   "4": [
+    "Wound buildup ×1.20",
+    "Extra non-elemental burst 300 damage"
+   ],
+   "5": [
+    "Wound buildup ×1.30",
+    "Extra non-elemental burst 400 damage"
+   ]
+  },
+  "notes": [
+   "Procs on about 50% of eligible hits; burst damage is fixed, independent of weapon.",
+   "Since Title Update 4 the burst also fires on parts past their wound limit."
+  ],
+  "source": "PlayerSkillParam _StabbingData = [140, 160, 220, 300, 400, 50, 0.5] matches game8's bursts and 50% chance; wound multiplier from SkillData _value[0] (inferred). SkillData _value[1] = 100..250 is superseded.",
+  "confidence": "medium"
+ },
+ "Flexible Leathercraft": {
+  "levels": {
+   "1": [
+    "Gathering speed ×1.4",
+    "No knockback while gathering or carving"
+   ]
+  },
+  "source": "Datamine SkillData [140]; Wycademy agrees.",
+  "confidence": "high"
+ },
+ "Flinch Free": {
+  "levels": {
+   "1": [
+    "Prevents knockbacks from small hits"
+   ],
+   "2": [
+    "Prevents knockbacks",
+    "Tripping reduced to a knockback"
+   ],
+   "3": [
+    "Prevents knockbacks and tripping"
+   ]
+  },
+  "source": "In-game text; SkillData has no numeric values for this skill.",
+  "confidence": "high"
+ },
+ "Focus": {
+  "levels": {
+   "1": [
+    "Gauge fill ×1.05",
+    "Charge time -5%"
+   ],
+   "2": [
+    "Gauge fill ×1.10",
+    "Charge time -10%"
+   ],
+   "3": [
+    "Gauge fill ×1.20",
+    "Charge time -15%"
+   ]
+  },
+  "notes": [
+   "game8 at Lv3: GS charge 2.5 -> 2.16 s, Hammer Big Bang 3.0 -> 2.55 s, Bow charge 1.8 -> 1.5 s."
+  ],
+  "source": "Datamine SkillData [0] = fill ×, [1] = charge time ×; in-game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Foray": {
+  "trigger": "While the large monster is poisoned or paralyzed",
+  "levels": {
+   "1": [
+    "Attack +6"
+   ],
+   "2": [
+    "Attack +8",
+    "Affinity +5%"
+   ],
+   "3": [
+    "Attack +10",
+    "Affinity +10%"
+   ],
+   "4": [
+    "Attack +12",
+    "Affinity +15%"
+   ],
+   "5": [
+    "Attack +15",
+    "Affinity +20%"
+   ]
+  },
+  "source": "Datamine SkillData _value[0] = attack, [1] = affinity; matches game text and kiranico.",
+  "confidence": "high"
+ },
+ "Fortifying Pelt": {
+  "trigger": "After fainting during the quest (up to 2 times)",
+  "levels": {
+   "1": [
+    "1st faint: attack ×1.10, defense ×1.15",
+    "2nd faint: attack ×1.20, defense ×1.30"
+   ]
+  },
+  "notes": [
+   "Lost while wearing armor without the group skill; restored when swapped back."
+  ],
+  "source": "Datamine SkillData [110, 115]; 2nd stack from game8.",
+  "confidence": "high"
+ },
+ "Free Meal": {
+  "levels": {
+   "1": [
+    "10% chance to consume a food or drink item for free"
+   ],
+   "2": [
+    "25% chance"
+   ],
+   "3": [
+    "45% chance"
+   ]
+  },
+  "source": "Game text; datamine SkillData _value[0] = 10 / 25 / 45 agrees.",
+  "confidence": "high"
+ },
+ "Fulgur Anjanath's Will": {
+  "levels": {
+   "1": [
+    "Extra stamina gauge of 25"
+   ],
+   "2": [
+    "Extra long stamina gauge of 50"
+   ]
+  },
+  "source": "Datamine SkillData [25] / [50]; kiranico and game8 agree.",
+  "confidence": "high"
+ },
+ "Geologist": {
+  "levels": {
+   "1": [
+    "+1 item from bonepiles"
+   ],
+   "2": [
+    "+1 from bonepiles",
+    "+1 from special gathering points"
+   ],
+   "3": [
+    "+1 from bonepiles",
+    "+1 from special gathering points",
+    "+1 from mining outcrops"
+   ]
+  },
+  "source": "Game text; datamine SkillData flags (1 per source) agree.",
+  "confidence": "high"
+ },
+ "Glory's Favor": {
+  "levels": {
+   "1": [
+    "+2 quest target rewards"
+   ]
+  },
+  "notes": [
+   "No effect when joining mid-quest."
+  ],
+  "source": "game8; no datamine parameters.",
+  "confidence": "medium"
+ },
+ "Gogmapocalypse": {
+  "trigger": "While a large monster is enraged",
+  "levels": {
+   "1": [
+    "Element ×1.2 +20"
+   ],
+   "2": [
+    "Element ×1.3 +40",
+    "Barrier absorbing 80 damage, lasts 140 s, 30 s cooldown after it ends"
+   ]
+  },
+  "notes": [
+   "Flat part in display units (true +2 / +4); e.g. 300 element becomes 380 (I) or 430 (II).",
+   "Starts about 3 s after the monster enrages."
+  ],
+  "source": "Datamine SkillData [120, 2] / [130, 4] and _ChallengerAttr_Barrier* params; game8 examples agree.",
+  "confidence": "high"
+ },
+ "Gore Magala's Tyranny": {
+  "trigger": "Against large monsters (Frenzy infection)",
+  "levels": {
+   "1": [
+    "Auto-infects you with Frenzy",
+    "Affinity +15% for 60 s after overcoming it"
+   ],
+   "2": [
+    "Attack +10 while infected",
+    "Attack +15 and affinity +15% for 60 s after overcoming"
+   ]
+  },
+  "notes": [
+   "Antivirus raises the overcome affinity to +18 / +21 / +25% (Lv1-3).",
+   "Frenzy here no longer triggers Lord's Fury (Resuscitate) since 1.000.05.",
+   "One guide quotes 45 s instead of 60 s for the overcome window."
+  ],
+  "source": "Datamine SkillData [10, 15] at tier II plus the base Frenzy overcome bonus; game8 and Wycademy agree.",
+  "confidence": "high"
+ },
+ "Gravios's Protection": {
+  "trigger": "While your health is full",
+  "levels": {
+   "1": [
+    "Damage taken -20%"
+   ],
+   "2": [
+    "Damage taken -35%"
+   ]
+  },
+  "source": "Game text states it; datamine SkillData [80] / [65].",
+  "confidence": "high"
+ },
+ "Grillmaster": {
+  "trigger": "Grilling meat",
+  "levels": {
+   "1": [
+    "Restores sharpness",
+    "Rare: fire +100, affinity +10%, 90 s",
+    "Well-done: fire +300, affinity +10%, 300 s",
+    "Burnt: fire +300, 150 s"
+   ]
+  },
+  "notes": [
+   "Innate on the Workshop Dual Blades Tasty Blades and Well-done Blades.",
+   "Despite the in-game wording, the boost is fire element and affinity, not raw attack. Grilling again overwrites the buff."
+  ],
+  "source": "PlayerSkillParam _MeatGrillMasterData (_FireAdd 10/30/30 true, _CriticalAdd 10/10/0, _ActiveTime 90/300/150); game8.jp table agrees.",
+  "confidence": "high"
+ },
+ "Guard": {
+  "trigger": "Guarding",
+  "levels": {
+   "1": [
+    "Guard stamina cost -15%",
+    "Smaller guard knockback"
+   ],
+   "2": [
+    "Guard stamina cost -30%",
+    "Smaller guard knockback"
+   ],
+   "3": [
+    "Guard stamina cost -50%",
+    "Much smaller guard knockback"
+   ]
+  },
+  "notes": [
+   "Data slot [0] 10/20/30 is most likely the knockback reduction; no tested meaning."
+  ],
+  "source": "Datamine SkillData [1] = stamina × 0.85/0.70/0.50; matches in-game text.",
+  "confidence": "high"
+ },
+ "Guard Up": {
+  "trigger": "Guarding",
+  "levels": {
+   "1": [
+    "Guard damage -10%",
+    "-30% total when guarding normally unblockable attacks"
+   ],
+   "2": [
+    "Guard damage -20%",
+    "-50% total when guarding normally unblockable attacks"
+   ],
+   "3": [
+    "Guard damage -30%",
+    "-80% total when guarding normally unblockable attacks"
+   ]
+  },
+  "notes": [
+   "Makes grabs, many breaths and lasers guardable (e.g. Gogmazios breath, Omega lasers); some big moves stay unblockable."
+  ],
+  "source": "Datamine SkillData [1] = 90/80/70, [0] = 70/50/20 (damage taken %); in-game text and game8.jp agree.",
+  "confidence": "high"
+ },
+ "Guardian Arkveld's Vitality": {
+  "trigger": "Destroying a wound on a large monster",
+  "levels": {
+   "1": [
+    "Heals 25 HP"
+   ],
+   "2": [
+    "Heals 50 HP"
+   ]
+  },
+  "notes": [
+   "Not shared with allies by Wide-Range."
+  ],
+  "source": "Datamine SkillData [25] / [50]; kiranico and game8 agree.",
+  "confidence": "high"
+ },
+ "Guardian's Protection": {
+  "trigger": "While in the Ruins of Wyveria",
+  "levels": {
+   "1": [
+    "Elemental damage taken -10%",
+    "Unique damage taken -10%"
+   ]
+  },
+  "source": "Datamine SkillData [90, 90]; Wycademy agrees.",
+  "confidence": "high"
+ },
+ "Guardian's Pulse": {
+  "trigger": "While near Wylkrystals",
+  "levels": {
+   "1": [
+    "Faster stamina recovery (datamine 400)",
+    "Faster red health recovery (datamine 200)"
+   ]
+  },
+  "notes": [
+   "Sources disagree on the size: game8 says +50% each, Wycademy says doubled."
+  ],
+  "source": "Datamine SkillData [400, 200]; meaning of the values is unclear.",
+  "confidence": "low"
+ },
+ "Handicraft": {
+  "levels": {
+   "1": [
+    "Sharpness +10"
+   ],
+   "2": [
+    "Sharpness +20"
+   ],
+   "3": [
+    "Sharpness +30"
+   ],
+   "4": [
+    "Sharpness +40"
+   ],
+   "5": [
+    "Sharpness +50"
+   ]
+  },
+  "notes": [
+   "Never extends past the weapon's maximum sharpness."
+  ],
+  "source": "In-game text; damage model uses the same values.",
+  "confidence": "high"
+ },
+ "Heroics": {
+  "trigger": "While health is 35% or lower",
+  "levels": {
+   "1": [
+    "Defense +50"
+   ],
+   "2": [
+    "Attack ×1.05",
+    "Defense +50"
+   ],
+   "3": [
+    "Attack ×1.05",
+    "Defense +100"
+   ],
+   "4": [
+    "Attack ×1.10",
+    "Defense +100"
+   ],
+   "5": [
+    "Attack ×1.30",
+    "Defense-increasing effects negated"
+   ]
+  },
+  "source": "Datamine SkillData _value[0] = attack %, [1] = defense; matches game text and game8.",
+  "confidence": "high"
+ },
+ "Horn Maestro": {
+  "trigger": "Hunting Horn melodies",
+  "levels": {
+   "1": [
+    "Melody durations extended (e.g. Self-Improvement +80 s)",
+    "Echo Bubble 60 -> 90 s",
+    "Larger heals more likely"
+   ],
+   "2": [
+    "Melody durations extended more (e.g. Self-Improvement +180 s)",
+    "Echo Bubble 60 -> 120 s"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Measured extensions (game8)",
+    "columns": [
+     "Melody",
+     "Lv1",
+     "Lv2"
+    ],
+    "rows": [
+     [
+      "Self-Improvement",
+      "+80 s (+29.6%)",
+      "+180 s (+66.6%)"
+     ],
+     [
+      "Attack Up (L)",
+      "+70 s (+64.8%)",
+      "+130 s (+120.3%)"
+     ],
+     [
+      "Echo Bubble",
+      "90 s",
+      "120 s"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Hunting Horn only; there is no single global multiplier, the extension differs per melody. Lost when you change weapons."
+  ],
+  "source": "game8 measurements (datamine SkillData slots are empty).",
+  "confidence": "medium"
+ },
+ "Hunger Resistance": {
+  "levels": {
+   "1": [
+    "Time until the stamina cap drops +50%"
+   ],
+   "2": [
+    "Time until the stamina cap drops +100%"
+   ],
+   "3": [
+    "Stamina cap never drops"
+   ]
+  },
+  "source": "In-game text states the percentages.",
+  "confidence": "high"
+ },
+ "Ice Attack": {
+  "levels": {
+   "1": [
+    "Ice attack +40"
+   ],
+   "2": [
+    "Ice attack ×1.10, then +50"
+   ],
+   "3": [
+    "Ice attack ×1.20, then +60"
+   ]
+  },
+  "notes": [
+   "Capped by the element cap: the larger of base + 400 and base × 2.3 (since TU4)."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = true 4/5/6 (display 40/50/60); in-game text.",
+  "confidence": "high"
+ },
+ "Ice Resistance": {
+  "levels": {
+   "1": [
+    "Ice resistance +6"
+   ],
+   "2": [
+    "Ice resistance +12"
+   ],
+   "3": [
+    "Ice resistance +20",
+    "Defense +10"
+   ]
+  },
+  "source": "Game text; datamine SkillData agrees.",
+  "confidence": "high"
+ },
+ "Imparted Wisdom": {
+  "levels": {
+   "1": [
+    "Higher chance of rare gathering points (parameter 25, likely +25%)"
+   ]
+  },
+  "source": "Datamine SkillData [25]; interpretation unverified.",
+  "confidence": "low"
+ },
+ "Intimidator": {
+  "trigger": "Small monsters that have spotted you",
+  "levels": {
+   "1": [
+    "Discourages small monsters from engaging you"
+   ],
+   "2": [
+    "Highly discourages small monsters from engaging you"
+   ],
+   "3": [
+    "Small monsters never engage you"
+   ]
+  },
+  "notes": [
+   "Datamine per level: [50, 100] / [0, 50] / [0, 0]; most likely engage chances in % for two monster groups, but the groups are not documented.",
+   "Has no effect on certain monsters."
+  ],
+  "source": "In-game text; SkillData _value[0..1] = 50/100, 0/50, 0/0 (kiranico shows the same), meaning of the slots unconfirmed.",
+  "confidence": "low"
+ },
+ "Iron Skin": {
+  "levels": {
+   "1": [
+    "Defense down duration -50%"
+   ],
+   "2": [
+    "Defense down duration -75%"
+   ],
+   "3": [
+    "Prevents defense down"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = remaining duration 50 / 25 / 0 %.",
+  "confidence": "high"
+ },
+ "Item Prolonger": {
+  "levels": {
+   "1": [
+    "Item effect duration +10%"
+   ],
+   "2": [
+    "Item effect duration +25%"
+   ],
+   "3": [
+    "Item effect duration +50%"
+   ]
+  },
+  "notes": [
+   "Applies to timed item buffs only (some item effects, per the game text)."
+  ],
+  "source": "Game text; SkillData _value[0] = duration 110 / 125 / 150 %.",
+  "confidence": "high"
+ },
+ "Jin Dahaad's Revolt": {
+  "trigger": "After recovering from webbed, frostblight, a pin or a Power Clash",
+  "levels": {
+   "1": [
+    "Attack +25",
+    "Duration 90 s"
+   ],
+   "2": [
+    "Attack +50",
+    "Duration 90 s"
+   ]
+  },
+  "notes": [
+   "Duration raised from 60 s to 90 s in Title Update 4; refreshes on re-trigger."
+  ],
+  "source": "Datamine SkillData [90, 25] / [90, 50]; game8 and Wycademy agree.",
+  "confidence": "high"
+ },
+ "Jump Master": {
+  "levels": {
+   "1": [
+    "Negates knockback while jumping"
+   ]
+  },
+  "source": "Game text; no numeric parameters in SkillData.",
+  "confidence": "high"
+ },
+ "Latent Power": {
+  "trigger": "After 120 s in combat with a large monster, or about 130 total damage taken",
+  "levels": {
+   "1": [
+    "Affinity +10%",
+    "Stamina depletion ×0.70",
+    "Lasts 120 s"
+   ],
+   "2": [
+    "Affinity +20%",
+    "Stamina depletion ×0.70",
+    "Lasts 120 s"
+   ],
+   "3": [
+    "Affinity +30%",
+    "Stamina depletion ×0.50",
+    "Lasts 120 s"
+   ],
+   "4": [
+    "Affinity +40%",
+    "Stamina depletion ×0.50",
+    "Lasts 120 s"
+   ],
+   "5": [
+    "Affinity +50%",
+    "Stamina depletion ×0.50",
+    "Lasts 120 s"
+   ]
+  },
+  "notes": [
+   "Cooldown about 120 s; without taking damage it is active about 50% of the hunt.",
+   "Rey Dau's Voltage (Thunderous Roar) extends the duration: I +30 s, II +90 s.",
+   "The game text says stamina depletion -30% at Lv1-2; the datamine stores it as ×0.70."
+  ],
+  "source": "Datamine SkillData [0] = affinity, [1] = stamina use %; PlayerSkillParam _PowerAwakeData = 120 / 120 / 131; matches kiranico and game8.",
+  "confidence": "high"
+ },
+ "Leap of Faith": {
+  "levels": {
+   "1": [
+    "Allows a dive-evade toward large monsters",
+    "Longer dive-evade distance"
+   ]
+  },
+  "source": "Game text; no per-level numbers in SkillData.",
+  "confidence": "high"
+ },
+ "Leviathan's Fury": {
+  "trigger": "When the thunder build-up from landed hits fills",
+  "levels": {
+   "1": [
+    "Thunder burst: 30 fixed + 70 thunder",
+    "Affinity +15% for 20 s"
+   ],
+   "2": [
+    "Thunder burst: 60 fixed + 200 thunder",
+    "Affinity +15% for 30 s"
+   ]
+  },
+  "notes": [
+   "About 30 s cooldown between bursts.",
+   "Burst damage ignores weapon attack but uses the thunder hitzone and Thunder Attack.",
+   "Some attacks do not build it up; hits needed per weapon are undocumented."
+  ],
+  "source": "Datamine SkillData [60, 15, 20] / [60, 15, 30] and _DischargeData; game8 dummy tests agree.",
+  "confidence": "high"
+ },
+ "Load Shells": {
+  "trigger": "Gunlance and Charge Blade",
+  "levels": {
+   "1": [
+    "Shell / phial reload speed ×1.1"
+   ],
+   "2": [
+    "Shell / phial reload speed ×1.2",
+    "Gunlance shell capacity +1",
+    "Charge Blade: 5 phials from a yellow gauge (normally 3)"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 110/120 (speed, inferred), [1] = capacity +1; in-game text and game8.jp agree on capacity and phials.",
+  "confidence": "medium"
+ },
+ "Lord's Favor": {
+  "trigger": "After using an item or melody that affects allies in range",
+  "levels": {
+   "1": [
+    "Attack +10",
+    "Duration 20 s"
+   ]
+  },
+  "notes": [
+   "Triggers on powders, Wide-Range items and most Hunting Horn melodies; re-trigger resets the timer."
+  ],
+  "source": "Datamine SkillData [20, 10]; game8 and Wycademy agree.",
+  "confidence": "high"
+ },
+ "Lord's Fury": {
+  "trigger": "While afflicted with an ailment",
+  "levels": {
+   "1": [
+    "Attack +10"
+   ]
+  },
+  "notes": [
+   "Counts poison, paralysis, sleep, stun, webbed, bleeding, elemental blights, frostblight, bubbleblight.",
+   "Frenzy no longer counts since 1.000.05."
+  ],
+  "source": "Datamine SkillData [10]; game8 agrees.",
+  "confidence": "high"
+ },
+ "Lord's Soul": {
+  "trigger": "Always on until it saves you from a lethal hit",
+  "levels": {
+   "1": [
+    "Attack ×1.05, defense ×0.95",
+    "Survive one lethal hit at 1 HP if above 64 HP",
+    "Afterwards: defense ×1.05, all resistances +3"
+   ]
+  },
+  "notes": [
+   "Once per quest; multi-hit or continuous damage can still kill.",
+   "Lost on fainting."
+  ],
+  "source": "Datamine SkillData [105, 95, 105, 3] and _Guts_ActiveRemainHealth 64; game8 agrees.",
+  "confidence": "high"
+ },
+ "Lumenhymn Prayer": {
+  "trigger": "Only while the Lumenhymn festival is running",
+  "levels": {
+   "1": [
+    "Special items added to quest rewards"
+   ],
+   "2": [
+    "Special items added to quest rewards",
+    "Attack ×1.09",
+    "Defense +50"
+   ]
+  },
+  "notes": [
+   "No effect outside the festival or when joining mid-quest.",
+   "Identical to the other festival Prayers."
+  ],
+  "source": "Datamine SkillData [100] / [109, 50] (dtlnor dump); game8 states 9% attack and 50 defense.",
+  "confidence": "high"
+ },
+ "Marathon Runner": {
+  "trigger": "Actions that drain stamina continuously (dashing, etc.)",
+  "levels": {
+   "1": [
+    "Continuous stamina depletion -15%"
+   ],
+   "2": [
+    "Continuous stamina depletion -30%"
+   ],
+   "3": [
+    "Continuous stamina depletion -50%"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = depletion 85 / 70 / 50 %.",
+  "confidence": "high"
+ },
+ "Master of the Fist": {
+  "trigger": "Akuma special actions",
+  "levels": {
+   "1": [
+    "Special action motion values +47%",
+    "Special actions deal stun",
+    "Drive Impact can Offset; a successful Offset gives +5% damage during reload"
+   ]
+  },
+  "notes": [
+   "All numbers come from one source (Wycademy); SkillData has no parameters."
+  ],
+  "source": "Wycademy notebooks; game8 text only.",
+  "confidence": "low"
+ },
+ "Master's Touch": {
+  "trigger": "Critical hits",
+  "levels": {
+   "1": [
+    "80% chance a critical hit costs no sharpness"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 80; in-game text.",
+  "confidence": "high"
+ },
+ "Maximum Might": {
+  "trigger": "Stamina full for 3 s",
+  "levels": {
+   "1": [
+    "Affinity +10%"
+   ],
+   "2": [
+    "Affinity +20%"
+   ],
+   "3": [
+    "Affinity +30%"
+   ]
+  },
+  "notes": [
+   "Stays active for 2 s after you start using stamina.",
+   "Only the base stamina bar counts."
+  ],
+  "source": "SkillData _value[0] = affinity; PlayerSkillParam _Konshin_MaxStaminaContinueTime 3 s / _Konshin_MaxUseStaminaTime 2 s; game8 agrees.",
+  "confidence": "high"
+ },
+ "Mind's Eye": {
+  "trigger": "Hard parts (base hitzone 44 or lower)",
+  "levels": {
+   "1": [
+    "50% chance to not bounce",
+    "Damage ×1.10 on hard parts"
+   ],
+   "2": [
+    "Never bounce",
+    "Damage ×1.15 on hard parts"
+   ],
+   "3": [
+    "Never bounce",
+    "Damage ×1.30 on hard parts"
+   ]
+  },
+  "notes": [
+   "Uses the part's base hitzone: a hard part that becomes soft when wounded still gets the bonus."
+  ],
+  "source": "Datamine SkillData [0] = no-bounce %, [1] = damage ×; threshold _Shingan_MeatThreshold 44; training-area tests agree.",
+  "confidence": "high"
+ },
+ "Mizutsune's Prowess": {
+  "trigger": "Evading",
+  "levels": {
+   "1": [
+    "Immune to major bubbleblight",
+    "Minor bubbleblight for 30 s after 3 evades"
+   ],
+   "2": [
+    "As I, plus Evade Window Lv2 i-frames while bubbleblighted"
+   ]
+  },
+  "notes": [
+   "The extra i-frames stack with the Evade Window skill up to its Lv5 cap."
+  ],
+  "source": "game8 and Wycademy tests; no per-level datamine numbers.",
+  "confidence": "medium"
+ },
+ "Mushroomancer": {
+  "levels": {
+   "1": [
+    "Eat Blue Mushrooms (heal) and Toadstools (faster natural recovery)"
+   ],
+   "2": [
+    "Also Nitroshrooms (attack up) and Parashrooms (defense up)"
+   ],
+   "3": [
+    "Also Mandragoras (full heal, max health up), Devil's Blight (stamina, less depletion), Exciteshrooms (random of the others)"
+   ]
+  },
+  "notes": [
+   "Mushrooms are eaten almost instantly; buff sizes and durations are not documented."
+  ],
+  "source": "Game text for the unlocks; per-mushroom effects from icy-veins / thefilibusterblog guides.",
+  "confidence": "medium"
+ },
+ "Neopteron Alert": {
+  "trigger": "Gathering honey",
+  "levels": {
+   "1": [
+    "+1 to +3 honey per gathering point"
+   ]
+  },
+  "source": "Datamine SkillData [1, 3]; Wycademy agrees.",
+  "confidence": "high"
+ },
+ "Neopteron Camouflage": {
+  "trigger": "While crouching",
+  "levels": {
+   "1": [
+    "Crouch move speed ×1.6 (datamine 160)",
+    "Easier to escape detection (datamine 120)"
+   ]
+  },
+  "notes": [
+   "Wycademy reports +40% speed instead."
+  ],
+  "source": "Datamine SkillData [160, 120]; multiplier reading is a guess.",
+  "confidence": "low"
+ },
+ "Normal Shots": {
+  "trigger": "Normal Ammo, normal arrows, Flying Swallow Shot",
+  "levels": {
+   "1": [
+    "Damage ×1.05"
+   ]
+  },
+  "notes": [
+   "Bowguns and Bow."
+  ],
+  "source": "Datamine SkillData [105,105] (bowgun / bow); kiranico and game8 agree.",
+  "confidence": "high"
+ },
+ "Nu Udra's Mutiny": {
+  "trigger": "While Resentment is active (red health) and landing hits",
+  "levels": {
+   "1": [
+    "Extra hit of 45 × hitzone %",
+    "2 s cooldown"
+   ],
+   "2": [
+    "Extra hit of 85 × hitzone %",
+    "2 s cooldown"
+   ]
+  },
+  "notes": [
+   "Requires the Resentment skill.",
+   "Dummy: 45 on a wound, 36 on HZV 80, 9 on HZV 20 (tier I); not affected by weapon type.",
+   "SkillData still shows the old 23 / 50."
+  ],
+  "source": "Common-effect _ViolentData [2, 45, 85]; matches game8 dummy tests exactly.",
+  "confidence": "high"
+ },
+ "Offensive Guard": {
+  "trigger": "After a perfectly-timed guard",
+  "levels": {
+   "1": [
+    "Attack ×1.05"
+   ],
+   "2": [
+    "Attack ×1.10"
+   ],
+   "3": [
+    "Attack ×1.15"
+   ]
+  },
+  "notes": [
+   "Lasts a short time after the perfect guard; no Wilds duration found."
+  ],
+  "source": "Datamine SkillData [0] = 105/110/115; in-game text.",
+  "confidence": "high"
+ },
+ "Omega Resonance": {
+  "trigger": "Local / Remote alternate every 90 s; needs an ally inside / outside the ring",
+  "levels": {
+   "1": [
+    "Local: affinity +20%",
+    "Remote: attack +10"
+   ],
+   "2": [
+    "Local: affinity +40%",
+    "Remote: attack +20",
+    "Synthetic Shield: +45 defense for 45 s (from +30 / 30 s)",
+    "Synergy: affinity +25% for 60 s (from +15% / 45 s)"
+   ]
+  },
+  "notes": [
+   "Only one mode is active at a time, chosen at random at quest start.",
+   "Support Hunters count as allies; whether Palico / Seikret count solo is unconfirmed."
+  ],
+  "source": "Datamine SkillData [20, 10] / [40, 20], _ResonanceData, _ShieldOption* and _Cooperation* params; game8 agrees.",
+  "confidence": "high"
+ },
+ "Opening Shot": {
+  "trigger": "Bowguns: first shot from a fully loaded magazine",
+  "levels": {
+   "1": [
+    "Reload speed up (data 5)",
+    "First shot when fully loaded: attack ×1.10"
+   ],
+   "2": [
+    "Reload speed up (data 10)",
+    "First shot when fully loaded: attack ×1.15"
+   ],
+   "3": [
+    "Reload speed up (data 15)",
+    "First shot when fully loaded: attack ×1.30"
+   ]
+  },
+  "notes": [
+   "Light and Heavy Bowgun only. The 5/10/15 slots probably mean reload speed +5/10/15%; the trailing 110/110 slots are unexplained."
+  ],
+  "source": "PlayerSkillParam _FirstShot [1.1, 1.15, 1.3] and SkillData [5,5,110,110]..[15,15,110,110]; slot meaning inferred.",
+  "confidence": "medium"
+ },
+ "Outdoorsman": {
+  "levels": {
+   "1": [
+    "Improves fishing, grilling and transporting",
+    "Carrying: move ×1.25, animation speed ×1.22, climbing ×1.2"
+   ]
+  },
+  "notes": [
+   "Datamine HunterLife params also set grilling timing (burn time 6.3 s, perfect window 0.28 s); attribution of these params to Outdoorsman is by name only, fishing has no number."
+  ],
+  "source": "Game text; PlayerSkillParam _HunterLife* values (egg move 1.25 / 1.22, wall 1.2, cable 1.2), skill attribution inferred.",
+  "confidence": "low"
+ },
+ "Palico Rally": {
+  "levels": {
+   "1": [
+    "Palico attack and defense ×1.05"
+   ],
+   "2": [
+    "Palico attack and defense ×1.10"
+   ],
+   "3": [
+    "Palico attack and defense ×1.15"
+   ],
+   "4": [
+    "Palico attack and defense ×1.20"
+   ],
+   "5": [
+    "Palico attack and defense ×1.25"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = attack %, [1] = defense % (105..125).",
+  "confidence": "high"
+ },
+ "Para Functionality": {
+  "trigger": "Bow only",
+  "levels": {
+   "1": [
+    "Lets the bow load Paralysis Coatings"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Paralysis Attack": {
+  "levels": {
+   "1": [
+    "Paralysis buildup ×1.05, then +10"
+   ],
+   "2": [
+    "Paralysis buildup ×1.10, then +20"
+   ],
+   "3": [
+    "Paralysis buildup ×1.20, then +50"
+   ]
+  },
+  "notes": [
+   "Capped by the status maximum."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = flat true 1/2/5 (= display 10/20/50); matches in-game text.",
+  "confidence": "high"
+ },
+ "Paralysis Resistance": {
+  "levels": {
+   "1": [
+    "Paralysis duration -30%"
+   ],
+   "2": [
+    "Paralysis duration -60%"
+   ],
+   "3": [
+    "Prevents paralysis"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = remaining duration 70 / 40 / 0 %.",
+  "confidence": "high"
+ },
+ "Partbreaker": {
+  "levels": {
+   "1": [
+    "Part damage ×1.10",
+    "Focus Strike wound-destroy damage ×1.10"
+   ],
+   "2": [
+    "Part damage ×1.20",
+    "Focus Strike wound-destroy damage ×1.20"
+   ],
+   "3": [
+    "Part damage ×1.30",
+    "Focus Strike wound-destroy damage ×1.30"
+   ]
+  },
+  "source": "SkillData _value[0] = part damage %, [1] = wound-destroy damage %; game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Peak Performance": {
+  "trigger": "Health full",
+  "levels": {
+   "1": [
+    "Attack +3"
+   ],
+   "2": [
+    "Attack +6"
+   ],
+   "3": [
+    "Attack +10"
+   ],
+   "4": [
+    "Attack +15"
+   ],
+   "5": [
+    "Attack +20"
+   ]
+  },
+  "notes": [
+   "Turns off on any damage, back on once health is full again."
+  ],
+  "source": "Game text; SkillData _value[0] = attack; kiranico and game8 agree.",
+  "confidence": "high"
+ },
+ "Piercing Shots": {
+  "trigger": "Pierce Ammo; Bow Dragon Piercer and Thousand Dragons",
+  "levels": {
+   "1": [
+    "Damage ×1.05"
+   ]
+  },
+  "source": "Datamine SkillData [105,105] (bowgun / bow); kiranico agrees.",
+  "confidence": "high"
+ },
+ "Poison Attack": {
+  "levels": {
+   "1": [
+    "Poison buildup ×1.05, then +10"
+   ],
+   "2": [
+    "Poison buildup ×1.10, then +20"
+   ],
+   "3": [
+    "Poison buildup ×1.20, then +50"
+   ]
+  },
+  "notes": [
+   "Capped by the status maximum."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = flat true 1/2/5 (= display 10/20/50); matches in-game text.",
+  "confidence": "high"
+ },
+ "Poison Duration Up": {
+  "levels": {
+   "1": [
+    "Poison duration on monsters ×1.20"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 120; in-game text says +20%.",
+  "confidence": "high"
+ },
+ "Poison Functionality": {
+  "trigger": "Bow only",
+  "levels": {
+   "1": [
+    "Lets the bow load Poison Coatings"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Poison Resistance": {
+  "levels": {
+   "1": [
+    "Poison ticks 1.5× further apart (about 1/3 fewer ticks)"
+   ],
+   "2": [
+    "Poison ticks 3× further apart (about 2/3 fewer ticks)"
+   ],
+   "3": [
+    "Prevents poison"
+   ]
+  },
+  "notes": [
+   "Game text only says the number of poison hits is reduced; the tick-interval reading of 150 / 300 is inferred."
+  ],
+  "source": "Game text; SkillData _value[0] = 150 / 300 / 300, read as poison tick interval %.",
+  "confidence": "medium"
+ },
+ "Power Prolonger": {
+  "trigger": "Powered-up states of LS, DB, SA, CB, IG",
+  "levels": {
+   "1": [
+    "Power-up duration ×1.1 (DB and SA ×1.3)"
+   ],
+   "2": [
+    "Power-up duration ×1.2 (DB ×1.5, SA ×1.6)"
+   ],
+   "3": [
+    "Power-up duration ×1.4 (DB ×1.8, SA ×2.0)"
+   ]
+  },
+  "tables": [
+   {
+    "title": "Duration multiplier per weapon",
+    "columns": [
+     "Weapon",
+     "Lv1",
+     "Lv2",
+     "Lv3"
+    ],
+    "rows": [
+     [
+      "Long Sword",
+      "×1.1",
+      "×1.2",
+      "×1.4"
+     ],
+     [
+      "Dual Blades",
+      "×1.3",
+      "×1.5",
+      "×1.8"
+     ],
+     [
+      "Switch Axe",
+      "×1.3",
+      "×1.6",
+      "×2.0"
+     ],
+     [
+      "Charge Blade",
+      "×1.1",
+      "×1.2",
+      "×1.4"
+     ],
+     [
+      "Insect Glaive",
+      "×1.1",
+      "×1.2",
+      "×1.4"
+     ]
+    ]
+   }
+  ],
+  "notes": [
+   "Does not extend Darkside or Power Stone.",
+   "game8 examples: LS white Spirit Gauge 215/234/272 s, SA Amped 60/77/90 s."
+  ],
+  "source": "PlayerSkillParam _PowerProlongeWp02/03/08/09/10Data; gamepedia.jp multipliers agree.",
+  "confidence": "high"
+ },
+ "Power Stone": {
+  "trigger": "Mining ore",
+  "levels": {
+   "1": [
+    "Attack +10 / +15 / +30 per ore (by rarity)",
+    "Stacks up to Attack +90",
+    "Lasts 90 s, refreshed by each ore"
+   ]
+  },
+  "notes": [
+   "Innate on the Workshop pickaxes: Scavenger Pickaxe / Mad Scavenger Pickaxe (LS) and Mining Pickaxe / Digmore War Pick (SnS).",
+   "game8: rarity 4 ore +10, rarity 5-6 +15, rarity 7 +30. Power Prolonger does not extend it."
+  ],
+  "source": "PlayerSkillParam _IamCoalMinerData [90, 90, 10, 15, 30]; game8.jp states the same values.",
+  "confidence": "high"
+ },
+ "Protective Polish": {
+  "trigger": "After sharpening",
+  "levels": {
+   "1": [
+    "No sharpness loss for 30 s"
+   ],
+   "2": [
+    "No sharpness loss for 60 s"
+   ],
+   "3": [
+    "No sharpness loss for 90 s"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 30/60/90; in-game text.",
+  "confidence": "high"
+ },
+ "Punishing Draw": {
+  "trigger": "Draw attacks (not while riding)",
+  "levels": {
+   "1": [
+    "Attack +3",
+    "Small stun damage"
+   ],
+   "2": [
+    "Attack +5",
+    "Medium stun damage"
+   ],
+   "3": [
+    "Attack +7",
+    "Large stun damage"
+   ]
+  },
+  "notes": [
+   "PlayerSkillParam _BattoPowerData also holds 20/60/100, probably the stun values per level (unconfirmed)."
+  ],
+  "source": "PlayerSkillParam _BattoPowerData [3, 5, 7, ...]; in-game text states the attack.",
+  "confidence": "high"
+ },
+ "Quick Sheathe": {
+  "levels": {
+   "1": [
+    "Sheathing speed ×1.1"
+   ],
+   "2": [
+    "Sheathing speed ×1.2"
+   ],
+   "3": [
+    "Sheathing speed ×1.4"
+   ]
+  },
+  "source": "SkillData _value[0] = 110 / 120 / 140, read as sheathe speed %; matches the game's slight / normal / great wording.",
+  "confidence": "medium"
+ },
+ "Rapid Fire Up": {
+  "trigger": "Light Bowgun rapid fire",
+  "levels": {
+   "1": [
+    "Rapid fire damage ×1.05"
+   ]
+  },
+  "notes": [
+   "Light Bowgun only."
+  ],
+  "source": "Datamine SkillData [0] = 105; in-game text.",
+  "confidence": "high"
+ },
+ "Rapid Morph": {
+  "trigger": "Switch Axe and Charge Blade morphs",
+  "levels": {
+   "1": [
+    "Morph speed +10%"
+   ],
+   "2": [
+    "Morph speed +20%",
+    "Morph attacks ×1.10"
+   ],
+   "3": [
+    "Morph speed +30%",
+    "Morph attacks ×1.20"
+   ]
+  },
+  "source": "Datamine SkillData [0] = speed, [1] = morph attack ×; in-game text.",
+  "confidence": "high"
+ },
+ "Rathalos's Flare": {
+  "trigger": "33% chance on a landed hit, checked about every 2.4 s",
+  "levels": {
+   "1": [
+    "Extra fire hit: 20 fixed + 60 fire"
+   ],
+   "2": [
+    "Extra fire hit: 40 fixed + 120 fire"
+   ]
+  },
+  "notes": [
+   "Fire part scales with the fire hitzone.",
+   "Zoh Shia Whiteflame Torrent weapons: 60 + 70 (I) / 80 + 140 (II).",
+   "Expect about one proc per 7.5 s of non-stop attacking."
+  ],
+  "source": "Common-effect _ScorchingHeatData (Title Update 4 values) and SkillData [33, ...]; game8 dummy tests agree.",
+  "confidence": "high"
+ },
+ "Razor Sharp": {
+  "levels": {
+   "1": [
+    "10% chance a hit costs no sharpness"
+   ],
+   "2": [
+    "25% chance a hit costs no sharpness"
+   ],
+   "3": [
+    "50% chance a hit costs no sharpness"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 10/25/50; in-game text.",
+  "confidence": "high"
+ },
+ "Recovery Speed": {
+  "levels": {
+   "1": [
+    "Red health regenerates ×2 faster"
+   ],
+   "2": [
+    "Red health regenerates ×3 faster"
+   ],
+   "3": [
+    "Red health regenerates ×4 faster"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = 200 / 300 / 400 %.",
+  "confidence": "high"
+ },
+ "Recovery Up": {
+  "levels": {
+   "1": [
+    "Health recovered ×1.1"
+   ],
+   "2": [
+    "Health recovered ×1.2"
+   ],
+   "3": [
+    "Health recovered ×1.3"
+   ]
+  },
+  "source": "SkillData _value[0] = 110 / 120 / 130, read as healing %; matches the game's slight / moderate / great wording.",
+  "confidence": "medium"
+ },
+ "Resentment": {
+  "trigger": "While you have red (recoverable) health",
+  "levels": {
+   "1": [
+    "Attack +5"
+   ],
+   "2": [
+    "Attack +10"
+   ],
+   "3": [
+    "Attack +15"
+   ],
+   "4": [
+    "Attack +20"
+   ],
+   "5": [
+    "Attack +25"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = attack; kiranico agrees.",
+  "confidence": "high"
+ },
+ "Rey Dau's Voltage": {
+  "trigger": "When Latent Power activates",
+  "levels": {
+   "1": [
+    "Latent Power duration +30 s (120 s to 150 s)"
+   ],
+   "2": [
+    "Latent Power duration +90 s (120 s to 210 s)"
+   ]
+  },
+  "notes": [
+   "Requires the Latent Power skill; its affinity values are unchanged."
+  ],
+  "source": "Datamine SkillData [30] / [90]; game8 and Wycademy agree.",
+  "confidence": "high"
+ },
+ "Rice Ball": {
+  "trigger": "Akuma actions (Street Fighter collab)",
+  "levels": {
+   "1": [
+    "Increases the attack power of Akuma actions",
+    "Increases stun damage"
+   ]
+  },
+  "notes": [
+   "Datamine has Akuma (SkillExEmote00) rates: attack ×1.5, arena attack ×2.0, arena stun ×2.0, parry buff ×1.05; which of them this skill controls is not confirmed.",
+   "Granted by the Rice Ball Charm (Arena Quests)."
+  ],
+  "source": "Game text; no SkillData numbers; PlayerSkillParam _SkillExEmote00_* values unattributed.",
+  "confidence": "low"
+ },
+ "Scale Layering": {
+  "trigger": "While health is at or below 40%",
+  "levels": {
+   "1": [
+    "Stamina use ×0.5",
+    "Lasts up to 90 s (likely)"
+   ]
+  },
+  "notes": [
+   "No cooldown between activations."
+  ],
+  "source": "Common-effect _Hunki_ActiveHP 0.4 / _Hunki_StamitaRate 0.5 and SkillData [90]; game8 says 50%.",
+  "confidence": "medium"
+ },
+ "Scaling Prowess": {
+  "trigger": "Mounting monsters",
+  "levels": {
+   "1": [
+    "Mount build-up ×1.2",
+    "Damage to wounds while mounted ×1.5"
+   ]
+  },
+  "source": "Datamine SkillData [120, 150]; Wycademy reading.",
+  "confidence": "medium"
+ },
+ "Self-Improvement": {
+  "trigger": "Time spent on the quest",
+  "levels": {
+   "1": [
+    "Defense +5 / +10 / +15 / +20",
+    "Attack +0 / +4 / +8 / +12",
+    "Steps at about 5, 10, 20, 30 min"
+   ]
+  },
+  "notes": [
+   "Maximum (attack +12, defense +20) after 30 minutes."
+  ],
+  "source": "PlayerSkillParam _Diligent_ActiveAttackParam 0/4/8/12, _Diligent_ActiveDefenseParam 5/10/15/20, interval 300 s × 6; step times from deltiasgaming.",
+  "confidence": "medium"
+ },
+ "Seregios's Tenacity": {
+  "trigger": "Perfect dodges (Adrenaline Rush)",
+  "levels": {
+   "1": [
+    "Adrenaline Rush lasts 45 s (from 30 s)",
+    "A second perfect dodge extends it once by +15 s"
+   ],
+   "2": [
+    "As I, plus attack ×1.05 after the extending dodge"
+   ]
+  },
+  "notes": [
+   "Requires the Adrenaline Rush skill.",
+   "Max 60 s per activation.",
+   "game8's attack table fits ×1.05 of base raw exactly (its text says 3-4%)."
+  ],
+  "source": "Datamine SkillData [15, 100] / [15, 105]; game8 attack table agrees.",
+  "confidence": "high"
+ },
+ "Shattering Reflection": {
+  "trigger": "Level 3 charged slash hitting the ground",
+  "levels": {
+   "1": [
+    "Extra area hit of about 25.5% of the charged slash's damage"
+   ]
+  },
+  "notes": [
+   "Innate on the Shatterseal Tree Great Swords (Shatterseal, Shatterseal Drakesnest).",
+   "Works with Charged, Strong Charged and True Charged Slash, not the Offset slash; the extra hit can crit."
+  ],
+  "source": "game8.jp training-area test (follow-up 25.5-25.6% of the slash); no numbers in the game data.",
+  "confidence": "medium"
+ },
+ "Shock Absorber": {
+  "levels": {
+   "1": [
+    "No flinch when you hit allies or allies hit you"
+   ]
+  },
+  "source": "Game text; no numeric parameters.",
+  "confidence": "high"
+ },
+ "Sleep Attack": {
+  "levels": {
+   "1": [
+    "Sleep buildup ×1.05, then +10"
+   ],
+   "2": [
+    "Sleep buildup ×1.10, then +20"
+   ],
+   "3": [
+    "Sleep buildup ×1.20, then +50"
+   ]
+  },
+  "notes": [
+   "Capped by the status maximum."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = flat true 1/2/5 (= display 10/20/50); matches in-game text.",
+  "confidence": "high"
+ },
+ "Sleep Functionality": {
+  "trigger": "Bow only",
+  "levels": {
+   "1": [
+    "Lets the bow load Sleep Coatings"
+   ]
+  },
+  "source": "In-game text.",
+  "confidence": "high"
+ },
+ "Sleep Resistance": {
+  "levels": {
+   "1": [
+    "Sleep duration -30%"
+   ],
+   "2": [
+    "Sleep duration -60%"
+   ],
+   "3": [
+    "Prevents sleep"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = remaining duration 70 / 40 / 0 %.",
+  "confidence": "high"
+ },
+ "Slicked Blade": {
+  "trigger": "While wet or bubbleblighted",
+  "levels": {
+   "1": [
+    "Affinity +3% when wet",
+    "Affinity +7% when bubbleblighted"
+   ],
+   "2": [
+    "Affinity +6% when wet",
+    "Affinity +14% when bubbleblighted"
+   ],
+   "3": [
+    "Affinity +9% when wet",
+    "Affinity +21% when bubbleblighted"
+   ]
+  },
+  "notes": [
+   "Innate on the Mizutsune Tree (Lv2 on the rarity 6 weapons, Lv3 on the rarity 8 ones, e.g. Tamonowo, Akanesasu, Heaven's Manna).",
+   "Wet and bubbleblight stack (up to +30% at Lv3); wet lasts about 30 s and is refreshed by water.",
+   "Lv3 data has an extra flag (1) with no documented effect."
+  ],
+  "source": "Datamine SkillData [0] = wet, [1] = bubble affinity; in-game text and game8.jp agree.",
+  "confidence": "high"
+ },
+ "Slugger": {
+  "levels": {
+   "1": [
+    "Stun buildup ×1.20"
+   ],
+   "2": [
+    "Stun buildup ×1.30"
+   ],
+   "3": [
+    "Stun buildup ×1.40"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 120/130/140; in-game text.",
+  "confidence": "high"
+ },
+ "Soul of the Dark Knight": {
+  "trigger": "Dark Arts: while you have red (recoverable) health",
+  "levels": {
+   "1": [
+    "Element ×1.20 (Great Sword, Hammer, Light and Heavy Bowgun)",
+    "Element ×1.14 (all other weapons)",
+    "Great Sword: Lv3 charged slashes add a shockwave (30 MV + 60 dragon)"
+   ],
+   "2": [
+    "Special action The Blackest Night: shield for 8 s (about 33% of max HP)",
+    "If the shield breaks: Eventide, then 30 s of red health that cannot drop and base defense ×2",
+    "Cooldown about 70 s"
+   ]
+  },
+  "notes": [
+   "Which weapons get ×1.20 comes from Wycademy; game8 only quotes 20%.",
+   "Shockwave numbers come from a single source.",
+   "Unassigned datamine _DarkBladeData [1.1, 30, 45, 20] and _KnightData [21, 12, 12] probably belong here."
+  ],
+  "source": "Datamine SkillData [120, 114] / [8, 6, 10]; Wycademy, game8 and Fextralife for the action details.",
+  "confidence": "medium"
+ },
+ "Special Ammo Boost": {
+  "trigger": "Bowgun special ammo; Bow Dragon Piercer, Thousand Dragons, Tracer",
+  "levels": {
+   "1": [
+    "Damage ×1.10"
+   ],
+   "2": [
+    "Damage ×1.20"
+   ]
+  },
+  "source": "Datamine SkillData [110,110] / [120,120] (bowgun / bow); kiranico and game8 agree.",
+  "confidence": "high"
+ },
+ "Speed Eating": {
+  "levels": {
+   "1": [
+    "Moderately increases eating and item-use speed"
+   ],
+   "2": [
+    "Increases eating and item-use speed"
+   ],
+   "3": [
+    "Greatly increases eating and item-use speed"
+   ]
+  },
+  "notes": [
+   "PlayerSkillParam _FastEatingData holds 7 rate groups per level (e.g. 1.1/1.35/1.45, 1.3/2.0/2.4, 1.2/1.4/1.6, 1.1/1.3/1.5); which action each applies to is not mapped."
+  ],
+  "source": "Game text; datamine rates exist but are not mapped to actions.",
+  "confidence": "low"
+ },
+ "Speed Sharpening": {
+  "levels": {
+   "1": [
+    "Sharpening takes 1 cycle less"
+   ],
+   "2": [
+    "Sharpening takes 2 cycles less"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 1/2; in-game text.",
+  "confidence": "high"
+ },
+ "Spread/Power Shots": {
+  "trigger": "Spread Ammo; Bow Power Shots and Quick Shots",
+  "levels": {
+   "1": [
+    "Damage ×1.05"
+   ]
+  },
+  "source": "Datamine SkillData [105,105] (bowgun / bow); kiranico agrees.",
+  "confidence": "high"
+ },
+ "Stamina Surge": {
+  "levels": {
+   "1": [
+    "Stamina recovery speed +10%"
+   ],
+   "2": [
+    "Stamina recovery speed +30%"
+   ],
+   "3": [
+    "Stamina recovery speed +50%"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = 110 / 130 / 150 %.",
+  "confidence": "high"
+ },
+ "Stamina Thief": {
+  "levels": {
+   "1": [
+    "Exhaust buildup ×1.20"
+   ],
+   "2": [
+    "Exhaust buildup ×1.30"
+   ],
+   "3": [
+    "Exhaust buildup ×1.40"
+   ]
+  },
+  "source": "Datamine SkillData [0] = 120/130/140; in-game text.",
+  "confidence": "high"
+ },
+ "Stench Resistance": {
+  "levels": {
+   "1": [
+    "Stench duration -50%"
+   ],
+   "2": [
+    "Prevents stench"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = remaining duration 50 / 0 %.",
+  "confidence": "high"
+ },
+ "Stun Resistance": {
+  "levels": {
+   "1": [
+    "Stun duration -30%"
+   ],
+   "2": [
+    "Stun duration -60%"
+   ],
+   "3": [
+    "Prevents stun"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = remaining duration 70 / 40 / 0 %.",
+  "confidence": "high"
+ },
+ "Survival Expert": {
+  "trigger": "Using an environmental healing interactable",
+  "levels": {
+   "1": [
+    "Restores 50 extra health"
+   ],
+   "2": [
+    "Restores 80 extra health"
+   ],
+   "3": [
+    "Restores 100 extra health"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = 50 / 80 / 100.",
+  "confidence": "high"
+ },
+ "Synergy": {
+  "trigger": "Insect Glaive Rising Spiral Slash",
+  "levels": {
+   "1": [
+    "Affinity +15% for you and nearby hunters",
+    "Lasts 45 s, refreshed by another Rising Spiral Slash"
+   ]
+  },
+  "notes": [
+   "Innate on the Omega Tree Insect Glaives (Omega's Rod, True Omega's Rod).",
+   "With the Omega Resonance II set bonus (4 Omega armor pieces): affinity +25% for 60 s.",
+   "Several hunters' Synergy does not stack."
+  ],
+  "source": "PlayerSkillParam _CooperationValue 15 / _CooperationTime 45 (Resonance 25 / 60); game8.jp states the same.",
+  "confidence": "high"
+ },
+ "Synthetic Shield": {
+  "trigger": "Perfect Guard",
+  "levels": {
+   "1": [
+    "Defense +30 for you and nearby hunters",
+    "Lasts 30 s, refreshed by another Perfect Guard"
+   ]
+  },
+  "notes": [
+   "Innate on the Omega Tree Sword & Shields (Omega's Sword, True Omega's Sword).",
+   "With the Omega Resonance II set bonus (4 Omega armor pieces): defense +45 for 45 s."
+  ],
+  "source": "PlayerSkillParam _ShieldOptionValue 30 / _ShieldOptionTime 30 (Resonance 45 / 45); game8.jp states the same.",
+  "confidence": "high"
+ },
+ "Tetrad Shot": {
+  "trigger": "Bowguns and Bow: from the 4th shot of a magazine / coating",
+  "levels": {
+   "1": [
+    "Affinity +8% from the 4th shot",
+    "Attack +3 on the 4th and 6th shots"
+   ],
+   "2": [
+    "Affinity +10% from the 4th shot",
+    "Attack +6 on the 4th and 6th shots"
+   ],
+   "3": [
+    "Affinity +12% from the 4th shot",
+    "Attack +10 on the 4th and 6th shots"
+   ]
+  },
+  "notes": [
+   "game8 measured affinity +8-9/10/12% and attack about ×1.01/1.02/1.05, which fits flat +3/+6/+10.",
+   "The trailing 105/105 data slots are unexplained."
+  ],
+  "source": "Datamine SkillData [8,3,105,105]..[12,10,105,105]: [0] = affinity, [1] = attack (inferred); game8.jp test agrees.",
+  "confidence": "medium"
+ },
+ "Thunder Attack": {
+  "levels": {
+   "1": [
+    "Thunder attack +40"
+   ],
+   "2": [
+    "Thunder attack ×1.10, then +50"
+   ],
+   "3": [
+    "Thunder attack ×1.20, then +60"
+   ]
+  },
+  "notes": [
+   "Capped by the element cap: the larger of base + 400 and base × 2.3 (since TU4)."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = true 4/5/6 (display 40/50/60); in-game text.",
+  "confidence": "high"
+ },
+ "Thunder Resistance": {
+  "levels": {
+   "1": [
+    "Thunder resistance +6"
+   ],
+   "2": [
+    "Thunder resistance +12"
+   ],
+   "3": [
+    "Thunder resistance +20",
+    "Defense +10"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = resistance, [1] = defense.",
+  "confidence": "high"
+ },
+ "Tool Specialist": {
+  "levels": {
+   "1": [
+    "Specialized tool recharge time -10%"
+   ],
+   "2": [
+    "Specialized tool recharge time -20%"
+   ],
+   "3": [
+    "Specialized tool recharge time -30%"
+   ],
+   "4": [
+    "Specialized tool recharge time -40%"
+   ],
+   "5": [
+    "Specialized tool recharge time -50%"
+   ]
+  },
+  "notes": [
+   "Specialized tools are the mantles."
+  ],
+  "source": "Game text; SkillData _value[0] = recharge time 90 .. 50 %.",
+  "confidence": "high"
+ },
+ "Tremor Resistance": {
+  "levels": {
+   "1": [
+    "Very minor tremors negated",
+    "Minor tremors: effect ×0.5",
+    "Major tremors: no reduction"
+   ],
+   "2": [
+    "Very minor and minor tremors negated",
+    "Major tremors: effect ×0.2"
+   ],
+   "3": [
+    "All tremors negated"
+   ]
+  },
+  "source": "SkillData _value[0..2] = remaining effect % for small / medium / large tremors (0/50/100, 0/0/20, 0/0/0); matches the game text.",
+  "confidence": "high"
+ },
+ "Uth Duna's Cover": {
+  "trigger": "After using a mantle (specialized tool)",
+  "levels": {
+   "1": [
+    "Defense +25",
+    "Duration 180 s"
+   ],
+   "2": [
+    "Defense +50",
+    "All resistances +12",
+    "Duration 180 s"
+   ]
+  },
+  "source": "Datamine SkillData [25] / [50, 12]; game8 agrees.",
+  "confidence": "high"
+ },
+ "Water Attack": {
+  "levels": {
+   "1": [
+    "Water attack +40"
+   ],
+   "2": [
+    "Water attack ×1.10, then +50"
+   ],
+   "3": [
+    "Water attack ×1.20, then +60"
+   ]
+  },
+  "notes": [
+   "Capped by the element cap: the larger of base + 400 and base × 2.3 (since TU4)."
+  ],
+  "source": "Datamine SkillData [0] = %, [1] = true 4/5/6 (display 40/50/60); in-game text.",
+  "confidence": "high"
+ },
+ "Water Resistance": {
+  "levels": {
+   "1": [
+    "Water resistance +6"
+   ],
+   "2": [
+    "Water resistance +12"
+   ],
+   "3": [
+    "Water resistance +20",
+    "Defense +10"
+   ]
+  },
+  "source": "Game text; SkillData _value[0] = resistance, [1] = defense.",
+  "confidence": "high"
+ },
+ "Weakness Exploit": {
+  "trigger": "Hits on weak points (raw hitzone 45 or more)",
+  "levels": {
+   "1": [
+    "Affinity +5% on weak points",
+    "+3% more on wounds"
+   ],
+   "2": [
+    "Affinity +10% on weak points",
+    "+5% more on wounds"
+   ],
+   "3": [
+    "Affinity +15% on weak points",
+    "+10% more on wounds"
+   ],
+   "4": [
+    "Affinity +20% on weak points",
+    "+15% more on wounds"
+   ],
+   "5": [
+    "Affinity +30% on weak points",
+    "+20% more on wounds"
+   ]
+  },
+  "notes": [
+   "The wound bonus applies on any wounded part; max +50% on a wounded weak point."
+  ],
+  "source": "SkillData _value[0] = weak point affinity, [1] = wound affinity; threshold from PlayerSkillParam _WeakAttackMeatThreshold = 45; game text and game8 agree.",
+  "confidence": "high"
+ },
+ "Whiteflame Torrent": {
+  "trigger": "Chance on hit",
+  "levels": {
+   "1": [
+    "Chance of an extra hit dealing 50 fixed damage",
+    "With Scorcher I: 81 fire damage instead; Scorcher II: 122"
+   ]
+  },
+  "notes": [
+   "Innate on the whole Zoh Shia Tree (Zoh ... I and Blazing ... weapons).",
+   "The 50 is the same for every weapon and ignores attack and crit buffs. With Scorcher, Scorcher's own effect stops and this hit turns into fire damage (values since TU4; before: 69 / 104).",
+   "Proc chance is not published."
+  ],
+  "source": "game8.jp training-area tests; no confirmed field in the game data.",
+  "confidence": "medium"
+ },
+ "Wide-Range": {
+  "trigger": "Using healing/buff items",
+  "levels": {
+   "1": [
+    "Allies get 33% of the item effect",
+    "Radius 30"
+   ],
+   "2": [
+    "Allies get 33% of the item effect",
+    "Radius 45"
+   ],
+   "3": [
+    "Allies get 66% of the item effect",
+    "Radius 45"
+   ],
+   "4": [
+    "Allies get 66% of the item effect",
+    "Radius 60"
+   ],
+   "5": [
+    "Allies get 100% of the item effect",
+    "Radius 60"
+   ]
+  },
+  "notes": [
+   "Radius is the raw datamine value in game units; its real-world scale is not confirmed."
+  ],
+  "source": "Game text; PlayerSkillParam _ItemWideEffectiveEffectiveData 0.334/0.334/0.667/0.667/1.0 and _ItemWideEffectiveRadiusData 30/45/45/60/60.",
+  "confidence": "high"
+ },
+ "Windproof": {
+  "levels": {
+   "1": [
+    "Minor wind pressure negated",
+    "Major wind pressure: effect ×0.5",
+    "Dragon wind pressure: no reduction"
+   ],
+   "2": [
+    "Minor and major wind pressure negated",
+    "Dragon wind pressure: effect ×0.5"
+   ],
+   "3": [
+    "All wind pressure negated"
+   ]
+  },
+  "source": "SkillData _value[0..2] = remaining effect % for minor / major / dragon wind pressure (0/50/100, 0/0/50, 0/0/0); matches the game text.",
+  "confidence": "high"
+ },
+ "Xu Wu's Vigor": {
+  "trigger": "After eating a well-done steak, burnt meat or similar",
+  "levels": {
+   "1": [
+    "Attack +15",
+    "Duration 180 s"
+   ],
+   "2": [
+    "Attack +30",
+    "Duration 180 s"
+   ]
+  },
+  "notes": [
+   "Does not stack with Might Seed / Might Pill; the higher value applies."
+  ],
+  "source": "Game text states the attack; datamine SkillData [180, 15] / [180, 30].",
+  "confidence": "high"
+ },
+ "Zoh Shia's Pulse": {
+  "levels": {
+   "1": [
+    "Recovers 1 HP every 2 s up to max HP"
+   ],
+   "2": [
+    "Recovers 1 HP every 1 s up to max HP"
+   ]
+  },
+  "notes": [
+   "Works even without red health; boosted by Recovery Up, not Recovery Speed."
+  ],
+  "source": "Common-effect _AutoRecoverData [1, 2, 1]; gamerant and Wycademy agree.",
+  "confidence": "high"
+ }
+}

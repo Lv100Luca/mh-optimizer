@@ -1,0 +1,145 @@
+@inject AppState App
+@* An armor set's wiki page: its pieces with skills, slots, defense and resistances, the full set's totals, and what its set
+   bonus and group skill do. *@
+@{
+    var set = Set;
+    var bonuses = set.SetBonus.Concat(set.GroupSkill is { } g ? [g] : []).Select(n => Wiki.Skills.GetValueOrDefault(n)).OfType<WikiSkill>().ToList();
+    var totals = set.Pieces.SelectMany(p => p.Skills).GroupBy(k => k.Skill)
+        .Select(grp => (Skill: grp.Key, Level: grp.Sum(k => k.Level), Max: Wiki.Skills.GetValueOrDefault(grp.Key)?.MaxLevel ?? 99))
+        .OrderByDescending(t => t.Level).ThenBy(t => t.Skill).ToList();
+    var transcends = set.Pieces.Any(p => p.SlotsTranscended is not null);
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head">
+        <div class="wiki-title">
+            <img class="icon" width="36" height="36" src="@GameIcons.Armor(ArmorPieceKind.Chest, set.Rarity)" alt="" />
+            <div>
+                <h1>@set.Name</h1>
+                <div class="chip-row">
+                    <RarityBadge Rarity="set.Rarity" />
+                    <span class="muted small">@(set.Rank == "high" ? "High rank" : "Low rank") · @Fmt.Plural(set.Pieces.Count, "piece")</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (bonuses.Count > 0)
+    {
+        <div class="wiki-bonus-grid">
+            @foreach (var b in bonuses)
+            {
+                var pieces = set.Pieces.Count(p => (p.SetBonus ?? set.SetBonus).Contains(b.Name) || set.GroupSkill == b.Name);
+                <section class="card wiki-bonus @b.Kind.ToString().ToLowerInvariant()">
+                    <div class="wiki-bonus-head">
+                        <SkillIcon Name="@b.Name" Kind="b.Kind" Size="22" />
+                        <button class="linklike wiki-bonus-name" @onclick="() => App.OpenWiki(Tab.WikiBonuses, b.Name)">@b.Name</button>
+                        <KindTag Kind="b.Kind" />
+                        @if (pieces < set.Pieces.Count)
+                        {
+                            <span class="muted tiny right">on @Fmt.Plural(pieces, "piece")</span>
+                        }
+                    </div>
+                    <ul class="wiki-tiers">
+                        @foreach (var r in b.Ranks)
+                        {
+                            var lines = b.Effects?.Levels.GetValueOrDefault(r.Level.ToString(CultureInfo.InvariantCulture));
+                            <li>
+                                <b>@(r.Name ?? $"Tier {r.Level}")</b>
+                                @if (r.Pieces is { } pc)
+                                {
+                                    <span class="muted"> · @pc pc</span>
+                                }
+                                <div class="muted small">@(lines is { Count: > 0 } ? string.Join(" · ", lines) : r.Description)</div>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        </div>
+    }
+
+    <Section Title="Pieces" Key="wiki-pieces" Collapsible="false"
+             Hint="@(transcends ? "Slots in brackets: after Armor Transcendence (rarity 5 and 6 pieces gain slot levels)." : null)">
+        <div class="dmg-scroll">
+            <table class="table wiki-pieces">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Piece</th>
+                        <th>Skills</th>
+                        <th>Slots</th>
+                        <th class="num" title="Base / fully upgraded">Defense</th>
+                        @foreach (var e in Elements)
+                        {
+                            <th class="num res"><img class="icon" width="16" height="16" src="@GameIcons.Element(e)" alt="@e" title="@($"{e} resistance")" /></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in set.Pieces)
+                    {
+                        <tr>
+                            <td class="icon-cell"><img class="icon" width="24" height="24" src="@GameIcons.Armor(p.Piece, p.Rarity)" alt="@p.Piece" /></td>
+                            <td>
+                                <div>@p.Name</div>
+                                @if (p.SetBonus is { } own)
+                                {
+                                    <div class="muted tiny">@string.Join(" + ", own)</div>
+                                }
+                            </td>
+                            <td>
+                                <div class="wiki-piece-skills">
+                                    @foreach (var k in p.Skills)
+                                    {
+                                        <button class="linklike" @onclick="() => App.OpenWiki(Tab.WikiSkills, k.Skill)">@k.Skill&nbsp;<b>@k.Level</b></button>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <Slots Numbers="p.Slots" />
+                                @if (p.SlotsTranscended is { } t)
+                                {
+                                    <span class="muted tiny" title="after Armor Transcendence">(@string.Join("-", t))</span>
+                                }
+                            </td>
+                            <td class="num">@p.DefenseBase<span class="muted">/@p.DefenseMax</span></td>
+                            @foreach (var e in Elements)
+                            {
+                                var v = p.Resistances.GetValueOrDefault(e.ToString().ToLowerInvariant());
+                                <td class="num res @(v < 0 ? "err" : v > 0 ? "ok" : "muted")">@v</td>
+                            }
+                        </tr>
+                    }
+                    @if (set.Pieces.Count > 1)
+                    {
+                        <tr class="wiki-total">
+                            <td></td>
+                            <td><b>Full set</b></td>
+                            <td colspan="2">
+                                <div class="wiki-piece-skills sum">
+                                    @foreach (var t in totals)
+                                    {
+                                        <span>@t.Skill&nbsp;<b>@Math.Min(t.Level, t.Max)</b>@(t.Level > t.Max ? $" (+{t.Level - t.Max} over max)" : "")</span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="num"><b>@set.Pieces.Sum(p => p.DefenseBase)</b><span class="muted">/@set.Pieces.Sum(p => p.DefenseMax)</span></td>
+                            @foreach (var e in Elements)
+                            {
+                                var v = set.Pieces.Sum(p => p.Resistances.GetValueOrDefault(e.ToString().ToLowerInvariant()));
+                                <td class="num res @(v < 0 ? "err" : v > 0 ? "ok" : "muted")"><b>@v</b></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiArmorSet Set { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+
+    private static readonly Element[] Elements = [Element.Fire, Element.Water, Element.Thunder, Element.Ice, Element.Dragon];
+}

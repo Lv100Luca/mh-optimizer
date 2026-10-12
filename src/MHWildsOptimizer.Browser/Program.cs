@@ -41,6 +41,7 @@ builder.Services.AddSingleton<BrowserProfileStore>();
 builder.Services.AddSingleton<UiState>();
 builder.Services.AddSingleton<IProfileStore>(sp => sp.GetRequiredService<BrowserProfileStore>());
 builder.Services.AddSingleton<CpSatBridge>();
+builder.Services.AddSingleton<WikiService>();
 builder.Services.AddScoped<AppState>();
 builder.Services.AddScoped<ProfileTransfer>();
 

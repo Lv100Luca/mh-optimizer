@@ -902,3 +902,68 @@ button.pathcard:hover { border-color: var(--accent); }
 .weapon-option-part li.chosen .muted { color: var(--ok); font-weight: 400; }
 .weapon-line { white-space: normal; max-width: 260px; margin-top: 2px; }
 .result-detail-row .weapon-options { margin: 0 0 8px; }
+
+/* ---------------------------------------------------------------- wiki */
+.wiki { display: grid; grid-template-columns: minmax(220px, 290px) minmax(0, 1fr); gap: 16px; align-items: start; max-width: 1400px; }
+.wiki-side { position: sticky; top: 0; display: flex; flex-direction: column; max-height: calc(100vh / var(--ui-zoom, 1) - 150px); overflow: hidden; }
+.wiki-tools { display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 8px; border-bottom: 1px solid var(--border); }
+.wiki-list { overflow-y: auto; display: flex; flex-direction: column; padding: 4px 0 8px; }
+.wiki-count { padding: 4px 12px; }
+.wiki-row { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: none; border-left: 3px solid transparent; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.wiki-row:hover { background: var(--panel-2); }
+.wiki-row.active { background: var(--panel-2); border-left-color: var(--accent); }
+.wiki-row-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiki-flag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(79, 195, 247, 0.5); color: var(--weapon); white-space: nowrap; }
+.wiki-flag.gogma { border-color: rgba(227, 182, 78, 0.5); color: var(--set); }
+.wiki-main { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.wiki-back { display: none; align-self: flex-start; }
+.wiki-page { max-width: none; }
+.wiki-head { padding: 14px 18px; border-left: 3px solid var(--armor); }
+.wiki-head.weapon { border-left-color: var(--weapon); }
+.wiki-head.set { border-left-color: var(--set); }
+.wiki-head.group { border-left-color: var(--group); }
+.wiki-title { display: flex; align-items: center; gap: 12px; }
+.wiki-title h1 { font-size: 20px; }
+.wiki-desc { margin: 10px 0 0; }
+.table.wiki-levels td { vertical-align: top; }
+.wiki-lv { width: 1%; white-space: nowrap; }
+.wiki-game { width: 40%; font-size: 12.5px; }
+.wiki-fx { font-weight: 600; }
+.wiki-fx > div + div { margin-top: 2px; }
+.wiki-subtable h3, .wiki-src h3, .wiki-subhead { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 4px 0 8px; }
+.wiki-subtable td:not(:first-child) { white-space: nowrap; }
+.wiki-notes { margin: 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; display: grid; gap: 3px; }
+.wiki-source { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: 0; }
+.wiki-conf { flex: none; padding: 0 6px; border-radius: 4px; border: 1px solid var(--border-2); color: var(--muted); }
+.wiki-conf.high { color: var(--ok); border-color: rgba(95, 191, 122, 0.5); }
+.wiki-conf.medium { color: var(--warn); border-color: rgba(232, 176, 75, 0.5); }
+.wiki-conf.low { color: var(--err); border-color: rgba(224, 90, 79, 0.5); }
+.wiki-src + .wiki-src { border-top: 1px solid var(--border); padding-top: 12px; }
+.wiki-src .chip { white-space: normal; }
+.table.wiki-armor-src td { padding-top: 4px; padding-bottom: 4px; }
+.wiki-weapons { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px 18px; }
+.wiki-weapon-group { display: flex; flex-direction: column; gap: 4px; }
+.wiki-weapon-names { display: flex; flex-direction: column; padding-left: 26px; font-size: 12.5px; color: var(--muted); }
+.wiki-bonus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 12px; }
+.wiki-bonus { padding: 12px 14px; border-left: 3px solid var(--set); }
+.wiki-bonus.group { border-left-color: var(--group); }
+.wiki-bonus-head { display: flex; align-items: center; gap: 8px; }
+.wiki-bonus-name { font-weight: 600; color: var(--text); }
+.wiki-tiers { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.table.wiki-pieces th, .table.wiki-pieces td { padding-left: 5px; padding-right: 5px; }
+.table.wiki-pieces td { vertical-align: top; }
+.table.wiki-pieces .num { white-space: nowrap; }
+.table.wiki-pieces .res { padding-left: 3px; padding-right: 3px; }
+.wiki-piece-skills { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.wiki-piece-skills > * { white-space: nowrap; }
+.wiki-piece-skills .linklike { color: var(--text); text-align: left; }
+.wiki-piece-skills.sum { flex-direction: row; flex-wrap: wrap; gap: 2px 14px; }
+.wiki-total td { border-top: 2px solid var(--border-2); }
+@media (max-width: 900px), (pointer: fine) and (max-width: 1350px) {
+  .wiki { grid-template-columns: 1fr; }
+  .wiki-side { position: static; max-height: none; }
+  .wiki.has-entry .wiki-side { display: none; }
+  .wiki:not(.has-entry) .wiki-main { display: none; }
+  .wiki-back { display: inline; }
+  .wiki-game { width: auto; }
+}

@@ -1,0 +1,285 @@
+@inject AppState App
+@* A skill's wiki page: the game's texts, what each level does in numbers, and everything that carries it. *@
+@{
+    var s = Skill;
+    var fx = s.Effects;
+    var bonus = s.Kind is SkillKind.Set or SkillKind.Group;
+    var src = s.Sources;
+    var section = bonus ? Tab.WikiBonuses : Tab.WikiSkills;
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head @Slug(s.Kind)">
+        <div class="wiki-title">
+            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="36" />
+            <div>
+                <h1>@s.Name</h1>
+                <div class="chip-row">
+                    <KindTag Kind="s.Kind" />
+                    @if (!bonus)
+                    {
+                        <span class="muted small">max level @s.MaxLevel</span>
+                    }
+                    @if (s.WeaponOnly)
+                    {
+                        <span class="wiki-flag" title="No decoration, armor piece or charm has it">only on weapons</span>
+                    }
+                    @if (s.GogmaPool)
+                    {
+                        <span class="wiki-flag gogma" title="A Gogma Artian weapon can roll it; the weapon counts as one piece">Gogma weapon roll</span>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (s.Description is { } d)
+        {
+            <p class="wiki-desc">@d</p>
+        }
+    </section>
+
+    <Section Title="@(bonus ? "Tiers" : "Levels")" Key="wiki-levels" Collapsible="false"
+             Hint="@(fx?.Trigger is { } t ? "When: " + LowerFirst(t) : null)">
+        <div class="dmg-scroll">
+            <table class="table wiki-levels">
+                <thead>
+                    <tr>
+                        <th>@(bonus ? "Tier" : "Lv")</th>
+                        <th>In game</th>
+                        <th>What it does</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in s.Ranks)
+                    {
+                        var lines = fx?.Levels.GetValueOrDefault(r.Level.ToString(CultureInfo.InvariantCulture));
+                        <tr>
+                            <td class="wiki-lv">
+                                @if (bonus)
+                                {
+                                    <b>@(r.Name ?? $"Tier {r.Level}")</b>
+                                    @if (r.Pieces is { } pc)
+                                    {
+                                        <div class="muted tiny">@pc pieces</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <b>@r.Level</b>
+                                }
+                            </td>
+                            <td class="muted wiki-game">@r.Description</td>
+                            <td class="wiki-fx">
+                                @if (lines is { Count: > 0 })
+                                {
+                                    @foreach (var line in lines)
+                                    {
+                                        <div>@line</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (fx?.Tables is { Count: > 0 } tables)
+        {
+            @foreach (var table in tables)
+            {
+                <div class="wiki-subtable">
+                    <h3>@table.Title</h3>
+                    <div class="dmg-scroll">
+                        <table class="table">
+                            <thead><tr>@foreach (var c in table.Columns) { <th>@c</th> }</tr></thead>
+                            <tbody>
+                                @foreach (var row in table.Rows)
+                                {
+                                    <tr>@foreach (var c in row) { <td>@c</td> }</tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+        @if (fx?.Notes is { Count: > 0 } notes)
+        {
+            <ul class="wiki-notes">
+                @foreach (var n in notes)
+                {
+                    <li>@n</li>
+                }
+            </ul>
+        }
+        @if (fx is not null)
+        {
+            <p class="wiki-source tiny">
+                <span class="wiki-conf @fx.Confidence" title="@ConfidenceHint(fx.Confidence)">@(fx.Confidence ?? "unrated") confidence</span>
+                <span class="muted">@fx.Source</span>
+            </p>
+        }
+        else
+        {
+            <p class="muted small">No numbers collected for this skill yet: the game's own text is all there is.</p>
+        }
+    </Section>
+
+    <Section Title="Where to get it" Key="wiki-sources" Collapsible="false">
+        @if (src.Decorations is { Count: > 0 } decos)
+        {
+            <div class="wiki-src">
+                <h3>Decorations</h3>
+                <div class="chip-row">
+                    @foreach (var d in decos)
+                    {
+                        var others = App.Index.DecorationsByName.GetValueOrDefault(d.Name)?.Skills.Where(g => g.Skill != s.Name).ToList() ?? [];
+                        <span class="chip deco" title="@($"{d.Name}: rarity {d.Rarity}, slot level {d.Slot}")">
+                            <img class="icon" width="20" height="20" src="@GameIcons.Decoration(d.Slot, d.Kind, d.IconColor)" alt="" />
+                            @d.Name&nbsp;<b>Lv @d.Level</b>
+                            @foreach (var o in others)
+                            {
+                                <span class="muted">+ <button class="linklike" @onclick="() => Open(o.Skill)">@o.Skill</button> @o.Level</span>
+                            }
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+        @if (src.Charms is { Count: > 0 } charms)
+        {
+            <div class="wiki-src">
+                <h3>Charms <span class="muted tiny">(highest rank of each)</span></h3>
+                <div class="chip-row">
+                    @foreach (var c in charms)
+                    {
+                        <span class="chip"><img class="icon" width="18" height="18" src="@GameIcons.Talisman(c.Rarity)" alt="" />@c.Name&nbsp;<b>Lv @c.Level</b></span>
+                    }
+                </div>
+            </div>
+        }
+        @if (src.Sets is { Count: > 0 } sets)
+        {
+            <div class="wiki-src">
+                <h3>Armor sets</h3>
+                <div class="chip-row">
+                    @foreach (var set in sets)
+                    {
+                        var info = Wiki.Sets.GetValueOrDefault(set);
+                        <button class="chip" @onclick="() => App.OpenWiki(Tab.WikiArmor, set)">
+                            @if (info is not null)
+                            {
+                                <img class="icon" width="18" height="18" src="@GameIcons.Armor(PieceWith(info, s.Name), info.Rarity)" alt="" />
+                            }
+                            @set
+                            @if (info is not null && PieceCount(info, s.Name) is var n && n < info.Pieces.Count)
+                            {
+                                <span class="muted">@n pc</span>
+                            }
+                        </button>
+                    }
+                </div>
+                @if (s.GogmaPool)
+                {
+                    <p class="muted small">A Gogma Artian weapon can roll this @(s.Kind == SkillKind.Set ? "set bonus" : "group skill") (with Reset Skills); it then counts as one piece.</p>
+                }
+            </div>
+        }
+        @if (src.Armor is { Count: > 0 } armor)
+        {
+            var shown = _allArmor ? armor : armor.Take(ArmorPreview).ToList();
+            <div class="wiki-src">
+                <h3>Armor pieces <span class="muted tiny">@armor.Count</span></h3>
+                <div class="dmg-scroll">
+                    <table class="table wiki-armor-src">
+                        <tbody>
+                            @foreach (var a in shown)
+                            {
+                                <tr>
+                                    <td class="icon-cell"><img class="icon" width="22" height="22" src="@GameIcons.Armor(a.Piece, a.Rarity)" alt="@a.Piece" /></td>
+                                    <td>@a.Name</td>
+                                    <td><button class="linklike" @onclick="() => App.OpenWiki(Tab.WikiArmor, a.Set)">@a.Set</button></td>
+                                    <td><RarityBadge Rarity="a.Rarity" /> <span class="muted tiny">@(a.Rank == "high" ? "HR" : "LR")</span></td>
+                                    <td class="num"><b>Lv @a.Level</b></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (armor.Count > ArmorPreview)
+                {
+                    <button class="linklike small" @onclick="() => _allArmor = !_allArmor">@(_allArmor ? "show fewer" : $"show all {armor.Count}")</button>
+                }
+            </div>
+        }
+        @if (src.Weapons is { Count: > 0 } weapons)
+        {
+            <div class="wiki-src">
+                <h3>Weapons with it built in <span class="muted tiny">@weapons.Count</span></h3>
+                <div class="wiki-weapons">
+                    @foreach (var group in weapons.GroupBy(w => w.Kind))
+                    {
+                        <div class="wiki-weapon-group">
+                            <div class="with-icon"><img class="icon" width="20" height="20" src="@GameIcons.Weapon(group.Key)" alt="" /><b>@WeaponLabel(group.Key)</b></div>
+                            <div class="wiki-weapon-names">
+                                @foreach (var w in group)
+                                {
+                                    <span title="@($"rarity {w.Rarity}")">@w.Name@(s.MaxLevel > 1 ? $" (Lv {w.Level})" : "")</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (src.Decorations is null && src.Charms is null && src.Sets is null && src.Armor is null && src.Weapons is null)
+        {
+            <p class="muted">Nothing in the game data carries this skill.</p>
+        }
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiSkill Skill { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+
+    private const int ArmorPreview = 12;
+    private bool _allArmor;
+    private string? _shownFor;
+
+    protected override void OnParametersSet()
+    {
+        if (_shownFor == Skill.Name) return;
+        _shownFor = Skill.Name;
+        _allArmor = false;
+    }
+
+    private void Open(string skill)
+    {
+        var target = Wiki.Skills.GetValueOrDefault(skill);
+        App.OpenWiki(target?.Kind is SkillKind.Set or SkillKind.Group ? Tab.WikiBonuses : Tab.WikiSkills, skill);
+    }
+
+    private string WeaponLabel(string kind) => App.Index.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
+
+    private static string Slug(SkillKind kind) => kind.ToString().ToLowerInvariant();
+
+    private static string LowerFirst(string text) => text.Length > 1 && char.IsUpper(text[0]) && !char.IsUpper(text[1]) ? char.ToLowerInvariant(text[0]) + text[1..] : text;
+
+    private static string ConfidenceHint(string? confidence) => confidence switch
+    {
+        "high" => "Game data and an independent test or the game's own text agree",
+        "medium" => "One good source, or game data whose meaning is inferred",
+        "low" => "A single secondary source or an unverified reading: take with salt",
+        _ => "",
+    };
+
+    /// <summary>The set's pieces that carry the bonus (Gogmazios pieces each carry a different one).</summary>
+    private static int PieceCount(WikiArmorSet set, string bonus) =>
+        set.Pieces.Count(p => (p.SetBonus ?? set.SetBonus).Contains(bonus) || set.GroupSkill == bonus);
+
+    private static ArmorPieceKind PieceWith(WikiArmorSet set, string bonus) =>
+        set.Pieces.FirstOrDefault(p => (p.SetBonus ?? set.SetBonus).Contains(bonus) || set.GroupSkill == bonus)?.Piece ?? set.Pieces[0].Piece;
+}

@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Limits, Conditions, Talismans, Options, Review, Results, Builds }
+public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Limits, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiBonuses, WikiArmor }
 
 public static class Tabs
 {
@@ -13,20 +13,33 @@ public static class Tabs
 
     public static Tab? Parse(string? slug) => Enum.TryParse<Tab>(slug, ignoreCase: true, out var t) && slug!.All(char.IsLetter) ? t : null;
 
-    /// <summary>Tabs of the whole profile rather than of the open weapon.</summary>
-    public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare;
+    /// <summary>Tabs of the whole profile rather than of the open weapon (the wiki belongs to neither, but behaves the same).</summary>
+    public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare || tab.IsWikiTab();
+
+    /// <summary>The game reference: skills, set and group bonuses, armor; the URL carries them as wiki/&lt;section&gt;.</summary>
+    public static bool IsWikiTab(this Tab tab) => tab is Tab.WikiSkills or Tab.WikiBonuses or Tab.WikiArmor;
+
+    public static readonly IReadOnlyDictionary<string, Tab> WikiSections = new Dictionary<string, Tab>
+    {
+        ["skills"] = Tab.WikiSkills, ["bonuses"] = Tab.WikiBonuses, ["armor"] = Tab.WikiArmor,
+    };
+
+    public static string WikiSection(this Tab tab) => WikiSections.First(kv => kv.Value == tab).Key;
 }
 
 /// <summary>
 /// Page URLs, so back / forward, reloads and bookmarks work: <c>&lt;profile&gt;/inventory</c>, <c>&lt;profile&gt;/compare</c>,
-/// <c>&lt;profile&gt;/weapon/&lt;weapon&gt;/&lt;tab&gt;</c> and <c>&lt;profile&gt;/new/&lt;tab&gt;</c> (the unsaved new weapon).
+/// <c>&lt;profile&gt;/weapon/&lt;weapon&gt;/&lt;tab&gt;</c>, <c>&lt;profile&gt;/new/&lt;tab&gt;</c> (the unsaved new weapon) and
+/// <c>&lt;profile&gt;/wiki/&lt;section&gt;/&lt;entry&gt;</c>.
 /// </summary>
 /// <param name="WeaponGiven">Whether the URL names the weapon: false = keep the open one; true with a null weapon = the new weapon.</param>
-public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Tab? Tab)
+/// <param name="WikiEntry">The skill or armor set a wiki page shows.</param>
+public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Tab? Tab, string? WikiEntry = null)
 {
-    public static string Url(string profile, string? weapon, Tab tab)
+    public static string Url(string profile, string? weapon, Tab tab, string? wikiEntry = null)
     {
         var p = Uri.EscapeDataString(profile);
+        if (tab.IsWikiTab()) return $"{p}/wiki/{tab.WikiSection()}" + (wikiEntry is null ? "" : "/" + Uri.EscapeDataString(wikiEntry));
         if (tab.IsProfileTab()) return $"{p}/{tab.Slug()}";
         return weapon is null ? $"{p}/new/{tab.Slug()}" : $"{p}/weapon/{Uri.EscapeDataString(weapon)}/{tab.Slug()}";
     }
@@ -43,6 +56,7 @@ public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Ta
         {
             "inventory" => new Route(profile, null, false, Services.Tab.Inventory),
             "compare" => new Route(profile, null, false, Services.Tab.Compare),
+            "wiki" => new Route(profile, null, false, Tabs.WikiSections.GetValueOrDefault(At(2) ?? "", Services.Tab.WikiSkills), At(3)),
             "new" => new Route(profile, null, true, tab(At(2))),
             "weapon" when At(2) is { } weapon => new Route(profile, weapon, true, tab(At(3))),
             _ => new Route(profile, null, false, null),
