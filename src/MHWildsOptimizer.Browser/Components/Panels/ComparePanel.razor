@@ -298,6 +298,11 @@
             lines.Add("Scored on: " + string.Join("; ", eff.Select((x, i) => $"{ColName(x.Col, oneWeapon)} {attacks[i]}")));
         if (eff.Select(x => x.C.MealAttack).Distinct().Count() > 1)
             lines.Add("Meal attack: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.C.MealAttack}")));
+        static string Uptime(double? u) => u is { } v ? $"{v * 100:0}%" : "auto";
+        if (eff.Select(x => x.C.LatentPowerUptime).Distinct().Count() > 1)
+            lines.Add("Latent Power uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.LatentPowerUptime)}")));
+        if (eff.Select(x => x.C.AzureBoltUptime).Distinct().Count() > 1)
+            lines.Add("Azure Bolt uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.AzureBoltUptime)}")));
         if (eff.Select(x => x.C.Resonance).Distinct().Count() > 1)
             lines.Add("Omega Resonance: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Fmt.TitleCase(x.C.Resonance)}")));
         return lines;

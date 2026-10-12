@@ -205,6 +205,8 @@ public static class RequestLoader
         if (weaponErrors.Count == 0) errors.AddRange(profile.Validate(weapon.Type));
         errors.AddRange(request.Conditions.Target.Validate());
         if (request.Conditions.MealAttack is < 0 or > 50) errors.Add("conditions.meal_attack must be between 0 and 50.");
+        if (request.Conditions.LatentPowerUptime is < 0 or > 1) errors.Add("conditions.latent_power_uptime must be between 0 and 1.");
+        if (request.Conditions.AzureBoltUptime is < 0 or > 1) errors.Add("conditions.azure_bolt_uptime must be between 0 and 1.");
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();

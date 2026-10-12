@@ -36,7 +36,7 @@ public sealed class ScoreUnit
 /// steps change conditions, one segment of it (<see cref="Conditions.Segments"/>).
 /// </summary>
 /// <param name="Health">The health side; the score is the best health side's weighted sum of its segments.</param>
-/// <param name="Weight">The segment's share of the sequence's motion value (1 without segments).</param>
+/// <param name="Weight">The segment's share of the sequence's motion value (1 without segments) times the part's share of the time (<see cref="Conditions.UptimeParts"/>).</param>
 /// <param name="RawFactor">EFR per true raw and crit factor: the attack's MV-weighted sharpness (and phial), <see cref="ResolvedAttackProfile.RawFactor"/>.</param>
 /// <param name="SharpEle">The weapon's element sharpness modifier (the Dark Arts shockwave's element).</param>
 /// <param name="ShockwaveRawShare">Shockwave damage per 100 MV = this x EFR + <paramref name="ShockwaveConstant"/>.</param>
@@ -117,10 +117,12 @@ public sealed class ScoreDecomposition
             {
                 var r = results[i];
                 var p = r.Attack;
-                sides.Add(new ScoreSide(segments[i], health, p.TotalMv / totalMv, p, p.RawFactor, r.SharpnessElementModifier,
-                    r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap,
-                    DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / p.RawFactor * p.Shockwaves * p.PerHundredMv,
-                    Shockwave(0, r.SharpnessElementModifier, p), r.TrueRaw - bare.TrueRaw));
+                // timed skills split the segment by time, with fixed weights (the tier-gated slices, see Conditions.UptimeParts)
+                foreach (var (part, share) in segments[i].UptimeParts())
+                    sides.Add(new ScoreSide(part, health, p.TotalMv / totalMv * share, p, p.RawFactor, r.SharpnessElementModifier,
+                        r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap,
+                        DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / p.RawFactor * p.Shockwaves * p.PerHundredMv,
+                        Shockwave(0, r.SharpnessElementModifier, p), r.TrueRaw - bare.TrueRaw));
             }
         }
 

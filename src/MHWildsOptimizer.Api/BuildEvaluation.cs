@@ -147,7 +147,7 @@ public static class BuildEvaluation
             };
             var d = DamageCalculator.Calculate(weapon, skills, stepConditions, trace: true);
             var critFactor = d.CriticalFactor;
-            var critEleFactor = d.Affinity > 0 ? 1.0 + d.Affinity / 100.0 * (d.CriticalElementMultiplier - 1.0) : 1.0;
+            var critEleFactor = d.CriticalElementFactor;
             var shockwave = DamageCalculator.CountsShockwave(type, skills, stepConditions);
             var (waveRaw, waveEle) = DamageCalculator.ShockwaveParts(d.TrueRaw, d.SharpnessRawModifier, d.SharpnessElementModifier, target.ElementRatio(weapon.Element));
             waveRaw *= target.RawHitzone / 100.0;

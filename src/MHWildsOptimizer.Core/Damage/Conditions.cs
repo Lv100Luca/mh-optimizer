@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using MHWildsOptimizer.Core.Build;
+using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Gogma;
 
 namespace MHWildsOptimizer.Core.Damage;
@@ -35,6 +38,13 @@ public sealed record Conditions
     /// <summary>Burst at the full (5-hit) boost; Burst Boost (Ebony Odogaron) rides on it.</summary>
     public bool BurstActive { get; init; } = true;
     public bool LatentPowerActive { get; init; } = false;
+    /// <summary>
+    /// Share of the hunt Latent Power is active (0 to 1) when <see cref="LatentPowerActive"/>; null: the build's default without
+    /// taking damage, by its Thunderous Roar tier (<see cref="DamageConstants.LatentPowerUptime"/>). See <see cref="UptimeParts"/>.
+    /// </summary>
+    public double? LatentPowerUptime { get; init; }
+    /// <summary>A part of the hunt where Latent Power only counts from this Thunderous Roar (Rey Dau's Voltage) tier on; see <see cref="UptimeParts"/>.</summary>
+    [JsonIgnore] public int LatentPowerMinRoarTier { get; init; }
     public bool AdrenalineRushActive { get; init; } = false;
     /// <summary>Razor's Edge II: Adrenaline Rush re-triggered while active (attack x1.05).</summary>
     public bool AdrenalineRushRetriggered { get; init; } = false;
@@ -49,6 +59,13 @@ public sealed record Conditions
     public bool ElementalAbsorptionActive { get; init; } = false;
     /// <summary>Azure Bolt (Leviathan's Fury) affinity window.</summary>
     public bool AzureBoltActive { get; init; } = true;
+    /// <summary>
+    /// Share of the hunt the Azure Bolt window is up (0 to 1) when <see cref="AzureBoltActive"/>; null: the build's default by its
+    /// Leviathan's Fury tier (<see cref="DamageConstants.AzureBoltUptime"/>). See <see cref="UptimeParts"/>.
+    /// </summary>
+    public double? AzureBoltUptime { get; init; }
+    /// <summary>A part of the hunt where the Azure Bolt window only counts from this Leviathan's Fury tier on; see <see cref="UptimeParts"/>.</summary>
+    [JsonIgnore] public int AzureBoltMinTier { get; init; }
     /// <summary>Omega Resonance alternates Local (affinity) and Remote (attack) every 90 s.</summary>
     public ResonanceMode Resonance { get; init; } = ResonanceMode.Local;
     /// <summary>Powerhouse (Doshaguma's Might): after a Power Clash / Offset.</summary>
@@ -119,6 +136,74 @@ public sealed record Conditions
     }
 
     /// <summary>
+    /// Timed skills that are active only part of the hunt (<see cref="LatentPowerUptime"/>, <see cref="AzureBoltUptime"/>) split it
+    /// into parts, each with its share of the time and the skills in it fixed on or off (uptime 1); the score is the parts' scores
+    /// weighted by their share. The two skills are independent, so their parts cross. A default uptime depends on a set bonus tier,
+    /// so it splits into slices that only count from a tier on: Azure Bolt on from Leviathan's Fury I for 60% of the time, from II
+    /// for another 25%, off for the rest gives 60% at tier I and 85% at tier II with fixed weights. With <paramref name="skills"/>,
+    /// parts that score alike for that loadout are merged (one part when it has neither skill).
+    /// </summary>
+    public IReadOnlyList<(Conditions Part, double Share)> UptimeParts(ActiveSkills? skills = null)
+    {
+        var hasLatent = skills is null || Effective(SkillNames.LatentPower, skills.Level(SkillNames.LatentPower)) > 0;
+        var fury = skills is null ? 2 : (int)skills.SetTier(SkillNames.LeviathansFury);
+        if (!(LatentPowerActive && hasLatent) && !(AzureBoltActive && fury > 0)) return [(this, 1)];
+
+        var latent = LatentPowerActive ? Slices(LatentPowerUptime, t => DamageConstants.LatentPowerUptime(t), from: 0) : null;
+        var bolt = AzureBoltActive ? Slices(AzureBoltUptime, t => DamageConstants.AzureBoltUptime(t), from: 1) : null;
+        if (latent is null && bolt is null) return [(this, 1)];
+
+        var parts = new List<(Conditions Part, double Share)>();
+        foreach (var (lpOn, lpTier, lpShare) in latent ?? [(LatentPowerActive, LatentPowerMinRoarTier, 1.0)])
+        foreach (var (abOn, abTier, abShare) in bolt ?? [(AzureBoltActive, AzureBoltMinTier, 1.0)])
+        {
+            var share = lpShare * abShare;
+            if (share <= 0) continue;
+            parts.Add((this with
+            {
+                LatentPowerActive = lpOn, LatentPowerMinRoarTier = lpTier, LatentPowerUptime = latent is null ? LatentPowerUptime : 1,
+                AzureBoltActive = abOn, AzureBoltMinTier = abTier, AzureBoltUptime = bolt is null ? AzureBoltUptime : 1,
+            }, share));
+        }
+        if (skills is null) return parts;
+
+        // what each part turns on for this loadout; parts that turn on the same score the same
+        var roar = (int)skills.SetTier(SkillNames.ReyDausVoltage);
+        return parts
+            .GroupBy(p => (Latent: p.Part.LatentPowerActive && hasLatent && roar >= p.Part.LatentPowerMinRoarTier,
+                           Bolt: p.Part.AzureBoltActive && fury >= Math.Max(1, p.Part.AzureBoltMinTier)))
+            .Select(g => (g.First().Part with
+            {
+                LatentPowerActive = g.Key.Latent, LatentPowerMinRoarTier = 0, AzureBoltActive = g.Key.Bolt, AzureBoltMinTier = 0,
+            }, g.Sum(p => p.Share)))
+            .ToList();
+    }
+
+    /// <summary>
+    /// A timed skill's parts as (on, from tier, share): none when it is always on (uptime 1), off for an uptime of 0, on and off for
+    /// a set uptime, and for the default one slice per tier from <paramref name="from"/> to II (the extra time that tier adds) plus off.
+    /// </summary>
+    private static List<(bool On, int Tier, double Share)>? Slices(double? uptime, Func<SetBonusTier, double> byTier, int from)
+    {
+        switch (uptime)
+        {
+            case >= 1: return null;
+            case <= 0: return [(false, 0, 1.0)];
+            case { } u: return [(true, 0, u), (false, 0, 1 - u)];
+        }
+        var slices = new List<(bool On, int Tier, double Share)>();
+        var before = 0.0;
+        for (var t = from; t <= 2; t++)
+        {
+            var at = byTier((SetBonusTier)t);
+            slices.Add((true, t, at - before));
+            before = at;
+        }
+        slices.Add((false, 0, 1 - before));
+        return slices;
+    }
+
+    /// <summary>
     /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
     /// (e.g. { "Burst": 1 } for Great Sword, where the five-hit boost is rarely reached). Levels above the cap are shown but not valued.
     /// </summary>
@@ -140,9 +225,11 @@ public sealed record Conditions
         _ => Default,
     };
 
-    /// <summary>Every conditional skill counted as active (a theoretical maximum: the better of full and red/low health, Resonance on its Local phase).</summary>
+    /// <summary>Every conditional skill counted as active all the time (a theoretical maximum: the better of full and red/low health, Resonance on its Local phase).</summary>
     public static Conditions AllOn => new()
     {
+        LatentPowerUptime = 1,
+        AzureBoltUptime = 1,
         MonsterEnraged = true,
         HittingWeakPoint = true,
         HittingWound = true,

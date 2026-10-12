@@ -159,6 +159,26 @@ public static class DamageConstants
     /// <summary>Special Ammo Boost on Dragon Piercer, Thousand Dragons and the Tracer: x1.10 / x1.20 (kiranico 110/120).</summary>
     public static double SpecialAmmoBoost(int level) => level switch { <= 0 => 1.0, 1 => 1.10, _ => 1.20 };
 
+    // ---------------- uptime of timed skills without taking damage, see notes/skill_values_vague_skills.md (Latent Power) and
+    // notes/skill_values_set_group.md (Azure Bolt, Thunderous Roar) ----------------
+
+    /// <summary>
+    /// Latent Power: on for 120 s after 120 s of fighting near a monster, then the 120 s start again (Game8), so half the time;
+    /// Thunderous Roar (Rey Dau's Voltage) makes it last 150 s (I) / 210 s (II). The 130 damage trigger is not counted.
+    /// </summary>
+    public static double LatentPowerUptime(SetBonusTier thunderousRoar) => thunderousRoar switch
+    {
+        SetBonusTier.II => 210.0 / 330,
+        SetBonusTier.I => 150.0 / 270,
+        _ => 0.5,
+    };
+
+    /// <summary>
+    /// Azure Bolt (Leviathan's Fury): +15 affinity for 20 s (I) / 30 s (II) on a proc, about 30 s cooldown from the proc and a gauge
+    /// filled by hits. Estimates on the careful side: whether the gauge fills during the cooldown is not documented.
+    /// </summary>
+    public static double AzureBoltUptime(SetBonusTier tier) => tier == SetBonusTier.II ? 0.85 : 0.60;
+
     // ---------------- proc damage (extra damage instances), see notes/skill_values_set_group.md ----------------
 
     // Azure Bolt bursts (Leviathan's Fury) and Scorcher (Rathalos's Flare) are deliberately not scored; their values are in the notes.

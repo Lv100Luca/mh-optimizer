@@ -113,6 +113,7 @@ public sealed class Relevance
         void Set(string name, bool when = true) { if (when && !sets.Contains(name)) sets.Add(name); }
         Set(SkillNames.GoreMagalasTyranny);
         Set(SkillNames.LeviathansFury, c.AzureBoltActive);
+        Set(SkillNames.ReyDausVoltage, c.LatentPowerActive && c.LatentPowerUptime is null); // Thunderous Roar: the default uptime grows
         Set(SkillNames.SeregiossTenacity, c.AdrenalineRushActive && c.AdrenalineRushRetriggered);
         Set(SkillNames.OmegaResonance, c.Resonance != ResonanceMode.None);
         Set(SkillNames.Gogmapocalypse, hasElement && c.MonsterEnraged);

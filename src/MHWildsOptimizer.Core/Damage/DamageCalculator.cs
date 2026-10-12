@@ -45,6 +45,8 @@ public static class SkillNames
     public const string XuWusVigor = "Xu Wu's Vigor";
     public const string JinDahaadsRevolt = "Jin Dahaad's Revolt";
     public const string BlangongasSpirit = "Blangonga's Spirit";
+    /// <summary>Thunderous Roar: Latent Power lasts longer.</summary>
+    public const string ReyDausVoltage = "Rey Dau's Voltage";
     public static readonly string[] FestivalPrayers = ["Blossomdance Prayer", "Flamefete Prayer", "Dreamspell Prayer", "Lumenhymn Prayer"];
 
     public const string LordsSoul = "Lord's Soul";
@@ -90,6 +92,9 @@ public sealed record DamageResult(
 
     /// <summary>The attack's raw multiplier from the shot skills (<see cref="ShotShares.Multiplier"/>); part of <see cref="EffectiveRaw"/>, 1 for melee.</summary>
     public double ShotMultiplier { get; init; } = 1.0;
+
+    /// <summary>Expected element multiplier from crits at the affinity (1 at none); with timed skills, averaged over the time like <see cref="CriticalFactor"/>.</summary>
+    public double CriticalElementFactor { get; init; } = 1.0;
 
     /// <summary>The optimizer's ranking metric: EFR + EFE + proc damage, per 100 motion value of the attack, on the raw-hitzone-100 scale.</summary>
     public double Total => EffectiveRaw + EffectiveElement + ProcDamage;
@@ -206,9 +211,9 @@ public static class DamageCalculator
     private static DamageResult CalculateSequence(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace)
     {
         var segments = cond.Segments(weapon);
-        if (segments.Count == 1) return CalculateAt(weapon, skills, segments[0], trace);
+        if (segments.Count == 1) return CalculateTimed(weapon, skills, segments[0], trace);
 
-        var results = segments.Select(c => CalculateAt(weapon, skills, c, trace)).ToList();
+        var results = segments.Select(c => CalculateTimed(weapon, skills, c, trace)).ToList();
         var totalMv = results.Sum(r => r.Attack.TotalMv);
         double Weighted(Func<DamageResult, double> value) => results.Sum(r => value(r) * r.Attack.TotalMv / totalMv);
         var main = results.MaxBy(r => r.Attack.TotalMv)!;
@@ -234,6 +239,45 @@ public static class DamageCalculator
             Breakdown = notes,
             ScoredAt = cond,
             ProcParts = [],
+        };
+    }
+
+    /// <summary>
+    /// Timed skills active part of the hunt are scored per part of the time (<see cref="Conditions.UptimeParts"/>) and the parts are
+    /// weighted by their share of it. The result shows the stats of the longest part, with EFR, EFE, procs and the crit factors
+    /// averaged over the time and the affinity as its rounded average.
+    /// </summary>
+    private static DamageResult CalculateTimed(GogmaWeaponStats weapon, ActiveSkills skills, Conditions cond, bool trace)
+    {
+        var parts = cond.UptimeParts(skills);
+        if (parts.Count == 1) return CalculateAt(weapon, skills, parts[0].Part, trace) with { ScoredAt = cond };
+
+        var results = parts.Select(p => CalculateAt(weapon, skills, p.Part, trace)).ToList();
+        double Average(Func<DamageResult, double> value) => results.Select((r, i) => value(r) * parts[i].Share).Sum();
+        var longest = Enumerable.Range(0, parts.Count).MaxBy(i => parts[i].Share);
+        var main = results[longest];
+        var notes = new List<string>();
+        if (trace)
+        {
+            notes.AddRange(main.Breakdown);
+            for (var i = 0; i < parts.Count; i++)
+            {
+                var (part, r) = (parts[i].Part, results[i]);
+                notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
+            }
+        }
+        return main with
+        {
+            Affinity = (int)Math.Round(Average(r => r.Affinity)),
+            EffectiveRaw = Average(r => r.EffectiveRaw),
+            EffectiveElement = Average(r => r.EffectiveElement),
+            ProcDamage = Average(r => r.ProcDamage),
+            CriticalFactor = Average(r => r.CriticalFactor),
+            CriticalElementFactor = Average(r => r.CriticalElementFactor),
+            ProcParts = results.SelectMany((r, i) => r.ProcParts.Select(p => p with { Value = p.Value * parts[i].Share }))
+                .GroupBy(p => p.Name).Select(g => new ProcPart(g.Key, g.Sum(p => p.Value))).ToList(),
+            Breakdown = notes,
+            ScoredAt = cond,
         };
     }
 
@@ -288,7 +332,7 @@ public static class DamageCalculator
             Flat("Peak Performance", L(SkillNames.PeakPerformance) switch { 1 => 3, 2 => 6, 3 => 10, 4 => 15, _ => 20 });
         if (cond.StaminaFull && L(SkillNames.MaximumMight) > 0)
             Aff("Maximum Might", 10 * Math.Min(L(SkillNames.MaximumMight), 3));
-        if (cond.LatentPowerActive && L(SkillNames.LatentPower) > 0)
+        if (cond.LatentPowerActive && L(SkillNames.LatentPower) > 0 && (int)skills.SetTier(SkillNames.ReyDausVoltage) >= cond.LatentPowerMinRoarTier)
             Aff("Latent Power", 10 * Math.Min(L(SkillNames.LatentPower), 5));
         if (cond.AdrenalineRushActive && L(SkillNames.AdrenalineRush) > 0)
         {
@@ -352,7 +396,7 @@ public static class DamageCalculator
             if (gore == SetBonusTier.II)
                 Flat("Black Eclipse II", cond.FrenzyOvercome ? 15 : 10);
         }
-        if (cond.AzureBoltActive && skills.SetTier(SkillNames.LeviathansFury) != SetBonusTier.None)
+        if (cond.AzureBoltActive && skills.SetTier(SkillNames.LeviathansFury) is var fury && fury != SetBonusTier.None && (int)fury >= cond.AzureBoltMinTier)
             Aff("Azure Bolt", 15);
         var omega = skills.SetTier(SkillNames.OmegaResonance);
         if (omega != SetBonusTier.None)
@@ -454,7 +498,7 @@ public static class DamageCalculator
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
             baseEle, ele, cap, critEleMult, sharpEle, efe, procs, critFactor, profile, notes)
         {
-            ScoredAt = cond, ProcParts = procParts ?? [], Shots = shots, ShotMultiplier = shotMult,
+            ScoredAt = cond, ProcParts = procParts ?? [], Shots = shots, ShotMultiplier = shotMult, CriticalElementFactor = critEleFactor,
         };
     }
 
@@ -491,13 +535,13 @@ public static class DamageCalculator
                     var stepCond = ConditionToggles.With(at, x.Step.Conditions) with { AttackProfile = new AttackProfile { Attack = x.Def!.Id, HitsPerMinute = hitsPerMinute, PierceHits = profile.PierceHits } };
                     var changes = ConditionToggles.StepKeys.Where(k => ConditionToggles.Get(stepCond, k) != ConditionToggles.Get(at, k))
                         .ToDictionary(k => k, k => ConditionToggles.Get(stepCond, k));
-                    var r = CalculateAt(weapon, skills, stepCond, trace: true);
+                    var r = CalculateTimed(weapon, skills, stepCond, trace: true);
                     return AttackDamageOf(x.Def.Name, x.Step.Repeat, changes, r, AttackProfile.ResolveHits(weapon, at.Target, x.Def.Hits, profile.PierceHits));
                 })
                 .ToList();
         }
 
-        var single = CalculateAt(weapon, skills, at, trace: true);
+        var single = CalculateTimed(weapon, skills, at, trace: true);
         IEnumerable<ResolvedHit> hits = profile.AttackFor(weapon.Type) is { } attack
             ? AttackProfile.ResolveHits(weapon, at.Target, attack.Hits, profile.PierceHits)
             : [new ResolvedHit(single.Attack.Name, 1, single.Attack.TotalMv, single.SharpnessRawModifier, single.SharpnessElementModifier, false, [])];
@@ -510,7 +554,7 @@ public static class DamageCalculator
         var elementHitzone = r.Attack.ElementHitzoneRatio * rawHitzone;
         // a crit multiplies raw and element; a feeble hit (negative affinity) only raw
         var (critRaw, critEle) = r.Affinity >= 0 ? (r.CriticalMultiplier, r.CriticalElementMultiplier) : (DamageConstants.NegativeCriticalMultiplier, 1.0);
-        var critEleFactor = r.Affinity > 0 ? 1.0 + r.Affinity / 100.0 * (r.CriticalElementMultiplier - 1.0) : 1.0;
+        var critEleFactor = r.CriticalElementFactor;
         var list = hits.Select(h =>
         {
             var raw = r.TrueRaw * h.Mv / 100.0 * h.RawModifier * r.Shots.For(h.Shot) * rawHitzone;

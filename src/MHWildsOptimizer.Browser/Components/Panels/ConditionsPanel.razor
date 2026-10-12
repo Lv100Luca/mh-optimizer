@@ -258,6 +258,8 @@
     {
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
         [nameof(Conditions.MealAttack)] = "Meal attack",
+        [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
+        [nameof(Conditions.AzureBoltUptime)] = "Azure Bolt uptime",
         [nameof(Conditions.AttackProfile)] = "Attack",
         [nameof(Conditions.Target)] = "Target",
         [nameof(Conditions.SkillLimits)] = "Skill limits",
@@ -449,9 +451,34 @@
                         </SkillHover>
                     }
                 </span>
+                @if (on && Uptimes.TryGetValue(x.Property, out var uptime))
+                {
+                    @* inside the card's label: clicks here must not toggle the checkbox *@
+                    <span class="cond-uptime" @onclick:preventDefault="true">
+                        <span class="muted small">Uptime</span>
+                        <Segmented T="double?" Small="true" Value="uptime.Get(v.Current)" Options="UptimeOptions"
+                                   ValueChanged="u => App.PatchConditions(c => uptime.Set(c, u))" />
+                        <span class="muted small">@uptime.Auto</span>
+                    </span>
+                }
             </span>
         </label>
     };
+
+    /// <summary>Timed skills scored by their share of the hunt: the uptime of the condition (null: the build's default) and what the default is.</summary>
+    private static readonly Dictionary<string, (Func<Conditions, double?> Get, Func<Conditions, double?, Conditions> Set, string Auto)> Uptimes = new()
+    {
+        [nameof(Conditions.LatentPowerActive)] = (c => c.LatentPowerUptime, (c, u) => c with { LatentPowerUptime = u },
+            $"Auto: {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.None))} without taking damage, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.I))} with Thunderous Roar I, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.II))} with II."),
+        [nameof(Conditions.AzureBoltActive)] = (c => c.AzureBoltUptime, (c, u) => c with { AzureBoltUptime = u },
+            $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
+    };
+
+
+    private static readonly IReadOnlyList<SegmentOption<double?>> UptimeOptions =
+        [new(null, "Auto", Hint: "The default for the build's set bonus tier"), .. new double?[] { 0.25, 0.5, 0.67, 0.85, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value)))];
+
+    private static string Pct(double share) => $"{share * 100:0}%";
 
     private string KeyLabel(string property) =>
         Catalog.Conditions.FirstOrDefault(x => x.Property == property)?.Label ?? OtherLabels.GetValueOrDefault(property) ?? property;

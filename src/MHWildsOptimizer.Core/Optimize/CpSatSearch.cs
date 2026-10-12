@@ -149,7 +149,7 @@ internal sealed class CpSatSearch
         var built = true;
         var score = Scores is null ? CheckedScore() : Scores.GetOrBuild(_weapon, _rel, _cond, CheckedScore, out built);
         _progress?.Report(built
-            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.HealthSides} health side(s){(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} sequence parts" : "")}, built in {sw.ElapsedMilliseconds} ms"
+            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.HealthSides} health side(s){(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts (sequence segments, uptime)" : "")}, built in {sw.ElapsedMilliseconds} ms"
             : $"  score model: {score.Units.Count} units, shared with an earlier search");
 
         _model = new CpModel();

@@ -323,6 +323,8 @@ dl.stats dd { margin: 0; }
 .cond-skills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .cond-skills .chip { white-space: normal; } /* long set bonus lists wrap instead of widening the page */
 .cond.resonance { cursor: default; }
+.cond-uptime { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 6px; cursor: default; }
+.cond-uptime .segmented.small button { padding: 4px 8px; }
 
 /* ---------------------------------------------------------------- talismans / options */
 .talisman-table td.right { white-space: nowrap; }

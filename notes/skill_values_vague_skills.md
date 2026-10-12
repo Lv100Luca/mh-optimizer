@@ -332,6 +332,8 @@ Burst damage "is fixed, regardless of weapon type and weapon damage" (game8). Ki
 
 A blog (dtgre.com) states "180 damage or 5 minutes" — those are World/Rise values; low.
 
+Optimizer: scored by its share of the hunt (`latent_power_uptime`, default in `DamageConstants.LatentPowerUptime`). Without taking damage it runs 120 s on, 120 s off: **50 %**; Thunderous Roar I 150 / 270 s ≈ **56 %**, II 210 / 330 s ≈ **64 %**. A short hunt gets less (the first 2 minutes are always without it).
+
 ### 2.8 Agitator
 
 | level | kiranico raw | numeric effect | condition | source | confidence |

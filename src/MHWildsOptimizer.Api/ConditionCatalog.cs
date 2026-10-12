@@ -33,7 +33,7 @@ public static class ConditionCatalog
         [nameof(Conditions.FrenzyOvercome)] = new("Frenzy overcome", GroupHunter, "You overcame the Frenzy virus (Gore Magala set bonus): +15% affinity, Antivirus bonus, Black Eclipse II recovery.", ["Gore Magala's Tyranny (Black Eclipse)", "Antivirus"]),
 
         [nameof(Conditions.BurstActive)] = new("Burst at full stacks", GroupSkills, "Five consecutive hits landed; Burst gives its full boost and Burst Boost (Ebony Odogaron) rides on it.", ["Burst", "Ebony Odogaron's Power (Burst Boost)"]),
-        [nameof(Conditions.LatentPowerActive)] = new("Latent Power triggered", GroupSkills, "Latent Power is active after taking damage or 3 minutes of fighting.", ["Latent Power"]),
+        [nameof(Conditions.LatentPowerActive)] = new("Latent Power triggered", GroupSkills, "Latent Power lasts 2 minutes, after 2 minutes of fighting or 130 damage taken; the uptime is the share of the hunt it is on.", ["Latent Power", "Rey Dau's Voltage (Thunderous Roar)"]),
         [nameof(Conditions.AdrenalineRushActive)] = new("Adrenaline Rush active", GroupSkills, "A perfectly timed evade triggered Adrenaline Rush.", ["Adrenaline Rush"]),
         [nameof(Conditions.AdrenalineRushRetriggered)] = new("Adrenaline Rush re-triggered", GroupSkills, "Adrenaline Rush triggered again while active (Razor's Edge II from Seregios's Tenacity: attack x1.05).", ["Seregios's Tenacity (Razor's Edge)"]),
         [nameof(Conditions.CounterstrikeActive)] = new("Counterstrike active", GroupSkills, "You were knocked back and Counterstrike kicked in.", ["Counterstrike"]),
@@ -43,7 +43,7 @@ public static class ConditionCatalog
         [nameof(Conditions.CoalescenceActive)] = new("Coalescence active", GroupSkills, "The Frenzy cure triggered Coalescence. Needs a natural status recovery, so it is only counted with the Gore Magala set bonus and Frenzy overcome.", ["Coalescence"]),
         [nameof(Conditions.ElementalAbsorptionActive)] = new("Elemental Absorption active", GroupSkills, "You took elemental damage recently.", ["Elemental Absorption"]),
 
-        [nameof(Conditions.AzureBoltActive)] = new("Azure Bolt window", GroupBonuses, "Leviathan's Fury (Lagiacrus): the Azure Bolt affinity window is up.", ["Leviathan's Fury (Azure Bolt)"]),
+        [nameof(Conditions.AzureBoltActive)] = new("Azure Bolt window", GroupBonuses, "Leviathan's Fury (Lagiacrus): enough hits open a +15 affinity window of 20 s (30 s at 4 pieces) with a cooldown; the uptime is the share of the hunt it is up.", ["Leviathan's Fury (Azure Bolt)"]),
         [nameof(Conditions.PowerhouseActive)] = new("Powerhouse active", GroupBonuses, "Doshaguma's Might: after a Power Clash or Offset attack.", ["Doshaguma's Might (Powerhouse)"]),
         [nameof(Conditions.ProteinFiendActive)] = new("Protein Fiend active", GroupBonuses, "Xu Wu's Vigor: after eating a well-done steak.", ["Xu Wu's Vigor (Protein Fiend)"]),
         [nameof(Conditions.BindingCounterActive)] = new("Binding Counter active", GroupBonuses, "Jin Dahaad's Revolt: after recovering from a bind.", ["Jin Dahaad's Revolt (Binding Counter)"]),
