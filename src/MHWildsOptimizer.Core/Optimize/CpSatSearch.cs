@@ -40,9 +40,26 @@ internal sealed class CpSatSearch
     private readonly CpSatParameters _parameters;
     private readonly IProgress<string>? _progress;
     private readonly CancellationToken _ct;
+    private ScoreDecomposition? _score;
 
     public int Solves { get; private set; }
+    /// <summary>Whether the best build was proved optimal (the later builds are only ranked, see <see cref="RankTimeLimitSeconds"/>).</summary>
     public bool ProvedOptimal { get; private set; } = true;
+
+    /// <summary>
+    /// Time limit for the solves after a search's first build: those builds are ranked, not proved (the proof is most of a
+    /// solve's time). Null, or at least the time limit: every build is proved like the first.
+    /// </summary>
+    public double? RankTimeLimitSeconds { get; init; }
+
+    /// <summary>
+    /// The first solve gets this long (at most half the time limit) before the model is tightened (<see cref="TightenAsync"/>) and
+    /// solved again; most searches are done by then and never pay for the tightening.
+    /// </summary>
+    public double TightenAfterSeconds { get; init; } = 8;
+    /// <summary>Time limit of each of the tightening solves; most are proved well within it, and a stopped one still gives a valid cap.</summary>
+    public const double TightenSolveSeconds = 0.5;
+    private bool _tightened;
     public string Summary { get; private set; } = "";
 
     /// <summary>Time spent building and checking the model, and waiting for the backend's solves.</summary>
@@ -108,15 +125,30 @@ internal sealed class CpSatSearch
 
         while (_builds.Count < topN && Solves < maxSolves)
         {
+            // the best build is proved; the next ones only get the rank time limit
+            var ranking = _builds.Count > 0 && RankTimeLimitSeconds is { } rank && rank < _parameters.TimeLimitSeconds;
+            // a first solve that would take long is tried briefly, then tightened and solved again
+            var tryFor = Math.Min(TightenAfterSeconds, _parameters.TimeLimitSeconds / 2);
+            var trying = !_tightened && _builds.Count == 0 && tryFor >= Math.Min(1, TightenAfterSeconds);
+            var parameters = ranking ? _parameters with { TimeLimitSeconds = RankTimeLimitSeconds!.Value }
+                : trying ? _parameters with { TimeLimitSeconds = tryFor } : _parameters;
             var solveSw = Stopwatch.StartNew();
-            var response = await Backend.SolveAsync(model, _parameters, Lane, _ct);
+            var response = await Backend.SolveAsync(model, parameters, Lane, _ct);
             SolveTime += solveSw.Elapsed;
             var status = response.Status;
-            Solves++;
             _ct.ThrowIfCancellationRequested();
+            if (trying && status is CpSolverStatus.Feasible or CpSolverStatus.Unknown)
+            {
+                _progress?.Report($"  solve 1 not done in {tryFor:0.#} s" +
+                                  (status == CpSolverStatus.Feasible ? $" (best {response.ObjectiveValue / ObjectiveScale / Micro:0.00}, bound {response.BestObjectiveBound / ObjectiveScale / Micro:0.00})" : "") +
+                                  ": tightening the model");
+                await TightenAsync();
+                continue;
+            }
+            Solves++;
             if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) { _statuses.Add(status.ToString().ToLowerInvariant()); break; }
-            if (status != CpSolverStatus.Optimal) ProvedOptimal = false;
-            _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : "time limit");
+            if (status != CpSolverStatus.Optimal && !ranking) ProvedOptimal = false;
+            _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : ranking ? "ranked" : "time limit");
 
             var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
             var talisman = vars.Talismans.FindIndex(t => response.BooleanValue(t));
@@ -152,11 +184,48 @@ internal sealed class CpSatSearch
             ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.HealthSides} health side(s){(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts (sequence segments, uptime)" : "")}, built in {sw.ElapsedMilliseconds} ms"
             : $"  score model: {score.Units.Count} units, shared with an earlier search");
 
+        _score = score;
         _model = new CpModel();
         _vars = BuildModel(_model, score);
         if (Cutoff is { } cutoff) _cutoff = _model.Add(_vars.Score >= cutoff);
         ModelTime = sw.Elapsed;
     }
+
+    /// <summary>
+    /// Caps the factors of the score at what a build can really reach. The solver bounds a product by the ranges of its factors,
+    /// and those come from every unit at its best at once, which no build reaches: with few targets the bound stays far above
+    /// the best build and proving it optimal takes long (Burst's flat raw times the affinity of a timed skill, for example).
+    /// A short solve per factor that maximizes it gives its real maximum, or at least a proved bound when it runs out of time;
+    /// both are valid caps. Measured on a Long Sword with only Quick Sheathe as target: 5 proved builds in ~33 s instead of ~60 s.
+    /// </summary>
+    private async Task TightenAsync()
+    {
+        _tightened = true;
+        var sw = Stopwatch.StartNew();
+        var aux = new CpModel();
+        var auxVars = BuildModel(aux, _score!);
+        var keys = _vars!.Keys;
+        var bounds = new Dictionary<string, long?>();
+        var capped = 0;
+        for (var k = 0; k < keys.Count; k++)
+        {
+            if (!bounds.TryGetValue(keys[k].Sig, out var bound))
+            {
+                aux.Model.Objective = null;
+                aux.Maximize(auxVars.Keys[k].Var);
+                var response = await Backend.SolveAsync(aux, _parameters with { TimeLimitSeconds = TightenSolveSeconds }, Lane, _ct);
+                _ct.ThrowIfCancellationRequested();
+                bounds[keys[k].Sig] = bound = response.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible ? (long)Math.Floor(response.BestObjectiveBound) : null;
+            }
+            if (bound is not { } b || b >= keys[k].Ub) continue;
+            _model!.Add(keys[k].Var <= b);
+            capped++;
+        }
+        ModelTime += sw.Elapsed;
+        _progress?.Report($"  tightened: {capped} of {keys.Count} factors capped by {Plural(bounds.Count, "short solve")} in {sw.ElapsedMilliseconds} ms");
+    }
+
+    private static string Plural(int n, string one) => $"{n} {(n == 1 ? one : one + "s")}";
 
     private ScoreDecomposition CheckedScore()
     {
@@ -166,10 +235,13 @@ internal sealed class CpSatSearch
         return score;
     }
 
-    private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, List<IntVar> Decos, IntVar Score);
+    /// <param name="Keys">The factors of the score <see cref="TightenAsync"/> caps, with the upper bound the model gave them, in the order the model builds them.</param>
+    private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, List<IntVar> Decos, IntVar Score,
+        List<(IntVar Var, long Ub, string Sig)> Keys);
 
     private Vars BuildModel(CpModel m, ScoreDecomposition score)
     {
+        var keys = new List<(IntVar Var, long Ub, string Sig)>();
         // ---------------- choices ----------------
         var pieces = _kinds.Select((k, d) => _armor[k].Select((c, i) => (c, m.NewBoolVar($"{k}{i}"))).ToList()).ToList();
         foreach (var list in pieces) if (list.Count > 0) m.AddExactlyOne(list.Select(x => (ILiteral)x.Item2));
@@ -233,7 +305,7 @@ internal sealed class CpSatSearch
             m.Add(idx == LinearExpr.Sum(u.Features.Select((f, i) => LinearExpr.Term(featureVars[f], u.Strides[i]))));
             return idx;
         }).ToList();
-        var sideScores = score.Sides.Select((_, side) => SideScore(m, score, side, unitIndex)).ToList();
+        var sideScores = score.Sides.Select((_, side) => SideScore(m, score, side, unitIndex, keys)).ToList();
         // a sequence's segments add up weighted by their share of the motion value (weights in 1e-8), per health side
         if (score.Sides.Count > score.HealthSides)
             sideScores = score.Sides.Select((s, i) => (s, i)).GroupBy(x => x.s.Health).Select(g =>
@@ -254,7 +326,7 @@ internal sealed class CpSatSearch
             m.AddMaxEquality(total, sideScores.Select(x => (LinearExpr)x.Var));
         }
         m.Maximize(LinearExpr.Term(total, ObjectiveScale) - LinearExpr.Term(LinearExpr.Sum(decos), DecoPenalty));
-        return new Vars(pieces, tals, decos, total);
+        return new Vars(pieces, tals, decos, total, keys);
     }
 
     private sealed record Bounded(IntVar Var, long Lb, long Ub)
@@ -265,9 +337,15 @@ internal sealed class CpSatSearch
     private static Bounded NewVar(CpModel m, long lb, long ub, string name) => new(m.NewIntVar(lb, ub, name), lb, ub);
 
     /// <summary>Score of one health side in micro points: EFR + EFE + procs (+ the Dark Arts shockwave).</summary>
-    private Bounded SideScore(CpModel m, ScoreDecomposition score, int side, List<IntVar> unitIndex)
+    /// <param name="keys">Collects the side's factors worth capping (<see cref="TightenAsync"/>).</param>
+    private Bounded SideScore(CpModel m, ScoreDecomposition score, int side, List<IntVar> unitIndex, List<(IntVar Var, long Ub, string Sig)> keys)
     {
         var sc = score.Sides[side];
+        // what a capped factor depends on: factors with the same signature (e.g. the attack of a segment's uptime parts, which
+        // differ only in affinity) have the same maximum, so one solve caps them all
+        string Sig(string kind, double constant, params Func<Channels, double>[] channels) =>
+            kind + "|" + constant.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "|" + string.Join(";", score.Units.Select(u =>
+                string.Join(",", u.Tables[side].Select(c => string.Join(" ", channels.Select(ch => ch(c).ToString("R", System.Globalization.CultureInfo.InvariantCulture)))))));
         // per-unit lookups of the channels that vary within the unit
         // state 0 of every unit is "nothing active", so a channel that is constant within a unit is at its neutral value
         Bounded? Lookup(int ui, Func<Channels, long> value, string name)
@@ -301,6 +379,7 @@ internal sealed class CpSatSearch
         var baseFlat = (long)Math.Round(sc.BaseRawFlat * S);
         var tr = NewVar(m, _weapon.TrueRaw * pct.Lb + baseFlat + Sum(flats, f => f.Lb), _weapon.TrueRaw * pct.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{side}");
         m.Add(tr.Var == LinearExpr.Term(pct.Var, _weapon.TrueRaw) + baseFlat + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
+        keys.Add((tr.Var, tr.Ub, Sig("tr", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat)));
 
         // affinity, clamped
         var affs = All(c => (long)Math.Round(c.Affinity), "aff");
@@ -308,6 +387,7 @@ internal sealed class CpSatSearch
         var affRaw = LinearExpr.Constant(_weapon.Affinity) + LinearExpr.Sum(affs.Select(a => (LinearExpr)a.Var));
         var affLow = m.NewIntVar(-cap, Math.Max(-cap, _weapon.Affinity + Sum(affs, a => a.Ub)), $"affLow{side}");
         m.AddMaxEquality(affLow, [affRaw, LinearExpr.Constant(-cap)]);
+        keys.Add((affLow, Math.Max(-cap, _weapon.Affinity + Sum(affs, a => a.Ub)), Sig("aff", 0, c => c.Affinity)));
         var aff = m.NewIntVar(-cap, cap, $"aff{side}");
         m.AddMinEquality(aff, [affLow, LinearExpr.Constant(cap)]);
         var affPos = m.NewIntVar(0, cap, $"affPos{side}");
@@ -322,6 +402,7 @@ internal sealed class CpSatSearch
         var negStep = (long)Math.Round((DamageConstants.NegativeCriticalMultiplier - 1.0) * S);
         var cf = NewVar(m, Micro + cap * negStep, Micro + critGain.Ub, $"cf{side}");
         m.Add(cf.Var == Micro + critGain.Var + LinearExpr.Term(affNeg, negStep));
+        keys.Add((cf.Var, cf.Ub, Sig("cf", sc.BaseCritMult, c => c.Affinity, c => c.CritMult)));
 
         // EFR in micro points = TR(1e-4) * CF(1e-6) * sharp(1e-4) / 1e8
         var sharp = (long)Math.Round(sc.RawFactor * S);
@@ -329,6 +410,7 @@ internal sealed class CpSatSearch
         m.AddMultiplicationEquality(trcf.Var, tr.Var, cf.Var);
         var efr = NewVar(m, Math.Min(trcf.Lb * sharp / 100_000_000, 0), trcf.Ub * sharp / 100_000_000 + 1, $"efr{side}");
         m.AddDivisionEquality(efr.Var, LinearExpr.Term(trcf.Var, sharp), 100_000_000);
+        keys.Add((efr.Var, efr.Ub, Sig($"efr{sc.RawFactor}|{sc.BaseCritMult}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat, c => c.Affinity, c => c.CritMult)));
 
         // bow shot skills multiply EFR after the flat bonuses (1e-4)
         var rawMults = All(c => (long)Math.Round(c.RawMult * S), "rmult");
@@ -355,6 +437,7 @@ internal sealed class CpSatSearch
             var eleCap = (long)Math.Round(sc.ElementCap * 10 * S);
             var ele = NewVar(m, Math.Min(eleRaw.Lb, eleCap), Math.Min(eleRaw.Ub, eleCap), $"ele{side}");
             m.AddMinEquality(ele.Var, [eleRaw.Var, LinearExpr.Constant(eleCap)]);
+            keys.Add((ele.Var, ele.Ub, Sig("ele", sc.ElementCap, c => c.ElePct, c => c.EleFlat)));
 
             var critEle = Single(All(c => (long)Math.Round(c.CritEleMult * S), "cele"), (long)Math.Round(sc.BaseCritEleMult * S));
             var ceGain = NewVar(m, 0, cap * Math.Max(0, critEle.Ub - S), $"ceGain{side}");
@@ -370,6 +453,7 @@ internal sealed class CpSatSearch
             var eleFactor = (long)Math.Round(sc.ElementScale * Micro);
             var efe = NewVar(m, ecMicro.Lb * eleFactor / Micro, ecMicro.Ub * eleFactor / Micro + 1, $"efe{side}");
             m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
+            keys.Add((efe.Var, efe.Ub, Sig($"efe{sc.ElementScale}|{sc.BaseCritEleMult}", sc.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
             terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
         }
 

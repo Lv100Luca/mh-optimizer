@@ -358,7 +358,7 @@ public sealed class Optimizer
         progress?.Report("  " + c.Summary);
         var cp = new CpSatSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN,
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
-        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores };
+        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds };
         var search = new ClassSearch(cls, c, cp, candidatesTime);
         search.Finish(await cp.RunAsync());
         progress?.Report($"  {cp.Summary}, {search.Result.Builds.Count} builds kept");

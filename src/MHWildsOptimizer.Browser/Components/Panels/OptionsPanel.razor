@@ -61,6 +61,10 @@
                     <Field Label="Time limit per solve (s)" Inline="true" Hint="When a solve runs out of time the best build found so far is used and the result is no longer proven optimal.">
                         <NumberInput T="double" Value="o.CpSatTimeLimitSeconds" Min="1" Max="3600" Step="10" Width="90" ValueChanged="v => Patch(x => x with { CpSatTimeLimitSeconds = v })" />
                     </Field>
+                    <Field Label="Time limit for builds 2 and on (s)" Inline="true"
+                           Hint="The best build of each skill pair is proved optimal. The next ones get this long each: a solve that finishes in time is proved too, one that does not is ranked by the best build it found (usually the same, but not guaranteed). Set it as high as the limit above to prove every build.">
+                        <NumberInput T="double" Value="o.CpSatRankTimeLimitSeconds" Min="1" Max="3600" Step="1" Width="90" ValueChanged="v => Patch(x => x with { CpSatRankTimeLimitSeconds = v })" />
+                    </Field>
                     <Field Label="Threads" Hint="@($"CPU threads the search may use (this browser reports {cores} cores). Results are identical for any count; fewer threads only take longer. 0 = all cores of this browser.")">
                         <div class="btn-row">
                             <Segmented T="int" Value="@(isThreadPreset ? threads : -1)" Options="threadPresets"

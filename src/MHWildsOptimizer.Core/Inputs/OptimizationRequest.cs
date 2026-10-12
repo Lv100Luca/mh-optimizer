@@ -62,6 +62,12 @@ public sealed record OptimizerOptions
     public OptimizerEngine Engine { get; init; } = OptimizerEngine.Beam;
     /// <summary>CP-SAT only: time limit per solve in seconds; the best build found so far is used when it runs out.</summary>
     public double CpSatTimeLimitSeconds { get; init; } = 120;
+    /// <summary>
+    /// CP-SAT only: time limit for the solves of the second and later builds of a skill pair. The best build is proved optimal;
+    /// proving the others can take about as long each, so they get a shorter limit: proved when that is enough, otherwise
+    /// ranked by the best build the solve found. At least <see cref="CpSatTimeLimitSeconds"/>: every build is proved.
+    /// </summary>
+    public double CpSatRankTimeLimitSeconds { get; init; } = 10;
 
     /// <summary>The armor the search may use: at least <see cref="MinRarity"/>, outside <see cref="ExcludeSets"/>, and the listed pieces of a kind <see cref="IncludeArmor"/> restricts.</summary>
     public List<ArmorPiece> AllowedArmor(IEnumerable<ArmorPiece> armor)
@@ -264,6 +270,7 @@ public static class RequestLoader
         if (request.Options.TopN < 1) errors.Add("options.top_n must be at least 1.");
         if (request.Options.MaxThreads < 0) errors.Add("options.max_threads must be 0 (all processors) or more.");
         if (request.Options.CpSatTimeLimitSeconds <= 0) errors.Add("options.cp_sat_time_limit_seconds must be above 0.");
+        if (request.Options.CpSatRankTimeLimitSeconds <= 0) errors.Add("options.cp_sat_rank_time_limit_seconds must be above 0.");
         foreach (var set in request.Options.ExcludeSets)
             if (!data.Armor.Any(a => a.Set == set)) warnings.Add($"options.exclude_sets: no armor set named '{set}'.");
         var allowedArmor = request.Options.AllowedArmor(data.Armor);

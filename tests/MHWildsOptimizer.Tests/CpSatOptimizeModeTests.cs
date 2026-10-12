@@ -39,6 +39,33 @@ public class CpSatOptimizeModeTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public void TighteningKeepsTheSameBuilds()
+    {
+        var data = TestData.Data;
+        var resolved = RequestLoader.Resolve(LongSwordRequest(SkillPairMode.Fixed, 4) with
+        {
+            Weapon = new WeaponStatsInput { Type = "long-sword", Attack = 660, Affinity = 10, Element = Element.Dragon, ElementDisplay = 350, SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" },
+            TargetSkills = new() { ["Quick Sheathe"] = 3 },
+            Conditions = Conditions.AllOff with { HittingWeakPoint = true, MonsterEnraged = true, FrenzyOvercome = true, BurstActive = true, AzureBoltActive = true },
+        }, data, RepoRoot);
+        Assert.True(resolved.IsValid, string.Join("; ", resolved.Errors));
+        var rel = Relevance.Build(resolved.Weapon, resolved, data);
+        var armor = Candidates.Armor(data, rel, resolved.Options);
+        var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
+        var log = new List<string>();
+        // a try too short for any solve: the search always tightens before its first build
+        CpSatSearch Search(double tightenAfter) => new(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
+            Candidates.Talismans(resolved.Talismans, rel), 3, 4, 60, new Progress<string>(log.Add), CancellationToken.None) { TightenAfterSeconds = tightenAfter };
+
+        var plain = Search(1000).Run();
+        var tightened = Search(0.001).Run();
+        Thread.Sleep(100); // Progress<T> posts its reports
+        Assert.Contains(log, l => l.Contains("tightened:"));
+        Assert.Equal(plain.Select(b => b.Score), tightened.Select(b => b.Score));
+        foreach (var l in log.Where(l => l.Contains("tighten"))) output.WriteLine(l);
+    }
+
+    [Fact]
     public void CutoffProvesThatNoBuildReachesAHigherScore()
     {
         var data = TestData.Data;
