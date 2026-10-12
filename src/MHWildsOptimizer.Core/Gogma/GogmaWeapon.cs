@@ -102,13 +102,34 @@ public sealed record GogmaWeaponSpec
         return new GogmaWeaponStats(
             Type, Focus, raw, affinity, Element, elementDisplay,
             variant.Sharpness?.TopColor, variant.Sharpness, sharpnessBonus, variant.Slots, SetBonus, GroupSkill,
-            Type == WeaponType.Bow ? GogmaConstants.BowCoatingOf(Focus) : null);
+            Type == WeaponType.Bow ? GogmaConstants.BowCoatingOf(Focus) : null, this);
     }
+
+    /// <summary>"Attack focus · Fire, infused · 3 attack parts · Attack EX x2, Affinity III, Sharpness EX x2"</summary>
+    public string Label() => string.Join(" · ", new[] { FocusLabel, ElementLabel, PartsLabel, ReinforcementsLabel });
+
+    public string FocusLabel => $"{Focus} focus";
+
+    public string ElementLabel => Element == Element.None ? "no element" : Infused ? $"{Element}, infused" : $"{Element}";
+
+    public string PartsLabel => $"{AttackParts} attack part{(AttackParts == 1 ? "" : "s")}";
+
+    /// <summary>"Attack EX x2, Affinity III, Sharpness EX x2"; "no reinforcements" when there are none.</summary>
+    public string ReinforcementsLabel => Reinforcements.Count == 0
+        ? "no reinforcements"
+        : string.Join(", ", Reinforcements.GroupBy(r => r)
+            .OrderBy(g => g.Key.Type).ThenByDescending(g => g.Key.Tier)
+            .Select(g => g.Count() > 1 ? $"{g.Key} x{g.Count()}" : g.Key.ToString()));
+
+    /// <summary>Same weapon, whatever the order of the reinforcements and the rolled pair.</summary>
+    public string Key => $"{Type}|{Focus}|{Element}|{Infused && Element != Element.None}|{AttackParts}|" +
+                         string.Join(",", Reinforcements.OrderBy(r => r.Type).ThenBy(r => r.Tier));
 }
 
 /// <summary>
 /// Final weapon stats before skills. Focus is null when the stats were entered directly instead of resolved from a spec.
-/// <paramref name="Coating"/> is the bow's damage coating (bows only).
+/// <paramref name="Coating"/> is the bow's damage coating (bows only). <paramref name="Spec"/> is what the stats were resolved from
+/// (null for entered stats); its rolled pair is not kept up to date, <see cref="SetBonus"/> and <see cref="GroupSkill"/> are.
 /// </summary>
 public sealed record GogmaWeaponStats(
     WeaponType Type,
@@ -123,7 +144,8 @@ public sealed record GogmaWeaponStats(
     IReadOnlyList<int> Slots,
     string? SetBonus,
     string? GroupSkill,
-    BowCoating? Coating = null)
+    BowCoating? Coating = null,
+    GogmaWeaponSpec? Spec = null)
 {
     public double ElementTrue => ElementDisplay / 10.0;
     public int DisplayAttack => (int)Math.Round(TrueRaw * Type.Bloat());

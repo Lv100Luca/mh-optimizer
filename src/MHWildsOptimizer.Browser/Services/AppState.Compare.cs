@@ -524,13 +524,19 @@ public sealed partial class AppState
     /// <summary>A build under its own weapon's conditions, without its own overrides: how the Inventory compares weapons.</summary>
     public ScoredRef? ScoreUnderWeapon(BuildRef r) => RequestOf(r.Weapon) is { } request ? ScoreUnder(r, request) : null;
 
+    /// <summary>A build of a run that optimized the weapon is scored with the weapon it got, not the one on the Weapon tab.</summary>
+    private static OptimizationRequest WithRunWeapon(OptimizationRequest request, BuildDto run) =>
+        run.WeaponOptions is { Count: > 0 } && run.Weapon.Spec is { } spec && request.Weapon.Spec is not null
+            ? request with { Weapon = request.Weapon with { Spec = spec }, WeaponOptimize = new() }
+            : request;
+
     private static double Value(BuildDto b) => BuildDamage.Of(b) ?? b.Score;
 
     private (OptimizationRequest Request, BuildInput Input, double? RunScore, DateTimeOffset? RunAt, bool Stale)? Lookup(BuildRef r)
     {
         if (RequestOf(r.Weapon) is not { } request) return null;
         if (r.IsRun)
-            return RunBuild(r) is { } run ? (request, _runInputs.GetValue(run, b => BuildHelpers.FromBuild(b, RefName(r))), run.Score, ResultsOf(r.Weapon)?.CompletedAt, IsStale(r.Weapon)) : null;
+            return RunBuild(r) is { } run ? (WithRunWeapon(request, run), _runInputs.GetValue(run, b => BuildHelpers.FromBuild(b, RefName(r))), run.Score, ResultsOf(r.Weapon)?.CompletedAt, IsStale(r.Weapon)) : null;
         return BuildsOf(r.Weapon).FirstOrDefault(b => b.Name == r.Mine) is { } own ? (request, own, null, null, false) : null;
     }
 }

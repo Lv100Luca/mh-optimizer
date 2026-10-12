@@ -21,6 +21,13 @@ public sealed record GogmaWeaponSpecInput
     /// <summary>"attack EX", "affinity III", "element II", "sharpness EX", "ammo I" (case-insensitive).</summary>
     public List<string> Reinforcements { get; init; } = [];
 
+    /// <summary>The input form of a spec (reinforcements as "attack EX"); the rolled pair is not part of it.</summary>
+    public static GogmaWeaponSpecInput From(GogmaWeaponSpec spec) => new()
+    {
+        Type = spec.Type.ApiKind(), Focus = spec.Focus, Element = spec.Element, Infused = spec.Infused, AttackParts = spec.AttackParts,
+        Reinforcements = spec.Reinforcements.Select(r => $"{r.Type.ToString().ToLowerInvariant()} {r.Tier}").ToList(),
+    };
+
     public (GogmaWeaponSpec? Spec, IReadOnlyList<string> Errors) ToSpec()
     {
         var errors = new List<string>();

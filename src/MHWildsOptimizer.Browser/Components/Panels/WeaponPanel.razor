@@ -11,6 +11,7 @@
     var weaponErrors = resolved?.Errors.Where(e => e.StartsWith("Weapon", StringComparison.Ordinal)).ToList() ?? [];
     var rw = resolved?.Weapon;
     var isBow = kind == "bow";
+    var opt = request.WeaponOptimize;
 
     <div class="panel two-col">
         <div class="col">
@@ -31,6 +32,44 @@
                 </div>
             </Section>
 
+            <Section Title="Optimize the weapon"
+                     Hint="Let the optimizer choose parts of the weapon together with the armor: switch on what you have not rolled yet or want to compare. Parts left off stay as described below. Each result lists, per optimized part, how well every choice does on its armor.">
+                @if (mode != SpecMode)
+                {
+                    <p class="muted">The weapon is entered as stats. <button class="linklike" @onclick="() => SetMode(SpecMode)">Describe it</button> to optimize its focus, element, parts or reinforcements.</p>
+                }
+                else
+                {
+                    <div class="opt-grid">
+                        <Toggle Checked="opt.Focus" CheckedChanged="v => PatchOptimize(o => o with { Focus = v })" Label="Focus"
+                                Hint="Attack, affinity or element: each one is searched with armor of its own." />
+                        <Toggle Checked="opt.Element" CheckedChanged="v => PatchOptimize(o => o with { Element = v })" Label="Element" Disabled="@(wt?.Gunner == true && !isBow)"
+                                Hint="The five elements, always infused; the target's hitzones decide." />
+                        <Toggle Checked="opt.AttackParts" CheckedChanged="v => PatchOptimize(o => o with { AttackParts = v })" Label="Attack Infusion lines"
+                                Hint="How many of the three parts give +5 attack rather than +5% affinity." />
+                        <Toggle Checked="opt.Reinforcements" CheckedChanged="v => PatchOptimize(o => o with { Reinforcements = v })" Label="Reinforcements"
+                                Hint="@(isBow ? "Which of attack, affinity and element fill the five lines." : "Which of attack, affinity, element and sharpness fill the five lines.")" />
+                    </div>
+                    @if (opt.Reinforcements)
+                    {
+                        <Field Label="Best reinforcement tier to assume" Inline="true"
+                               Hint="Each type takes its best tiers up to this one, at most two of each (2x EX, 2x III, then II). EX lines are rare; III gives a weapon you can expect to roll.">
+                            <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
+                        </Field>
+                    }
+                    @if (opt.Any)
+                    {
+                        <p class="muted small">
+                            @OptimizeSummary(opt)
+                            @if (request.SkillPair.Mode == SkillPairMode.Fixed)
+                            {
+                                <span> The rolled skill pair stays fixed; the Skill pair tab can optimize it too.</span>
+                            }
+                        </p>
+                    }
+                }
+            </Section>
+
             <Section Title="Stats"
                      Hint="@(mode == SpecMode
                          ? "Describe the weapon the way the game shows it on the Production Bonus and Reinforcement Bonus screens; the true stats are computed."
@@ -42,7 +81,7 @@
                     @if (mode == SpecMode && spec is not null)
                     {
                         <div class="form-grid">
-                            <Field Label="Focus" Hint="@(isBow ? "The Artian focus decides the base raw / affinity variant and the bow's coating: attack Close-range, affinity Power, element Pierce." : "The Artian focus decides the base raw / affinity variant.")">
+                            <Field LabelContent="@OptLabel("Focus", opt.Focus)" Hint="@(isBow ? "The Artian focus decides the base raw / affinity variant and the bow's coating: attack Close-range, affinity Power, element Pierce." : "The Artian focus decides the base raw / affinity variant.")">
                                 <Segmented T="GogmaFocus" Value="spec.Focus" ValueChanged="focus => PatchSpec(s => s with { Focus = focus })" Options="FocusOptions(wt)" />
                                 @if (isBow)
                                 {
@@ -50,7 +89,7 @@
                                 }
                             </Field>
 
-                            <Field Label="Element">
+                            <Field LabelContent="@OptLabel("Element", opt.Element)">
                                 <div class="chip-row">
                                     @foreach (var e in Elements)
                                     {
@@ -70,11 +109,11 @@
                                         CheckedChanged="infused => PatchSpec(s => s with { Infused = infused })" Label="Element Infusion line present" />
                             </Field>
 
-                            <Field Label="Attack Infusion lines" Hint="Each Artian part gives +5 true attack or +5% affinity; count the 'Attack Infusion +5' lines.">
+                            <Field LabelContent="@OptLabel("Attack Infusion lines", opt.AttackParts)" Hint="Each Artian part gives +5 true attack or +5% affinity; count the 'Attack Infusion +5' lines.">
                                 <Segmented T="int" Value="spec.AttackParts" ValueChanged="n => PatchSpec(s => s with { AttackParts = n })" Options="AttackPartOptions" />
                             </Field>
 
-                            <Field Label="Reinforcement bonuses" Hint="@(isBow ? "Up to five; at most two identical lines, ammo at most twice. Element lines need an element." : "Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.")">
+                            <Field LabelContent="@OptLabel("Reinforcement bonuses", opt.Reinforcements)" Hint="@(isBow ? "Up to five; at most two identical lines, ammo at most twice. Element lines need an element." : "Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.")">
                                 @{
                                     var slots = ReinforcementSlots(spec);
                                     var options = Catalog.Reinforcements
@@ -337,6 +376,36 @@
             });
         }
     }
+
+    private static readonly IReadOnlyList<SegmentOption<ReinforcementTier>> TierOptions =
+        [.. new[] { ReinforcementTier.EX, ReinforcementTier.III, ReinforcementTier.II }.Select(t => new SegmentOption<ReinforcementTier>(t, t.ToString()))];
+
+    /// <summary>A field label with an "optimized" badge when the optimizer chooses that part (the value below is then only a start).</summary>
+    private static RenderFragment OptLabel(string label, bool optimized) => __builder =>
+    {
+        @label
+        @if (optimized)
+        {
+            <span class="badge-mini" title="The optimizer chooses this part; what is set here is not used">optimized</span>
+        }
+    };
+
+    /// <summary>"Searches 3 foci x 5 elements x 46 reinforcement splits = 690 weapons for every build."</summary>
+    private static string OptimizeSummary(Core.Gogma.WeaponOptimizeSettings o)
+    {
+        var parts = new List<(string Label, int Count)>();
+        if (o.Focus) parts.Add(("foci", 3));
+        if (o.Element) parts.Add(("elements", 5));
+        if (o.AttackParts) parts.Add(("part splits", 4));
+        var total = parts.Aggregate(1, (n, p) => n * p.Count);
+        var text = string.Join(" × ", parts.Select(p => $"{p.Count} {p.Label}"));
+        if (o.Reinforcements) text += (text.Length > 0 ? " × " : "") + "every split of the five reinforcement lines";
+        return $"Tries {text} on every build found{(o.Reinforcements ? "" : $" ({total} weapons)")}, and searches the armor again for the weapon that wins until the two agree." +
+               (o.Focus ? " Each focus starts a search of its own, so this takes up to three times as long." : "");
+    }
+
+    private void PatchOptimize(Func<Core.Gogma.WeaponOptimizeSettings, Core.Gogma.WeaponOptimizeSettings> fn) =>
+        App.PatchRequest(r => r with { WeaponOptimize = fn(r.WeaponOptimize) });
 
     private void PatchSpec(Func<GogmaWeaponSpecInput, GogmaWeaponSpecInput> fn) =>
         App.PatchWeapon(w => w.Spec is { } spec ? w with { Spec = fn(spec) } : w);

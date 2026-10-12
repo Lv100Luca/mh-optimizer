@@ -888,3 +888,17 @@ button.pathcard:hover { border-color: var(--accent); }
 .effect-delta { font-size: 14px; }
 .effect-skills { justify-content: flex-end; margin: 3px 0; }
 .table.upgrades td { vertical-align: middle; }
+
+/* weapon tuning: the weapon a build got and how every choice of each optimized part does on its armor */
+.opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 16px; margin-bottom: 8px; }
+.weapon-options { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); }
+.weapon-options-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.weapon-options-head .label { color: var(--muted); font-size: 12px; }
+.weapon-options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px 18px; margin-top: 6px; }
+.weapon-option-part h5 { margin: 0 0 2px; font-size: 12.5px; font-weight: 600; }
+.weapon-option-part ol { margin: 0; padding-left: 18px; font-size: 12.5px; }
+.weapon-option-part li { display: flex; justify-content: space-between; gap: 10px; }
+.weapon-option-part li.chosen { color: var(--ok); font-weight: 600; }
+.weapon-option-part li.chosen .muted { color: var(--ok); font-weight: 400; }
+.weapon-line { white-space: normal; max-width: 260px; margin-top: 2px; }
+.result-detail-row .weapon-options { margin: 0 0 8px; }

@@ -1,0 +1,56 @@
+@*
+    With weapon tuning: the weapon a build got and, for each optimized part, the best score every choice reaches on the build's
+    armor (the other optimized parts at their best), as a share of the part's best.
+*@
+@if (Build.WeaponOptions is { Count: > 0 })
+{
+    <div class="weapon-options">
+        <div class="weapon-options-head">
+            <span class="label">Weapon</span>
+            <b>@Build.Weapon.SpecLabel</b>
+            @if (OnUseWeapon.HasDelegate && Build.Weapon.Spec is { } spec)
+            {
+                <button type="button" class="linklike small right" title="Describe the Weapon tab's weapon like this one (the rolled pair stays)"
+                        @onclick="() => OnUseWeapon.InvokeAsync(spec)">Use this weapon</button>
+            }
+        </div>
+        <div class="weapon-options-grid">
+            @foreach (var part in Build.WeaponOptions!.GroupBy(o => o.Part))
+            {
+                var best = part.Max(o => o.Score);
+                <div class="weapon-option-part">
+                    <h5>@part.Key <span class="muted small">on this armor</span></h5>
+                    <ol>
+                        @foreach (var o in part.Take(_allOptions.Contains(part.Key) ? int.MaxValue : 4))
+                        {
+                            <li class="@(o.Chosen ? "chosen" : "")">
+                                <span>@o.Label</span>
+                                <span class="muted">@(o.Chosen ? "chosen" : OptionDelta(o.Score, best))</span>
+                            </li>
+                        }
+                    </ol>
+                    @if (part.Count() > 4)
+                    {
+                        var key = part.Key;
+                        <button type="button" class="linklike small" @onclick="() => { if (!_allOptions.Remove(key)) _allOptions.Add(key); }">
+                            @(_allOptions.Contains(key) ? "Fewer" : $"All {part.Count()}")
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public BuildDto Build { get; set; } = default!;
+    /// <summary>"Use this weapon" puts the build's weapon on the Weapon tab; no button without it.</summary>
+    [Parameter] public EventCallback<GogmaWeaponSpecInput> OnUseWeapon { get; set; }
+
+    /// <summary>Weapon parts whose every option is shown (not only the best four).</summary>
+    private readonly HashSet<string> _allOptions = [];
+
+    /// <summary>"-1.2%" below the part's best choice.</summary>
+    private static string OptionDelta(double score, double best) =>
+        best > 0 ? (score / best - 1).ToString("+0.0%;-0.0%;±0%", CultureInfo.InvariantCulture) : "";
+}

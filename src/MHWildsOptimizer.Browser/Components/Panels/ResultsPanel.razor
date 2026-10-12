@@ -342,6 +342,10 @@
                                 {
                                     <span class="badge-mini" title="@($"Scored again under today's conditions; the run scored it {Fmt.N(row.RunScore)}")">now</span>
                                 }
+                                @if (b.WeaponOptions is { Count: > 0 })
+                                {
+                                    <div class="muted tiny weapon-line" title="The weapon this build got">@b.Weapon.SpecLabel</div>
+                                }
                             </td>
                             <td class="num"><b class="dmg">@BuildDamage.Text(b)</b></td>
                             @if (row.Gain is { } gain)
@@ -379,7 +383,7 @@
         var b = row.Build;
         var label = Label(result, row);
         var open = _open.Contains(row.Key) && row.Diff is not null;
-        <BuildCard @key="row.Key" Build="b" Best="@(row.Pair.Rank == 1 && b.Rank == 1)"
+        <BuildCard @key="row.Key" Build="b" Best="@(row.Pair.Rank == 1 && b.Rank == 1)" OnUseWeapon="UseWeapon"
                    Delta="@(baseline?.Build is { } bb ? DeltaTo(b, bb, baseName) : null)">
             <Summary>
                 @if (row.Diff is { } diff)
@@ -419,6 +423,7 @@
         var sb = bb.Summary;
         var mine = baselineRef.Weapon == App.ActiveKey && !baselineRef.IsRun;
         var attacks = AttackDeltas(row, baseline);
+        <WeaponOptionsView Build="b" OnUseWeapon="UseWeapon" />
         <div class="result-detail">
             <div class="stack">
                 <div class="row-line"><b>From @baseName to build @b.Rank</b></div>
@@ -509,6 +514,10 @@
     }
 
     private IEnumerable<string> BuildNames => App.Builds.Select(x => x.Name);
+
+    /// <summary>The Weapon tab's weapon described like a tuned build's (the rolled pair and slots stay).</summary>
+    private void UseWeapon(GogmaWeaponSpecInput spec) =>
+        App.PatchWeapon(w => w with { Spec = spec, Type = null, Attack = null });
 
     private void EditCopy(BuildDto b, string label, BuildRef r) =>
         App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (copy)", BuildNames)), $"opt:{r.Pair}:{r.Rank}");

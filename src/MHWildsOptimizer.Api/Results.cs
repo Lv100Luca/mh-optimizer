@@ -14,7 +14,8 @@ public sealed record DecoCountDto(string Name, int Slot, SkillKind Kind, string?
 
 public sealed record BuildWeaponDto(
     string Type, string Label, int TrueRaw, int DisplayAttack, int Affinity, Element Element, int ElementDisplay, SharpnessColor? Sharpness,
-    string? SetBonus, string? GroupSkill, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations);
+    string? SetBonus, string? GroupSkill, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations,
+    GogmaWeaponSpecInput? Spec = null, string? SpecLabel = null);
 
 public sealed record BuildArmorDto(
     ArmorPieceKind Kind, int Id, string Name, string? Set, int Rarity, bool Transcended, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations,
@@ -60,7 +61,7 @@ public sealed record BuildSummaryDto(
 public sealed record BuildDto(
     int Rank, double Score, double Efr, double Efe, double Procs, BuildSummaryDto Summary, BuildWeaponDto Weapon, IReadOnlyList<BuildArmorDto> Armor, BuildTalismanDto? Talisman,
     IReadOnlyList<DecoCountDto> Decorations, IReadOnlyList<BuildSkillDto> Skills, IReadOnlyList<SetBonusStateDto> SetBonuses, IReadOnlyList<GroupSkillStateDto> GroupSkills,
-    StatsDto StatsRequested, StatsDto StatsAllOn, string Text);
+    StatsDto StatsRequested, StatsDto StatsAllOn, string Text, IReadOnlyList<WeaponOption>? WeaponOptions = null);
 
 public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string WorkLabel, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
 
@@ -91,7 +92,8 @@ public static class ResultMapper
         var sources = CollectSources(loadout);
 
         var weapon = new BuildWeaponDto(w.Type.ApiKind(), Catalog.WeaponLabel(w.Type), w.TrueRaw, w.DisplayAttack, w.Affinity, w.Element, w.ElementDisplay, w.TopSharpness,
-            w.SetBonus, w.GroupSkill, w.Slots, loadout.Weapon.Decos.Select(Deco).ToList());
+            w.SetBonus, w.GroupSkill, w.Slots, loadout.Weapon.Decos.Select(Deco).ToList(),
+            w.Spec is { } spec ? GogmaWeaponSpecInput.From(spec) : null, w.Spec?.Label());
 
         var armor = loadout.ArmorPieces.Select(a => new BuildArmorDto(
             a.Piece.Piece, a.Piece.Id, a.Piece.Name, a.Piece.Set, a.Piece.Rarity, a.Transcended, a.EffectiveSlots, a.Decos.Select(Deco).ToList(),
@@ -135,9 +137,11 @@ public static class ResultMapper
             s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
             s.DependsOn, s.Description);
 
-        var text = LoadoutReport.Render(loadout, data, cond, label is null ? ResultsText.BuildTitle(rank, b) : ResultsText.BuildTitle(label, b)).TrimEnd();
+        var text = (LoadoutReport.Render(loadout, data, cond, label is null ? ResultsText.BuildTitle(rank, b) : ResultsText.BuildTitle(label, b)).TrimEnd()
+                    + Environment.NewLine + ResultsText.WeaponOptionsText(b)).TrimEnd();
 
-        return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, b.Result.ProcDamage, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text);
+        return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, b.Result.ProcDamage, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text,
+            b.WeaponOptions);
     }
 
     private static DecoDto? Deco(Decoration? d) => d is null ? null : new DecoDto(d.Name, d.Slot, d.Kind, d.IconColor, d.Skills);

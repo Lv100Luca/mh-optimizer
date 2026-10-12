@@ -88,6 +88,8 @@ public sealed record OptimizerOptions
 public sealed record OptimizationRequest
 {
     public required WeaponStatsInput Weapon { get; init; }
+    /// <summary>Parts of the Gogma weapon (focus, element, attack parts, reinforcements) the optimizer chooses; needs the weapon spec.</summary>
+    public WeaponOptimizeSettings WeaponOptimize { get; init; } = new();
     public SkillPairSettings SkillPair { get; init; } = new();
     /// <summary>
     /// Required skills with minimum levels, e.g. { "Weakness Exploit": 5, "Agitator": 5 }. Set bonuses and group skills are
@@ -116,7 +118,8 @@ public sealed record ResolvedRequest(
     OptimizerOptions Options,
     IReadOnlyList<(string Skill, int Level)> AppliedCoreSkills,
     IReadOnlyList<string> Errors,
-    IReadOnlyList<string> Warnings)
+    IReadOnlyList<string> Warnings,
+    WeaponSpace? WeaponSpace = null)
 {
     public bool IsValid => Errors.Count == 0;
 
@@ -154,6 +157,16 @@ public static class RequestLoader
         var weaponErrors = request.Weapon.Validate(data);
         errors.AddRange(weaponErrors);
         var weapon = weaponErrors.Count == 0 ? request.Weapon.ToStats(data) : PlaceholderWeapon();
+
+        // the weapon parts to optimize
+        WeaponSpace? space = null;
+        if (request.WeaponOptimize.Any)
+        {
+            if (request.Weapon.Spec is null)
+                errors.Add("Weapon: optimizing the weapon needs it described (focus, element, parts and reinforcements), not entered as stats.");
+            else if (weaponErrors.Count == 0 && weapon.Spec is { } spec)
+                space = new WeaponSpace(spec with { SetBonus = weapon.SetBonus, GroupSkill = weapon.GroupSkill }, request.WeaponOptimize, data, weapon.Slots);
+        }
 
         // skill pair candidates
         var candidates = new List<GogmaSkillPair?>();
@@ -282,7 +295,7 @@ public static class RequestLoader
         }
 
         return new ResolvedRequest(
-            weapon, candidates, request.SkillPair, targets, setTargets, groupTargets, request.Conditions, talismans, request.Options, applied, errors, warnings);
+            weapon, candidates, request.SkillPair, targets, setTargets, groupTargets, request.Conditions, talismans, request.Options, applied, errors, warnings, space);
     }
 
     /// <summary>Pieces (armor, or the Gogma weapon) a set bonus / group skill needs at a level, from the skill's ranks.</summary>

@@ -10,7 +10,9 @@ using MHWildsOptimizer.Core.Inputs;
 
 namespace MHWildsOptimizer.Core.Optimize;
 
-public sealed record RankedBuild(Loadout Loadout, DamageResult Result, GogmaSkillPair? SkillPair, string SkillPairLabel)
+/// <param name="WeaponOptions">With weapon tuning: each optimized part's choices and the best score they reach on this build's armor.</param>
+public sealed record RankedBuild(Loadout Loadout, DamageResult Result, GogmaSkillPair? SkillPair, string SkillPairLabel,
+    IReadOnlyList<WeaponOption>? WeaponOptions = null)
 {
     public double Score => Result.Total;
 }
@@ -41,9 +43,13 @@ public sealed record OptimizationResult(IReadOnlyList<SkillPairResult> PairResul
 public sealed class Optimizer
 {
     public const string OtherLabel = "(any other)";
+    /// <summary>Weapon tuning: armor searches per start before the search and the best weapon for its builds must have met.</summary>
+    public const int MaxTuningRounds = 4;
     private readonly GameData _data;
     private readonly ResolvedRequest _request;
     private readonly ICpSatBackend _cpSat;
+    /// <summary>Weapon tuning only: one start weapon per focus the settings allow, the weapon's own focus first.</summary>
+    private readonly IReadOnlyList<GogmaWeaponStats> _starts = [];
 
     /// <param name="cpSat">Where CP-SAT solves run; the native library by default.</param>
     public Optimizer(GameData data, ResolvedRequest request, ICpSatBackend? cpSat = null)
@@ -51,7 +57,13 @@ public sealed class Optimizer
         _data = data;
         _request = request;
         _cpSat = cpSat ?? NativeCpSatBackend.Instance;
+        if (request.WeaponSpace is { } space) _starts = space.Starts(request.Conditions);
     }
+
+    /// <summary>The weapon the classes are built on: the request's, or with weapon tuning its first start (rolled pair kept).</summary>
+    private GogmaWeaponStats BaseWeapon => _starts.Count > 0
+        ? _starts[0] with { SetBonus = _request.Weapon.SetBonus, GroupSkill = _request.Weapon.GroupSkill }
+        : _request.Weapon;
 
     /// <summary>Runs the search; with the CP-SAT engine the backend must complete without the caller's thread (the native one does).</summary>
     public OptimizationResult Run(IProgress<string>? progress = null, CancellationToken ct = default) =>
@@ -68,21 +80,21 @@ public sealed class Optimizer
     private SkillPairClass FixedClass()
     {
         var pair = _request.SkillPairCandidates.FirstOrDefault();
-        var weapon = _request.Weapon with { SetBonus = pair?.SetBonus ?? _request.Weapon.SetBonus, GroupSkill = pair?.GroupSkill ?? _request.Weapon.GroupSkill };
+        var weapon = BaseWeapon with { SetBonus = pair?.SetBonus ?? _request.Weapon.SetBonus, GroupSkill = pair?.GroupSkill ?? _request.Weapon.GroupSkill };
         return new SkillPairClass($"{weapon.SetBonus ?? "-"} + {weapon.GroupSkill ?? "-"}", weapon, pair, 1, 2);
     }
 
     /// <summary>The rollable pairs grouped by the set bonus / group skill that matter for the score (others become <see cref="OtherLabel"/>).</summary>
     private List<SkillPairClass> Classes()
     {
-        var baseRel = Relevance.Build(_request.Weapon, _request, _data);
+        var baseRel = Relevance.Build(BaseWeapon, _request, _data);
         return _request.SkillPairCandidates.Where(p => p is not null).Select(p => p!)
             .GroupBy(p => (Set: baseRel.SetIndex.ContainsKey(p.SetBonus) ? p.SetBonus : OtherLabel,
                            Group: baseRel.GroupIndex.ContainsKey(p.GroupSkill) ? p.GroupSkill : OtherLabel))
             .Select(cls =>
             {
                 var representative = cls.First();
-                var weapon = _request.Weapon with
+                var weapon = BaseWeapon with
                 {
                     SetBonus = cls.Key.Set == OtherLabel ? null : representative.SetBonus,
                     GroupSkill = cls.Key.Group == OtherLabel ? null : representative.GroupSkill,
@@ -112,7 +124,9 @@ public sealed class Optimizer
         {
             var cls = FixedClass();
             progress?.Report($"Searching builds for {cls.Label} on {Plural(threads, "thread")}");
-            results.Add(BeamSearch(cls, _request.Options.TopN, parallel, progress));
+            results.Add(_starts.Count > 0
+                ? TuneAsync(cls, _request.Options.TopN, (c, n) => Task.FromResult(BeamSearch(c, n, parallel, progress)), _starts, progress).GetAwaiter().GetResult()
+                : BeamSearch(cls, _request.Options.TopN, parallel, progress));
         }
         else
         {
@@ -122,7 +136,9 @@ public sealed class Optimizer
             var bag = new ConcurrentBag<SkillPairResult>();
             Parallel.ForEach(classes, parallel, cls =>
             {
-                var r = BeamSearch(cls, _request.Options.TopN, parallel, null);
+                var r = _starts.Count > 0
+                    ? TuneAsync(cls, _request.Options.TopN, (c, n) => Task.FromResult(BeamSearch(c, n, parallel, null)), _starts, null).GetAwaiter().GetResult()
+                    : BeamSearch(cls, _request.Options.TopN, parallel, null);
                 bag.Add(r);
                 var n = Interlocked.Increment(ref done);
                 progress?.Report($"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} ({cls.RollablePairs} rollable pairs)");
@@ -152,6 +168,9 @@ public sealed class Optimizer
         {
             var cls = FixedClass();
             progress?.Report($"Searching builds for {cls.Label} with {Plural(workers, "CP-SAT worker")}");
+            if (_starts.Count > 0)
+                return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct)).Result, _starts, progress)],
+                    DateTime.UtcNow - started);
             var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct);
             return new OptimizationResult([fixedSearch.Result], DateTime.UtcNow - started);
         }
@@ -162,6 +181,8 @@ public sealed class Optimizer
         var lanes = Math.Max(1, threads / workers);
         progress?.Report($"{classes.Count} score-equivalent skill pair classes, {Plural(Math.Min(lanes, classes.Count), "class", "classes")} at a time " +
                          $"with {Plural(workers, "CP-SAT worker")} each: the best build of every class, then the top {topN} of the best {shown}");
+
+        if (_starts.Count > 0) return await RunTunedCpSatAsync(classes, lanes, topN, shown, scores, progress, ct, started);
 
         var bests = new List<ClassSearch>();
         var done = 0;
@@ -191,6 +212,94 @@ public sealed class Optimizer
             progress?.Report($"{search.Class.Label}: top {search.Result.Builds.Count} builds ({search.Timing()})");
         }, ct);
         return new OptimizationResult(top.Select(b => b.Result).OrderByDescending(r => r.BestScore).ToList(), DateTime.UtcNow - started);
+    }
+
+    /// <summary>
+    /// CP-SAT with weapon tuning, optimize mode: each class's best build with its best weapon, then the full top N for the shown
+    /// classes, starting from the weapon their best build has. No cutoff: a better weapon can lift a class above it.
+    /// </summary>
+    private async Task<OptimizationResult> RunTunedCpSatAsync(List<SkillPairClass> classes, int lanes, int topN, int shown,
+        ScoreDecompositionCache scores, IProgress<string>? progress, CancellationToken ct, DateTime started)
+    {
+        var bests = new ConcurrentBag<(SkillPairClass Class, SkillPairResult Result)>();
+        var done = 0;
+        await ForEachOnLanesAsync(classes, lanes, async (cls, lane) =>
+        {
+            var r = await TuneAsync(cls, 1, async (c, n) => (await CpSatSearchAsync(c, n, null, lane, scores, null, ct)).Result, _starts, null);
+            if (r.Builds.Count > 0) bests.Add((cls, r));
+            var n = Interlocked.Increment(ref done);
+            progress?.Report(r.Builds.Count > 0
+                ? $"[{n}/{classes.Count}] {cls.Label}: best {Score(r.BestScore)} with {r.Builds[0].Loadout.Weapon.Stats.Spec?.Label()} ({cls.RollablePairs} rollable pairs)"
+                : $"[{n}/{classes.Count}] {cls.Label}: no build reaches the targets ({cls.RollablePairs} rollable pairs)");
+        }, ct);
+
+        var top = bests.OrderByDescending(b => b.Result.BestScore).Take(shown).ToList();
+        if (topN == 1) return new OptimizationResult(top.Select(b => b.Result).ToList(), DateTime.UtcNow - started);
+
+        var results = new ConcurrentBag<SkillPairResult>();
+        await ForEachOnLanesAsync(top, lanes, async (b, lane) =>
+        {
+            var r = await TuneAsync(b.Class, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, lane, scores, null, ct)).Result,
+                [b.Result.Builds[0].Loadout.Weapon.Stats], null);
+            results.Add(r);
+            progress?.Report($"{b.Class.Label}: top {r.Builds.Count} builds");
+        }, ct);
+        return new OptimizationResult(results.OrderByDescending(r => r.BestScore).ToList(), DateTime.UtcNow - started);
+    }
+
+    /// <summary>
+    /// Weapon tuning for one class: search the armor for a weapon, give every build found its best weapon, and search again for
+    /// the weapon the best build ended up with, until that weapon was searched already (at most <see cref="MaxTuningRounds"/>
+    /// searches per start). Every build found is kept with its best weapon; the top N of them across starts are the result.
+    /// </summary>
+    /// <param name="search">The class's armor search with its weapon, for the top N builds.</param>
+    private async Task<SkillPairResult> TuneAsync(SkillPairClass cls, int topN, Func<SkillPairClass, int, Task<SkillPairResult>> search,
+        IReadOnlyList<GogmaWeaponStats> starts, IProgress<string>? progress)
+    {
+        var space = _request.WeaponSpace!;
+        var variants = space.WithPair(cls.Weapon.SetBonus, cls.Weapon.GroupSkill);
+        var byKey = variants.ToDictionary(v => v.Spec!.Key);
+        var searched = new List<SkillPairResult>();
+        var seen = new HashSet<string>();
+        var builds = new List<RankedBuild>();
+        foreach (var start in starts)
+        {
+            var weapon = byKey[start.Spec!.Key];
+            for (var round = 1; round <= MaxTuningRounds && seen.Add(weapon.Spec!.Key); round++)
+            {
+                var r = await search(cls with { Weapon = weapon }, topN);
+                searched.Add(r);
+                var tuned = new List<RankedBuild>();
+                foreach (var b in r.Builds)
+                {
+                    // CP-SAT may share the page's thread (the browser): let it update between builds. Not the beam, whose
+                    // scheduler is busy blocking on this
+                    if (_request.Options.Engine == OptimizerEngine.CpSat) await Task.Yield();
+                    var t = space.Tune(b.Loadout, variants, _request.Conditions);
+                    tuned.Add(b with { Loadout = t.Loadout, Result = t.Result, WeaponOptions = t.Options });
+                }
+                tuned = tuned.OrderByDescending(x => x.Score).ToList();
+                builds.AddRange(tuned);
+                progress?.Report(tuned.Count == 0
+                    ? $"  round {round}, {weapon.Spec.Label()}: no build reaches the targets"
+                    : $"  round {round}, armor for {weapon.Spec.Label()}: best {Score(r.BestScore)}; its best weapon {tuned[0].Loadout.Weapon.Stats.Spec!.Label()}: {Score(tuned[0].Score)}");
+                if (tuned.Count == 0) break;
+                weapon = tuned[0].Loadout.Weapon.Stats;
+            }
+        }
+
+        var best = builds.DistinctBy(Signature).OrderByDescending(b => b.Score).Take(topN).ToList();
+        var summary = $"{Plural(searched.Count, "weapon")} searched; {searched.FirstOrDefault()?.CandidateSummary}";
+        return new SkillPairResult(cls.Label, cls.Pair, best, searched.Sum(r => r.StatesEvaluated), summary, searched.FirstOrDefault()?.Engine ?? _request.Options.Engine);
+    }
+
+    /// <summary>Weapon, armor, talisman and decorations of a build, to drop the same build found from two weapons.</summary>
+    private static string Signature(RankedBuild b)
+    {
+        var l = b.Loadout;
+        static string Decos(IReadOnlyList<Decoration?> d) => string.Join(",", d.Select(x => x?.Name ?? "-").Order());
+        return string.Join("|", new[] { l.Weapon.Stats.Spec?.Key ?? "", Decos(l.Weapon.Decos), l.Talisman?.Talisman.Name ?? "", Decos(l.Talisman?.Decos ?? []) }
+            .Concat(l.ArmorPieces.Select(a => $"{a.Piece.Name}{(a.Transcended ? "*" : "")}:{Decos(a.Decos)}")));
     }
 
     /// <summary>Runs <paramref name="body"/> for every item, at most <paramref name="lanes"/> at a time, each run knowing its lane.</summary>

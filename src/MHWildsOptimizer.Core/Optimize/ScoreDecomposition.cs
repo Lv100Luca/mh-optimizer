@@ -322,7 +322,7 @@ public sealed class ScoreDecompositionCache
     /// <param name="built">Whether this call built it.</param>
     public ScoreDecomposition GetOrBuild(GogmaWeaponStats weapon, Relevance rel, Conditions cond, Func<ScoreDecomposition> build, out bool built)
     {
-        var key = (weapon with { SetBonus = null, GroupSkill = null }, cond,
+        var key = (weapon with { SetBonus = null, GroupSkill = null, Spec = null }, cond,
                    string.Join("|", ScoreDecomposition.FeaturesOf(rel).Select(f => $"{f.Kind}:{f.Name}:{f.Max}")));
         var created = new Lazy<ScoreDecomposition>(build);
         var model = _models.GetOrAdd(key, created);

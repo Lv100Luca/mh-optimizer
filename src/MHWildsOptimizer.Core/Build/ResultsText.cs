@@ -24,8 +24,26 @@ public static class ResultsText
                 i++;
                 sb.AppendLine();
                 sb.AppendLine(LoadoutReport.Render(b.Loadout, data, resolved.Conditions, BuildTitle(i, b)).TrimEnd());
+                sb.Append(WeaponOptionsText(b));
             }
             sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>With weapon tuning: the weapon the build got and, per optimized part, the best score of each choice on its armor.</summary>
+    public static string WeaponOptionsText(RankedBuild b)
+    {
+        if (b.WeaponOptions is not { Count: > 0 } options) return "";
+        var inv = CultureInfo.InvariantCulture;
+        var sb = new StringBuilder();
+        sb.AppendLine($"  Optimized weapon: {b.Loadout.Weapon.Stats.Spec?.Label()}");
+        foreach (var part in options.GroupBy(o => o.Part))
+        {
+            sb.AppendLine($"    {part.Key} on this armor:");
+            foreach (var o in part.Take(6))
+                sb.AppendLine(string.Format(inv, "      {0} {1,-48} {2:0.00}{3}", o.Chosen ? "*" : " ", o.Label, o.Score,
+                    o.Chosen ? "" : string.Format(inv, "  ({0:+0.00;-0.00})", o.Score - b.Score)));
         }
         return sb.ToString();
     }
