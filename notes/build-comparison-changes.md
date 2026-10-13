@@ -142,8 +142,10 @@ duplicate a weapon (request, builds and last run, opened right away). Merged int
 
 9. **Results: always sort by damage; drop the Sort control.** Remove "Sort: Damage | Fewest changes"
    (`ResultsPanel.razor`, `SortOptions` / `Sorted`). Sort by the damage shown, highest first: after a stale run is
-   rescored that can differ from the run's rank order (today "Damage" means the run's order). The "To get there" column and
-   the "N pieces away" card still show which build needs the fewest changes.
+   rescored that can differ from the run's rank order (today "Damage" means the run's order). The "To get there" column
+   still shows how many pieces each build changes. (2026-10-13: the summary cards above the results — compared with,
+   "N pieces away", best of the run — were dropped: how many pieces change does not matter, and every build already shows
+   its gain against the compared build next to the "Compare with" picker.)
 
 10. **Card titles not vertically centered next to the header buttons.** With the Results card collapsed, "Results" sits at
     the top while Run again / Download .txt / Copy are taller, so the title looks too high. `.card-head` uses

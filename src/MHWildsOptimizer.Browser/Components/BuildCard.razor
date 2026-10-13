@@ -124,8 +124,22 @@
                         <td class="name">
                             <b>@w.Label</b>
                             <div class="muted small">@w.TrueRaw attack, @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @(w.Sharpness is { } ws ? Fmt.TitleCase(ws) : "-") sharpness</div>
+                            @if (w.SetBonus is not null || w.GroupSkill is not null)
+                            {
+                                @* the rolled skills, shown like an armor piece's *@
+                                <div class="muted small">
+                                    @if (w.SetBonus is { } wb)
+                                    {
+                                        <SkillHover Name="@wb" Class="with-icon"><SkillIcon Name="@wb" Kind="SkillKind.Set" Size="14" />@wb</SkillHover>
+                                    }
+                                    @if (w.GroupSkill is { } wg)
+                                    {
+                                        <SkillHover Name="@wg" Class="with-icon"><SkillIcon Name="@wg" Kind="SkillKind.Group" Size="14" />@wg</SkillHover>
+                                    }
+                                </div>
+                            }
                         </td>
-                        <td class="skills"><span class="muted small">rolled: @(w.SetBonus ?? "-") / @(w.GroupSkill ?? "-")</span></td>
+                        <td class="skills"></td>
                         <td class="decos">@SlotDecos(w.Decorations, numbers: w.Slots)</td>
                     </tr>
                     @foreach (var a in b.Armor)

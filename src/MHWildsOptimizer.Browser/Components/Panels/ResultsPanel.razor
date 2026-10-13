@@ -94,10 +94,6 @@
                         and sorted by that damage. <button class="linklike" @onclick="App.RunOptimizerAsync" disabled="@(!valid)">Run again</button>
                     </Alert>
                 }
-                @if (baseBuild is not null && rows.Count > 0)
-                {
-                    @UpgradePath(rows, baseBuild, baseName)
-                }
             }
         </ChildContent>
     </Section>
@@ -249,48 +245,6 @@
 
     private static string Pct(double? pct) => pct is { } p ? $"({(p >= 0 ? "+" : "−")}{Fmt.N(Math.Abs(p), 1)}%)" : "";
 
-    private static string SlotList(IEnumerable<BuildSlot> slots) => string.Join(", ", slots.Select(s => s.ToString().ToLowerInvariant()));
-
-    /// <summary>Your build, the result that beats it with the fewest new pieces, and the best of the run.</summary>
-    private RenderFragment UpgradePath(List<Row> rows, BuildDto baseBuild, string baseName) => __builder =>
-    {
-        var better = rows.Where(r => r.Gain > 0.5).ToList();
-        var fewest = better.OrderBy(r => r.Diff!.Swapped.Count).ThenBy(r => r.Diff!.Regemmed.Count).ThenByDescending(r => r.Gain).FirstOrDefault();
-        var best = rows.OrderByDescending(r => r.Damage).ThenBy(r => r.Pair.Rank).ThenBy(r => r.Build.Rank).First();
-        var digits = BuildDamage.Compare(best.Build, baseBuild).Digits;
-        <div class="pathcards">
-            <div class="pathcard">
-                <span class="muted small">Compare with</span>
-                <span class="big plain">@Fmt.N(BuildDamage.Of(baseBuild) ?? baseBuild.Score, digits)</span>
-                <span class="small muted">@baseName</span>
-            </div>
-            @if (fewest is null)
-            {
-                <div class="pathcard">
-                    <span class="muted small">Gain</span>
-                    <span class="big plain">none</span>
-                    <span class="small muted">No build of this run beats @baseName.</span>
-                </div>
-            }
-            else
-            {
-                <button type="button" class="pathcard hl" @onclick="() => { _open.Add(fewest.Key); }" title="Open its swap list">
-                    <span class="muted small">@(fewest.Diff!.Swapped.Count == 0 ? "No new piece" : $"{Fmt.Plural(fewest.Diff!.Swapped.Count, "piece")} away") · build @fewest.Build.Rank</span>
-                    <span class="big"><Delta Value="@fewest.Gain!.Value" Digits="digits" /> <span class="muted small">@Pct(fewest.GainPct)</span></span>
-                    <span class="small">@(fewest.Diff.Swapped.Count > 0 ? $"swap {SlotList(fewest.Diff.Swapped)}" : $"re-gem {SlotList(fewest.Diff.Regemmed)}")</span>
-                </button>
-            }
-            @if (best != fewest && best.Gain is { } bestGain)
-            {
-                <button type="button" class="pathcard" @onclick="() => { _open.Add(best.Key); }" title="Open its swap list">
-                    <span class="muted small">Best of the run · build @best.Build.Rank@(rows.Select(r => r.Pair).Distinct().Count() > 1 ? $" of pair #{best.Pair.Rank}" : "")</span>
-                    <span class="big"><Delta Value="bestGain" Digits="digits" /> <span class="muted small">@Pct(best.GainPct)</span></span>
-                    <span class="small">@SlotStrip.CountText(best.Diff!)@(fewest is not null && best.Diff!.Swapped.Count > fewest.Diff!.Swapped.Count ? $" · {best.Diff.Swapped.Count - fewest.Diff.Swapped.Count} more for {Fmt.N(bestGain - fewest.Gain!.Value, digits)}" : "")</span>
-                </button>
-            }
-        </div>
-    };
-
     private RenderFragment Table(List<Row> rows, ResultDto result, ScoredRef? baseline, BuildRef? baselineRef, string baseName) => __builder =>
     {
         var baseBuild = baseline?.Build;
@@ -392,7 +346,11 @@
                         <span class="muted">vs @baseName</span>
                         <SlotStrip Diff="diff" WeaponKind="@b.Weapon.Type" Count="true" />
                         <span class="chip-row"><SkillDeltas Diff="diff" Max="3" /><SkillDeltas Diff="diff" Gains="false" Max="3" /></span>
-                        <button type="button" class="linklike small right" @onclick="() => Toggle(row.Key)">@(open ? "Hide the swaps ▴" : "Show the swaps ▾")</button>
+                        <MudButton Variant="@(open ? Variant.Filled : Variant.Outlined)" Color="@(open ? Color.Primary : Color.Default)" Size="Size.Small" Class="right"
+                                   OnClick="() => Toggle(row.Key)" aria-pressed="@(open ? "true" : "false")"
+                                   title="@(open ? "Hide the swaps" : $"Show the swaps, skills, stats and damage per attack against {baseName}")">
+                            @(open ? "▴ Hide changes" : "▾ Show changes")
+                        </MudButton>
                     </div>
                     @if (open)
                     {
