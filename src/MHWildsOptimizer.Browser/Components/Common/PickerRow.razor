@@ -4,6 +4,12 @@
 <button type="button" role="option" aria-selected="@Active" class="picker-opt @(Active ? "active" : "")"
         @onmouseenter="() => OnHover.InvokeAsync()" @onclick="() => OnPick.InvokeAsync()">
     @Option.Render
+    @if (Favorite is { } favorite)
+    {
+        @* a span: a button may not hold another one *@
+        <span class="picker-fav @(favorite ? "on" : "")" role="button" title="@(favorite ? "Remove from favorites" : "Add to favorites: listed first")"
+              @onclick="() => OnFavorite.InvokeAsync()" @onclick:stopPropagation="true">@(favorite ? "★" : "☆")</span>
+    }
 </button>
 
 @code {
@@ -11,16 +17,21 @@
     [Parameter] public bool Active { get; set; }
     [Parameter] public EventCallback OnPick { get; set; }
     [Parameter] public EventCallback OnHover { get; set; }
+    /// <summary>Whether the option is starred; null = no star.</summary>
+    [Parameter] public bool? Favorite { get; set; }
+    [Parameter] public EventCallback OnFavorite { get; set; }
 
     private PickerOption<T>? _shown;
     private bool _shownActive;
+    private bool? _shownFavorite;
     private bool _changed = true;
 
     protected override void OnParametersSet()
     {
-        _changed = !ReferenceEquals(_shown, Option) || _shownActive != Active;
+        _changed = !ReferenceEquals(_shown, Option) || _shownActive != Active || _shownFavorite != Favorite;
         _shown = Option;
         _shownActive = Active;
+        _shownFavorite = Favorite;
     }
 
     protected override bool ShouldRender() => _changed;

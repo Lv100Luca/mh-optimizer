@@ -31,9 +31,8 @@
 
     private Task<IEnumerable<SelectOption>> Search(string? query, CancellationToken _)
     {
-        var words = (query ?? "").Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         // the chosen entry's own label is not a filter: opening the list again shows everything
-        if (words.Length == 0 || Current?.Label == query) return Task.FromResult<IEnumerable<SelectOption>>(Options);
-        return Task.FromResult(Options.Where(o => words.All(w => o.Label.Contains(w, StringComparison.OrdinalIgnoreCase) || (o.Group ?? "").Contains(w, StringComparison.OrdinalIgnoreCase))));
+        if (Current?.Label == query) return Task.FromResult<IEnumerable<SelectOption>>(Options);
+        return Task.FromResult<IEnumerable<SelectOption>>(LooseSearch.Filter(Options, o => o.Group is null ? o.Label : $"{o.Label} {o.Group}", query));
     }
 }

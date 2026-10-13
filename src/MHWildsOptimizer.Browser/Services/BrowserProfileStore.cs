@@ -37,7 +37,8 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
     public bool ProfileExists(string profile) => storage.GetString($"{P(profile)}settings") is not null;
 
     public ProfileDto? LoadProfile(string profile) =>
-        ProfileExists(profile) && Settings(profile) is var settings ? new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences) : null;
+        ProfileExists(profile) && Settings(profile) is var settings ? new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences, settings.FavoriteDecorations)
+            : null;
 
     public ProfileDto CreateProfile(string profile)
     {
@@ -96,6 +97,13 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
         if (sequences.Count == 0) all.Remove(weaponKind);
         else all[weaponKind] = sequences.ToList();
         storage.Set($"{P(profile)}settings", settings with { Sequences = all }, Json);
+        Touch(profile);
+        return LoadProfile(profile)!;
+    }
+
+    public ProfileDto SaveFavoriteDecorations(string profile, IReadOnlyList<string> decorations)
+    {
+        storage.Set($"{P(profile)}settings", Settings(profile) with { FavoriteDecorations = decorations.ToList() }, Json);
         Touch(profile);
         return LoadProfile(profile)!;
     }

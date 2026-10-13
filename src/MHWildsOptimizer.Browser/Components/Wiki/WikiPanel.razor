@@ -150,14 +150,11 @@ else
         _ => "Skill, text or effect…",
     };
 
-    private static bool Matches(string text, string query) =>
-        query.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(w => text.Contains(w, StringComparison.OrdinalIgnoreCase));
-
     private IEnumerable<WikiSkill> Skills(WikiIndex wiki, Tab section)
     {
         var query = Query(section);
         var filter = Filter(section);
-        return wiki.Data.Skills.Where(s => section == Tab.WikiSkills
+        var shown = wiki.Data.Skills.Where(s => section == Tab.WikiSkills
                 ? s.Kind is SkillKind.Armor or SkillKind.Weapon && filter switch
                 {
                     "armor" => s.Kind == SkillKind.Armor,
@@ -172,13 +169,13 @@ else
                     "gogma" => s.GogmaPool,
                     _ => true,
                 })
-            .Where(s => query.Length == 0 || Matches(wiki.SkillText[s.Name], query))
             .OrderBy(s => s.Kind is SkillKind.Set or SkillKind.Group ? (int)s.Kind : 0).ThenBy(s => s.Name);
+        return LooseSearch.Filter(shown, s => wiki.SkillText[s.Name], query);
     }
 
     private IEnumerable<WikiArmorSet> Sets(WikiIndex wiki)
     {
         var query = Query(Tab.WikiArmor);
-        return wiki.Data.ArmorSets.Where(s => s.Rank == _rank && (query.Length == 0 || Matches(wiki.SetText[s.Name], query)));
+        return LooseSearch.Filter(wiki.Data.ArmorSets.Where(s => s.Rank == _rank), s => wiki.SetText[s.Name], query);
     }
 }

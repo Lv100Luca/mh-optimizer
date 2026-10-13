@@ -15,18 +15,14 @@
     var isThreadPreset = threadPresets.Any(p => p.Value == threads);
     if (!isThreadPreset) threadPresets.Add(new(-1, "Custom", Hint: "custom value"));
     var setWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.exclude_sets")).ToList() ?? [];
-    var q = _query.Trim().ToLowerInvariant();
-    var sets = Catalog.ArmorSets
-        .Where(s => s.Rarity >= o.MinRarity)
-        .Where(s => q == "" || s.Name.ToLowerInvariant().Contains(q) || s.SetBonus.Any(b => b.ToLowerInvariant().Contains(q)) || (s.GroupSkill ?? "").ToLowerInvariant().Contains(q))
-        .ToList();
+    var sets = LooseSearch.Filter(Catalog.ArmorSets.Where(s => s.Rarity >= o.MinRarity), s => string.Join(' ', [s.Name, .. s.SetBonus, s.GroupSkill ?? ""]), _query);
     var used = Store.StorageUsed();
     var included = o.IncludeArmor.ToHashSet();
     var armorWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.include_armor")).ToList() ?? [];
-    var pq = _pieceQuery.Trim().ToLowerInvariant();
-    List<ArmorEntry> matches = pq == "" ? [] : Cat.ArmorByName.Values
-        .Where(p => p.Rarity >= o.MinRarity && (p.Name.ToLowerInvariant().Contains(pq) || p.Set.ToLowerInvariant().Contains(pq)))
-        .OrderBy(p => p.Set).ThenBy(p => p.Kind)
+    var pieceSearch = _pieceQuery.Trim() != "";
+    List<ArmorEntry> matches = !pieceSearch ? [] : LooseSearch.Filter(Cat.ArmorByName.Values
+        .Where(p => p.Rarity >= o.MinRarity)
+        .OrderBy(p => p.Set).ThenBy(p => p.Kind), p => $"{p.Name} {p.Set}", _pieceQuery)
         .Take(60)
         .ToList();
 
@@ -138,7 +134,7 @@
                         }
                     </div>
                     <SearchBox Value="@_pieceQuery" ValueChanged="v => _pieceQuery = v ?? string.Empty" Placeholder="Search armor pieces or sets to allow…" />
-                    @if (pq != "")
+                    @if (pieceSearch)
                     {
                         <div class="setlist">
                             @foreach (var p in matches)

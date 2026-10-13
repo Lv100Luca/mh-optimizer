@@ -1,5 +1,7 @@
 @typeparam T
-@* A button that opens a searchable list (armor pieces, decorations, talismans). Arrow keys move, Enter picks, Escape closes. *@
+@* A button that opens a searchable list (armor pieces, decorations, talismans). Arrow keys move, Enter picks, Escape closes.
+   The search is loose (LooseSearch): when nothing matches, entries a typo away show under "Close matches". With Favorites, each row
+   has a star and the starred entries come first. *@
 <div class="picker-anchor @AnchorClass">
     <button type="button" class="picker-btn @Class @(_open ? "open" : "")" title="@Title" @onclick="Toggle" aria-haspopup="listbox" aria-expanded="@_open">
         @Trigger
@@ -26,13 +28,17 @@
                     {
                         var o = Options[_filtered[i]];
                         var index = i;
-                        if (o.Group is not null && o.Group != group)
+                        var header = i < _favoriteCount ? (i == 0 ? "★ Favorites" : null)
+                            : i >= _closeFrom ? (i == _closeFrom ? "Close matches" : null)
+                            : o.Group is not null && (o.Group != group || i == _favoriteCount) ? o.Group : null;
+                        if (i >= _favoriteCount && i < _closeFrom) group = o.Group;
+                        if (header is not null)
                         {
-                            group = o.Group;
-                            <div class="picker-group">@o.Group</div>
+                            <div class="picker-group">@header</div>
                         }
                         @* keyed by the position in Options: rows that stay while the query changes are kept as they are *@
-                        <PickerRow @key="_filtered[i]" T="T" Option="o" Active="index == _active" OnHover="() => _active = index" OnPick="() => Pick(o)" />
+                        <PickerRow @key="_filtered[i]" T="T" Option="o" Active="index == _active" OnHover="() => _active = index" OnPick="() => Pick(o)"
+                                   Favorite="@(Favorites is null ? null : Favorites.Contains(o.Value))" OnFavorite="() => OnFavorite.InvokeAsync(o.Value)" />
                     }
                 </div>
             </div>
@@ -54,27 +60,38 @@
     /// <summary>Classes of the wrapper; "block" makes the button fill the width.</summary>
     [Parameter] public string? AnchorClass { get; set; }
     [Parameter] public string? Title { get; set; }
+    /// <summary>The starred values, listed first; null = no stars.</summary>
+    [Parameter] public IReadOnlySet<T>? Favorites { get; set; }
+    /// <summary>A row's star was clicked.</summary>
+    [Parameter] public EventCallback<T> OnFavorite { get; set; }
 
     private bool _open;
     private string _query = "";
     private int _active;
     private MudTextField<string>? _search;
-    /// <summary>Indexes into <see cref="Options"/> of the entries that match the query, worked out when either changes.</summary>
+    /// <summary>
+    /// Indexes into <see cref="Options"/> of the entries that match the query, worked out when either changes: the
+    /// favorites, the other exact matches, then the close ones.
+    /// </summary>
     private List<int> _filtered = [];
+    private int _favoriteCount, _closeFrom;
     private IReadOnlyList<PickerOption<T>>? _filteredOptions;
+    private IReadOnlySet<T>? _filteredFavorites;
 
     protected override void OnParametersSet()
     {
-        if (!ReferenceEquals(_filteredOptions, Options)) Filter();
+        if (!ReferenceEquals(_filteredOptions, Options) || !ReferenceEquals(_filteredFavorites, Favorites)) Filter();
     }
 
     private void Filter()
     {
         _filteredOptions = Options;
-        var words = _query.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        _filtered = [];
-        for (var i = 0; i < Options.Count; i++)
-            if (words.All(w => Options[i].Search.Contains(w, StringComparison.Ordinal))) _filtered.Add(i);
+        _filteredFavorites = Favorites;
+        var (exact, close) = LooseSearch.Split(Enumerable.Range(0, Options.Count), i => Options[i].Search, _query);
+        var favorites = Favorites is { Count: > 0 } f ? exact.Where(i => f.Contains(Options[i].Value)).ToList() : [];
+        _filtered = [.. favorites, .. exact.Except(favorites), .. close];
+        _favoriteCount = favorites.Count;
+        _closeFrom = exact.Count;
     }
 
     private void Toggle()

@@ -495,6 +495,10 @@ details summary { cursor: pointer; color: var(--accent-2); }
 .opt-main .small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .opt-name { font-weight: 600; }
 .opt-side { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; max-width: 130px; text-align: right; }
+.picker-fav { margin-left: auto; flex-shrink: 0; padding: 0 4px; font-size: 16px; line-height: 1; color: var(--muted); opacity: 0.45; }
+.picker-opt:hover .picker-fav, .picker-opt.active .picker-fav { opacity: 1; }
+.picker-fav:hover { color: var(--accent); }
+.picker-fav.on { color: var(--accent); opacity: 1; }
 
 /* ---------------------------------------------------------------- my builds */
 .buildtabs { display: flex; flex-wrap: wrap; gap: 6px; }

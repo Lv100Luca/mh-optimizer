@@ -251,6 +251,7 @@ public sealed partial class AppState : IDisposable
         Profile = p.Name;
         Presets = p.ConditionPresets;
         Sequences = p.Sequences ?? new Dictionary<string, List<SavedSequence>>();
+        FavoriteDecorations = (p.FavoriteDecorations ?? []).ToHashSet();
         Talismans = p.Talismans;
         Weapons = list;
 

@@ -36,7 +36,7 @@ public sealed class ProfileStore(string inputs) : IProfileStore
     {
         if (!ProfileExists(profile)) return null;
         var settings = ProfileFiles.ReadSettings(ProfileDir(profile));
-        return new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences);
+        return new ProfileDto(profile, LoadTalismans(profile), settings.ConditionPresets, settings.Sequences, settings.FavoriteDecorations);
     }
 
     public ProfileDto CreateProfile(string profile)
@@ -97,6 +97,13 @@ public sealed class ProfileStore(string inputs) : IProfileStore
         if (sequences.Count == 0) all.Remove(weaponKind);
         else all[weaponKind] = sequences.ToList();
         ProfileFiles.SaveSettings(settings with { Sequences = all }, dir);
+        return LoadProfile(profile)!;
+    }
+
+    public ProfileDto SaveFavoriteDecorations(string profile, IReadOnlyList<string> decorations)
+    {
+        var dir = ProfileDir(profile);
+        ProfileFiles.SaveSettings(ProfileFiles.ReadSettings(dir) with { FavoriteDecorations = decorations.ToList() }, dir);
         return LoadProfile(profile)!;
     }
 

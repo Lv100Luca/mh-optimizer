@@ -6,8 +6,8 @@ using MHWildsOptimizer.Core.Data;
 namespace MHWildsOptimizer.Core.Inputs;
 
 /// <summary>
-/// Account-wide settings of a profile (profile.json): the hunt conditions each weapon type starts from and the named attack
-/// sequences of each type. Talismans are account-wide too and live next to it in talismans.json.
+/// Account-wide settings of a profile (profile.json): the hunt conditions each weapon type starts from, the named attack
+/// sequences of each type and the favorite decorations. Talismans are account-wide too and live next to it in talismans.json.
 /// </summary>
 public sealed record ProfileSettings
 {
@@ -16,6 +16,9 @@ public sealed record ProfileSettings
 
     /// <summary>Named custom sequences per weapon type (API kind), in the order they were saved.</summary>
     public Dictionary<string, List<SavedSequence>> Sequences { get; init; } = new();
+
+    /// <summary>Decorations starred in the slot pickers, listed first there.</summary>
+    public List<string> FavoriteDecorations { get; init; } = [];
 
     public Conditions PresetFor(string weaponKind) => ConditionPresets.TryGetValue(weaponKind, out var c) ? c : Conditions.DefaultFor(weaponKind);
 }

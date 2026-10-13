@@ -9,7 +9,7 @@ public sealed record SegmentOption<T>(T Value, string Label, RenderFragment? Con
 public sealed record SelectOption(string Value, string Label, string? Group = null);
 
 /// <summary>
-/// One choice of a <see cref="Picker{T}"/>; <paramref name="Search"/> is the lower-case text the query is matched against
-/// (every word must occur).
+/// One choice of a <see cref="Picker{T}"/>; <paramref name="Search"/> is the text the query is matched against
+/// (<see cref="LooseSearch"/>: names, sets, skills).
 /// </summary>
 public sealed record PickerOption<T>(string Key, T Value, string Search, RenderFragment Render, string? Group = null);

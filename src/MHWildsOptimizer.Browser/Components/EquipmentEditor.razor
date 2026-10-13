@@ -291,7 +291,7 @@
             .OrderByDescending(p => p.Rarity).ThenBy(p => p.Set).ThenBy(p => p.Name)
             .GroupBy(p => p.Kind)
             .ToDictionary(g => g.Key, g => g.Select(p => new PickerOption<string>(p.Name, p.Name,
-                string.Join(' ', [p.Name, p.Set, .. p.Piece.Skills.Select(s => s.Skill), .. p.SetBonus, p.GroupSkill ?? ""]).ToLowerInvariant(),
+                string.Join(' ', [p.Name, p.Set, .. p.Piece.Skills.Select(s => s.Skill), .. p.SetBonus, p.GroupSkill ?? ""]),
                 @<text>
                     <img class="icon" src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" width="24" height="24" />
                     <span class="opt-main"><span class="opt-name">@p.Name</span><span class="muted small">@GrantsText(p.Piece.Skills)</span></span>
@@ -308,7 +308,7 @@
     {
         if (_talismanOptions is not null && ReferenceEquals(_talismanSource, App.Talismans)) return _talismanOptions;
         PickerOption<string> Option(string name, int rarity, IReadOnlyList<SkillGrant> skills, IReadOnlyList<string> slots, string group) => new(
-            group + name, name, string.Join(' ', [name, .. skills.Select(g => g.Skill)]).ToLowerInvariant(),
+            group + name, name, string.Join(' ', [name, .. skills.Select(g => g.Skill)]),
             @<text>
                 <img class="icon" src="@GameIcons.Talisman(rarity)" alt="" width="24" height="24" />
                 <span class="opt-main"><span class="opt-name">@name</span><span class="muted small">@GrantsText(skills)</span></span>

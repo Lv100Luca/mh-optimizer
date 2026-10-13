@@ -145,15 +145,12 @@
     private List<SkillDto> Available(IEnumerable<SkillDto> skills, List<SkillDto> rows)
     {
         var shown = rows.Select(s => s.Name).ToHashSet();
-        var q = (_query ?? "").Trim().ToLowerInvariant();
-        return skills
+        var sorted = skills
             .Where(s => !shown.Contains(s.Name))
             .Where(s => _kind is null || s.Kind == _kind)
-            .Where(s => q == "" || s.Name.Contains(q, StringComparison.OrdinalIgnoreCase) || (s.Description ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
-                || s.Ranks.Any(r => (r.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)))
             .OrderByDescending(s => Highlight?.Contains(s.Name) == true)
-            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase);
+        return LooseSearch.Filter(sorted, s => string.Join(' ', [s.Name, .. s.Ranks.Select(r => r.Name ?? ""), s.Description ?? ""]), _query);
     }
 
     /// <summary>Hands on the targets and limits after <paramref name="edit"/>; a limit at the max level is no limit.</summary>
