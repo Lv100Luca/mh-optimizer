@@ -41,7 +41,7 @@ public sealed class WikiIndex
         Skills = data.Skills.ToDictionary(s => s.Name);
         Sets = data.ArmorSets.ToDictionary(s => s.Name);
         SkillText = data.Skills.ToDictionary(s => s.Name, s => string.Join('\n', [
-            s.Name, s.Description, .. s.Ranks.Select(r => $"{r.Name} {r.Description}"),
+            s.Name, s.Description, .. s.Ranks.Select(r => $"{r.Name} {r.Description} {r.Game}"),
             s.Effects?.Trigger, .. s.Effects?.Levels.Values.SelectMany(l => l) ?? [], .. s.Effects?.Notes ?? [],
         ]).ToLowerInvariant());
         SetText = data.ArmorSets.ToDictionary(s => s.Name, s => string.Join('\n', [

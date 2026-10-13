@@ -33,31 +33,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10 while active."
+    "description": "Attack +10 for 30 s.",
+    "game_description": "Attack +10 while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15 while active."
+    "description": "Attack +15 for 30 s.",
+    "game_description": "Attack +15 while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +20 while active."
+    "description": "Attack +20 for 30 s.",
+    "game_description": "Attack +20 while active."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +25 while active."
+    "description": "Attack +25 for 30 s.",
+    "game_description": "Attack +25 while active."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +30 while active."
+    "description": "Attack +30 for 30 s.",
+    "game_description": "Attack +30 while active."
    }
   ]
  },
@@ -113,19 +118,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +5% while active."
+    "description": "Attack +5% for 30 s.",
+    "game_description": "Attack +5% while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10% while active."
+    "description": "Attack +10% for 30 s.",
+    "game_description": "Attack +10% while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15% while active."
+    "description": "Attack +15% for 30 s.",
+    "game_description": "Attack +15% while active."
    }
   ]
  },
@@ -141,19 +149,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases recovery rate after contracting the Frenzy. Affinity +3% if cured."
+    "description": "Increases recovery rate after contracting the Frenzy by 10%. Affinity +3% if cured.",
+    "game_description": "Slightly increases recovery rate after contracting the Frenzy. Affinity +3% if cured."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases recovery rate after contracting the Frenzy. Affinity +6% if cured."
+    "description": "Increases recovery rate after contracting the Frenzy by 20%. Affinity +6% if cured.",
+    "game_description": "Increases recovery rate after contracting the Frenzy. Affinity +6% if cured."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases recovery rate after contracting the Frenzy. Affinity +10% if cured."
+    "description": "Increases recovery rate after contracting the Frenzy by 30%. Affinity +10% if cured.",
+    "game_description": "Greatly increases recovery rate after contracting the Frenzy. Affinity +10% if cured."
    }
   ]
  },
@@ -191,13 +202,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Allows you to quickly recover from webbed status or frostblight."
+    "description": "Allows you to recover from webbed status or frostblight faster: duration ×0.70 (about 6 s -> 4 s).",
+    "game_description": "Allows you to quickly recover from webbed status or frostblight."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Allows you to very quickly recover from webbed status or frostblight."
+    "description": "Allows you to recover from webbed status or frostblight much faster: duration ×0.40 (about 6 s -> 2 s).",
+    "game_description": "Allows you to very quickly recover from webbed status or frostblight."
    },
    {
     "level": 3,
@@ -219,13 +232,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Delays blastblight and reduces blast damage."
+    "description": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage.",
+    "game_description": "Delays blastblight and reduces blast damage."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly delays blastblight and greatly reduces blast damage."
+    "description": "Delays blastblight by 50 s (about 25 s -> 75 s) and greatly reduces blast damage.",
+    "game_description": "Greatly delays blastblight and greatly reduces blast damage."
    },
    {
     "level": 3,
@@ -247,13 +262,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces damage while bleeding."
+    "description": "Reduces damage while bleeding to ×0.50.",
+    "game_description": "Reduces damage while bleeding."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly reduces damage while bleeding."
+    "description": "Reduces damage while bleeding to ×0.25.",
+    "game_description": "Greatly reduces damage while bleeding."
    },
    {
     "level": 3,
@@ -381,31 +398,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "On first hit, gain a small temporary attack and element boost, replaced by a larger boost after the fifth hit."
+    "description": "On first hit, gain attack +5 and element +50 (Dual Blades and Bow +30) for 3 to 5 s by weapon, replaced by attack +6 to +10 and element +40 to +80 by weapon after the fifth hit.",
+    "game_description": "On first hit, gain a small temporary attack and element boost, replaced by a larger boost after the fifth hit."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Hit 5 successive times for a moderate stat boost."
+    "description": "Hit 5 successive times for attack +7 to +12 and element +60 to +100 by weapon.",
+    "game_description": "Hit 5 successive times for a moderate stat boost."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Hit 5 successive times for a bigger stat boost."
+    "description": "Hit 5 successive times for attack +8 to +14 and element +80 to +120 by weapon.",
+    "game_description": "Hit 5 successive times for a bigger stat boost."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Hit 5 successive times for an even bigger stat boost."
+    "description": "Hit 5 successive times for attack +9 to +16 and element +100 to +160 by weapon.",
+    "game_description": "Hit 5 successive times for an even bigger stat boost."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Hit 5 successive times for a huge stat boost."
+    "description": "Hit 5 successive times for attack +10 to +18 and element +120 to +200 by weapon.",
+    "game_description": "Hit 5 successive times for a huge stat boost."
    }
   ]
  },
@@ -437,19 +459,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "When active, grants a slight increase to elemental attack and status buildup."
+    "description": "For 30 s, grants element ×1.10 on heavy weapons (×1.05 on others) and status buildup ×1.05.",
+    "game_description": "When active, grants a slight increase to elemental attack and status buildup."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "When active, grants an increase to elemental attack and status buildup."
+    "description": "For 30 s, grants element ×1.20 on heavy weapons (×1.10 on others) and status buildup ×1.10.",
+    "game_description": "When active, grants an increase to elemental attack and status buildup."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "When active, grants a large increase to elemental attack and status buildup."
+    "description": "For 30 s, grants element ×1.30 on heavy weapons (×1.15 on others) and status buildup ×1.15.",
+    "game_description": "When active, grants a large increase to elemental attack and status buildup."
    }
   ]
  },
@@ -505,19 +530,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "While active, deals extra dragon damage after dealing enough elemental damage. Slightly increases dragon attack."
+    "description": "For 120 s (then 90 s cooldown), deals extra dragon damage (150 base) after dealing enough elemental damage. Dragon attack +80 and ×1.10.",
+    "game_description": "While active, deals extra dragon damage after dealing enough elemental damage. Slightly increases dragon attack."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases additional dragon damage and increases dragon attack."
+    "description": "Increases additional dragon damage to 200 base and dragon attack to +120 and ×1.15.",
+    "game_description": "Increases additional dragon damage and increases dragon attack."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Further increases additional dragon damage and greatly increases dragon attack."
+    "description": "Further increases additional dragon damage to 280 base and dragon attack to +180 and ×1.20.",
+    "game_description": "Further increases additional dragon damage and greatly increases dragon attack."
    }
   ]
  },
@@ -533,19 +561,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10 while active."
+    "description": "Attack +10 for 30 s.",
+    "game_description": "Attack +10 while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15 while active. Moderately extends effect time."
+    "description": "Attack +15 for 35 s.",
+    "game_description": "Attack +15 while active. Moderately extends effect time."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +25 while active. Extends effect time."
+    "description": "Attack +25 for 45 s.",
+    "game_description": "Attack +25 while active. Extends effect time."
    }
   ]
  },
@@ -573,31 +604,36 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +5% Bonus: +10"
+    "description": "Defense +5% and a +10 bonus.",
+    "game_description": "Defense +5% Bonus: +10"
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +5% Bonus: +20 All elemental resistances +3"
+    "description": "Defense +5% and a +20 bonus. All elemental resistances +3.",
+    "game_description": "Defense +5% Bonus: +20 All elemental resistances +3"
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +8% Bonus: +20 All elemental resistances +3"
+    "description": "Defense +8% and a +20 bonus. All elemental resistances +3.",
+    "game_description": "Defense +8% Bonus: +20 All elemental resistances +3"
    },
    {
     "level": 6,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +8% Bonus: +35 All elemental resistances +5"
+    "description": "Defense +8% and a +35 bonus. All elemental resistances +5.",
+    "game_description": "Defense +8% Bonus: +35 All elemental resistances +5"
    },
    {
     "level": 7,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +10% Bonus: +35 All elemental resistances +5"
+    "description": "Defense +10% and a +35 bonus. All elemental resistances +5.",
+    "game_description": "Defense +10% Bonus: +35 All elemental resistances +5"
    }
   ]
  },
@@ -653,7 +689,8 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Dragon resistance +20 Defense +10"
+    "description": "Dragon resistance +20. Defense +10.",
+    "game_description": "Dragon resistance +20 Defense +10"
    }
   ]
  },
@@ -669,13 +706,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces the effects of weak monster roars."
+    "description": "Reduces the effects of weak monster roars to about 20%.",
+    "game_description": "Reduces the effects of weak monster roars."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Nullifies weak monster roars and reduces the effects of strong monster roars."
+    "description": "Nullifies weak monster roars and reduces the effects of strong monster roars to about 10%.",
+    "game_description": "Nullifies weak monster roars and reduces the effects of strong monster roars."
    },
    {
     "level": 3,
@@ -697,19 +736,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "While active, slightly increases elemental attack, and resistance to element taken at activation by 4."
+    "description": "For 120 s, element ×1.05 plus +30 to +50 by weapon, and resistance to element taken at activation +4. 60 s cooldown.",
+    "game_description": "While active, slightly increases elemental attack, and resistance to element taken at activation by 4."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "While active, moderately increases elemental attack, and resistance to element taken at activation by 6."
+    "description": "For 120 s, element ×1.10 plus +40 to +80 by weapon, and resistance to element taken at activation +6. 60 s cooldown.",
+    "game_description": "While active, moderately increases elemental attack, and resistance to element taken at activation by 6."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "While active, increases elemental attack, and resistance to element taken at activation by 8."
+    "description": "For 120 s, element ×1.15 plus +50 to +100 by weapon, and resistance to element taken at activation +8. 60 s cooldown.",
+    "game_description": "While active, increases elemental attack, and resistance to element taken at activation by 8."
    }
   ]
  },
@@ -741,19 +783,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly extends evasion distance."
+    "description": "Extends evasion distance ×1.10.",
+    "game_description": "Slightly extends evasion distance."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Extends evasion distance."
+    "description": "Extends evasion distance ×1.25.",
+    "game_description": "Extends evasion distance."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly extends evasion distance."
+    "description": "Extends evasion distance ×1.40.",
+    "game_description": "Greatly extends evasion distance."
    }
   ]
  },
@@ -769,31 +814,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Very slightly increases invulnerability window."
+    "description": "Increases invulnerability window to 15 frames on rolls and 12 frames on step evades.",
+    "game_description": "Very slightly increases invulnerability window."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases invulnerability window."
+    "description": "Increases invulnerability window to 17 frames on rolls and 14 frames on step evades.",
+    "game_description": "Slightly increases invulnerability window."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Increases invulnerability window."
+    "description": "Increases invulnerability window to 19 frames on rolls and 16 frames on step evades.",
+    "game_description": "Increases invulnerability window."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases invulnerability window."
+    "description": "Increases invulnerability window to 22 frames on rolls and 19 frames on step evades.",
+    "game_description": "Greatly increases invulnerability window."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Massively increases invulnerability window."
+    "description": "Increases invulnerability window to 25 frames on rolls and 22 frames on step evades.",
+    "game_description": "Massively increases invulnerability window."
    }
   ]
  },
@@ -821,7 +871,8 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Fire resistance +20 Defense +10"
+    "description": "Fire resistance +20. Defense +10.",
+    "game_description": "Fire resistance +20 Defense +10"
    }
   ]
  },
@@ -837,31 +888,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Makes it ever so slightly easier to inflict wounds. Also deals additional non-elemental damage."
+    "description": "Makes it easier to inflict wounds (buildup ×1.05). Also deals 140 additional non-elemental damage on about 50% of eligible hits.",
+    "game_description": "Makes it ever so slightly easier to inflict wounds. Also deals additional non-elemental damage."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Makes it moderately easier to inflict wounds. Also deals slightly more additional non-elemental damage."
+    "description": "Makes it easier to inflict wounds (buildup ×1.10). Also deals 160 additional non-elemental damage on about 50% of eligible hits.",
+    "game_description": "Makes it moderately easier to inflict wounds. Also deals slightly more additional non-elemental damage."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Makes it easier to inflict wounds. Also deals moderately more additional non-elemental damage."
+    "description": "Makes it easier to inflict wounds (buildup ×1.15). Also deals 220 additional non-elemental damage on about 50% of eligible hits.",
+    "game_description": "Makes it easier to inflict wounds. Also deals moderately more additional non-elemental damage."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Makes it much easier to inflict wounds. Also deals more additional non-elemental damage."
+    "description": "Makes it easier to inflict wounds (buildup ×1.20). Also deals 300 additional non-elemental damage on about 50% of eligible hits.",
+    "game_description": "Makes it much easier to inflict wounds. Also deals more additional non-elemental damage."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Makes it significantly easier to inflict wounds. Also deals much more additional non-elemental damage."
+    "description": "Makes it easier to inflict wounds (buildup ×1.30). Also deals 400 additional non-elemental damage on about 50% of eligible hits.",
+    "game_description": "Makes it significantly easier to inflict wounds. Also deals much more additional non-elemental damage."
    }
   ]
  },
@@ -1081,7 +1137,8 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Ice resistance +20 Defense +10"
+    "description": "Ice resistance +20. Defense +10.",
+    "game_description": "Ice resistance +20 Defense +10"
    }
   ]
  },
@@ -1197,31 +1254,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "While active, affinity +10% and reduces stamina depletion by 30%."
+    "description": "For 120 s, affinity +10% and reduces stamina depletion by 30%.",
+    "game_description": "While active, affinity +10% and reduces stamina depletion by 30%."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "While active, affinity +20% and reduces stamina depletion by 30%."
+    "description": "For 120 s, affinity +20% and reduces stamina depletion by 30%.",
+    "game_description": "While active, affinity +20% and reduces stamina depletion by 30%."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "While active, affinity +30% and reduces stamina depletion by 50%."
+    "description": "For 120 s, affinity +30% and reduces stamina depletion by 50%.",
+    "game_description": "While active, affinity +30% and reduces stamina depletion by 50%."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "While active, affinity +40% and reduces stamina depletion by 50%."
+    "description": "For 120 s, affinity +40% and reduces stamina depletion by 50%.",
+    "game_description": "While active, affinity +40% and reduces stamina depletion by 50%."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "While active, affinity +50% and reduces stamina depletion by 50%."
+    "description": "For 120 s, affinity +50% and reduces stamina depletion by 50%.",
+    "game_description": "While active, affinity +50% and reduces stamina depletion by 50%."
    }
   ]
  },
@@ -1337,7 +1399,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Improves fishing, grilling, and transporting abilities."
+    "description": "Improves fishing, grilling, and transporting abilities. While carrying, move speed ×1.25, animation speed ×1.22 and climbing speed ×1.2.",
+    "game_description": "Improves fishing, grilling, and transporting abilities."
    }
   ]
  },
@@ -1421,19 +1484,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Increases part damage and damage dealt when conditions are met by 10%."
+    "description": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 10%.",
+    "game_description": "Increases part damage and damage dealt when conditions are met by 10%."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases part damage and damage dealt when conditions are met by 20%."
+    "description": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 20%.",
+    "game_description": "Increases part damage and damage dealt when conditions are met by 20%."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Increases part damage and damage dealt when conditions are met by 30%."
+    "description": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 30%.",
+    "game_description": "Increases part damage and damage dealt when conditions are met by 30%."
    }
   ]
  },
@@ -1489,13 +1555,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces the number of times you take poison damage."
+    "description": "Reduces the number of times you take poison damage by about 1/3 (tick interval ×1.5).",
+    "game_description": "Reduces the number of times you take poison damage."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly reduces the number of times you take poison damage."
+    "description": "Reduces the number of times you take poison damage by about 2/3 (tick interval ×3).",
+    "game_description": "Greatly reduces the number of times you take poison damage."
    },
    {
     "level": 3,
@@ -1517,19 +1585,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases sheathing speed."
+    "description": "Increases sheathing speed (×1.1).",
+    "game_description": "Slightly increases sheathing speed."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases sheathing speed."
+    "description": "Increases sheathing speed (×1.2).",
+    "game_description": "Increases sheathing speed."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases sheathing speed."
+    "description": "Increases sheathing speed (×1.4).",
+    "game_description": "Greatly increases sheathing speed."
    }
   ]
  },
@@ -1573,19 +1644,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases recovery."
+    "description": "Increases recovery (×1.1).",
+    "game_description": "Slightly increases recovery."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases recovery."
+    "description": "Increases recovery (×1.2).",
+    "game_description": "Moderately increases recovery."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases recovery."
+    "description": "Increases recovery (×1.3).",
+    "game_description": "Greatly increases recovery."
    }
   ]
  },
@@ -1657,7 +1731,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Defense +5 / +10 / +15 / +20 and attack +0 / +4 / +8 / +12 after about 5, 10, 20 and 30 min on the quest.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -1863,7 +1938,8 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Thunder resistance +20 Defense +10"
+    "description": "Thunder resistance +20. Defense +10.",
+    "game_description": "Thunder resistance +20 Defense +10"
    }
   ]
  },
@@ -1925,7 +2001,8 @@
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Nullifies up to minor ground tremors and greatly reduces the effects of major ground tremors."
+    "description": "Nullifies up to minor ground tremors and reduces the effects of major ground tremors to ×0.2.",
+    "game_description": "Nullifies up to minor ground tremors and greatly reduces the effects of major ground tremors."
    },
    {
     "level": 3,
@@ -1959,7 +2036,8 @@
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Water resistance +20 Defense +10"
+    "description": "Water resistance +20. Defense +10.",
+    "game_description": "Water resistance +20 Defense +10"
    }
   ]
  },
@@ -2083,7 +2161,8 @@
     "level": 1,
     "name": "Diversion",
     "pieces_required": 3,
-    "description": "Increases the attention drawn to you when attacking a monster."
+    "description": "Increases the attention drawn to you when attacking a monster (×2).",
+    "game_description": "Increases the attention drawn to you when attacking a monster."
    }
   ]
  },
@@ -2099,7 +2178,8 @@
     "level": 1,
     "name": "Affinity Sliding",
     "pieces_required": 3,
-    "description": "Increases your affinity temporarily when sliding on terrain."
+    "description": "Increases your affinity by 30% for 60 s when sliding on terrain.",
+    "game_description": "Increases your affinity temporarily when sliding on terrain."
    }
   ]
  },
@@ -2131,7 +2211,8 @@
     "level": 1,
     "name": "Hunter Gatherer",
     "pieces_required": 3,
-    "description": "Increases gathering speed, and prevents knock back when gathering or carving."
+    "description": "Increases gathering speed ×1.4, and prevents knock back when gathering or carving.",
+    "game_description": "Increases gathering speed, and prevents knock back when gathering or carving."
    }
   ]
  },
@@ -2147,7 +2228,8 @@
     "level": 1,
     "name": "Fortify",
     "pieces_required": 3,
-    "description": "Increases attack and defense after fainting during a quest. (Can be used twice.)"
+    "description": "Increases attack ×1.10 and defense ×1.15 after fainting during a quest, and attack ×1.20 and defense ×1.30 after a second faint. (Can be used twice.)",
+    "game_description": "Increases attack and defense after fainting during a quest. (Can be used twice.)"
    }
   ]
  },
@@ -2163,7 +2245,8 @@
     "level": 1,
     "name": "Luck",
     "pieces_required": 3,
-    "description": "Increases quest target rewards. (No effect when joining mid-quest.)"
+    "description": "Increases quest target rewards by 2. (No effect when joining mid-quest.)",
+    "game_description": "Increases quest target rewards. (No effect when joining mid-quest.)"
    }
   ]
  },
@@ -2179,7 +2262,8 @@
     "level": 1,
     "name": "Ward of Wyveria",
     "pieces_required": 3,
-    "description": "Reduces elemental and unique damage while in the Ruins of Wyveria."
+    "description": "Reduces elemental and unique damage by 10% while in the Ruins of Wyveria.",
+    "game_description": "Reduces elemental and unique damage while in the Ruins of Wyveria."
    }
   ]
  },
@@ -2227,7 +2311,8 @@
     "level": 1,
     "name": "Inspiration",
     "pieces_required": 3,
-    "description": "Temporarily increases attack power when using effects like Melody Effects that affect companions in range."
+    "description": "Grants attack +10 for 20 s when using effects like Melody Effects that affect companions in range.",
+    "game_description": "Temporarily increases attack power when using effects like Melody Effects that affect companions in range."
    }
   ]
  },
@@ -2243,7 +2328,8 @@
     "level": 1,
     "name": "Resuscitate",
     "pieces_required": 3,
-    "description": "Increases attack when inflicted with ailments."
+    "description": "Grants attack +10 when inflicted with ailments.",
+    "game_description": "Increases attack when inflicted with ailments."
    }
   ]
  },
@@ -2259,7 +2345,8 @@
     "level": 1,
     "name": "Guts (Tenacity)",
     "pieces_required": 3,
-    "description": "Boosts attack and lowers defense but lets you survive one lethal hit. Afterwards, boosts defense and res."
+    "description": "Boosts attack ×1.05 and lowers defense ×0.95 but lets you survive one lethal hit when above 64 HP. Afterwards, boosts defense ×1.05 and all resistances +3.",
+    "game_description": "Boosts attack and lowers defense but lets you survive one lethal hit. Afterwards, boosts defense and res."
    }
   ]
  },
@@ -2275,7 +2362,8 @@
     "level": 1,
     "name": "Satsui no Hado",
     "pieces_required": 3,
-    "description": "Increases power of special actions. Drive Impacts can trigger offset attacks. Further increases power of offset attacks."
+    "description": "Increases motion values of special actions by 47%. Drive Impacts can trigger offset attacks. Further increases power of offset attacks.",
+    "game_description": "Increases power of special actions. Drive Impacts can trigger offset attacks. Further increases power of offset attacks."
    }
   ]
  },
@@ -2291,7 +2379,8 @@
     "level": 1,
     "name": "Honey Hunter",
     "pieces_required": 3,
-    "description": "Increases the amount of honey you gain from gathering points."
+    "description": "Increases the amount of honey you gain from gathering points by 1 to 3.",
+    "game_description": "Increases the amount of honey you gain from gathering points."
    }
   ]
  },
@@ -2323,7 +2412,8 @@
     "level": 1,
     "name": "Adrenaline",
     "pieces_required": 3,
-    "description": "Temporarily reduces stamina depletion when health is at 40% or lower."
+    "description": "Temporarily reduces stamina depletion to ×0.5 when health is at 40% or lower.",
+    "game_description": "Temporarily reduces stamina depletion when health is at 40% or lower."
    }
   ]
  },
@@ -2339,7 +2429,8 @@
     "level": 1,
     "name": "Master Mounter",
     "pieces_required": 3,
-    "description": "Makes it easier to mount monsters and to wound them once mounted."
+    "description": "Makes it easier to mount monsters (mount build-up ×1.2) and to wound them once mounted (wound damage ×1.5).",
+    "game_description": "Makes it easier to mount monsters and to wound them once mounted."
    }
   ]
  },
@@ -2355,13 +2446,15 @@
     "level": 1,
     "name": "Hasten Recovery I",
     "pieces_required": 2,
-    "description": "Regenerates a small amount of your health as you continually attack a monster. Recovery varies by weapon."
+    "description": "Regenerates 3 to 14 health per trigger as you continually attack a monster. Recovery varies by weapon.",
+    "game_description": "Regenerates a small amount of your health as you continually attack a monster. Recovery varies by weapon."
    },
    {
     "level": 2,
     "name": "Hasten Recovery II",
     "pieces_required": 4,
-    "description": "Regenerates your health as you continually attack a monster. Recovery varies by weapon."
+    "description": "Regenerates 5 to 20 health per trigger as you continually attack a monster. Recovery varies by weapon.",
+    "game_description": "Regenerates your health as you continually attack a monster. Recovery varies by weapon."
    }
   ]
  },
@@ -2377,13 +2470,15 @@
     "level": 1,
     "name": "War Cry I",
     "pieces_required": 2,
-    "description": "Using the To Victory! gesture moderately  increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+    "description": "Using the To Victory! gesture grants attack +3 for 90 s to nearby allies. Greatly effects Palicoes and Support Hunters.",
+    "game_description": "Using the To Victory! gesture moderately  increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
    },
    {
     "level": 2,
     "name": "War Cry II",
     "pieces_required": 4,
-    "description": "Using the To Victory! gesture increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
+    "description": "Using the To Victory! gesture grants attack +6 for 90 s to nearby allies. Greatly effects Palicoes and Support Hunters.",
+    "game_description": "Using the To Victory! gesture increases attack temporarily to nearby allies. Greatly effects Palicoes and Support Hunters."
    }
   ]
  },
@@ -2405,7 +2500,8 @@
     "level": 2,
     "name": "Blossomdance Boon II",
     "pieces_required": 4,
-    "description": "During Blossomdance, adds special items to quest rewards, and greatly boosts attack and defense."
+    "description": "During Blossomdance, adds special items to quest rewards, and boosts attack ×1.09 and defense +50.",
+    "game_description": "During Blossomdance, adds special items to quest rewards, and greatly boosts attack and defense."
    }
   ]
  },
@@ -2421,13 +2517,15 @@
     "level": 1,
     "name": "Powerhouse I",
     "pieces_required": 2,
-    "description": "Temporarily grants attack +10 after a successful Power Clash or Offset attack"
+    "description": "Grants attack +10 for 180 s after a successful Power Clash or Offset attack.",
+    "game_description": "Temporarily grants attack +10 after a successful Power Clash or Offset attack"
    },
    {
     "level": 2,
     "name": "Powerhouse II",
     "pieces_required": 4,
-    "description": "Temporarily grants attack +25 after a successful Power Clash or Offset attack"
+    "description": "Grants attack +25 for 180 s after a successful Power Clash or Offset attack.",
+    "game_description": "Temporarily grants attack +25 after a successful Power Clash or Offset attack"
    }
   ]
  },
@@ -2449,7 +2547,8 @@
     "level": 2,
     "name": "Dreamspell Boon II",
     "pieces_required": 4,
-    "description": "During Dreamspell, adds special items to quest rewards, and greatly boosts attack and defense."
+    "description": "During Dreamspell, adds special items to quest rewards, and boosts attack ×1.09 and defense +50.",
+    "game_description": "During Dreamspell, adds special items to quest rewards, and greatly boosts attack and defense."
    }
   ]
  },
@@ -2465,13 +2564,15 @@
     "level": 1,
     "name": "Burst Boost I",
     "pieces_required": 2,
-    "description": "Extends the duration of the Burst skill and grants attack +8 while Burst is active."
+    "description": "Extends the duration of the Burst skill by 1 s and grants attack +8 while Burst is active.",
+    "game_description": "Extends the duration of the Burst skill and grants attack +8 while Burst is active."
    },
    {
     "level": 2,
     "name": "Burst Boost II",
     "pieces_required": 4,
-    "description": "Further extends the duration of the Burst skill and grants attack +18 while Burst is active."
+    "description": "Extends the duration of the Burst skill by 2 s and grants attack +18 while Burst is active.",
+    "game_description": "Further extends the duration of the Burst skill and grants attack +18 while Burst is active."
    }
   ]
  },
@@ -2493,7 +2594,8 @@
     "level": 2,
     "name": "Flamefete Boon II",
     "pieces_required": 4,
-    "description": "During Flamefete, adds special items to quest rewards, and greatly boosts attack and defense."
+    "description": "During Flamefete, adds special items to quest rewards, and boosts attack ×1.09 and defense +50.",
+    "game_description": "During Flamefete, adds special items to quest rewards, and greatly boosts attack and defense."
    }
   ]
  },
@@ -2509,13 +2611,15 @@
     "level": 1,
     "name": "Second Wind I",
     "pieces_required": 2,
-    "description": "Grants an additional Stamina Gauge."
+    "description": "Grants an additional Stamina Gauge of 25.",
+    "game_description": "Grants an additional Stamina Gauge."
    },
    {
     "level": 2,
     "name": "Second Wind II",
     "pieces_required": 4,
-    "description": "Grants an additional long Stamina Gauge."
+    "description": "Grants an additional long Stamina Gauge of 50.",
+    "game_description": "Grants an additional long Stamina Gauge."
    }
   ]
  },
@@ -2531,13 +2635,15 @@
     "level": 1,
     "name": "Mutual Hostility I",
     "pieces_required": 2,
-    "description": "Increases elemental attack when large monsters become enraged."
+    "description": "Increases elemental attack ×1.2 and +20 when large monsters become enraged.",
+    "game_description": "Increases elemental attack when large monsters become enraged."
    },
    {
     "level": 2,
     "name": "Mutual Hostility II",
     "pieces_required": 4,
-    "description": "Level I effect is increased, and you gain a temporary damage barrier. (Barrier reactivates after cooldown.)"
+    "description": "Level I effect is increased to ×1.3 and +40, and you gain a barrier absorbing 80 damage for 140 s. (Barrier reactivates after a 30 s cooldown.)",
+    "game_description": "Level I effect is increased, and you gain a temporary damage barrier. (Barrier reactivates after cooldown.)"
    }
   ]
  },
@@ -2559,7 +2665,8 @@
     "level": 2,
     "name": "Black Eclipse II",
     "pieces_required": 4,
-    "description": "Infects you with Frenzy and raises attack when against large monsters. Attack power increases upon recovery."
+    "description": "Infects you with Frenzy and raises attack +10 when against large monsters. Grants attack +15 and affinity +15% for 60 s upon recovery.",
+    "game_description": "Infects you with Frenzy and raises attack when against large monsters. Attack power increases upon recovery."
    }
   ]
  },
@@ -2597,13 +2704,15 @@
     "level": 1,
     "name": "Decimator I",
     "pieces_required": 2,
-    "description": "Restores a moderate amount of health when destroying a wound on a large monster."
+    "description": "Restores 25 health when destroying a wound on a large monster.",
+    "game_description": "Restores a moderate amount of health when destroying a wound on a large monster."
    },
    {
     "level": 2,
     "name": "Decimator II",
     "pieces_required": 4,
-    "description": "Restores health when destroying a wound on a large monster."
+    "description": "Restores 50 health when destroying a wound on a large monster.",
+    "game_description": "Restores health when destroying a wound on a large monster."
    }
   ]
  },
@@ -2619,13 +2728,15 @@
     "level": 1,
     "name": "Binding Counter I",
     "pieces_required": 2,
-    "description": "Increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+    "description": "Grants attack +25 for 90 s after recovering from webbed status, frostblight, being pinned, or a Power Clash.",
+    "game_description": "Increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
    },
    {
     "level": 2,
     "name": "Binding Counter II",
     "pieces_required": 4,
-    "description": "Greatly increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+    "description": "Grants attack +50 for 90 s after recovering from webbed status, frostblight, being pinned, or a Power Clash.",
+    "game_description": "Greatly increases attack after recovering from webbed status, frostblight, being pinned, or a Power Clash."
    }
   ]
  },
@@ -2641,13 +2752,15 @@
     "level": 1,
     "name": "Azure Bolt I",
     "pieces_required": 2,
-    "description": "Temporarily increases affinity and can deal extra thunder damage upon buildup. (Excludes some attacks.)"
+    "description": "Grants affinity +15% for 20 s and can deal extra thunder damage (30 fixed + 70 thunder) upon buildup, with about a 30 s cooldown. (Excludes some attacks.)",
+    "game_description": "Temporarily increases affinity and can deal extra thunder damage upon buildup. (Excludes some attacks.)"
    },
    {
     "level": 2,
     "name": "Azure Bolt II",
     "pieces_required": 4,
-    "description": "Further increases additional thunder damage and moderately extends the duration affinity is increased."
+    "description": "Increases the extra thunder damage to 60 fixed + 200 thunder and extends the affinity increase to 30 s.",
+    "game_description": "Further increases additional thunder damage and moderately extends the duration affinity is increased."
    }
   ]
  },
@@ -2669,7 +2782,8 @@
     "level": 2,
     "name": "Lumenhymn Boon II",
     "pieces_required": 4,
-    "description": "During Lumenhymn, adds special items to quest rewards, and greatly boosts attack and defense."
+    "description": "During Lumenhymn, adds special items to quest rewards, and boosts attack ×1.09 and defense +50.",
+    "game_description": "During Lumenhymn, adds special items to quest rewards, and greatly boosts attack and defense."
    }
   ]
  },
@@ -2685,13 +2799,15 @@
     "level": 1,
     "name": "Bubbly Dance I",
     "pieces_required": 2,
-    "description": "Prevents major bubbleblight and grants you minor bubbleblight after evading several times."
+    "description": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after evading 3 times.",
+    "game_description": "Prevents major bubbleblight and grants you minor bubbleblight after evading several times."
    },
    {
     "level": 2,
     "name": "Bubbly Dance II",
     "pieces_required": 4,
-    "description": "In addition to previous effects, also increases evasion while afflicted with bubbleblight."
+    "description": "In addition to previous effects, also grants Evade Window Lv2 i-frames while afflicted with bubbleblight.",
+    "game_description": "In addition to previous effects, also increases evasion while afflicted with bubbleblight."
    }
   ]
  },
@@ -2707,13 +2823,15 @@
     "level": 1,
     "name": "Bad Blood I",
     "pieces_required": 2,
-    "description": "Deals moderate additional damage while the Resentment skill is active."
+    "description": "Deals an additional 45 × hitzone % damage while the Resentment skill is active, with a 2 s cooldown.",
+    "game_description": "Deals moderate additional damage while the Resentment skill is active."
    },
    {
     "level": 2,
     "name": "Bad Blood II",
     "pieces_required": 4,
-    "description": "Deals additional damage while the Resentment skill is active."
+    "description": "Deals an additional 85 × hitzone % damage while the Resentment skill is active, with a 2 s cooldown.",
+    "game_description": "Deals additional damage while the Resentment skill is active."
    }
   ]
  },
@@ -2729,13 +2847,15 @@
     "level": 1,
     "name": "Resonance I",
     "pieces_required": 2,
-    "description": "(When quest starts) Local and Remote Resonance alternate, increasing attack or affinity when conditions are met."
+    "description": "(When quest starts) Local and Remote Resonance alternate every 90 s, increasing affinity +20% (Local) or attack +10 (Remote) when conditions are met.",
+    "game_description": "(When quest starts) Local and Remote Resonance alternate, increasing attack or affinity when conditions are met."
    },
    {
     "level": 2,
     "name": "Resonance II",
     "pieces_required": 4,
-    "description": "Increases the effect of Resonance I, and the effect of the weapon skill Synthetic Shield or the effect of Synergy."
+    "description": "Increases Resonance I to affinity +40% (Local) or attack +20 (Remote), and the weapon skill Synthetic Shield to defense +45 for 45 s or Synergy to affinity +25% for 60 s.",
+    "game_description": "Increases the effect of Resonance I, and the effect of the weapon skill Synthetic Shield or the effect of Synergy."
    }
   ]
  },
@@ -2751,13 +2871,15 @@
     "level": 1,
     "name": "Scorcher I",
     "pieces_required": 2,
-    "description": "Chance to deal additional fire damage after landing an attack."
+    "description": "33% chance to deal additional fire damage (20 fixed + 60 fire) after landing an attack.",
+    "game_description": "Chance to deal additional fire damage after landing an attack."
    },
    {
     "level": 2,
     "name": "Scorcher II",
     "pieces_required": 4,
-    "description": "Increases additional fire damage after landing an attack."
+    "description": "Increases additional fire damage to 40 fixed + 120 fire after landing an attack.",
+    "game_description": "Increases additional fire damage after landing an attack."
    }
   ]
  },
@@ -2773,13 +2895,15 @@
     "level": 1,
     "name": "Thunderous Roar I",
     "pieces_required": 2,
-    "description": "Moderately extends the activation time of the Latent Power skill."
+    "description": "Extends the activation time of the Latent Power skill by 30 s (120 s to 150 s).",
+    "game_description": "Moderately extends the activation time of the Latent Power skill."
    },
    {
     "level": 2,
     "name": "Thunderous Roar II",
     "pieces_required": 4,
-    "description": "Extends the activation time of the Latent Power skill."
+    "description": "Extends the activation time of the Latent Power skill by 90 s (120 s to 210 s).",
+    "game_description": "Extends the activation time of the Latent Power skill."
    }
   ]
  },
@@ -2795,13 +2919,15 @@
     "level": 1,
     "name": "Razor's Edge I",
     "pieces_required": 2,
-    "description": "Extends the duration of Adrenaline Rush. If triggered again while the skill is active, extends the effect duration once."
+    "description": "Extends the duration of Adrenaline Rush to 45 s. If triggered again while the skill is active, extends the effect duration once by 15 s.",
+    "game_description": "Extends the duration of Adrenaline Rush. If triggered again while the skill is active, extends the effect duration once."
    },
    {
     "level": 2,
     "name": "Razor's Edge II",
     "pieces_required": 4,
-    "description": "Additionally, if triggered again while the skill is active, further increases attack."
+    "description": "Additionally, if triggered again while the skill is active, further increases attack ×1.05.",
+    "game_description": "Additionally, if triggered again while the skill is active, further increases attack."
    }
   ]
  },
@@ -2817,13 +2943,15 @@
     "level": 1,
     "name": "Dark Arts",
     "pieces_required": 2,
-    "description": "Having recoverable damage increases elemental attack, and some great sword Lvl 3 charged slashes are strengthened."
+    "description": "Having recoverable damage increases elemental attack ×1.14 (×1.20 for Great Sword, Hammer, Light and Heavy Bowgun), and some great sword Lvl 3 charged slashes add a shockwave.",
+    "game_description": "Having recoverable damage increases elemental attack, and some great sword Lvl 3 charged slashes are strengthened."
    },
    {
     "level": 2,
     "name": "The Blackest Night",
     "pieces_required": 4,
-    "description": "Allows you to perform the special action: The Blackest Night."
+    "description": "Allows you to perform the special action: The Blackest Night. It grants a shield for 8 s, with a cooldown of about 70 s.",
+    "game_description": "Allows you to perform the special action: The Blackest Night."
    }
   ]
  },
@@ -2839,13 +2967,15 @@
     "level": 1,
     "name": "Protective Veil I",
     "pieces_required": 2,
-    "description": "Increases defense temporarily when using a specialized tool."
+    "description": "Grants defense +25 for 180 s when using a specialized tool.",
+    "game_description": "Increases defense temporarily when using a specialized tool."
    },
    {
     "level": 2,
     "name": "Protective Veil II",
     "pieces_required": 4,
-    "description": "Greatly increases defense and resistance temporarily when using a specialized tool."
+    "description": "Grants defense +50 and all resistances +12 for 180 s when using a specialized tool.",
+    "game_description": "Greatly increases defense and resistance temporarily when using a specialized tool."
    }
   ]
  },
@@ -2861,13 +2991,15 @@
     "level": 1,
     "name": "Protein Fiend I",
     "pieces_required": 2,
-    "description": "Temporarily grants attack +15 after eating items such as well-done steak."
+    "description": "Grants attack +15 for 180 s after eating items such as well-done steak.",
+    "game_description": "Temporarily grants attack +15 after eating items such as well-done steak."
    },
    {
     "level": 2,
     "name": "Protein Fiend II",
     "pieces_required": 4,
-    "description": "Temporarily grants attack +30 after eating items such as well-done steak."
+    "description": "Grants attack +30 for 180 s after eating items such as well-done steak.",
+    "game_description": "Temporarily grants attack +30 after eating items such as well-done steak."
    }
   ]
  },
@@ -2883,13 +3015,15 @@
     "level": 1,
     "name": "Super Recovery I",
     "pieces_required": 2,
-    "description": "Allows the Health Gauge to continue to slowly recover up to the max value, even if there is no red portion."
+    "description": "Allows the Health Gauge to continue to recover 1 HP every 2 s up to the max value, even if there is no red portion.",
+    "game_description": "Allows the Health Gauge to continue to slowly recover up to the max value, even if there is no red portion."
    },
    {
     "level": 2,
     "name": "Super Recovery II",
     "pieces_required": 4,
-    "description": "Allows the Health Gauge to continue to recover up to the max value, even if there is no red portion."
+    "description": "Allows the Health Gauge to continue to recover 1 HP every 1 s up to the max value, even if there is no red portion.",
+    "game_description": "Allows the Health Gauge to continue to recover up to the max value, even if there is no red portion."
    }
   ]
  },
@@ -2921,19 +3055,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases each attack and Wyvern's Fire firing speed. Shelling fire attack +30."
+    "description": "Impact phial and Sticky Ammo damage ×1.10, and moderately increases Wyvern's Fire firing speed. Shelling fire attack +30.",
+    "game_description": "Moderately increases each attack and Wyvern's Fire firing speed. Shelling fire attack +30."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases each attack and Wyvern's Fire firing speed. Shelling fire attack +60."
+    "description": "Impact phial and Sticky Ammo damage ×1.20, and increases Wyvern's Fire firing speed. Shelling fire attack +60.",
+    "game_description": "Increases each attack and Wyvern's Fire firing speed. Shelling fire attack +60."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases each attack and Wyvern's Fire firing speed. Shelling fire attack +90."
+    "description": "Impact phial and Sticky Ammo damage ×1.30, and greatly increases Wyvern's Fire firing speed. Shelling fire attack +90.",
+    "game_description": "Greatly increases each attack and Wyvern's Fire firing speed. Shelling fire attack +90."
    }
   ]
  },
@@ -2989,19 +3126,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly extends range."
+    "description": "Extends critical range: start ×0.9, end ×1.1 for most ammo.",
+    "game_description": "Slightly extends range."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Extends range."
+    "description": "Extends critical range: start ×0.85, end ×1.15 for most ammo.",
+    "game_description": "Extends range."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly extends critical range, and boosts the power of attacks made within critical range."
+    "description": "Extends critical range to start ×0.75, end ×1.25 for most ammo, and grants attack +5 to attacks made within critical range.",
+    "game_description": "Greatly extends critical range, and boosts the power of attacks made within critical range."
    }
   ]
  },
@@ -3017,7 +3157,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Special sharpness with raw ×1.40 and element ×1.25.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3033,7 +3174,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25).",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3121,7 +3263,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "4% chance per critical hit to obtain an item, at most one roll every 3 s.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3165,7 +3308,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Charged attacks get stun ×1.30 and damage ×1.03.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3181,7 +3325,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Thunder +2 to +5 per point of thunder resistance by weapon.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3197,7 +3342,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Water +4 per point of water resistance.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3213,7 +3359,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Shelling damage ×1.35 and shelling fire attack +30.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3297,19 +3444,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases elemental damage while active."
+    "description": "Increases elemental damage ×1.05 to ×1.07 by weapon while active.",
+    "game_description": "Slightly increases elemental damage while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases elemental damage while active."
+    "description": "Increases elemental damage ×1.10 to ×1.14 by weapon while active.",
+    "game_description": "Increases elemental damage while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases elemental damage while active."
+    "description": "Increases elemental damage ×1.15 to ×1.21 by weapon while active.",
+    "game_description": "Greatly increases elemental damage while active."
    }
   ]
  },
@@ -3365,19 +3515,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases abnormal status effects when landing critical hits."
+    "description": "Increases abnormal status buildup ×1.05 to ×1.10 by weapon when landing critical hits.",
+    "game_description": "Slightly increases abnormal status effects when landing critical hits."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases abnormal status effects when landing critical hits."
+    "description": "Increases abnormal status buildup ×1.10 to ×1.20 by weapon when landing critical hits.",
+    "game_description": "Increases abnormal status effects when landing critical hits."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases abnormal status effects when landing critical hits."
+    "description": "Increases abnormal status buildup ×1.20 to ×1.40 by weapon when landing critical hits.",
+    "game_description": "Greatly increases abnormal status effects when landing critical hits."
    }
   ]
  },
@@ -3393,7 +3546,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect. (Requires activation cooldown, but self-damage still occurs.)"
+    "description": "Attack ×1.10 for 30 s. (Requires an activation cooldown of about 15 s after the buff ends, but self-damage still occurs.)",
+    "game_description": "Activates skill effect. (Requires activation cooldown, but self-damage still occurs.)"
    }
   ]
  },
@@ -3437,7 +3591,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Each evade loads 1 round of the selected ammo.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3497,19 +3652,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases gauge fill rate and reduces charge times by 5%."
+    "description": "Increases gauge fill rate ×1.05 and reduces charge times by 5%.",
+    "game_description": "Slightly increases gauge fill rate and reduces charge times by 5%."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases gauge fill rate and reduces charge times by 10%."
+    "description": "Increases gauge fill rate ×1.10 and reduces charge times by 10%.",
+    "game_description": "Moderately increases gauge fill rate and reduces charge times by 10%."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Increases gauge fill rate and reduces charge times by 15%."
+    "description": "Increases gauge fill rate ×1.20 and reduces charge times by 15%.",
+    "game_description": "Increases gauge fill rate and reduces charge times by 15%."
    }
   ]
  },
@@ -3525,7 +3683,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Restores sharpness. Rare meat grants fire +100 and affinity +10% for 90 s, well-done fire +300 and affinity +10% for 300 s, burnt fire +300 for 150 s.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -3637,13 +3796,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Extends Melody Effect duration and increases the chance of larger heals from healing melodies."
+    "description": "Extends Melody Effect duration (e.g. Self-Improvement +80 s, Echo Bubble 90 s instead of 60 s) and increases the chance of larger heals from healing melodies.",
+    "game_description": "Extends Melody Effect duration and increases the chance of larger heals from healing melodies."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases the effect duration of hunting horn melodies."
+    "description": "Increases the effect duration of hunting horn melodies further (e.g. Self-Improvement +180 s, Echo Bubble 120 s instead of 60 s).",
+    "game_description": "Greatly increases the effect duration of hunting horn melodies."
    }
   ]
  },
@@ -3687,13 +3848,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Increases shell and phial reloading speed."
+    "description": "Shell and phial reloading speed ×1.1.",
+    "game_description": "Increases shell and phial reloading speed."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases shell/phial reloading speed. Gunlance loading capacity +1. Charge blade charges 5 phials on yellow gauge."
+    "description": "Shell/phial reloading speed ×1.2. Gunlance loading capacity +1. Charge blade charges 5 phials on yellow gauge.",
+    "game_description": "Increases shell/phial reloading speed. Gunlance loading capacity +1. Charge blade charges 5 phials on yellow gauge."
    }
   ]
  },
@@ -3753,7 +3916,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases the power of specified ammo and arrows."
+    "description": "Power of specified ammo and arrows ×1.05.",
+    "game_description": "Slightly increases the power of specified ammo and arrows."
    }
   ]
  },
@@ -3797,19 +3961,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases bowgun reload speed and attack power of ammo when certain conditions are met."
+    "description": "Moderately increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.10.",
+    "game_description": "Moderately increases bowgun reload speed and attack power of ammo when certain conditions are met."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases bowgun reload speed and attack power of ammo when certain conditions are met."
+    "description": "Increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.15.",
+    "game_description": "Increases bowgun reload speed and attack power of ammo when certain conditions are met."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases bowgun reload speed and attack power of ammo when certain conditions are met."
+    "description": "Greatly increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.30.",
+    "game_description": "Greatly increases bowgun reload speed and attack power of ammo when certain conditions are met."
    }
   ]
  },
@@ -3869,7 +4036,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases the power of specified ammo and arrows."
+    "description": "Power of specified ammo and arrows ×1.05.",
+    "game_description": "Slightly increases the power of specified ammo and arrows."
    }
   ]
  },
@@ -3945,19 +4113,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately boosts the duration weapons are powered up."
+    "description": "Boosts the duration weapons are powered up: ×1.1 to ×1.3 by weapon.",
+    "game_description": "Moderately boosts the duration weapons are powered up."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Boosts the duration weapons are powered up."
+    "description": "Boosts the duration weapons are powered up: ×1.2 to ×1.6 by weapon.",
+    "game_description": "Boosts the duration weapons are powered up."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly boosts the duration weapons are powered up."
+    "description": "Boosts the duration weapons are powered up: ×1.4 to ×2.0 by weapon.",
+    "game_description": "Greatly boosts the duration weapons are powered up."
    }
   ]
  },
@@ -3973,7 +4144,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Mining particularly rare materials greatly increases attack. (Attack increase has a maximum limit.)"
+    "description": "Mining ore grants attack +10 to +30 by rarity for 90 s. (Attack increase has a maximum of +90.)",
+    "game_description": "Mining particularly rare materials greatly increases attack. (Attack increase has a maximum limit.)"
    }
   ]
  },
@@ -4117,7 +4289,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Adds an area hit of about 25.5% of the charged slash's damage.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -4233,13 +4406,15 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases the power of specified ammo and arrows."
+    "description": "Power of specified ammo and arrows ×1.10.",
+    "game_description": "Moderately increases the power of specified ammo and arrows."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases the power of specified ammo and arrows."
+    "description": "Power of specified ammo and arrows ×1.20.",
+    "game_description": "Increases the power of specified ammo and arrows."
    }
   ]
  },
@@ -4277,7 +4452,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases the power of specified ammo and arrows."
+    "description": "Power of specified ammo and arrows ×1.05.",
+    "game_description": "Slightly increases the power of specified ammo and arrows."
    }
   ]
  },
@@ -4321,7 +4497,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Affinity +15% for you and nearby hunters for 45 s.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -4337,7 +4514,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect."
+    "description": "Defense +30 for you and nearby hunters for 30 s.",
+    "game_description": "Activates skill effect."
    }
   ]
  },
@@ -4353,19 +4531,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases the attack power and affinity of ammo after certain conditions are met."
+    "description": "Affinity +8% from the 4th shot, and attack +3 on the 4th and 6th shots.",
+    "game_description": "Slightly increases the attack power and affinity of ammo after certain conditions are met."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases attack power and affinity of ammo after certain conditions are met."
+    "description": "Affinity +10% from the 4th shot, and attack +6 on the 4th and 6th shots.",
+    "game_description": "Moderately increases attack power and affinity of ammo after certain conditions are met."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Increases the attack power and affinity of ammo after certain conditions are met."
+    "description": "Affinity +12% from the 4th shot, and attack +10 on the 4th and 6th shots.",
+    "game_description": "Increases the attack power and affinity of ammo after certain conditions are met."
    }
   ]
  },
@@ -4437,7 +4618,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Activates skill effect. (When used with Scorcher, does not stack but adds extra fire damage.)"
+    "description": "Chance of an extra hit dealing 50 fixed damage. (When used with Scorcher, does not stack but deals 81 fire damage with Scorcher I, 122 with Scorcher II.)",
+    "game_description": "Activates skill effect. (When used with Scorcher, does not stack but adds extra fire damage.)"
    }
   ]
  }

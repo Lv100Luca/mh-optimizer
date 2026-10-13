@@ -6,6 +6,10 @@ Contents:
   and where it comes from: armor pieces (low and high rank), decorations, charms, weapons (innate skills), armor sets and the
   Gogma weapon skill pool. Skills that exist only as innate weapon skills are flagged `weapon_only`.
 - armor_sets: every armor set (low and high rank) with its pieces: skills, slots, defense and resistances.
+
+Exact texts: a skill's `text` in skill_effects.json (the game's per-level wording with the exact numbers) replaces the game's
+rank description, in data/wiki.json (the game's own wording kept as `game`) and in data/skills.json (kept as
+`game_description`), so the optimizer's skill cards and pickers show it too. Run this again after tools/build_dataset.py.
 """
 import json
 from collections import defaultdict
@@ -119,23 +123,40 @@ for v in src.values():
 
 # ---------------------------------------------------------------- skills
 
+def exact_text(name, level):
+    return ((effects.get(name) or {}).get('text') or {}).get(str(level))
+
+
+def rank(name, r):
+    out = {'level': r['level'], 'name': r['name'], 'pieces': r['setPiecesRequired'], 'description': exact_text(name, r['level']) or r['description']}
+    if out['description'] != r['description']:
+        out['game'] = r['description']
+    return out
+
+
 in_pool = set(pool['set_bonuses_in_pool']) | set(pool['group_skills_in_pool'])
 skills = []
 for s in sorted(raw_skills, key=lambda s: s['name']):
     name = s['name']
     so = src[name]
     weapon_only = bool(so['weapons']) and not so['armor'] and not so['decorations'] and not so['charms']
+    fx = effects.get(name)
     skill = {
         'id': s['id'], 'name': name, 'kind': s['kind'], 'icon': s['icon']['kind'],
         'description': s['description'],
         'max_level': max(r['level'] for r in s['ranks']),
-        'ranks': [{'level': r['level'], 'name': r['name'], 'pieces': r['setPiecesRequired'], 'description': r['description']} for r in s['ranks']],
+        'ranks': [rank(name, r) for r in s['ranks']],
         'weapon_only': weapon_only,
         'gogma_pool': name in in_pool,
-        'effects': effects.get(name),
+        'effects': {k: v for k, v in fx.items() if k != 'text'} if fx else None,
         'sources': {k: v for k, v in so.items() if v},
     }
     skills.append(skill)
+
+levels_of = {s['name']: {str(r['level']) for r in s['ranks']} for s in raw_skills}
+for name, fx in effects.items():
+    if name != '_about' and name in levels_of and set(fx.get('text', {})) - levels_of[name]:
+        raise SystemExit(f'skill_effects.json: {name} has text for levels the skill does not have: {sorted(set(fx["text"]) - levels_of[name])}')
 
 missing = [s['name'] for s in skills if s['effects'] is None]
 if missing:
@@ -152,3 +173,21 @@ out = {
 with open('data/wiki.json', 'w', encoding='utf-8', newline='\n') as f:
     json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
 print(f'wrote data/wiki.json: {len(skills)} skills ({sum(s["weapon_only"] for s in skills)} weapon-only), {len(armor_sets)} armor sets')
+
+# ---------------------------------------------------------------- exact texts into the optimizer's skills.json
+
+game_text = {(s['name'], r['level']): r['description'] for s in raw_skills for r in s['ranks']}
+dataset = load('data/skills.json')
+changed = 0
+for s in dataset:
+    for r in s['ranks']:
+        game = game_text.get((s['name'], r['level']), r.get('game_description', r['description']))
+        text = exact_text(s['name'], r['level']) or game
+        r.pop('game_description', None)
+        r['description'] = text
+        if text != game:
+            r['game_description'] = game
+            changed += 1
+with open('data/skills.json', 'w', encoding='utf-8', newline='\r\n') as f:
+    json.dump(dataset, f, ensure_ascii=False, indent=1)
+print(f'wrote data/skills.json: exact texts on {changed} skill levels')

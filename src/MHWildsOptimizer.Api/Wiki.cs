@@ -18,7 +18,9 @@ public sealed record WikiSkill(
 
 /// <param name="Name">The tier's own name for set and group skills ("Black Eclipse I").</param>
 /// <param name="Pieces">Pieces a set or group tier needs.</param>
-public sealed record WikiRank(int Level, string? Name, int? Pieces, string? Description);
+/// <param name="Description">The game's text with exact numbers (curated in data/skill_effects.json), else the game's own.</param>
+/// <param name="Game">The game's own wording where <paramref name="Description"/> differs from it.</param>
+public sealed record WikiRank(int Level, string? Name, int? Pieces, string? Description, string? Game = null);
 
 /// <param name="Levels">Effect lines by level ("1", "2", …); for set bonuses tier I and II.</param>
 /// <param name="Trigger">When it applies.</param>

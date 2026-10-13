@@ -1,5 +1,5 @@
 @inject AppState App
-@* A skill's wiki page: the game's texts, what each level does in numbers, and everything that carries it. *@
+@* A skill's wiki page: the game's texts with exact numbers (the game's own wording on hover), what each level does in numbers, and everything that carries it. *@
 @{
     var s = Skill;
     var fx = s.Effects;
@@ -43,7 +43,7 @@
                 <thead>
                     <tr>
                         <th>@(bonus ? "Tier" : "Lv")</th>
-                        <th>In game</th>
+                        <th>Effect</th>
                         <th>What it does</th>
                     </tr>
                 </thead>
@@ -66,7 +66,7 @@
                                     <b>@r.Level</b>
                                 }
                             </td>
-                            <td class="muted wiki-game">@r.Description</td>
+                            <td class="wiki-game" title="@(r.Game is { } g ? "In game: " + g : null)">@r.Description</td>
                             <td class="wiki-fx">
                                 @if (lines is { Count: > 0 })
                                 {

@@ -1,5 +1,5 @@
 {
- "_about": "What each skill level does in numbers, shown by the wiki (tools/build_wiki.py folds it into data/wiki.json). Curated 2026-10-12 from the game data (data/datamine, notes/skill_params_datamine.md), data/damage_model.json, notes/skill_values_*.md, kiranico and community tests. Units as the game words them: attack as in skill texts, element in display units. confidence: high = data and an independent check agree, medium = one source or inferred meaning, low = single secondary source.",
+ "_about": "What each skill level does in numbers, shown by the wiki (tools/build_wiki.py folds it into data/wiki.json). Curated 2026-10-12 from the game data (data/datamine, notes/skill_params_datamine.md), data/damage_model.json, notes/skill_values_*.md, kiranico and community tests. Units as the game words them: attack as in skill texts, element in display units. confidence: high = data and an independent check agree, medium = one source or inferred meaning, low = single secondary source. text: the game's per-level wording with the exact numbers (vague words such as \"temporarily\" or \"greatly\" replaced), only where it differs from the game; written 2026-10-13 from the levels lines, it replaces the game text in the app (data/skills.json) and the wiki.",
  "Adaptability": {
   "levels": {
    "1": [
@@ -14,6 +14,13 @@
  },
  "Adrenaline Rush": {
   "trigger": "After a perfectly-timed evade",
+  "text": {
+   "1": "Attack +10 for 30 s.",
+   "2": "Attack +15 for 30 s.",
+   "3": "Attack +20 for 30 s.",
+   "4": "Attack +25 for 30 s.",
+   "5": "Attack +30 for 30 s."
+  },
   "levels": {
    "1": [
     "Attack +10",
@@ -85,6 +92,9 @@
  },
  "Alluring Pelt": {
   "trigger": "When attacking a monster",
+  "text": {
+   "1": "Increases the attention drawn to you when attacking a monster (×2)."
+  },
   "levels": {
    "1": [
     "Aggro (threat) from your attacks ×2"
@@ -95,6 +105,11 @@
  },
  "Ambush": {
   "trigger": "After a successful Sneak Attack on a large monster",
+  "text": {
+   "1": "Attack +5% for 30 s.",
+   "2": "Attack +10% for 30 s.",
+   "3": "Attack +15% for 30 s."
+  },
   "levels": {
    "1": [
     "Attack ×1.05",
@@ -118,6 +133,11 @@
  },
  "Antivirus": {
   "trigger": "After contracting / overcoming the Frenzy",
+  "text": {
+   "1": "Increases recovery rate after contracting the Frenzy by 10%. Affinity +3% if cured.",
+   "2": "Increases recovery rate after contracting the Frenzy by 20%. Affinity +6% if cured.",
+   "3": "Increases recovery rate after contracting the Frenzy by 30%. Affinity +10% if cured."
+  },
   "levels": {
    "1": [
     "Frenzy recovery +10%",
@@ -154,6 +174,10 @@
  },
  "Arkveld's Hunger": {
   "trigger": "While continually landing hits (about 5 hits in a few seconds)",
+  "text": {
+   "1": "Regenerates 3 to 14 health per trigger as you continually attack a monster. Recovery varies by weapon.",
+   "2": "Regenerates 5 to 20 health per trigger as you continually attack a monster. Recovery varies by weapon."
+  },
   "levels": {
    "1": [
     "Heals 3 / 6 / 14 HP per trigger (by weapon class)"
@@ -198,6 +222,11 @@
  },
  "Artillery": {
   "trigger": "Shelling, Wyvern's Fire, Charge Blade impact phials, Sticky Ammo",
+  "text": {
+   "1": "Impact phial and Sticky Ammo damage ×1.10, and moderately increases Wyvern's Fire firing speed. Shelling fire attack +30.",
+   "2": "Impact phial and Sticky Ammo damage ×1.20, and increases Wyvern's Fire firing speed. Shelling fire attack +60.",
+   "3": "Impact phial and Sticky Ammo damage ×1.30, and greatly increases Wyvern's Fire firing speed. Shelling fire attack +90."
+  },
   "levels": {
    "1": [
     "Shelling fire attack +30",
@@ -245,6 +274,11 @@
  },
  "Ballistics": {
   "trigger": "Bow, Light and Heavy Bowgun",
+  "text": {
+   "1": "Extends critical range: start ×0.9, end ×1.1 for most ammo.",
+   "2": "Extends critical range: start ×0.85, end ×1.15 for most ammo.",
+   "3": "Extends critical range to start ×0.75, end ×1.25 for most ammo, and grants attack +5 to attacks made within critical range."
+  },
   "levels": {
    "1": [
     "Critical range: start ×0.9, end ×1.1 (most ammo)"
@@ -315,6 +349,10 @@
   "confidence": "medium"
  },
  "Bind Resistance": {
+  "text": {
+   "1": "Allows you to recover from webbed status or frostblight faster: duration ×0.70 (about 6 s -> 4 s).",
+   "2": "Allows you to recover from webbed status or frostblight much faster: duration ×0.40 (about 6 s -> 2 s)."
+  },
   "levels": {
    "1": [
     "Webbed / frostblight duration ×0.70 (about 6 s -> 4 s)"
@@ -334,6 +372,9 @@
  },
  "Bladescale Honing": {
   "trigger": "Narrowly evading a monster attack with the weapon drawn",
+  "text": {
+   "1": "Special sharpness with raw ×1.40 and element ×1.25."
+  },
   "levels": {
    "1": [
     "Grants a special sharpness gauge: raw ×1.40, element ×1.25",
@@ -373,6 +414,9 @@
  },
  "Bladescale Loading": {
   "trigger": "Narrowly evading a monster attack with the weapon drawn",
+  "text": {
+   "1": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25)."
+  },
   "levels": {
    "1": [
     "Loads 3 special rounds / coatings",
@@ -390,6 +434,10 @@
  },
  "Blangonga's Spirit": {
   "trigger": "Using the To Victory! gesture near allies",
+  "text": {
+   "1": "Using the To Victory! gesture grants attack +3 for 90 s to nearby allies. Greatly effects Palicoes and Support Hunters.",
+   "2": "Using the To Victory! gesture grants attack +6 for 90 s to nearby allies. Greatly effects Palicoes and Support Hunters."
+  },
   "levels": {
    "1": [
     "Attack +3 for you and nearby hunters",
@@ -438,6 +486,10 @@
   "confidence": "high"
  },
  "Blast Resistance": {
+  "text": {
+   "1": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage.",
+   "2": "Delays blastblight by 50 s (about 25 s -> 75 s) and greatly reduces blast damage."
+  },
   "levels": {
    "1": [
     "Blast countdown +25 s (about 25 s -> 50 s)",
@@ -459,6 +511,10 @@
   "confidence": "medium"
  },
  "Bleeding Resistance": {
+  "text": {
+   "1": "Reduces damage while bleeding to ×0.50.",
+   "2": "Reduces damage while bleeding to ×0.25."
+  },
   "levels": {
    "1": [
     "Bleeding damage ×0.50"
@@ -506,6 +562,9 @@
  },
  "Blossomdance Prayer": {
   "trigger": "Only while the Blossomdance festival is running",
+  "text": {
+   "2": "During Blossomdance, adds special items to quest rewards, and boosts attack ×1.09 and defense +50."
+  },
   "levels": {
    "1": [
     "Special items added to quest rewards"
@@ -579,6 +638,13 @@
  },
  "Burst": {
   "trigger": "First hit gives a small boost; 5 consecutive hits give the full boost",
+  "text": {
+   "1": "On first hit, gain attack +5 and element +50 (Dual Blades and Bow +30) for 3 to 5 s by weapon, replaced by attack +6 to +10 and element +40 to +80 by weapon after the fifth hit.",
+   "2": "Hit 5 successive times for attack +7 to +12 and element +60 to +100 by weapon.",
+   "3": "Hit 5 successive times for attack +8 to +14 and element +80 to +120 by weapon.",
+   "4": "Hit 5 successive times for attack +9 to +16 and element +100 to +160 by weapon.",
+   "5": "Hit 5 successive times for attack +10 to +18 and element +120 to +200 by weapon."
+  },
   "levels": {
    "1": [
     "First hit: Attack +5, element +50 (DB/Bow +30)",
@@ -768,6 +834,9 @@
  },
  "Buttery Leathercraft": {
   "trigger": "After sliding down terrain for at least 1 s",
+  "text": {
+   "1": "Increases your affinity by 30% for 60 s when sliding on terrain."
+  },
   "levels": {
    "1": [
     "Affinity +30%",
@@ -779,6 +848,9 @@
  },
  "Catburglar": {
   "trigger": "Critical hits",
+  "text": {
+   "1": "4% chance per critical hit to obtain an item, at most one roll every 3 s."
+  },
   "levels": {
    "1": [
     "4% chance per critical hit to obtain an item",
@@ -817,6 +889,9 @@
  },
  "Charge Up": {
   "trigger": "Hammer charged attacks",
+  "text": {
+   "1": "Charged attacks get stun ×1.30 and damage ×1.03."
+  },
   "levels": {
    "1": [
     "Stun ×1.30 on charged attacks",
@@ -840,6 +915,11 @@
  },
  "Coalescence": {
   "trigger": "After recovering naturally from a blight or abnormal status",
+  "text": {
+   "1": "For 30 s, grants element ×1.10 on heavy weapons (×1.05 on others) and status buildup ×1.05.",
+   "2": "For 30 s, grants element ×1.20 on heavy weapons (×1.10 on others) and status buildup ×1.10.",
+   "3": "For 30 s, grants element ×1.30 on heavy weapons (×1.15 on others) and status buildup ×1.15."
+  },
   "levels": {
    "1": [
     "Element ×1.10 (heavy weapons) / ×1.05 (others)",
@@ -891,6 +971,11 @@
  },
  "Convert Element": {
   "trigger": "After taking elemental damage; 120 s, then 90 s cooldown",
+  "text": {
+   "1": "For 120 s (then 90 s cooldown), deals extra dragon damage (150 base) after dealing enough elemental damage. Dragon attack +80 and ×1.10.",
+   "2": "Increases additional dragon damage to 200 base and dragon attack to +120 and ×1.15.",
+   "3": "Further increases additional dragon damage to 280 base and dragon attack to +180 and ×1.20."
+  },
   "levels": {
    "1": [
     "Dragon attack +80 and ×1.10",
@@ -915,6 +1000,9 @@
  },
  "Convert Thunder Resistance": {
   "trigger": "Thunder-element weapon",
+  "text": {
+   "1": "Thunder +2 to +5 per point of thunder resistance by weapon."
+  },
   "levels": {
    "1": [
     "Thunder +5 per point of thunder resistance (GS, Hammer, HH)",
@@ -932,6 +1020,9 @@
  },
  "Convert Water Resistance": {
   "trigger": "Water-element weapon",
+  "text": {
+   "1": "Water +4 per point of water resistance."
+  },
   "levels": {
    "1": [
     "Water +4 per point of water resistance (Long Sword, Bow)"
@@ -947,6 +1038,11 @@
  },
  "Counterstrike": {
   "trigger": "After being knocked back",
+  "text": {
+   "1": "Attack +10 for 30 s.",
+   "2": "Attack +15 for 35 s.",
+   "3": "Attack +25 for 45 s."
+  },
   "levels": {
    "1": [
     "Attack +10",
@@ -969,6 +1065,9 @@
  },
  "Crackling Cornpopper": {
   "trigger": "While Wyvern's Fire is reloading (gauge blinking red)",
+  "text": {
+   "1": "Shelling damage ×1.35 and shelling fire attack +30."
+  },
   "levels": {
    "1": [
     "Shelling damage ×1.35",
@@ -1021,6 +1120,11 @@
  },
  "Critical Element": {
   "trigger": "Critical hits (element part of the hit)",
+  "text": {
+   "1": "Increases elemental damage ×1.05 to ×1.07 by weapon while active.",
+   "2": "Increases elemental damage ×1.10 to ×1.14 by weapon while active.",
+   "3": "Increases elemental damage ×1.15 to ×1.21 by weapon while active."
+  },
   "levels": {
    "1": [
     "Element ×1.05 (fast weapons) / ×1.07 (heavy weapons) on crits"
@@ -1086,6 +1190,11 @@
  },
  "Critical Status": {
   "trigger": "Critical hits (status part of the hit)",
+  "text": {
+   "1": "Increases abnormal status buildup ×1.05 to ×1.10 by weapon when landing critical hits.",
+   "2": "Increases abnormal status buildup ×1.10 to ×1.20 by weapon when landing critical hits.",
+   "3": "Increases abnormal status buildup ×1.20 to ×1.40 by weapon when landing critical hits."
+  },
   "levels": {
    "1": [
     "Status buildup ×1.10 on crits (×1.05 for the second weapon group)"
@@ -1105,6 +1214,9 @@
  },
  "Darkside": {
   "trigger": "Certain charged slashes at charge level 2 or higher",
+  "text": {
+   "1": "Attack ×1.10 for 30 s. (Requires an activation cooldown of about 15 s after the buff ends, but self-damage still occurs.)"
+  },
   "levels": {
    "1": [
     "Attack ×1.10 for 30 s",
@@ -1121,6 +1233,13 @@
   "confidence": "high"
  },
  "Defense Boost": {
+  "text": {
+   "3": "Defense +5% and a +10 bonus.",
+   "4": "Defense +5% and a +20 bonus. All elemental resistances +3.",
+   "5": "Defense +8% and a +20 bonus. All elemental resistances +3.",
+   "6": "Defense +8% and a +35 bonus. All elemental resistances +5.",
+   "7": "Defense +10% and a +35 bonus. All elemental resistances +5."
+  },
   "levels": {
    "1": [
     "Defense +5"
@@ -1176,6 +1295,10 @@
  },
  "Doshaguma's Might": {
   "trigger": "After a successful Power Clash or Offset attack",
+  "text": {
+   "1": "Grants attack +10 for 180 s after a successful Power Clash or Offset attack.",
+   "2": "Grants attack +25 for 180 s after a successful Power Clash or Offset attack."
+  },
   "levels": {
    "1": [
     "Attack +10",
@@ -1211,6 +1334,9 @@
   "confidence": "high"
  },
  "Dragon Resistance": {
+  "text": {
+   "3": "Dragon resistance +20. Defense +10."
+  },
   "levels": {
    "1": [
     "Dragon resistance +6"
@@ -1228,6 +1354,9 @@
  },
  "Dreamspell Prayer": {
   "trigger": "Only while the Dreamspell festival is running",
+  "text": {
+   "2": "During Dreamspell, adds special items to quest rewards, and boosts attack ×1.09 and defense +50."
+  },
   "levels": {
    "1": [
     "Special items added to quest rewards"
@@ -1246,6 +1375,10 @@
   "confidence": "high"
  },
  "Earplugs": {
+  "text": {
+   "1": "Reduces the effects of weak monster roars to about 20%.",
+   "2": "Nullifies weak monster roars and reduces the effects of strong monster roars to about 10%."
+  },
   "levels": {
    "1": [
     "Weak roars: reaction cut to about 20%",
@@ -1264,6 +1397,10 @@
  },
  "Ebony Odogaron's Power": {
   "trigger": "While the Burst skill is active",
+  "text": {
+   "1": "Extends the duration of the Burst skill by 1 s and grants attack +8 while Burst is active.",
+   "2": "Extends the duration of the Burst skill by 2 s and grants attack +18 while Burst is active."
+  },
   "levels": {
    "1": [
     "Attack +8 while Burst is active",
@@ -1283,6 +1420,11 @@
  },
  "Elemental Absorption": {
   "trigger": "After taking elemental damage; 120 s, then 60 s cooldown",
+  "text": {
+   "1": "For 120 s, element ×1.05 plus +30 to +50 by weapon, and resistance to element taken at activation +4. 60 s cooldown.",
+   "2": "For 120 s, element ×1.10 plus +40 to +80 by weapon, and resistance to element taken at activation +6. 60 s cooldown.",
+   "3": "For 120 s, element ×1.15 plus +50 to +100 by weapon, and resistance to element taken at activation +8. 60 s cooldown."
+  },
   "levels": {
    "1": [
     "Element ×1.05 plus +30 to +50 flat (see table)",
@@ -1345,6 +1487,11 @@
   "confidence": "high"
  },
  "Evade Extender": {
+  "text": {
+   "1": "Extends evasion distance ×1.10.",
+   "2": "Extends evasion distance ×1.25.",
+   "3": "Extends evasion distance ×1.40."
+  },
   "levels": {
    "1": [
     "Evade distance ×1.10"
@@ -1363,6 +1510,13 @@
   "confidence": "high"
  },
  "Evade Window": {
+  "text": {
+   "1": "Increases invulnerability window to 15 frames on rolls and 12 frames on step evades.",
+   "2": "Increases invulnerability window to 17 frames on rolls and 14 frames on step evades.",
+   "3": "Increases invulnerability window to 19 frames on rolls and 16 frames on step evades.",
+   "4": "Increases invulnerability window to 22 frames on rolls and 19 frames on step evades.",
+   "5": "Increases invulnerability window to 25 frames on rolls and 22 frames on step evades."
+  },
   "levels": {
    "1": [
     "Roll invulnerability 15 frames",
@@ -1496,6 +1650,9 @@
  },
  "Evading Reload": {
   "trigger": "Evading with a bowgun",
+  "text": {
+   "1": "Each evade loads 1 round of the selected ammo."
+  },
   "levels": {
    "1": [
     "Each evade loads 1 round of the selected ammo"
@@ -1549,6 +1706,9 @@
   "confidence": "high"
  },
  "Fire Resistance": {
+  "text": {
+   "3": "Fire resistance +20. Defense +10."
+  },
   "levels": {
    "1": [
     "Fire resistance +6"
@@ -1566,6 +1726,9 @@
  },
  "Flamefete Prayer": {
   "trigger": "Only while the Flamefete festival is running",
+  "text": {
+   "2": "During Flamefete, adds special items to quest rewards, and boosts attack ×1.09 and defense +50."
+  },
   "levels": {
    "1": [
     "Special items added to quest rewards"
@@ -1585,6 +1748,13 @@
  },
  "Flayer": {
   "trigger": "On hits that build up wounds (excludes some attacks)",
+  "text": {
+   "1": "Makes it easier to inflict wounds (buildup ×1.05). Also deals 140 additional non-elemental damage on about 50% of eligible hits.",
+   "2": "Makes it easier to inflict wounds (buildup ×1.10). Also deals 160 additional non-elemental damage on about 50% of eligible hits.",
+   "3": "Makes it easier to inflict wounds (buildup ×1.15). Also deals 220 additional non-elemental damage on about 50% of eligible hits.",
+   "4": "Makes it easier to inflict wounds (buildup ×1.20). Also deals 300 additional non-elemental damage on about 50% of eligible hits.",
+   "5": "Makes it easier to inflict wounds (buildup ×1.30). Also deals 400 additional non-elemental damage on about 50% of eligible hits."
+  },
   "levels": {
    "1": [
     "Wound buildup ×1.05",
@@ -1615,6 +1785,9 @@
   "confidence": "medium"
  },
  "Flexible Leathercraft": {
+  "text": {
+   "1": "Increases gathering speed ×1.4, and prevents knock back when gathering or carving."
+  },
   "levels": {
    "1": [
     "Gathering speed ×1.4",
@@ -1641,6 +1814,11 @@
   "confidence": "high"
  },
  "Focus": {
+  "text": {
+   "1": "Increases gauge fill rate ×1.05 and reduces charge times by 5%.",
+   "2": "Increases gauge fill rate ×1.10 and reduces charge times by 10%.",
+   "3": "Increases gauge fill rate ×1.20 and reduces charge times by 15%."
+  },
   "levels": {
    "1": [
     "Gauge fill ×1.05",
@@ -1689,6 +1867,9 @@
  },
  "Fortifying Pelt": {
   "trigger": "After fainting during the quest (up to 2 times)",
+  "text": {
+   "1": "Increases attack ×1.10 and defense ×1.15 after fainting during a quest, and attack ×1.20 and defense ×1.30 after a second faint. (Can be used twice.)"
+  },
   "levels": {
    "1": [
     "1st faint: attack ×1.10, defense ×1.15",
@@ -1717,6 +1898,10 @@
   "confidence": "high"
  },
  "Fulgur Anjanath's Will": {
+  "text": {
+   "1": "Grants an additional Stamina Gauge of 25.",
+   "2": "Grants an additional long Stamina Gauge of 50."
+  },
   "levels": {
    "1": [
     "Extra stamina gauge of 25"
@@ -1747,6 +1932,9 @@
   "confidence": "high"
  },
  "Glory's Favor": {
+  "text": {
+   "1": "Increases quest target rewards by 2. (No effect when joining mid-quest.)"
+  },
   "levels": {
    "1": [
     "+2 quest target rewards"
@@ -1760,6 +1948,10 @@
  },
  "Gogmapocalypse": {
   "trigger": "While a large monster is enraged",
+  "text": {
+   "1": "Increases elemental attack ×1.2 and +20 when large monsters become enraged.",
+   "2": "Level I effect is increased to ×1.3 and +40, and you gain a barrier absorbing 80 damage for 140 s. (Barrier reactivates after a 30 s cooldown.)"
+  },
   "levels": {
    "1": [
     "Element ×1.2 +20"
@@ -1778,6 +1970,9 @@
  },
  "Gore Magala's Tyranny": {
   "trigger": "Against large monsters (Frenzy infection)",
+  "text": {
+   "2": "Infects you with Frenzy and raises attack +10 when against large monsters. Grants attack +15 and affinity +15% for 60 s upon recovery."
+  },
   "levels": {
    "1": [
     "Auto-infects you with Frenzy",
@@ -1811,6 +2006,9 @@
  },
  "Grillmaster": {
   "trigger": "Grilling meat",
+  "text": {
+   "1": "Restores sharpness. Rare meat grants fire +100 and affinity +10% for 90 s, well-done fire +300 and affinity +10% for 300 s, burnt fire +300 for 150 s."
+  },
   "levels": {
    "1": [
     "Restores sharpness",
@@ -1872,6 +2070,10 @@
  },
  "Guardian Arkveld's Vitality": {
   "trigger": "Destroying a wound on a large monster",
+  "text": {
+   "1": "Restores 25 health when destroying a wound on a large monster.",
+   "2": "Restores 50 health when destroying a wound on a large monster."
+  },
   "levels": {
    "1": [
     "Heals 25 HP"
@@ -1888,6 +2090,9 @@
  },
  "Guardian's Protection": {
   "trigger": "While in the Ruins of Wyveria",
+  "text": {
+   "1": "Reduces elemental and unique damage by 10% while in the Ruins of Wyveria."
+  },
   "levels": {
    "1": [
     "Elemental damage taken -10%",
@@ -1963,6 +2168,10 @@
  },
  "Horn Maestro": {
   "trigger": "Hunting Horn melodies",
+  "text": {
+   "1": "Extends Melody Effect duration (e.g. Self-Improvement +80 s, Echo Bubble 90 s instead of 60 s) and increases the chance of larger heals from healing melodies.",
+   "2": "Increases the effect duration of hunting horn melodies further (e.g. Self-Improvement +180 s, Echo Bubble 120 s instead of 60 s)."
+  },
   "levels": {
    "1": [
     "Melody durations extended (e.g. Self-Improvement +80 s)",
@@ -2041,6 +2250,9 @@
   "confidence": "high"
  },
  "Ice Resistance": {
+  "text": {
+   "3": "Ice resistance +20. Defense +10."
+  },
   "levels": {
    "1": [
     "Ice resistance +6"
@@ -2120,6 +2332,10 @@
  },
  "Jin Dahaad's Revolt": {
   "trigger": "After recovering from webbed, frostblight, a pin or a Power Clash",
+  "text": {
+   "1": "Grants attack +25 for 90 s after recovering from webbed status, frostblight, being pinned, or a Power Clash.",
+   "2": "Grants attack +50 for 90 s after recovering from webbed status, frostblight, being pinned, or a Power Clash."
+  },
   "levels": {
    "1": [
     "Attack +25",
@@ -2147,6 +2363,13 @@
  },
  "Latent Power": {
   "trigger": "After 120 s in combat with a large monster, or about 130 total damage taken",
+  "text": {
+   "1": "For 120 s, affinity +10% and reduces stamina depletion by 30%.",
+   "2": "For 120 s, affinity +20% and reduces stamina depletion by 30%.",
+   "3": "For 120 s, affinity +30% and reduces stamina depletion by 50%.",
+   "4": "For 120 s, affinity +40% and reduces stamina depletion by 50%.",
+   "5": "For 120 s, affinity +50% and reduces stamina depletion by 50%."
+  },
   "levels": {
    "1": [
     "Affinity +10%",
@@ -2194,6 +2417,10 @@
  },
  "Leviathan's Fury": {
   "trigger": "When the thunder build-up from landed hits fills",
+  "text": {
+   "1": "Grants affinity +15% for 20 s and can deal extra thunder damage (30 fixed + 70 thunder) upon buildup, with about a 30 s cooldown. (Excludes some attacks.)",
+   "2": "Increases the extra thunder damage to 60 fixed + 200 thunder and extends the affinity increase to 30 s."
+  },
   "levels": {
    "1": [
     "Thunder burst: 30 fixed + 70 thunder",
@@ -2214,6 +2441,10 @@
  },
  "Load Shells": {
   "trigger": "Gunlance and Charge Blade",
+  "text": {
+   "1": "Shell and phial reloading speed ×1.1.",
+   "2": "Shell/phial reloading speed ×1.2. Gunlance loading capacity +1. Charge blade charges 5 phials on yellow gauge."
+  },
   "levels": {
    "1": [
     "Shell / phial reload speed ×1.1"
@@ -2229,6 +2460,9 @@
  },
  "Lord's Favor": {
   "trigger": "After using an item or melody that affects allies in range",
+  "text": {
+   "1": "Grants attack +10 for 20 s when using effects like Melody Effects that affect companions in range."
+  },
   "levels": {
    "1": [
     "Attack +10",
@@ -2243,6 +2477,9 @@
  },
  "Lord's Fury": {
   "trigger": "While afflicted with an ailment",
+  "text": {
+   "1": "Grants attack +10 when inflicted with ailments."
+  },
   "levels": {
    "1": [
     "Attack +10"
@@ -2257,6 +2494,9 @@
  },
  "Lord's Soul": {
   "trigger": "Always on until it saves you from a lethal hit",
+  "text": {
+   "1": "Boosts attack ×1.05 and lowers defense ×0.95 but lets you survive one lethal hit when above 64 HP. Afterwards, boosts defense ×1.05 and all resistances +3."
+  },
   "levels": {
    "1": [
     "Attack ×1.05, defense ×0.95",
@@ -2273,6 +2513,9 @@
  },
  "Lumenhymn Prayer": {
   "trigger": "Only while the Lumenhymn festival is running",
+  "text": {
+   "2": "During Lumenhymn, adds special items to quest rewards, and boosts attack ×1.09 and defense +50."
+  },
   "levels": {
    "1": [
     "Special items added to quest rewards"
@@ -2308,6 +2551,9 @@
  },
  "Master of the Fist": {
   "trigger": "Akuma special actions",
+  "text": {
+   "1": "Increases motion values of special actions by 47%. Drive Impacts can trigger offset attacks. Further increases power of offset attacks."
+  },
   "levels": {
    "1": [
     "Special action motion values +47%",
@@ -2375,6 +2621,10 @@
  },
  "Mizutsune's Prowess": {
   "trigger": "Evading",
+  "text": {
+   "1": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after evading 3 times.",
+   "2": "In addition to previous effects, also grants Evade Window Lv2 i-frames while afflicted with bubbleblight."
+  },
   "levels": {
    "1": [
     "Immune to major bubbleblight",
@@ -2410,6 +2660,9 @@
  },
  "Neopteron Alert": {
   "trigger": "Gathering honey",
+  "text": {
+   "1": "Increases the amount of honey you gain from gathering points by 1 to 3."
+  },
   "levels": {
    "1": [
     "+1 to +3 honey per gathering point"
@@ -2434,6 +2687,9 @@
  },
  "Normal Shots": {
   "trigger": "Normal Ammo, normal arrows, Flying Swallow Shot",
+  "text": {
+   "1": "Power of specified ammo and arrows ×1.05."
+  },
   "levels": {
    "1": [
     "Damage ×1.05"
@@ -2447,6 +2703,10 @@
  },
  "Nu Udra's Mutiny": {
   "trigger": "While Resentment is active (red health) and landing hits",
+  "text": {
+   "1": "Deals an additional 45 × hitzone % damage while the Resentment skill is active, with a 2 s cooldown.",
+   "2": "Deals an additional 85 × hitzone % damage while the Resentment skill is active, with a 2 s cooldown."
+  },
   "levels": {
    "1": [
     "Extra hit of 45 × hitzone %",
@@ -2486,6 +2746,10 @@
  },
  "Omega Resonance": {
   "trigger": "Local / Remote alternate every 90 s; needs an ally inside / outside the ring",
+  "text": {
+   "1": "(When quest starts) Local and Remote Resonance alternate every 90 s, increasing affinity +20% (Local) or attack +10 (Remote) when conditions are met.",
+   "2": "Increases Resonance I to affinity +40% (Local) or attack +20 (Remote), and the weapon skill Synthetic Shield to defense +45 for 45 s or Synergy to affinity +25% for 60 s."
+  },
   "levels": {
    "1": [
     "Local: affinity +20%",
@@ -2507,6 +2771,11 @@
  },
  "Opening Shot": {
   "trigger": "Bowguns: first shot from a fully loaded magazine",
+  "text": {
+   "1": "Moderately increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.10.",
+   "2": "Increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.15.",
+   "3": "Greatly increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.30."
+  },
   "levels": {
    "1": [
     "Reload speed up (data 5)",
@@ -2528,6 +2797,9 @@
   "confidence": "medium"
  },
  "Outdoorsman": {
+  "text": {
+   "1": "Improves fishing, grilling, and transporting abilities. While carrying, move speed ×1.25, animation speed ×1.22 and climbing speed ×1.2."
+  },
   "levels": {
    "1": [
     "Improves fishing, grilling and transporting",
@@ -2605,6 +2877,11 @@
   "confidence": "high"
  },
  "Partbreaker": {
+  "text": {
+   "1": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 10%.",
+   "2": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 20%.",
+   "3": "Increases part damage, and damage dealt when destroying a wound with a Focus Strike, by 30%."
+  },
   "levels": {
    "1": [
     "Part damage ×1.10",
@@ -2649,6 +2926,9 @@
  },
  "Piercing Shots": {
   "trigger": "Pierce Ammo; Bow Dragon Piercer and Thousand Dragons",
+  "text": {
+   "1": "Power of specified ammo and arrows ×1.05."
+  },
   "levels": {
    "1": [
     "Damage ×1.05"
@@ -2695,6 +2975,10 @@
   "confidence": "high"
  },
  "Poison Resistance": {
+  "text": {
+   "1": "Reduces the number of times you take poison damage by about 1/3 (tick interval ×1.5).",
+   "2": "Reduces the number of times you take poison damage by about 2/3 (tick interval ×3)."
+  },
   "levels": {
    "1": [
     "Poison ticks 1.5× further apart (about 1/3 fewer ticks)"
@@ -2714,6 +2998,11 @@
  },
  "Power Prolonger": {
   "trigger": "Powered-up states of LS, DB, SA, CB, IG",
+  "text": {
+   "1": "Boosts the duration weapons are powered up: ×1.1 to ×1.3 by weapon.",
+   "2": "Boosts the duration weapons are powered up: ×1.2 to ×1.6 by weapon.",
+   "3": "Boosts the duration weapons are powered up: ×1.4 to ×2.0 by weapon."
+  },
   "levels": {
    "1": [
     "Power-up duration ×1.1 (DB and SA ×1.3)"
@@ -2777,6 +3066,9 @@
  },
  "Power Stone": {
   "trigger": "Mining ore",
+  "text": {
+   "1": "Mining ore grants attack +10 to +30 by rarity for 90 s. (Attack increase has a maximum of +90.)"
+  },
   "levels": {
    "1": [
     "Attack +10 / +15 / +30 per ore (by rarity)",
@@ -2830,6 +3122,11 @@
   "confidence": "high"
  },
  "Quick Sheathe": {
+  "text": {
+   "1": "Increases sheathing speed (×1.1).",
+   "2": "Increases sheathing speed (×1.2).",
+   "3": "Increases sheathing speed (×1.4)."
+  },
   "levels": {
    "1": [
     "Sheathing speed ×1.1"
@@ -2877,6 +3174,10 @@
  },
  "Rathalos's Flare": {
   "trigger": "33% chance on a landed hit, checked about every 2.4 s",
+  "text": {
+   "1": "33% chance to deal additional fire damage (20 fixed + 60 fire) after landing an attack.",
+   "2": "Increases additional fire damage to 40 fixed + 120 fire after landing an attack."
+  },
   "levels": {
    "1": [
     "Extra fire hit: 20 fixed + 60 fire"
@@ -2924,6 +3225,11 @@
   "confidence": "high"
  },
  "Recovery Up": {
+  "text": {
+   "1": "Increases recovery (×1.1).",
+   "2": "Increases recovery (×1.2).",
+   "3": "Increases recovery (×1.3)."
+  },
   "levels": {
    "1": [
     "Health recovered ×1.1"
@@ -2962,6 +3268,10 @@
  },
  "Rey Dau's Voltage": {
   "trigger": "When Latent Power activates",
+  "text": {
+   "1": "Extends the activation time of the Latent Power skill by 30 s (120 s to 150 s).",
+   "2": "Extends the activation time of the Latent Power skill by 90 s (120 s to 210 s)."
+  },
   "levels": {
    "1": [
     "Latent Power duration +30 s (120 s to 150 s)"
@@ -2993,6 +3303,9 @@
  },
  "Scale Layering": {
   "trigger": "While health is at or below 40%",
+  "text": {
+   "1": "Temporarily reduces stamina depletion to ×0.5 when health is at 40% or lower."
+  },
   "levels": {
    "1": [
     "Stamina use ×0.5",
@@ -3007,6 +3320,9 @@
  },
  "Scaling Prowess": {
   "trigger": "Mounting monsters",
+  "text": {
+   "1": "Makes it easier to mount monsters (mount build-up ×1.2) and to wound them once mounted (wound damage ×1.5)."
+  },
   "levels": {
    "1": [
     "Mount build-up ×1.2",
@@ -3018,6 +3334,9 @@
  },
  "Self-Improvement": {
   "trigger": "Time spent on the quest",
+  "text": {
+   "1": "Defense +5 / +10 / +15 / +20 and attack +0 / +4 / +8 / +12 after about 5, 10, 20 and 30 min on the quest."
+  },
   "levels": {
    "1": [
     "Defense +5 / +10 / +15 / +20",
@@ -3033,6 +3352,10 @@
  },
  "Seregios's Tenacity": {
   "trigger": "Perfect dodges (Adrenaline Rush)",
+  "text": {
+   "1": "Extends the duration of Adrenaline Rush to 45 s. If triggered again while the skill is active, extends the effect duration once by 15 s.",
+   "2": "Additionally, if triggered again while the skill is active, further increases attack ×1.05."
+  },
   "levels": {
    "1": [
     "Adrenaline Rush lasts 45 s (from 30 s)",
@@ -3052,6 +3375,9 @@
  },
  "Shattering Reflection": {
   "trigger": "Level 3 charged slash hitting the ground",
+  "text": {
+   "1": "Adds an area hit of about 25.5% of the charged slash's damage."
+  },
   "levels": {
    "1": [
     "Extra area hit of about 25.5% of the charged slash's damage"
@@ -3157,6 +3483,10 @@
  },
  "Soul of the Dark Knight": {
   "trigger": "Dark Arts: while you have red (recoverable) health",
+  "text": {
+   "1": "Having recoverable damage increases elemental attack ×1.14 (×1.20 for Great Sword, Hammer, Light and Heavy Bowgun), and some great sword Lvl 3 charged slashes add a shockwave.",
+   "2": "Allows you to perform the special action: The Blackest Night. It grants a shield for 8 s, with a cooldown of about 70 s."
+  },
   "levels": {
    "1": [
     "Element ×1.20 (Great Sword, Hammer, Light and Heavy Bowgun)",
@@ -3179,6 +3509,10 @@
  },
  "Special Ammo Boost": {
   "trigger": "Bowgun special ammo; Bow Dragon Piercer, Thousand Dragons, Tracer",
+  "text": {
+   "1": "Power of specified ammo and arrows ×1.10.",
+   "2": "Power of specified ammo and arrows ×1.20."
+  },
   "levels": {
    "1": [
     "Damage ×1.10"
@@ -3222,6 +3556,9 @@
  },
  "Spread/Power Shots": {
   "trigger": "Spread Ammo; Bow Power Shots and Quick Shots",
+  "text": {
+   "1": "Power of specified ammo and arrows ×1.05."
+  },
   "levels": {
    "1": [
     "Damage ×1.05"
@@ -3305,6 +3642,9 @@
  },
  "Synergy": {
   "trigger": "Insect Glaive Rising Spiral Slash",
+  "text": {
+   "1": "Affinity +15% for you and nearby hunters for 45 s."
+  },
   "levels": {
    "1": [
     "Affinity +15% for you and nearby hunters",
@@ -3321,6 +3661,9 @@
  },
  "Synthetic Shield": {
   "trigger": "Perfect Guard",
+  "text": {
+   "1": "Defense +30 for you and nearby hunters for 30 s."
+  },
   "levels": {
    "1": [
     "Defense +30 for you and nearby hunters",
@@ -3336,6 +3679,11 @@
  },
  "Tetrad Shot": {
   "trigger": "Bowguns and Bow: from the 4th shot of a magazine / coating",
+  "text": {
+   "1": "Affinity +8% from the 4th shot, and attack +3 on the 4th and 6th shots.",
+   "2": "Affinity +10% from the 4th shot, and attack +6 on the 4th and 6th shots.",
+   "3": "Affinity +12% from the 4th shot, and attack +10 on the 4th and 6th shots."
+  },
   "levels": {
    "1": [
     "Affinity +8% from the 4th shot",
@@ -3376,6 +3724,9 @@
   "confidence": "high"
  },
  "Thunder Resistance": {
+  "text": {
+   "3": "Thunder resistance +20. Defense +10."
+  },
   "levels": {
    "1": [
     "Thunder resistance +6"
@@ -3416,6 +3767,9 @@
   "confidence": "high"
  },
  "Tremor Resistance": {
+  "text": {
+   "2": "Nullifies up to minor ground tremors and reduces the effects of major ground tremors to ×0.2."
+  },
   "levels": {
    "1": [
     "Very minor tremors negated",
@@ -3435,6 +3789,10 @@
  },
  "Uth Duna's Cover": {
   "trigger": "After using a mantle (specialized tool)",
+  "text": {
+   "1": "Grants defense +25 for 180 s when using a specialized tool.",
+   "2": "Grants defense +50 and all resistances +12 for 180 s when using a specialized tool."
+  },
   "levels": {
    "1": [
     "Defense +25",
@@ -3468,6 +3826,9 @@
   "confidence": "high"
  },
  "Water Resistance": {
+  "text": {
+   "3": "Water resistance +20. Defense +10."
+  },
   "levels": {
    "1": [
     "Water resistance +6"
@@ -3515,6 +3876,9 @@
  },
  "Whiteflame Torrent": {
   "trigger": "Chance on hit",
+  "text": {
+   "1": "Chance of an extra hit dealing 50 fixed damage. (When used with Scorcher, does not stack but deals 81 fire damage with Scorcher I, 122 with Scorcher II.)"
+  },
   "levels": {
    "1": [
     "Chance of an extra hit dealing 50 fixed damage",
@@ -3579,6 +3943,10 @@
  },
  "Xu Wu's Vigor": {
   "trigger": "After eating a well-done steak, burnt meat or similar",
+  "text": {
+   "1": "Grants attack +15 for 180 s after eating items such as well-done steak.",
+   "2": "Grants attack +30 for 180 s after eating items such as well-done steak."
+  },
   "levels": {
    "1": [
     "Attack +15",
@@ -3596,6 +3964,10 @@
   "confidence": "high"
  },
  "Zoh Shia's Pulse": {
+  "text": {
+   "1": "Allows the Health Gauge to continue to recover 1 HP every 2 s up to the max value, even if there is no red portion.",
+   "2": "Allows the Health Gauge to continue to recover 1 HP every 1 s up to the max value, even if there is no red portion."
+  },
   "levels": {
    "1": [
     "Recovers 1 HP every 2 s up to max HP"
