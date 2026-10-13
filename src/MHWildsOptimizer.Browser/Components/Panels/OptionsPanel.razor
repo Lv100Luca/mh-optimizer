@@ -49,6 +49,9 @@
                             </span>
                         }
                     </div>
+                    <Toggle Checked="request.Talismans.IncludeCraftable" CheckedChanged="v => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeCraftable = v } })"
+                            Label="@($"Include the {Catalog.CraftableTalismanCount} craftable charm lines")"
+                            Hint="Every charm line at max rank (e.g. Challenger Charm III) next to your random talismans from the Talismans tab." />
                     <Field Label="Builds to report per skill pair" Inline="true">
                         <NumberInput T="int" Value="o.TopN" Min="1" Max="50" Width="90" ValueChanged="v => Patch(x => x with { TopN = v })" />
                     </Field>

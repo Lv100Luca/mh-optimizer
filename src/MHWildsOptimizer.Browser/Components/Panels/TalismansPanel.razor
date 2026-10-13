@@ -11,7 +11,7 @@
 
     <div class="panel">
         <Section Key="talismans" Title="@($"Talismans of {App.Profile}")"
-                 Hint="Talismans belong to the account: every weapon of the profile draws from this pool, and changes are saved in this browser right away. Craftable charm lines are always available at their highest rank. Add the random (melded) talismans you own; the optimizer picks the best one per build.">
+                 Hint="Talismans belong to the account: every weapon of the profile draws from this pool, and changes are saved in this browser right away. Craftable charm lines are added at their highest rank (switch them off under Options). Add the random (melded) talismans you own; the optimizer picks the best one per build.">
             <Actions>
                 @if (_draft is null)
                 {
@@ -19,10 +19,6 @@
                 }
             </Actions>
             <ChildContent>
-                <Toggle Checked="request.Talismans.IncludeCraftable" CheckedChanged="SetIncludeCraftable"
-                        Label="@($"Include the {Catalog.CraftableTalismanCount} craftable charm lines")"
-                        Hint="Every charm line at max rank (e.g. Challenger Charm III)." />
-
                 @if (talismans.Count == 0 && _draft is null)
                 {
                     <p class="muted">No random talismans yet.</p>
@@ -123,8 +119,6 @@
     }
 
     private static RenderFragment RarityLabel(int r) => @<span class="with-icon"><img src="@GameIcons.Talisman(r)" alt="" width="18" height="18" /> R@(r)</span>;
-
-    private void SetIncludeCraftable(bool include) => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeCraftable = include } });
 
     private bool _scrollToEditor;
 
