@@ -39,6 +39,7 @@ def tag(s):
 
 # ---- skills that can roll, with max level and points per level
 skills = {}
+lot_skills = []
 for e in load('RandomAmuletLotSkillTable'):
     name = skill_name(e['_SkillType'])
     if not name:
@@ -49,6 +50,7 @@ for e in load('RandomAmuletLotSkillTable'):
     lv, pt = e['_SkillLv'], e['_SkillPt']
     entry['max_level'] = max(entry['max_level'], lv)
     entry['points'][str(lv)] = min(pt, entry['points'].get(str(lv), 99))
+    lot_skills.append({'skill': name, 'level': lv, 'points': pt})
 
 # ---- slot patterns (ACC_TYPE_00 = weapon decoration slot, ACC_TYPE_01 = armor decoration slot)
 patterns = []
@@ -68,8 +70,14 @@ for a in load('AmuletData'):
     if t.startswith('AT_01') and int(t[3:]) >= 189:
         rarity_of_type[t] = int(re.search(r'RARE(\d+)', a['_Rare']).group(1))
 budgets = collections.defaultdict(lambda: {'skill1': set(), 'skill2': set(), 'skill3': set(), 'slot': set()})
+point_rows = []
 for e in load('RandomAmuletPtTable'):
-    b = budgets[tag(e['_AmuletType'])]
+    t = tag(e['_AmuletType'])
+    b = budgets[t]
+    if t in rarity_of_type:  # AT_0193 has no AmuletData entry: not a talisman the game hands out
+        row = {'rarity': rarity_of_type[t], 'skill_points': [e['_SkillPt_01'], e['_SkillPt_02'], e['_SkillPt_03']], 'slot_points': e['_SlotPt']}
+        if row not in point_rows:
+            point_rows.append(row)
     b['skill1'].add(e['_SkillPt_01']); b['skill2'].add(e['_SkillPt_02']); b['skill3'].add(e['_SkillPt_03']); b['slot'].add(e['_SlotPt'])
 budgets = {t: {k: sorted(v) for k, v in b.items()} | {'rarity': rarity_of_type.get(t)} for t, b in budgets.items()}
 
@@ -77,11 +85,15 @@ out = {
     '_about': 'What random talismans (melded charms) can roll, from the game data (dtlnor/MHWs-in-json RandomAmulet* tables). '
               'Skill slot 1 draws from the primary pool (weapon-kind skills, 1-4 points), skill slots 2-3 from the secondary pool '
               '(armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. '
-              'Used for validating user-entered talismans, not for generating hypothetical ones.',
+              'A talisman rolls one of point_rows for its rarity, then for each skill point value a lot_skills entry worth exactly '
+              'that many points (1-4 points = weapon-kind table, 5-10 = armor-kind table, 0 = empty) and the slot pattern worth slot_points. '
+              'Used for validating user-entered talismans and for the "every possible talisman" mode.',
     'rarity_by_type': rarity_of_type,
     'point_budgets_by_type': budgets,
     'slot_patterns': patterns,
     'skills': dict(sorted(skills.items())),
+    'point_rows': point_rows,
+    'lot_skills': lot_skills,
 }
 json.dump(out, open('data/random_talisman_pool.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(skills), 'skills,', len(patterns), 'slot patterns, types:', rarity_of_type)

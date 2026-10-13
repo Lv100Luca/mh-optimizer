@@ -144,7 +144,7 @@
 
                     <div class="kv">
                         <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Talismans)">Talismans</button></h4>
-                        <div>@App.Talismans.Count random@(request.Talismans.IncludeCraftable ? $" + {Catalog.CraftableTalismanCount} craftable charm lines" : "")</div>
+                        <div>@App.Talismans.Count random@(request.Talismans.IncludeCraftable ? $" + {Catalog.CraftableTalismanCount} craftable charm lines" : "")@(request.Talismans.IncludeAllPossible ? " + every possible roll" : "")</div>
                         @if (r is not null)
                         {
                             <div class="muted small">@r.Talismans.Total usable after validation</div>

@@ -1,5 +1,5 @@
 {
- "_about": "What random talismans (melded charms) can roll, from the game data (dtlnor/MHWs-in-json RandomAmulet* tables). Skill slot 1 draws from the primary pool (weapon-kind skills, 1-4 points), skill slots 2-3 from the secondary pool (armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. Used for validating user-entered talismans, not for generating hypothetical ones.",
+ "_about": "What random talismans (melded charms) can roll, from the game data (dtlnor/MHWs-in-json RandomAmulet* tables). Skill slot 1 draws from the primary pool (weapon-kind skills, 1-4 points), skill slots 2-3 from the secondary pool (armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. A talisman rolls one of point_rows for its rarity, then for each skill point value a lot_skills entry worth exactly that many points (1-4 points = weapon-kind table, 5-10 = armor-kind table, 0 = empty) and the slot pattern worth slot_points. Used for validating user-entered talismans and for the \"every possible talisman\" mode.",
  "rarity_by_type": {
   "AT_0189": 4,
   "AT_0190": 5,
@@ -1308,5 +1308,2349 @@
     "3": 7
    }
   }
- }
+ },
+ "point_rows": [
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    7,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    6,
+    6
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    6
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    8
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    9,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    10,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    7,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    6,
+    6
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    6
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    8
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    9,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    10,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    7,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    6,
+    6
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    6
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    8
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    9,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    10,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    7,
+    0
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    6,
+    6
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    6
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    8,
+    8
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    9,
+    0
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 4,
+   "skill_points": [
+    1,
+    10,
+    0
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    7
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    10
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    6,
+    6
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    6
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    8
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    9,
+    0
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    10,
+    0
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    7
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    10
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    6,
+    6
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    6
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    8
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    9,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    10,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    7
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    10
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    6,
+    6
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    6
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    8
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    9,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    10,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    7
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    1,
+    1,
+    10
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    6,
+    6
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    6
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    8,
+    8
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    9,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 5,
+   "skill_points": [
+    2,
+    10,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 6
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 1
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 2
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 6,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 4
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 11
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 12
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    4,
+    1,
+    1
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    7
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    8
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    2,
+    1,
+    10
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    7,
+    0
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    6,
+    5
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    8,
+    5
+   ],
+   "slot_points": 13
+  },
+  {
+   "rarity": 7,
+   "skill_points": [
+    3,
+    10,
+    0
+   ],
+   "slot_points": 13
+  }
+ ],
+ "lot_skills": [
+  {
+   "skill": "Attack Boost",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Critical Eye",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Critical Element",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Fire Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Water Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Ice Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Thunder Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Dragon Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Poison Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Paralysis Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Sleep Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Blast Attack",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Handicraft",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Razor Sharp",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Protective Polish",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Mind's Eye",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Ballistics",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Bludgeoner",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Focus",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Power Prolonger",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Guard",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Guard Up",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Offensive Guard",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Critical Draw",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Punishing Draw",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Slugger",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Stamina Thief",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Horn Maestro",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Artillery",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Load Shells",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Special Ammo Boost",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Speed Sharpening",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Rapid Morph",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Charge Master",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Critical Status",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Tetrad Shot",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Opening Shot",
+   "level": 1,
+   "points": 1
+  },
+  {
+   "skill": "Attack Boost",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Critical Eye",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Critical Element",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Fire Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Water Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Ice Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Thunder Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Dragon Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Poison Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Paralysis Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Sleep Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Blast Attack",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Handicraft",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Razor Sharp",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Protective Polish",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Mind's Eye",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Ballistics",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Bludgeoner",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Focus",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Power Prolonger",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Guard",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Guard Up",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Offensive Guard",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Critical Draw",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Punishing Draw",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Slugger",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Stamina Thief",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Horn Maestro",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Artillery",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Load Shells",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Special Ammo Boost",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Speed Sharpening",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Rapid Morph",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Charge Master",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Critical Status",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Tetrad Shot",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Opening Shot",
+   "level": 2,
+   "points": 2
+  },
+  {
+   "skill": "Poison Functionality",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Blast Functionality",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Exhaust Functionality",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Airborne",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Charge Up",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Poison Duration Up",
+   "level": 1,
+   "points": 2
+  },
+  {
+   "skill": "Attack Boost",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Critical Eye",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Critical Element",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Fire Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Water Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Ice Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Thunder Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Dragon Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Poison Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Paralysis Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Sleep Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Blast Attack",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Handicraft",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Razor Sharp",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Protective Polish",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Mind's Eye",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Ballistics",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Bludgeoner",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Focus",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Power Prolonger",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Guard",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Guard Up",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Offensive Guard",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Critical Draw",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Punishing Draw",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Slugger",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Stamina Thief",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Artillery",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Rapid Morph",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Charge Master",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Critical Status",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Tetrad Shot",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Opening Shot",
+   "level": 3,
+   "points": 3
+  },
+  {
+   "skill": "Master's Touch",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Normal Shots",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Piercing Shots",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Spread/Power Shots",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Rapid Fire Up",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Para Functionality",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Sleep Functionality",
+   "level": 1,
+   "points": 3
+  },
+  {
+   "skill": "Attack Boost",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Critical Eye",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Critical Boost",
+   "level": 1,
+   "points": 4
+  },
+  {
+   "skill": "Critical Element",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Fire Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Water Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Ice Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Thunder Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Dragon Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Poison Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Paralysis Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Sleep Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Blast Attack",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Handicraft",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Razor Sharp",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Protective Polish",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Guard",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Guard Up",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Ballistics",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Tetrad Shot",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Opening Shot",
+   "level": 2,
+   "points": 4
+  },
+  {
+   "skill": "Aquatic/Oilsilt Mobility",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Stench Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Adaptability",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Marathon Runner",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Constitution",
+   "level": 2,
+   "points": 5
+  },
+  {
+   "skill": "Quick Sheathe",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Defense Boost",
+   "level": 2,
+   "points": 5
+  },
+  {
+   "skill": "Divine Blessing",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Recovery Up",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Recovery Speed",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Speed Eating",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Windproof",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Tremor Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Fire Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Water Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Ice Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Thunder Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Dragon Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Poison Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Paralysis Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Sleep Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Stun Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Blast Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Botanist",
+   "level": 2,
+   "points": 5
+  },
+  {
+   "skill": "Geologist",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Bombardier",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Item Prolonger",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Wide-Range",
+   "level": 2,
+   "points": 5
+  },
+  {
+   "skill": "Free Meal",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Flinch Free",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Hunger Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Bleeding Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Iron Skin",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Survival Expert",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Intimidator",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Bind Resistance",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Antivirus",
+   "level": 1,
+   "points": 5
+  },
+  {
+   "skill": "Aquatic/Oilsilt Mobility",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Stench Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Adaptability",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Marathon Runner",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Constitution",
+   "level": 3,
+   "points": 6
+  },
+  {
+   "skill": "Quick Sheathe",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Defense Boost",
+   "level": 3,
+   "points": 6
+  },
+  {
+   "skill": "Divine Blessing",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Recovery Up",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Recovery Speed",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Speed Eating",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Windproof",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Tremor Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Fire Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Water Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Ice Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Thunder Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Dragon Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Poison Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Paralysis Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Sleep Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Stun Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Blast Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Botanist",
+   "level": 3,
+   "points": 6
+  },
+  {
+   "skill": "Geologist",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Bombardier",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Item Prolonger",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Wide-Range",
+   "level": 3,
+   "points": 6
+  },
+  {
+   "skill": "Free Meal",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Flinch Free",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Hunger Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Bleeding Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Iron Skin",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Survival Expert",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Intimidator",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Bind Resistance",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Antivirus",
+   "level": 2,
+   "points": 6
+  },
+  {
+   "skill": "Marathon Runner",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Constitution",
+   "level": 4,
+   "points": 7
+  },
+  {
+   "skill": "Quick Sheathe",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Defense Boost",
+   "level": 4,
+   "points": 7
+  },
+  {
+   "skill": "Divine Blessing",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Recovery Up",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Recovery Speed",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Speed Eating",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Windproof",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Tremor Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Fire Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Water Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Ice Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Thunder Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Dragon Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Poison Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Paralysis Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Sleep Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Stun Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Blast Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Botanist",
+   "level": 4,
+   "points": 7
+  },
+  {
+   "skill": "Geologist",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Bombardier",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Item Prolonger",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Wide-Range",
+   "level": 4,
+   "points": 7
+  },
+  {
+   "skill": "Free Meal",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Flinch Free",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Hunger Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Bleeding Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Iron Skin",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Survival Expert",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Intimidator",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Bind Resistance",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Antivirus",
+   "level": 3,
+   "points": 7
+  },
+  {
+   "skill": "Peak Performance",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Resentment",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Maximum Might",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Stamina Surge",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Earplugs",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Evade Window",
+   "level": 2,
+   "points": 8
+  },
+  {
+   "skill": "Evade Extender",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Blight Resistance",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Partbreaker",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Mushroomancer",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Heroics",
+   "level": 2,
+   "points": 8
+  },
+  {
+   "skill": "Counterstrike",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Coalescence",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Ambush",
+   "level": 1,
+   "points": 8
+  },
+  {
+   "skill": "Tool Specialist",
+   "level": 2,
+   "points": 8
+  },
+  {
+   "skill": "Peak Performance",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Resentment",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Maximum Might",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Stamina Surge",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Earplugs",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Evade Window",
+   "level": 3,
+   "points": 9
+  },
+  {
+   "skill": "Evade Extender",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Blight Resistance",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Partbreaker",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Mushroomancer",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Heroics",
+   "level": 3,
+   "points": 9
+  },
+  {
+   "skill": "Counterstrike",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Coalescence",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Ambush",
+   "level": 2,
+   "points": 9
+  },
+  {
+   "skill": "Tool Specialist",
+   "level": 3,
+   "points": 9
+  },
+  {
+   "skill": "Agitator",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Weakness Exploit",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Latent Power",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Foray",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Burst",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Adrenaline Rush",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Flayer",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Elemental Absorption",
+   "level": 1,
+   "points": 10
+  },
+  {
+   "skill": "Convert Element",
+   "level": 1,
+   "points": 10
+  }
+ ]
 }

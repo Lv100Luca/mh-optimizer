@@ -16,11 +16,18 @@ public sealed record BuildArmorInput
     public List<string?> Decorations { get; init; } = [];
 }
 
-/// <summary>The talisman of a hand-entered build: one of the configuration's random talismans or a craftable charm, by name.</summary>
+/// <summary>
+/// The talisman of a hand-entered build: one of the configuration's random talismans or a craftable charm, by name, or a
+/// possible talisman (from the "every possible talisman" mode) spelled out with its rarity, skills and slots.
+/// </summary>
 public sealed record BuildTalismanInput
 {
     public required string Name { get; init; }
     public List<string?> Decorations { get; init; } = [];
+    /// <summary>Only for a possible talisman nobody owns: its rarity, skills and slots, as in <see cref="TalismanInput"/>.</summary>
+    public int? Rarity { get; init; }
+    public Dictionary<string, int>? Skills { get; init; }
+    public List<string>? Slots { get; init; }
 }
 
 /// <summary>
@@ -109,8 +116,17 @@ public sealed record BuildInput
         Arms = ArmorOf(loadout.Arms),
         Waist = ArmorOf(loadout.Waist),
         Legs = ArmorOf(loadout.Legs),
-        Talisman = loadout.Talisman is { } t ? new BuildTalismanInput { Name = t.Talisman.Name, Decorations = Names(t.Decos) } : null,
+        Talisman = loadout.Talisman is { } t ? TalismanOf(t) : null,
     };
+
+    private static BuildTalismanInput TalismanOf(EquippedTalisman t) =>
+        t.Talisman.Source == TalismanSource.Possible
+            ? new BuildTalismanInput
+            {
+                Name = t.Talisman.Name, Decorations = Names(t.Decos), Rarity = t.Talisman.Rarity,
+                Skills = t.Talisman.Skills.ToDictionary(s => s.Skill, s => s.Level), Slots = t.Talisman.Slots.Select(s => s.ToString()).ToList(),
+            }
+            : new BuildTalismanInput { Name = t.Talisman.Name, Decorations = Names(t.Decos) };
 
     private static BuildArmorInput? ArmorOf(EquippedArmor? a) =>
         a is null ? null : new BuildArmorInput { Piece = a.Piece.Name, Transcended = a.Transcended, Decorations = Names(a.Decos) };
@@ -138,7 +154,8 @@ public static class BuildInputLoader
         if (input.Talisman is { } t)
         {
             var found = talismans.FirstOrDefault(x => x.Name == t.Name)
-                        ?? (data.CharmsByName.TryGetValue(t.Name, out var charm) ? Talisman.FromCharm(charm) : null);
+                        ?? (data.CharmsByName.TryGetValue(t.Name, out var charm) ? Talisman.FromCharm(charm) : null)
+                        ?? (t.Skills is { } skills ? PossibleTalisman(t, skills, data, errors) : null);
             if (found is null) errors.Add($"Talisman: '{t.Name}' is neither one of your talismans nor a craftable charm.");
             else talisman = new EquippedTalisman(found, Decorations($"Talisman '{t.Name}'", t.Decorations));
         }
@@ -184,5 +201,13 @@ public static class BuildInputLoader
             }
             return decos;
         }
+    }
+
+    /// <summary>A possible talisman saved with a build, rebuilt from its spelled-out skills and slots.</summary>
+    private static Talisman? PossibleTalisman(BuildTalismanInput t, Dictionary<string, int> skills, GameData data, List<string> errors)
+    {
+        var c = TalismanInputLoader.Convert(new TalismanInput { Name = t.Name, Rarity = t.Rarity ?? 0, Skills = skills, Slots = t.Slots ?? [] }, data);
+        errors.AddRange(c.Errors);
+        return c.Talisman is { } found ? found with { Source = TalismanSource.Possible } : null;
     }
 }

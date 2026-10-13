@@ -1,4 +1,5 @@
 using MHWildsOptimizer.Api;
+using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 using MHWildsOptimizer.Core.Inputs;
 
@@ -42,7 +43,16 @@ public static class BuildHelpers
             Arms = Armor(ArmorPieceKind.Arms),
             Waist = Armor(ArmorPieceKind.Waist),
             Legs = Armor(ArmorPieceKind.Legs),
-            Talisman = b.Talisman is { } t ? new BuildTalismanInput { Name = t.Name, Decorations = Names(t.Decorations) } : null,
+            Talisman = b.Talisman is { } t
+                ? new BuildTalismanInput
+                {
+                    Name = t.Name, Decorations = Names(t.Decorations),
+                    // a possible roll is in nobody's talisman list, so it carries its skills and slots
+                    Rarity = t.Source == TalismanSource.Possible ? t.Rarity : null,
+                    Skills = t.Source == TalismanSource.Possible ? t.Skills.ToDictionary(s => s.Skill, s => s.Level) : null,
+                    Slots = t.Source == TalismanSource.Possible ? [.. t.Slots] : null,
+                }
+                : null,
         };
     }
 
