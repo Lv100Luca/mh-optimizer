@@ -43,7 +43,7 @@ public class RequestTests
 
         Assert.True(r.Conditions.MonsterEnraged);
         Assert.False(r.Conditions.HittingWound);
-        Assert.Equal(ResonanceMode.Local, r.Conditions.Resonance);
+        Assert.Equal(ResonanceMode.None, r.Conditions.Resonance);
         Assert.True(r.Options.AllowTranscendence);
         Assert.Equal(5, r.Options.TopN);
     }

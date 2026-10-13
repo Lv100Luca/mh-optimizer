@@ -354,9 +354,12 @@ public static class DamageCalculator
         }
         if (cond.BurstActive && L(SkillNames.Burst) > 0)
         {
-            var b = DamageConstants.Burst(type, L(SkillNames.Burst));
-            Flat($"Burst {L(SkillNames.Burst)}", b.Attack);
-            EleFlat($"Burst {L(SkillNames.Burst)}", b.Element);
+            // before the fifth hit only the first-hit boost, the same at every level
+            var (b, label) = cond.BurstFull
+                ? (DamageConstants.Burst(type, L(SkillNames.Burst)), $"Burst {L(SkillNames.Burst)}")
+                : (DamageConstants.BurstFirstHit(type), "Burst (first hit)");
+            Flat(label, b.Attack);
+            EleFlat(label, b.Element);
             switch (cond.SetTier(skills, SkillNames.EbonyOdogaronsPower))
             {
                 case SetBonusTier.I: Flat("Burst Boost I", 8); break;

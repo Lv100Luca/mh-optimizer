@@ -35,8 +35,15 @@ public sealed record Conditions
     public bool FrenzyOvercome { get; init; } = true;
 
     // ----- skill-specific triggers -----
-    /// <summary>Burst at the full (5-hit) boost; Burst Boost (Ebony Odogaron) rides on it.</summary>
+    /// <summary>Burst active, at the stage set by <see cref="BurstHits"/>; Burst Boost (Ebony Odogaron) rides on it.</summary>
     public bool BurstActive { get; init; } = true;
+    /// <summary>
+    /// Consecutive hits Burst is scored at when <see cref="BurstActive"/> (1 to 5): 1 to 4 give only the small first-hit boost
+    /// (<see cref="DamageConstants.BurstFirstHit"/>, the same at every level), the fifth the full boost of the level. Null: 5.
+    /// </summary>
+    public int? BurstHits { get; init; }
+    /// <summary>Burst at its full (five-hit) boost rather than the first-hit one.</summary>
+    [JsonIgnore] public bool BurstFull => BurstHits is null or >= DamageConstants.BurstFullHits;
     public bool LatentPowerActive { get; init; } = false;
     /// <summary>
     /// Share of the hunt Latent Power is active (0 to 1) when <see cref="LatentPowerActive"/>; null: the build's default without
@@ -67,7 +74,7 @@ public sealed record Conditions
     /// <summary>A part of the hunt where the Azure Bolt window only counts from this Leviathan's Fury tier on; see <see cref="UptimeParts"/>.</summary>
     [JsonIgnore] public int AzureBoltMinTier { get; init; }
     /// <summary>Omega Resonance alternates Local (affinity) and Remote (attack) every 90 s.</summary>
-    public ResonanceMode Resonance { get; init; } = ResonanceMode.Local;
+    public ResonanceMode Resonance { get; init; } = ResonanceMode.None;
     /// <summary>Long Sword Spirit Gauge level: raw x<see cref="DamageConstants.SpiritGaugeRaw"/> on hits that use it (<see cref="AttackHit.Spirit"/>).</summary>
     public SpiritGauge SpiritGauge { get; init; } = SpiritGauge.Red;
     /// <summary>Powerhouse (Doshaguma's Might): after a Power Clash / Offset.</summary>

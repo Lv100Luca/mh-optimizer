@@ -241,6 +241,9 @@ public static class DamageConstants
             : new BurstBoost(a[1 + lv], 0);
     }
 
+    /// <summary>Consecutive hits that give Burst its full boost; fewer give the first-hit boost.</summary>
+    public const int BurstFullHits = 5;
+
     /// <summary>Small boost granted by the first hit, before the fifth hit lands.</summary>
     public static BurstBoost BurstFirstHit(WeaponType type)
     {

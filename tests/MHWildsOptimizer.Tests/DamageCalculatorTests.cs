@@ -166,6 +166,28 @@ public class DamageCalculatorTests
         Assert.Equal(off.ElementTrue + 10, on.ElementTrue, Tol);   // LS Burst 3: +10 true element
     }
 
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    public void BurstBeforeTheFifthHitGivesTheFirstHitBoost(int hits)
+    {
+        var data = TestData.Data;
+        var loadout = new Loadout
+        {
+            Weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.LongSword, Focus = GogmaFocus.Attack, Element = Element.Fire }, data),
+            Talisman = data.Charm("Chain Charm III"), // Burst 3
+        };
+        var off = DamageCalculator.Calculate(loadout, data, Conditions.AllOff);
+        var first = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { BurstActive = true, BurstHits = hits });
+        var five = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { BurstActive = true, BurstHits = 5 });
+        var notActive = DamageCalculator.Calculate(loadout, data, Conditions.AllOff with { BurstHits = hits });
+
+        Assert.Equal(off.TrueRaw + 5, first.TrueRaw, Tol);         // first hit: +5 attack at any level
+        Assert.Equal(off.ElementTrue + 5, first.ElementTrue, Tol); // and +5 true element
+        Assert.Equal(off.TrueRaw + 12, five.TrueRaw, Tol);         // LS Burst 3 in full
+        Assert.Equal(off.Total, notActive.Total, Tol);
+    }
+
     [Fact]
     public void SkillLimitsCapTheValuedLevel()
     {

@@ -225,6 +225,7 @@ public static class RequestLoader
         if (request.Conditions.MealAttack is < 0 or > 50) errors.Add("conditions.meal_attack must be between 0 and 50.");
         if (request.Conditions.LatentPowerUptime is < 0 or > 1) errors.Add("conditions.latent_power_uptime must be between 0 and 1.");
         if (request.Conditions.AzureBoltUptime is < 0 or > 1) errors.Add("conditions.azure_bolt_uptime must be between 0 and 1.");
+        if (request.Conditions.BurstHits is < 1 or > DamageConstants.BurstFullHits) errors.Add($"conditions.burst_hits must be between 1 and {DamageConstants.BurstFullHits}.");
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();

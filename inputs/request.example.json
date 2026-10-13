@@ -29,7 +29,7 @@
     "burst_active": true,
     "frenzy_overcome": true,
     "azure_bolt_active": true,
-    "resonance": "local",
+    "resonance": "none",
     "guts_not_yet_triggered": true
   },
   "talismans": { "file": "talismans.example.json", "include_craftable": true },

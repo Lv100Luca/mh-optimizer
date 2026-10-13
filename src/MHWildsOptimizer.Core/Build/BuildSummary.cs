@@ -118,6 +118,7 @@ public sealed record BuildSummary(
         _ when label.StartsWith("Weakness Exploit") => "weak-point hits",
         _ when label.StartsWith("Peak Performance") => "full health",
         _ when label.StartsWith("Maximum Might") => "full stamina",
+        _ when label.StartsWith("Burst (first hit)") => "a first hit",
         _ when label.StartsWith("Burst") => "5 consecutive hits",
         _ when label.StartsWith("Frenzy overcome") || label.StartsWith("Antivirus") || label.StartsWith("Black Eclipse") => "overcoming Frenzy",
         _ when label.StartsWith("Latent Power") => "Latent Power trigger",

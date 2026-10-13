@@ -269,6 +269,7 @@
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
         [nameof(Conditions.MealAttack)] = "Meal attack",
         [nameof(Conditions.SpiritGauge)] = "Spirit Gauge",
+        [nameof(Conditions.BurstHits)] = "Burst hits",
         [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
         [nameof(Conditions.AzureBoltUptime)] = "Azure Bolt uptime",
         [nameof(Conditions.AttackProfile)] = "Attack",
@@ -473,6 +474,14 @@
                         <span class="muted small">@uptime.Auto</span>
                     </span>
                 }
+                @if (on && x.Property == nameof(Conditions.BurstActive))
+                {
+                    <span class="cond-uptime" @onclick:preventDefault="true">
+                        <span class="muted small">Hits</span>
+                        <Segmented T="int?" Small="true" Value="v.Current.BurstFull ? null : 1" Options="BurstHitOptions"
+                                   ValueChanged="h => App.PatchConditions(c => c with { BurstHits = h })" />
+                    </span>
+                }
             </span>
         </label>
     };
@@ -485,6 +494,13 @@
         [nameof(Conditions.AzureBoltActive)] = (c => c.AzureBoltUptime, (c, u) => c with { AzureBoltUptime = u },
             $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
     };
+
+    /// <summary>Burst's two stages: the first-hit boost (1 to 4 hits, stored as 1) and the full one (null: five hits).</summary>
+    private static readonly IReadOnlyList<SegmentOption<int?>> BurstHitOptions =
+    [
+        new(1, "1–4", Hint: "The first-hit boost: +5 attack and a little element at any Burst level"),
+        new(null, "5", Hint: "The full boost of the Burst level"),
+    ];
 
     private static readonly IReadOnlyList<SegmentOption<SpiritGauge>> SpiritOptions =
         Enum.GetValues<SpiritGauge>().Select(g => new SegmentOption<SpiritGauge>(g, g == SpiritGauge.None ? "None" : $"{g} ×{Num(DamageConstants.SpiritGaugeRaw(g))}")).ToList();
