@@ -34,39 +34,54 @@
 
             <Section Title="Optimize the weapon"
                      Hint="Let the optimizer choose parts of the weapon together with the armor: switch on what you have not rolled yet or want to compare. Parts left off stay as described below. Each result lists, per optimized part, how well every choice does on its armor.">
-                @if (mode != SpecMode)
+                @{
+                    var described = mode == SpecMode;
+                    var pairOn = request.SkillPair.Mode == SkillPairMode.Optimize;
+                    var pool = Catalog.SkillPool;
+                }
+                @if (!described)
                 {
                     <p class="muted">The weapon is entered as stats. <button class="linklike" @onclick="() => SetMode(SpecMode)">Describe it</button> to optimize its focus, element, parts or reinforcements.</p>
                 }
-                else
+                <div class="opt-grid">
+                    <Toggle Checked="@(described && opt.Focus)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { Focus = v })" Label="Focus"
+                            Hint="Attack, affinity or element: each one is searched with armor of its own." />
+                    <Toggle Checked="@(described && opt.Element)" CheckedChanged="v => PatchOptimize(o => o with { Element = v })" Label="Element" Disabled="@(!described || wt?.Gunner == true && !isBow)"
+                            Hint="The five elements, always infused; the target's hitzones decide." />
+                    <Toggle Checked="@(described && opt.AttackParts)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { AttackParts = v })" Label="Attack Infusion lines"
+                            Hint="How many of the three parts give +5 attack rather than +5% affinity." />
+                    <Toggle Checked="@(described && opt.Reinforcements)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { Reinforcements = v })" Label="Reinforcements"
+                            Hint="@(isBow ? "Which of attack, affinity and element fill the five lines." : "Which of attack, affinity, element and sharpness fill the five lines.")" />
+                    <Toggle Checked="pairOn" CheckedChanged="SetPairOptimized" Label="Skill pair"
+                            Hint="@($"The set bonus and group skill: all {pool.Pairs.Count} rollable pairs ({pool.SetBonuses.Count} × {pool.GroupSkills.Count}), every pair equally likely.")" />
+                </div>
+                @if (described && opt.Reinforcements)
                 {
-                    <div class="opt-grid">
-                        <Toggle Checked="opt.Focus" CheckedChanged="v => PatchOptimize(o => o with { Focus = v })" Label="Focus"
-                                Hint="Attack, affinity or element: each one is searched with armor of its own." />
-                        <Toggle Checked="opt.Element" CheckedChanged="v => PatchOptimize(o => o with { Element = v })" Label="Element" Disabled="@(wt?.Gunner == true && !isBow)"
-                                Hint="The five elements, always infused; the target's hitzones decide." />
-                        <Toggle Checked="opt.AttackParts" CheckedChanged="v => PatchOptimize(o => o with { AttackParts = v })" Label="Attack Infusion lines"
-                                Hint="How many of the three parts give +5 attack rather than +5% affinity." />
-                        <Toggle Checked="opt.Reinforcements" CheckedChanged="v => PatchOptimize(o => o with { Reinforcements = v })" Label="Reinforcements"
-                                Hint="@(isBow ? "Which of attack, affinity and element fill the five lines." : "Which of attack, affinity, element and sharpness fill the five lines.")" />
-                    </div>
-                    @if (opt.Reinforcements)
-                    {
-                        <Field Label="Best reinforcement tier to assume" Inline="true"
-                               Hint="Each type takes its best tiers up to this one, at most two of each (2x EX, 2x III, then II). EX lines are rare; III gives a weapon you can expect to roll.">
-                            <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
-                        </Field>
-                    }
-                    @if (opt.Any)
-                    {
-                        <p class="muted small">
+                    <Field Label="Best reinforcement tier to assume" Inline="true"
+                           Hint="Each type takes its best tiers up to this one, at most two of each (2x EX, 2x III, then II). EX lines are rare; III gives a weapon you can expect to roll.">
+                        <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
+                    </Field>
+                }
+                @if (pairOn)
+                {
+                    <Field Label="Best skill pairs to report" Inline="true"
+                           Hint="Pairs that score the same under your conditions are grouped and searched once; the results list the best groups.">
+                        <NumberInput T="int" Value="request.SkillPair.TopN" Min="1" Max="50" Width="90"
+                                     ValueChanged="n => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { TopN = n } })" />
+                    </Field>
+                }
+                @if (described && opt.Any || pairOn)
+                {
+                    <p class="muted small">
+                        @if (described && opt.Any)
+                        {
                             @OptimizeSummary(opt)
-                            @if (request.SkillPair.Mode == SkillPairMode.Fixed)
-                            {
-                                <span> The rolled skill pair stays fixed; the Skill pair tab can optimize it too.</span>
-                            }
-                        </p>
-                    }
+                        }
+                        @if (pairOn && resolved?.SkillPairCandidates is { } c)
+                        {
+                            <span> @Fmt.Plural(c, "candidate skill pair") will be searched.</span>
+                        }
+                    </p>
                 }
             </Section>
 
@@ -193,7 +208,7 @@
                 </ChildContent>
             </Section>
 
-            <Section Title="Rolled skill pair" Hint="The two lines under 'Active Skills' on the weapon: one set bonus and one group skill. The weapon counts as one armor piece for each. Ignored when the skill pair mode is 'optimize'.">
+            <Section Title="Rolled skill pair" Hint="The two lines under 'Active Skills' on the weapon: one set bonus and one group skill. The weapon counts as one armor piece for each. Not used while the skill pair is optimized.">
                 <div class="form-grid">
                     <Field>
                         <LabelContent><span class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonus</span></LabelContent>
@@ -213,8 +228,8 @@
                 @if (request.SkillPair.Mode == SkillPairMode.Optimize)
                 {
                     <Alert Kind="info">
-                        Skill pair mode is <b>optimize</b>: every rollable pair is searched, so the rolled pair above is not used.
-                        <button class="linklike" @onclick="() => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { Mode = SkillPairMode.Fixed } })">Switch to fixed</button>
+                        The skill pair is <b>optimized</b>: every rollable pair is searched, so the rolled pair above is not used.
+                        <button class="linklike" @onclick="() => SetPairOptimized(false)">Use the rolled pair</button>
                     </Alert>
                 }
             </Section>
@@ -278,9 +293,16 @@
                             <dd><Slots Numbers="rw.Slots" Kind="weapon" /></dd>
                             <dt>Rolled pair</dt>
                             <dd>
-                                @if (rw.SetBonus is not null) { @rw.SetBonus } else { <span class="muted">no set bonus</span> }
-                                /
-                                @if (rw.GroupSkill is not null) { @rw.GroupSkill } else { <span class="muted">no group skill</span> }
+                                @if (request.SkillPair.Mode == SkillPairMode.Optimize)
+                                {
+                                    <span class="muted">optimized</span>
+                                }
+                                else
+                                {
+                                    @if (rw.SetBonus is not null) { @rw.SetBonus } else { <span class="muted">no set bonus</span> }
+                                    @(" / ")
+                                    @if (rw.GroupSkill is not null) { @rw.GroupSkill } else { <span class="muted">no group skill</span> }
+                                }
                             </dd>
                         </dl>
                         @if (resolved?.Baseline is { } baseline)
@@ -406,6 +428,9 @@
 
     private void PatchOptimize(Func<Core.Gogma.WeaponOptimizeSettings, Core.Gogma.WeaponOptimizeSettings> fn) =>
         App.PatchRequest(r => r with { WeaponOptimize = fn(r.WeaponOptimize) });
+
+    private void SetPairOptimized(bool on) =>
+        App.PatchRequest(r => r with { SkillPair = r.SkillPair with { Mode = on ? SkillPairMode.Optimize : SkillPairMode.Fixed } });
 
     private void PatchSpec(Func<GogmaWeaponSpecInput, GogmaWeaponSpecInput> fn) =>
         App.PatchWeapon(w => w.Spec is { } spec ? w with { Spec = fn(spec) } : w);

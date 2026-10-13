@@ -54,7 +54,6 @@ else
                 case Tab.Inventory: <InventoryPanel /> break;
                 case Tab.Compare: <ComparePanel /> break;
                 case Tab.Weapon: <WeaponPanel /> break;
-                case Tab.Pair: <SkillPairPanel /> break;
                 case Tab.Targets: <TargetsPanel /> break;
                 case Tab.Conditions: <ConditionsPanel /> break;
                 case Tab.Talismans: <TalismansPanel /> break;
@@ -137,7 +136,6 @@ else
         yield return new(GroupProfile, Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
         yield return new(GroupProfile, Tab.Compare, "Compare", GameIcons.SkillGeneric("handicraft"), Count(App.Tray.Count), App.Tray.Count > 0 ? "acc" : null);
         yield return new(GroupWeapon, Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
-        yield return new(GroupWeapon, Tab.Pair, "Skill pair", GameIcons.SkillGeneric("set"), request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed" : "optimize");
         yield return new(GroupWeapon, Tab.Targets, "Targets & limits", GameIcons.SkillGeneric("offense"), Count(rules));
         yield return new(GroupWeapon, Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
         yield return new(GroupWeapon, Tab.Options, "Options", GameIcons.Defense);

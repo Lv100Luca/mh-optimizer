@@ -83,7 +83,6 @@ try {
     ['inventory', `${origin}/${profile}/inventory`, ''],
     ['weapon', `${origin}/${profile}/weapon/${w}/weapon`, ''],
     ['weapon-stats', `${origin}/${profile}/weapon/${w}/weapon`, `[...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Enter stats')?.click(); await sleep(600);`],
-    ['pair', `${origin}/${profile}/weapon/${w}/pair`, ''],
     ['targets', `${origin}/${profile}/weapon/${w}/targets`, ''],
     ['limits', `${origin}/${profile}/weapon/${w}/limits`, ''],
     ['conditions', `${origin}/${profile}/weapon/${w}/conditions`, ''],

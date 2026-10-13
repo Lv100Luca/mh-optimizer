@@ -96,7 +96,7 @@ try {
     await sleep(2000);`);
   const profile = basename(profileFolder);
   const steps = stepsFile ? JSON.parse(readFileSync(stepsFile, 'utf8')) : null;
-  const tabs = ['inventory', 'weapon', 'pair', 'targets', 'limits', 'conditions', 'talismans', 'options', 'review', 'results', 'builds'];
+  const tabs = ['inventory', 'weapon', 'targets', 'limits', 'conditions', 'talismans', 'options', 'review', 'results', 'builds'];
   const w = encodeURIComponent(weapon);
   for (const tab of (process.env.ONLY_EXTRA ? [] : process.env.ONLY_TABS ? process.env.ONLY_TABS.split(',') : tabs)) {
     const url = tab === 'inventory' ? `${origin}/${profile}/inventory` : `${origin}/${profile}/weapon/${w}/${tab}`;

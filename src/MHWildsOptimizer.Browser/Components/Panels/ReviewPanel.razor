@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="kv">
-                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Pair)">Skill pair</button></h4>
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Weapon)">Skill pair</button></h4>
                         <div>@(request.SkillPair.Mode == SkillPairMode.Fixed ? "fixed: use the rolled pair" : $"optimize over all rollable pairs, report the best {request.SkillPair.TopN}")</div>
                         @if (r is not null)
                         {
