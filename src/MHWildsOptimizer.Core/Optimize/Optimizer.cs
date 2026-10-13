@@ -317,17 +317,23 @@ public sealed class Optimizer
         }));
     }
 
+    /// <param name="Rolls">Every talisman the game can roll, as a table (CP-SAT); null unless the request asks for them.</param>
     private sealed record ClassCandidates(Relevance Rel, Dictionary<ArmorPieceKind, List<ArmorCandidate>> Armor, List<TalismanCandidate> Talismans,
-        DecorationFiller Filler, ArmorPieceKind[] Kinds, string Summary);
+        RollTable? Rolls, DecorationFiller Filler, ArmorPieceKind[] Kinds, string Summary);
 
-    private ClassCandidates CandidatesFor(GogmaWeaponStats weapon)
+    /// <param name="spellOutRolls">List every possible talisman among the talismans (the beam search) instead of a roll table.</param>
+    private ClassCandidates CandidatesFor(GogmaWeaponStats weapon, bool spellOutRolls = false)
     {
         var rel = Relevance.Build(weapon, _request, _data);
         var armor = Candidates.Armor(_data, rel, _request.Options);
-        var talismans = Candidates.Talismans(_request.Talismans, rel);
+        var pool = _request.AllPossibleTalismans ? _data.TalismanPool : null;
+        var talismans = Candidates.Talismans(
+            pool is not null && spellOutRolls ? _request.Talismans.Concat(PossibleTalismans.Generate(pool, rel, _data)) : _request.Talismans, rel);
+        var rolls = pool is not null && !spellOutRolls ? RollTable.Build(pool, rel) : null;
         var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
-        var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}";
-        return new ClassCandidates(rel, armor, talismans, new DecorationFiller(_data, rel), kinds, summary);
+        var summary = $"candidates after pruning: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))}, talismans {talismans.Count}"
+                      + (rolls is not null ? $" + every possible roll ({rolls.Rows.Count} roll rows)" : "");
+        return new ClassCandidates(rel, armor, talismans, rolls, new DecorationFiller(_data, rel), kinds, summary);
     }
 
     /// <summary>One skill pair class's CP-SAT search and its result so far.</summary>
@@ -358,7 +364,7 @@ public sealed class Optimizer
         progress?.Report("  " + c.Summary);
         var cp = new CpSatSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN,
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
-        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds };
+        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds, Rolls = c.Rolls };
         var search = new ClassSearch(cls, c, cp, candidatesTime);
         search.Finish(await cp.RunAsync());
         progress?.Report($"  {cp.Summary}, {search.Result.Builds.Count} builds kept");
@@ -367,7 +373,7 @@ public sealed class Optimizer
 
     private SkillPairResult BeamSearch(SkillPairClass cls, int topN, ParallelOptions parallel, IProgress<string>? progress)
     {
-        var c = CandidatesFor(cls.Weapon);
+        var c = CandidatesFor(cls.Weapon, spellOutRolls: true);
         progress?.Report("  " + c.Summary);
         var search = new StateSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN, _request.Options.MaxStatesPerDepth, parallel, progress);
         var builds = search.Run().Select(b => b with { SkillPair = cls.Pair, SkillPairLabel = cls.Label }).ToList();

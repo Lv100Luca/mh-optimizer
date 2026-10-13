@@ -91,6 +91,12 @@ internal sealed class CpSatSearch
     /// <summary>Score models shared with other searches of the same weapon and conditions; null builds one for this search.</summary>
     public ScoreDecompositionCache? Scores { get; init; }
 
+    /// <summary>
+    /// Every talisman this table can roll is a choice besides the listed talismans: the model picks a row and a skill per
+    /// position instead of one boolean per possible talisman (hundreds of those made the solver far slower).
+    /// </summary>
+    public RollTable? Rolls { get; init; }
+
     private CpModel? _model;
     private Vars? _vars;
     private Constraint? _cutoff;
@@ -152,6 +158,7 @@ internal sealed class CpSatSearch
 
             var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
             var talisman = vars.Talismans.FindIndex(t => response.BooleanValue(t));
+            var rolled = vars.Rolls is { } rv ? rv.Decode(response, _data) : null;
             var decos = new List<DecoCandidate>();
             for (var i = 0; i < vars.Decos.Count; i++)
                 for (var n = response.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
@@ -163,9 +170,10 @@ internal sealed class CpSatSearch
             var used = new List<ILiteral>();
             for (var d = 0; d < chosen.Length; d++) if (chosen[d] >= 0) used.Add(vars.Pieces[d][chosen[d]].Var);
             if (talisman >= 0) used.Add(vars.Talismans[talisman]);
+            if (rolled is not null) used.AddRange(rolled.Value.Literals);
             model.Add(LinearExpr.Sum(used) <= used.Count - 1);
 
-            var loadout = BuildLoadout(chosen, talisman, decos);
+            var loadout = BuildLoadout(chosen, rolled?.Talisman ?? (talisman >= 0 ? _talismans[talisman].Talisman : null), decos);
             if (loadout is null) continue;
             var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
             if (!_seen.Add(key)) continue;
@@ -236,8 +244,49 @@ internal sealed class CpSatSearch
     }
 
     /// <param name="Keys">The factors of the score <see cref="TightenAsync"/> caps, with the upper bound the model gave them, in the order the model builds them.</param>
-    private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, List<IntVar> Decos, IntVar Score,
+    private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, RollVars? Rolls, List<IntVar> Decos, IntVar Score,
         List<(IntVar Var, long Ub, string Sig)> Keys);
+
+    /// <summary>The possible-talisman choice: one boolean per roll row, one per (position, point value, relevant skill level).</summary>
+    private sealed record RollVars(RollTable Table, List<BoolVar> Rows, List<(int Position, RollTable.SkillOption Option, BoolVar Var)> Skills)
+    {
+        public (Talisman Talisman, List<ILiteral> Literals)? Decode(CpSolverResponse response, GameData data)
+        {
+            var row = Rows.FindIndex(r => response.BooleanValue(r));
+            if (row < 0) return null;
+            var skills = Skills.Where(s => response.BooleanValue(s.Var)).OrderBy(s => s.Position).ToList();
+            var literals = new List<ILiteral> { Rows[row] };
+            literals.AddRange(skills.Select(s => (ILiteral)s.Var));
+            return (PossibleTalismans.Make(Table.Rows[row], skills.Select(s => s.Option).ToList(), data), literals);
+        }
+    }
+
+    /// <summary>
+    /// Rows: exactly one when a possible talisman is worn (the caller's exactly-one covers it). Each position of the chosen
+    /// row takes at most one relevant skill level worth its points (exactly one when no other skill is worth that much), no
+    /// skill twice.
+    /// </summary>
+    private static RollVars AddRollVars(CpModel m, RollTable table)
+    {
+        var rows = table.Rows.Select((_, k) => m.NewBoolVar($"roll{k}")).ToList();
+        var skills = new List<(int, RollTable.SkillOption, BoolVar)>();
+        for (var p = 0; p < 3; p++)
+        {
+            foreach (var group in table.Rows.Select((r, k) => (r, k)).Where(x => x.r.SkillPoints[p] != 0).GroupBy(x => x.r.SkillPoints[p]))
+            {
+                var options = table.Options[group.Key];
+                var picks = options.Relevant.Select(o => (o, v: m.NewBoolVar($"roll{p}_{group.Key}_{o.Skill}{o.Level}"))).ToList();
+                skills.AddRange(picks.Select(x => (p, x.o, x.v)));
+                var rowSum = LinearExpr.Sum(group.Select(x => (LinearExpr)rows[x.k]));
+                var pickSum = LinearExpr.Sum(picks.Select(x => (LinearExpr)x.v));
+                if (options.AnyOther) m.Add(pickSum <= rowSum);
+                else m.Add(pickSum == rowSum);
+            }
+        }
+        foreach (var bySkill in skills.GroupBy(s => s.Item2.SkillIndex).Where(g => g.Count() > 1))
+            m.Add(LinearExpr.Sum(bySkill.Select(s => (LinearExpr)s.Item3)) <= 1);
+        return new RollVars(table, rows, skills);
+    }
 
     private Vars BuildModel(CpModel m, ScoreDecomposition score)
     {
@@ -246,7 +295,8 @@ internal sealed class CpSatSearch
         var pieces = _kinds.Select((k, d) => _armor[k].Select((c, i) => (c, m.NewBoolVar($"{k}{i}"))).ToList()).ToList();
         foreach (var list in pieces) if (list.Count > 0) m.AddExactlyOne(list.Select(x => (ILiteral)x.Item2));
         var tals = _talismans.Select((_, i) => m.NewBoolVar($"t{i}")).ToList();
-        m.AddExactlyOne(tals);
+        var rolls = Rolls is { } table ? AddRollVars(m, table) : null;
+        m.AddExactlyOne(tals.Concat(rolls?.Rows ?? []));
 
         var maxSlots = _weapon.Slots.Count + 3 + 3 * _kinds.Length;
         var decos = _filler.All.Select((d, i) => m.NewIntVar(0, maxSlots, $"d{i}")).ToList();
@@ -257,11 +307,15 @@ internal sealed class CpSatSearch
             var armorCap = new List<LinearExpr>();
             foreach (var list in pieces) foreach (var (c, x) in list) armorCap.Add(LinearExpr.Term(x, SlotsAtLeast(c.ArmorSlots, level)));
             for (var j = 0; j < tals.Count; j++) armorCap.Add(LinearExpr.Term(tals[j], SlotsAtLeast(_talismans[j].ArmorSlots, level)));
+            if (rolls is not null)
+                for (var k = 0; k < rolls.Rows.Count; k++) armorCap.Add(LinearExpr.Term(rolls.Rows[k], SlotsAtLeast(rolls.Table.Rows[k].ArmorSlots, level)));
             var armorUse = _filler.All.Select((d, i) => (d, i)).Where(x => x.d.Kind == SkillKind.Armor && x.d.Level >= level).Select(x => (LinearExpr)decos[x.i]);
             m.Add(LinearExpr.Sum(armorUse) <= LinearExpr.Sum(armorCap));
 
             var weaponCap = new List<LinearExpr> { LinearExpr.Constant(_weapon.Slots.Count(l => l >= level)) };
             for (var j = 0; j < tals.Count; j++) weaponCap.Add(LinearExpr.Term(tals[j], SlotsAtLeast(_talismans[j].WeaponSlots, level)));
+            if (rolls is not null)
+                for (var k = 0; k < rolls.Rows.Count; k++) weaponCap.Add(LinearExpr.Term(rolls.Rows[k], SlotsAtLeast(rolls.Table.Rows[k].WeaponSlots, level)));
             var weaponUse = _filler.All.Select((d, i) => (d, i)).Where(x => x.d.Kind == SkillKind.Weapon && x.d.Level >= level).Select(x => (LinearExpr)decos[x.i]);
             m.Add(LinearExpr.Sum(weaponUse) <= LinearExpr.Sum(weaponCap));
         }
@@ -273,6 +327,8 @@ internal sealed class CpSatSearch
             var terms = new List<LinearExpr>();
             foreach (var list in pieces) foreach (var (c, x) in list) if (c.Skills[s] != 0) terms.Add(LinearExpr.Term(x, c.Skills[s]));
             for (var j = 0; j < tals.Count; j++) if (_talismans[j].Skills[s] != 0) terms.Add(LinearExpr.Term(tals[j], _talismans[j].Skills[s]));
+            if (rolls is not null)
+                foreach (var (_, o, v) in rolls.Skills) if (o.SkillIndex == s) terms.Add(LinearExpr.Term(v, o.Level));
             for (var i = 0; i < decos.Count; i++)
                 foreach (var (skill, grant) in _filler.All[i].Grants) if (skill == s) terms.Add(LinearExpr.Term(decos[i], grant));
             var sum = LinearExpr.Sum(terms);
@@ -326,7 +382,7 @@ internal sealed class CpSatSearch
             m.AddMaxEquality(total, sideScores.Select(x => (LinearExpr)x.Var));
         }
         m.Maximize(LinearExpr.Term(total, ObjectiveScale) - LinearExpr.Term(LinearExpr.Sum(decos), DecoPenalty));
-        return new Vars(pieces, tals, decos, total, keys);
+        return new Vars(pieces, tals, rolls, decos, total, keys);
     }
 
     private sealed record Bounded(IntVar Var, long Lb, long Ub)
@@ -516,9 +572,8 @@ internal sealed class CpSatSearch
         return n;
     }
 
-    private Loadout? BuildLoadout(int[] chosen, int talismanIndex, List<DecoCandidate> decos)
+    private Loadout? BuildLoadout(int[] chosen, Talisman? talisman, List<DecoCandidate> decos)
     {
-        var talisman = talismanIndex >= 0 ? _talismans[talismanIndex].Talisman : null;
         var pieces = chosen.Select((c, d) => c >= 0 ? _armor[_kinds[d]][c] : null).ToArray();
         var free = new List<FreeSlot>();
         for (var i = 0; i < _weapon.Slots.Count; i++) free.Add(new FreeSlot(SkillKind.Weapon, _weapon.Slots[i], -1, i));

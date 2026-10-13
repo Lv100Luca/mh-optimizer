@@ -52,7 +52,7 @@ public static class GameDataLoader
                         .Select(p => new GogmaSkillPair(p.SetBonus, p.GroupSkill)).ToList();
 
         var pool = TryRead<TalismanPoolFile>("random_talisman_pool.json") is { } tp
-            ? new RandomTalismanPool { Skills = tp.Skills, SlotPatterns = tp.SlotPatterns, RarityByType = tp.RarityByType }
+            ? new RandomTalismanPool { Skills = tp.Skills, SlotPatterns = tp.SlotPatterns, RarityByType = tp.RarityByType, PointRows = tp.PointRows ?? [], LotSkills = tp.LotSkills ?? [] }
             : null;
 
         var monsters = TryRead<List<MonsterHitzones>>("monster_hitzones.json");
@@ -88,5 +88,7 @@ public static class GameDataLoader
     private sealed record TalismanPoolFile(
         Dictionary<string, RandomTalismanPool.PoolSkill> Skills,
         List<RandomTalismanPool.SlotPattern> SlotPatterns,
-        Dictionary<string, int> RarityByType);
+        Dictionary<string, int> RarityByType,
+        List<RandomTalismanPool.PointRow>? PointRows,
+        List<RandomTalismanPool.LotSkill>? LotSkills);
 }

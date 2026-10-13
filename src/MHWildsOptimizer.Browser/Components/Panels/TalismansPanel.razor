@@ -19,6 +19,10 @@
                 }
             </Actions>
             <ChildContent>
+                <Toggle Checked="request.Talismans.IncludeAllPossible" CheckedChanged="SetIncludeAllPossible"
+                        Label="Pretend you own every talisman the game can roll"
+                        Hint="Random talismans are not fully random: each rarity rolls from a fixed table of skill point values, skills and slot layouts. With this on, the optimizer also tries every talisman that table allows, so you see the best talisman for the build in theory. It is a ceiling to compare against, not something you can farm on purpose; the builds mark these talismans as possible rolls." />
+
                 @if (talismans.Count == 0 && _draft is null)
                 {
                     <p class="muted">No random talismans yet.</p>
@@ -119,6 +123,8 @@
     }
 
     private static RenderFragment RarityLabel(int r) => @<span class="with-icon"><img src="@GameIcons.Talisman(r)" alt="" width="18" height="18" /> R@(r)</span>;
+
+    private void SetIncludeAllPossible(bool include) => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeAllPossible = include } });
 
     private bool _scrollToEditor;
 

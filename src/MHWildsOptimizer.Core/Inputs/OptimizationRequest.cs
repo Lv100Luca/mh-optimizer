@@ -35,6 +35,8 @@ public sealed record TalismanSettings
     public string? File { get; init; }
     /// <summary>Also consider every craftable charm line at max rank.</summary>
     public bool IncludeCraftable { get; init; } = true;
+    /// <summary>Also consider every talisman the game can roll, as if all of them were owned (a theoretical best, not a farming target).</summary>
+    public bool IncludeAllPossible { get; init; }
 }
 
 public sealed record OptimizerOptions
@@ -128,6 +130,9 @@ public sealed record ResolvedRequest(
     WeaponSpace? WeaponSpace = null)
 {
     public bool IsValid => Errors.Count == 0;
+
+    /// <summary>Add every talisman the game can roll to <see cref="Talismans"/> (generated per search, for the relevant skills only).</summary>
+    public bool AllPossibleTalismans { get; init; }
 
     /// <summary>Every requirement for display: "Weakness Exploit 5", "Gore Magala's Tyranny II (4 pieces)", "Lord's Soul (3 pieces)".</summary>
     public IEnumerable<string> TargetLabels =>
@@ -263,7 +268,9 @@ public static class RequestLoader
                 warnings.AddRange(tWarnings);
             }
         }
-        if (talismans.Count == 0)
+        if (request.Talismans.IncludeAllPossible && data.TalismanPool is not { PointRows.Count: > 0 })
+            warnings.Add("Talismans: the dataset has no random talisman roll table, so 'every possible talisman' adds nothing.");
+        if (talismans.Count == 0 && !request.Talismans.IncludeAllPossible)
             warnings.Add("No talismans available; the optimizer will run without a charm.");
 
         // options
@@ -302,7 +309,10 @@ public static class RequestLoader
         }
 
         return new ResolvedRequest(
-            weapon, candidates, request.SkillPair, targets, setTargets, groupTargets, request.Conditions, talismans, request.Options, applied, errors, warnings, space);
+            weapon, candidates, request.SkillPair, targets, setTargets, groupTargets, request.Conditions, talismans, request.Options, applied, errors, warnings, space)
+        {
+            AllPossibleTalismans = request.Talismans.IncludeAllPossible,
+        };
     }
 
     /// <summary>Pieces (armor, or the Gogma weapon) a set bonus / group skill needs at a level, from the skill's ranks.</summary>

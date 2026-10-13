@@ -514,10 +514,17 @@ public sealed class ConfigEditor
             choices.AddRange(_talismans.Select(t => "Edit " + t.Name));
             choices.AddRange(_talismans.Select(t => "Remove " + t.Name));
             choices.Add($"Craftable charm lines: {(_request.Talismans.IncludeCraftable ? "included" : "excluded")} (toggle)");
+            choices.Add($"Every possible talisman roll: {(_request.Talismans.IncludeAllPossible ? "included" : "excluded")} (toggle)");
             choices.Add("Back");
             var choice = AnsiConsole.Prompt(new SelectionPrompt<string>().Title("Talismans").PageSize(15).AddChoices(choices.Select(Markup.Escape)));
 
             if (choice == "Back") return;
+            if (choice.StartsWith("Every possible"))
+            {
+                _request = _request with { Talismans = _request.Talismans with { IncludeAllPossible = !_request.Talismans.IncludeAllPossible } };
+                _dirty = true;
+                continue;
+            }
             if (choice.StartsWith("Craftable"))
             {
                 _request = _request with { Talismans = _request.Talismans with { IncludeCraftable = !_request.Talismans.IncludeCraftable } };
