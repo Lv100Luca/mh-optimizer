@@ -62,7 +62,7 @@ else
                 case Tab.Review: <ReviewPanel /> break;
                 case Tab.Results: <ResultsPanel /> break;
                 case Tab.Builds: <BuildsPanel /> break;
-                case Tab.WikiSkills or Tab.WikiBonuses or Tab.WikiArmor: <WikiPanel /> break;
+                case Tab.WikiSkills or Tab.WikiArmor: <WikiPanel /> break;
             }
         </main>
         <TrayBar />
@@ -147,7 +147,6 @@ else
             App.Run.Status == RunStatus.Running ? "…" : App.Run.Result is { } r ? r.Pairs.Sum(p => p.Builds.Count).ToString() : null);
         yield return new(GroupBuilds, Tab.Builds, "My builds", GameIcons.Armor(ArmorPieceKind.Chest, 8), Count(App.Builds.Count));
         yield return new(GroupWiki, Tab.WikiSkills, "Skills", GameIcons.SkillGeneric("attack"));
-        yield return new(GroupWiki, Tab.WikiBonuses, "Set & group", GameIcons.SkillGeneric("group"));
         yield return new(GroupWiki, Tab.WikiArmor, "Armor", GameIcons.Armor(ArmorPieceKind.Head, 8));
     }
 }

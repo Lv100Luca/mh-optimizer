@@ -41,7 +41,8 @@ public sealed class WikiIndex
         Skills = data.Skills.ToDictionary(s => s.Name);
         Sets = data.ArmorSets.ToDictionary(s => s.Name);
         SkillText = data.Skills.ToDictionary(s => s.Name, s => string.Join('\n', [
-            s.Name, s.Description, .. s.Ranks.Select(r => $"{r.Name} {r.Description} {r.Game}"),
+            s.Name, s.Description, s.WeaponOnly ? "weapon only" : null, s.GogmaPool ? "gogma" : null,
+            .. s.Ranks.Select(r => $"{r.Name} {r.Description} {r.Game}"),
             s.Effects?.Trigger, .. s.Effects?.Levels.Values.SelectMany(l => l) ?? [], .. s.Effects?.Notes ?? [],
         ]).ToLowerInvariant());
         SetText = data.ArmorSets.ToDictionary(s => s.Name, s => string.Join('\n', [
@@ -53,7 +54,7 @@ public sealed class WikiIndex
     public IReadOnlyDictionary<string, WikiSkill> Skills { get; }
     public IReadOnlyDictionary<string, WikiArmorSet> Sets { get; }
 
-    /// <summary>Lower-case text a search matches: names, game texts and effect lines.</summary>
+    /// <summary>Lower-case text a search matches: names, game texts, effect lines, "weapon only" and "gogma" for those.</summary>
     public IReadOnlyDictionary<string, string> SkillText { get; }
 
     /// <summary>Lower-case text a search matches: set, piece, skill and bonus names.</summary>

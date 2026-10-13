@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiBonuses, WikiArmor }
+public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor }
 
 public static class Tabs
 {
@@ -19,12 +19,13 @@ public static class Tabs
     /// <summary>Tabs of the whole profile rather than of the open weapon (the wiki belongs to neither, but behaves the same).</summary>
     public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare || tab.IsWikiTab();
 
-    /// <summary>The game reference: skills, set and group bonuses, armor; the URL carries them as wiki/&lt;section&gt;.</summary>
-    public static bool IsWikiTab(this Tab tab) => tab is Tab.WikiSkills or Tab.WikiBonuses or Tab.WikiArmor;
+    /// <summary>The game reference: skills (set and group bonuses among them), armor; the URL carries them as wiki/&lt;section&gt;.</summary>
+    public static bool IsWikiTab(this Tab tab) => tab is Tab.WikiSkills or Tab.WikiArmor;
 
     public static readonly IReadOnlyDictionary<string, Tab> WikiSections = new Dictionary<string, Tab>
     {
-        ["skills"] = Tab.WikiSkills, ["bonuses"] = Tab.WikiBonuses, ["armor"] = Tab.WikiArmor,
+        // "bonuses": the old set & group section, kept so its links still open
+        ["skills"] = Tab.WikiSkills, ["armor"] = Tab.WikiArmor, ["bonuses"] = Tab.WikiSkills,
     };
 
     public static string WikiSection(this Tab tab) => WikiSections.First(kv => kv.Value == tab).Key;

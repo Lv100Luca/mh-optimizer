@@ -32,7 +32,7 @@
                 <section class="card wiki-bonus @b.Kind.ToString().ToLowerInvariant()">
                     <div class="wiki-bonus-head">
                         <SkillIcon Name="@b.Name" Kind="b.Kind" Size="22" />
-                        <button class="linklike wiki-bonus-name" @onclick="() => App.OpenWiki(Tab.WikiBonuses, b.Name)">@b.Name</button>
+                        <button class="linklike wiki-bonus-name" @onclick="() => App.OpenWiki(Tab.WikiSkills, b.Name)">@b.Name</button>
                         <KindTag Kind="b.Kind" />
                         @if (pieces < set.Pieces.Count)
                         {

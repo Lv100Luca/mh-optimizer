@@ -18,29 +18,18 @@
                     @Fmt.Plural(Wiki.Data.ArmorSets.Count(s => s.Rank == "low"), "low rank set")
                 </p>
                 break;
-            case Tab.WikiBonuses:
-                <p>
-                    Set bonuses (two tiers, at 2 and 4 pieces of the same set bonus) and group skills (3 pieces with the same group skill,
-                    from any sets), with what each tier does in numbers and the sets that carry them. A Gogma Artian weapon that rolled one counts as a piece.
-                </p>
-                <div class="chip-row">
-                    @foreach (var s in Wiki.Data.Skills.Where(s => s.Kind is SkillKind.Set or SkillKind.Group).OrderBy(s => s.Kind).ThenBy(s => s.Name))
-                    {
-                        <button class="chip skill @s.Kind.ToString().ToLowerInvariant()" @onclick="() => App.OpenWiki(Section, s.Name)">
-                            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="18" />@s.Name
-                        </button>
-                    }
-                </div>
-                break;
             default:
                 var weaponOnly = Wiki.Data.Skills.Where(s => s.WeaponOnly).ToList();
                 <p>
-                    Every armor and weapon skill in the game, with what each level actually does in numbers (the game's own texts are often
-                    vague), and where to get it: decorations, charms, armor pieces and weapons with it built in.
+                    Every skill in the game, with what each level actually does in numbers (the game's own texts are often vague), and
+                    where to get it: decorations, charms, armor pieces and weapons with it built in. Set skills are in the same list:
+                    set bonuses (two tiers, at 2 and 4 pieces of the same set bonus) and group skills (3 pieces with the same group skill,
+                    from any sets), with the sets that carry them. A Gogma Artian weapon that rolled one counts as a piece.
                 </p>
                 <p class="muted small">
                     @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Armor), "armor skill") ·
                     @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Weapon), "weapon skill") ·
+                    @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind is SkillKind.Set or SkillKind.Group), "set skill") ·
                     numbers from the game data (dtlnor/MHWs-in-json), kiranico and community tests, each rated by confidence.
                 </p>
                 <h3 class="wiki-subhead">Only on weapons</h3>
@@ -49,6 +38,15 @@
                     @foreach (var s in weaponOnly)
                     {
                         <button class="chip skill weapon" @onclick="() => App.OpenWiki(Section, s.Name)">
+                            <SkillIcon Name="@s.Name" Kind="s.Kind" Size="18" />@s.Name
+                        </button>
+                    }
+                </div>
+                <h3 class="wiki-subhead">Set skills</h3>
+                <div class="chip-row">
+                    @foreach (var s in Wiki.Data.Skills.Where(s => s.Kind is SkillKind.Set or SkillKind.Group).OrderBy(s => s.Kind).ThenBy(s => s.Name))
+                    {
+                        <button class="chip skill @s.Kind.ToString().ToLowerInvariant()" @onclick="() => App.OpenWiki(Section, s.Name)">
                             <SkillIcon Name="@s.Name" Kind="s.Kind" Size="18" />@s.Name
                         </button>
                     }
@@ -67,7 +65,6 @@
     private string Title => Section switch
     {
         Tab.WikiArmor => "Armor sets",
-        Tab.WikiBonuses => "Set & group bonuses",
         _ => "Skills",
     };
 

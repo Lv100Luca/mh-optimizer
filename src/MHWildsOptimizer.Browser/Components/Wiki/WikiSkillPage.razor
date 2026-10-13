@@ -5,7 +5,6 @@
     var fx = s.Effects;
     var bonus = s.Kind is SkillKind.Set or SkillKind.Group;
     var src = s.Sources;
-    var section = bonus ? Tab.WikiBonuses : Tab.WikiSkills;
 }
 <div class="panel wiki-page">
     <section class="card wiki-head @Slug(s.Kind)">
@@ -256,11 +255,7 @@
         _allArmor = false;
     }
 
-    private void Open(string skill)
-    {
-        var target = Wiki.Skills.GetValueOrDefault(skill);
-        App.OpenWiki(target?.Kind is SkillKind.Set or SkillKind.Group ? Tab.WikiBonuses : Tab.WikiSkills, skill);
-    }
+    private void Open(string skill) => App.OpenWiki(Tab.WikiSkills, skill);
 
     private string WeaponLabel(string kind) => App.Index.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
 
