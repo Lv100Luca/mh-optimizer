@@ -259,7 +259,7 @@ public class ApiTests : IClassFixture<WebFixture>
         (await client.PutAsJsonAsync("/api/profiles/renames/weapons/two", new WeaponPayload(payload.Request, [build with { Name = "Other" }]), _json)).EnsureSuccessStatusCode();
 
         var renamed = payload.Talismans!.Select(t => t.Name == "Golden Age Charm" ? t with { Name = "My best charm" } : t).ToList();
-        (await client.PutAsJsonAsync("/api/profiles/renames/talismans", new TalismansPayload(renamed, new() { ["Secret Charm"] = "My best charm" }), _json)).EnsureSuccessStatusCode();
+        (await client.PutAsJsonAsync("/api/profiles/renames/talismans", new TalismansPayload(renamed, new() { ["Golden Age Charm"] = "My best charm" }), _json)).EnsureSuccessStatusCode();
 
         foreach (var weapon in new[] { "one", "two" })
         {
