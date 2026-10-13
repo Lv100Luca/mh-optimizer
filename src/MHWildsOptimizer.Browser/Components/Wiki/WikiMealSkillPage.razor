@@ -1,0 +1,56 @@
+@inject AppState App
+@* A meal skill's wiki page: the game's text and what it does in numbers. *@
+@{
+    var m = Skill;
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head meal">
+        <div class="wiki-title">
+            <img class="icon" width="36" height="36" src="@GameIcons.SkillGeneric(m.Icon)" alt="" />
+            <div>
+                <h1>@m.Name</h1>
+                <div class="chip-row">
+                    <span class="muted small">Meal skill</span>
+                </div>
+            </div>
+        </div>
+        @if (m.Description is { } d)
+        {
+            <p class="wiki-desc">@d</p>
+        }
+    </section>
+
+    <Section Title="What it does" Key="wiki-meal-effect" Collapsible="false">
+        <ul class="wiki-item-effects">
+            @foreach (var line in m.Effects)
+            {
+                <li>@line</li>
+            }
+        </ul>
+        @if (m.From is { } from)
+        {
+            <p class="wiki-stacking"><span class="muted tiny">From</span> @from</p>
+        }
+        @if (m.Notes is { Count: > 0 } notes)
+        {
+            <ul class="wiki-notes">
+                @foreach (var n in notes)
+                {
+                    <li>@n</li>
+                }
+            </ul>
+        }
+        <p class="wiki-source tiny">
+            <span class="wiki-conf @m.Confidence">@(m.Confidence ?? "unrated") confidence</span>
+            <span class="muted">@m.Source</span>
+        </p>
+        <p class="muted small">
+            How meals hand out their skills: <button class="linklike" @onclick="() => App.OpenWiki(Tab.WikiMeals)">Meals</button>.
+        </p>
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiMealSkill Skill { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+}

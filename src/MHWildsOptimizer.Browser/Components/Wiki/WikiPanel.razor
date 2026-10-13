@@ -1,7 +1,7 @@
 @inherits AppComponent
 @inject WikiService Wiki
 @* The game reference: a searchable list of the section's entries next to the open entry (on phones one or the other).
-   Sections: skills (set and group bonuses among them), armor sets; the URL names the open entry, so pages can be linked. *@
+   Sections: skills (set and group bonuses among them), armor sets, items, meal skills; the URL names the open entry, so pages can be linked. *@
 
 @if (_error is not null)
 {
@@ -26,13 +26,45 @@ else
                 {
                     <Segmented T="string" Small="true" Value="_rank" ValueChanged="v => _rank = v" Options="RankOptions" />
                 }
-                else
+                else if (section == Tab.WikiSkills)
                 {
                     <Segmented T="string" Small="true" Value="_filter" ValueChanged="v => _filter = v" Options="SkillFilters" />
                 }
             </div>
             <div class="wiki-list" role="list">
-                @if (section == Tab.WikiArmor)
+                @if (section == Tab.WikiItems)
+                {
+                    var items = Items(wiki).ToList();
+                    <div class="wiki-count muted tiny">@Fmt.Plural(items.Count, "item")</div>
+                    @foreach (var group in items.GroupBy(i => i.Category))
+                    {
+                        <div class="wiki-list-head muted tiny">@CategoryTitle(wiki, group.Key)</div>
+                        @foreach (var i in group)
+                        {
+                            <button @key="i.Name" role="listitem" class="wiki-row @(i.Name == entry ? "active" : "")" @onclick="() => App.OpenWiki(section, i.Name)">
+                                <img class="icon" width="22" height="22" src="@GameIcons.Item(i.Icon, i.IconColor)" alt="" />
+                                <span class="wiki-row-name">@i.Name</span>
+                                @if (i.Boost is { } boost)
+                                {
+                                    <span class="muted tiny wiki-row-note">@boost</span>
+                                }
+                            </button>
+                        }
+                    }
+                }
+                else if (section == Tab.WikiMeals)
+                {
+                    var meals = MealSkills(wiki).ToList();
+                    <div class="wiki-count muted tiny">@Fmt.Plural(meals.Count, "meal skill")</div>
+                    @foreach (var m in meals)
+                    {
+                        <button @key="m.Name" role="listitem" class="wiki-row @(m.Name == entry ? "active" : "")" @onclick="() => App.OpenWiki(section, m.Name)">
+                            <img class="icon" width="22" height="22" src="@GameIcons.SkillGeneric(m.Icon)" alt="" />
+                            <span class="wiki-row-name">@m.Name</span>
+                        </button>
+                    }
+                }
+                else if (section == Tab.WikiArmor)
                 {
                     var sets = Sets(wiki).ToList();
                     <div class="wiki-count muted tiny">@Fmt.Plural(sets.Count, "set")</div>
@@ -74,9 +106,31 @@ else
         <div class="wiki-main">
             @if (entry is not null)
             {
-                <button class="linklike wiki-back" @onclick="() => App.OpenWiki(section)">← all @(section == Tab.WikiArmor ? "armor sets" : "skills")</button>
+                <button class="linklike wiki-back" @onclick="() => App.OpenWiki(section)">← all @ListName(section)</button>
             }
-            @if (section == Tab.WikiArmor)
+            @if (section == Tab.WikiItems)
+            {
+                if (entry is not null && wiki.Items.TryGetValue(entry, out var item))
+                {
+                    <WikiItemPage Item="item" Wiki="wiki" />
+                }
+                else
+                {
+                    <WikiIntro Section="section" Wiki="wiki" Missing="@entry" />
+                }
+            }
+            else if (section == Tab.WikiMeals)
+            {
+                if (entry is not null && wiki.MealSkills.TryGetValue(entry, out var meal))
+                {
+                    <WikiMealSkillPage Skill="meal" Wiki="wiki" />
+                }
+                else
+                {
+                    <WikiIntro Section="section" Wiki="wiki" Missing="@entry" />
+                }
+            }
+            else if (section == Tab.WikiArmor)
             {
                 if (entry is not null && wiki.Sets.TryGetValue(entry, out var set))
                 {
@@ -138,8 +192,32 @@ else
     private static string SearchHint(Tab section) => section switch
     {
         Tab.WikiArmor => "Set, piece or skill…",
+        Tab.WikiItems => "Item, effect or ingredient…",
+        Tab.WikiMeals => "Meal skill or effect…",
         _ => "Skill, set bonus or effect…",
     };
+
+    private static string ListName(Tab section) => section switch
+    {
+        Tab.WikiArmor => "armor sets",
+        Tab.WikiItems => "items",
+        Tab.WikiMeals => "meal skills",
+        _ => "skills",
+    };
+
+    private static string CategoryTitle(WikiIndex wiki, string key) =>
+        wiki.Data.ItemCategories?.FirstOrDefault(c => c.Key == key)?.Title ?? key;
+
+    /// <summary>The items in their categories' order (the data's own order within each).</summary>
+    private IEnumerable<WikiItem> Items(WikiIndex wiki)
+    {
+        var order = (wiki.Data.ItemCategories ?? []).Select(c => c.Key).ToList();
+        var shown = (wiki.Data.Items ?? []).OrderBy(i => order.IndexOf(i.Category) is var n && n < 0 ? int.MaxValue : n);
+        return LooseSearch.Filter(shown, i => wiki.ItemText[i.Name], Query(Tab.WikiItems));
+    }
+
+    private IEnumerable<WikiMealSkill> MealSkills(WikiIndex wiki) =>
+        LooseSearch.Filter((wiki.Data.Meals?.Skills ?? []).OrderBy(m => m.Name), m => wiki.MealText[m.Name], Query(Tab.WikiMeals));
 
     /// <summary>Every skill, set and group bonuses among them, by name; the filter narrows to one of the two.</summary>
     private IEnumerable<WikiSkill> Skills(WikiIndex wiki)

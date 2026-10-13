@@ -4,7 +4,8 @@ Run from the workspace root:  python tools/fetch_icons.py [--force]
 
 Sources: monsterhunterwiki.org (MediaWiki). The icon images are Capcom's Monster Hunter Wilds UI assets as uploaded
 there. Only small (100-120 px) UI icons are fetched: skill-category icons, decoration icons per level / slot kind /
-color, armor-piece and weapon icons per rarity, talisman icons, element (blight) icons.
+color, armor-piece and weapon icons per rarity, talisman icons, element (blight) icons, and the icons of the items the wiki
+shows (read from data/wiki.json, so run tools/build_wiki.py first).
 Writes src/MHWildsOptimizer.Web/client/public/icons/<category>/<name> and a manifest.json next to them.
 """
 import json
@@ -19,6 +20,7 @@ API = 'https://monsterhunterwiki.org/api.php'
 UA = 'MHWildsOptimizer-icon-fetch/0.1 (build optimizer web UI; fetches small UI icons once)'
 OUT = os.path.join('src', 'MHWildsOptimizer.Web', 'client', 'public', 'icons')
 FORCE = '--force' in sys.argv
+WIKI = os.path.join('data', 'wiki.json')
 
 # mhdb skill icon kind -> wiki icon name
 SKILL_KINDS = {
@@ -36,6 +38,14 @@ WEAPONS = {
     'light-bowgun': 'Light_Bowgun',
 }
 ELEMENTS = ['Fire', 'Water', 'Thunder', 'Ice', 'Dragon']
+# mhdb item icon kind -> wiki icon name (matched by eye: a potion's jar is "Medicine", a drink's flask "Vial", the powder pile "Charm")
+ITEM_KINDS = {
+    'potion': 'Medicine', 'curative': 'Vial', 'powder': 'Charm', 'drug': 'Drug', 'pill': 'Pill', 'seed': 'Seed', 'meat': 'Meat',
+    'whetstone': 'Whetstone', 'smoke': 'Smoke_Bomb', 'trap': 'Trap', 'mushroom': 'Mushroom', 'plant': 'Herb',
+}
+# mhdb color -> wiki color, as for decorations; the rest by name
+ITEM_COLORS = {'sky': 'Light_Blue', 'ivory': 'Tan', 'moss-green': 'Moss', 'ultramarine': 'Dark_Blue', 'sage-green': 'Light_Green',
+               'dark-purple': 'Dark_Purple', 'blue-purple': 'Violet'}
 
 
 def kebab(s):
@@ -67,6 +77,12 @@ def wanted():
     files['ui/defense-up.png'] = 'MHWA-Defense_Up_Icon.png'
     files['ui/sharpness.png'] = 'MHWA-Restore_Sharpness_Icon.png'
     files['ui/decoration.png'] = 'UI-Decoration_Icon.png'
+    # the items the wiki shows (data/wiki.json, from tools/build_wiki.py)
+    if os.path.exists(WIKI):
+        for item in json.load(open(WIKI, encoding='utf-8')).get('items', []):
+            kind, color = item['icon'], item['icon_color']
+            if kind in ITEM_KINDS:
+                files[f'items/{kind}-{color}.png'] = f'MHWilds-{ITEM_KINDS[kind]}_Icon_{ITEM_COLORS.get(color, color.title())}.png'
     return files
 
 
@@ -119,11 +135,15 @@ def main():
         except Exception as e:  # keep going; report at the end
             print(f'failed {title}: {e}')
         time.sleep(0.15)
+    # entries other tools added (tools/cut_slot_icons.py) stay as long as their files do
+    path = os.path.join(OUT, 'manifest.json')
+    old = json.load(open(path, encoding='utf-8')).get('files', {}) if os.path.exists(path) else {}
+    kept = {rel: title for rel, title in old.items() if rel not in files and os.path.exists(os.path.join(OUT, rel))}
     manifest = {
         'source': 'https://monsterhunterwiki.org (MediaWiki file uploads)',
         'note': 'Monster Hunter Wilds UI icons are Capcom assets, fetched for a personal, non-commercial build optimizer UI.',
         'fetched_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-        'files': {rel: title for rel, title in sorted(files.items()) if os.path.exists(os.path.join(OUT, rel))},
+        'files': dict(sorted(({rel: title for rel, title in files.items() if os.path.exists(os.path.join(OUT, rel))} | kept).items())),
     }
     json.dump(manifest, open(os.path.join(OUT, 'manifest.json'), 'w', encoding='utf-8'), indent=1)
     present = len(manifest['files'])

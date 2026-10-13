@@ -1,0 +1,17 @@
+@inject AppState App
+@* An item by name: a link to its wiki page with its icon where the wiki has it, else just the name. *@
+@if (Wiki.Items.TryGetValue(Name, out var item))
+{
+    <button class="chip" @onclick="() => App.OpenWiki(Tab.WikiItems, item.Name)">
+        <img class="icon" width="18" height="18" src="@GameIcons.Item(item.Icon, item.IconColor)" alt="" />@item.Name
+    </button>
+}
+else
+{
+    <span class="chip">@Name</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+}

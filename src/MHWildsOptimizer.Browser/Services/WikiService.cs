@@ -48,6 +48,15 @@ public sealed class WikiIndex
         SetText = data.ArmorSets.ToDictionary(s => s.Name, s => string.Join('\n', [
             s.Name, s.GroupSkill, .. s.SetBonus, .. s.Pieces.Select(p => p.Name), .. s.Pieces.SelectMany(p => p.Skills).Select(k => k.Skill),
         ]).ToLowerInvariant());
+        Items = (data.Items ?? []).ToDictionary(i => i.Name);
+        ItemText = Items.Values.ToDictionary(i => i.Name, i => string.Join('\n', [
+            i.Name, i.Description, i.Boost, i.Stacking, .. i.Effects, .. i.Notes ?? [], .. i.Recipes?.SelectMany(r => r) ?? [],
+            (data.ItemCategories ?? []).FirstOrDefault(c => c.Key == i.Category)?.Title,
+        ]).ToLowerInvariant());
+        MealSkills = (data.Meals?.Skills ?? []).ToDictionary(m => m.Name);
+        MealText = MealSkills.Values.ToDictionary(m => m.Name, m => string.Join('\n', [
+            m.Name, m.Description, .. m.Effects, .. m.Notes ?? [],
+        ]).ToLowerInvariant());
     }
 
     public WikiData Data { get; }
@@ -59,4 +68,14 @@ public sealed class WikiIndex
 
     /// <summary>Lower-case text a search matches: set, piece, skill and bonus names.</summary>
     public IReadOnlyDictionary<string, string> SetText { get; }
+
+    public IReadOnlyDictionary<string, WikiItem> Items { get; }
+
+    /// <summary>Lower-case text a search matches: name, game text, effects, ingredients, category.</summary>
+    public IReadOnlyDictionary<string, string> ItemText { get; }
+
+    public IReadOnlyDictionary<string, WikiMealSkill> MealSkills { get; }
+
+    /// <summary>Lower-case text a search matches: name, game text, effects.</summary>
+    public IReadOnlyDictionary<string, string> MealText { get; }
 }

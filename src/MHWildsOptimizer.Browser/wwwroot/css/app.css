@@ -970,6 +970,20 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .wiki-piece-skills .linklike { color: var(--text); text-align: left; }
 .wiki-piece-skills.sum { flex-direction: row; flex-wrap: wrap; gap: 2px 14px; }
 .wiki-total td { border-top: 2px solid var(--border-2); }
+.wiki-list-head { padding: 10px 12px 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+.wiki-row-note { flex: none; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiki-head.item, .wiki-head.meal { border-left-color: var(--accent); }
+.wiki-item-stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-bottom: 10px; }
+.wiki-item-stats > div { display: flex; flex-direction: column; gap: 2px; }
+.wiki-item-stats b { font-size: 16px; }
+.wiki-item-effects { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 4px; font-weight: 600; }
+.wiki-stacking { margin: 0 0 10px; }
+.wiki-stacking .tiny { text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px; }
+.table.wiki-item-table td { padding-top: 4px; padding-bottom: 4px; }
+.table.wiki-item-table td:nth-child(2) { white-space: nowrap; }
+/* meal tables carry sentences: let them wrap, keep the first column readable */
+.wiki-meal-table td:not(:first-child) { white-space: normal; }
+.wiki-meal-table td:first-child { min-width: 10em; }
 @media (max-width: 900px), (pointer: fine) and (max-width: 1350px) {
   .wiki { grid-template-columns: 1fr; }
   .wiki-side { position: static; max-height: none; }

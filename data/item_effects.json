@@ -1,0 +1,234 @@
+{
+ "_about": "The consumables the wiki shows and what they do in numbers (tools/build_wiki.py folds them into data/wiki.json with the game's text, icon, rarity and recipes from data/raw/items.json). Curated 2026-10-13. Numbers from the game data: data/datamine/PlayerItemParam.json (dtlnor/MHWs-in-json; internal names: Kijin = Demon, Kouka = Armor/Hardshell, Kairiki = Might, Nintai = Adamant, Kanpou = Herbal, Elixir = Max Potion, _G = the stronger version). Stacking from game8 (archives/501955), Fextralife item pages and Steam tests. boost and duration are the short forms for the overview tables. confidence: high = game data and the game's text or a community test agree, medium = game data whose meaning is inferred or one secondary source, low = unverified.",
+ "categories": [
+  {"key": "attack", "title": "Attack", "about": "Three separate boosts that add up: a drink (Demondrug or Mega Demondrug, the Mega one replaces the other), a seed or pill (Might Seed or Might Pill, only the higher counts; the Xu Wu set bonus Protein Fiend shares this slot) and Demon Powder. The Powercharm counts on top of all of them, as does a meal's attack. Best stack: Mega Demondrug + Might Seed + Demon Powder + Powercharm = +33."},
+  {"key": "defense", "title": "Defense", "about": "The same pattern as attack: a drink (Armorskin or Mega Armorskin), a seed or pill (Adamant Seed or Adamant Pill), Hardshell Powder, and the Armorcharm on top."},
+  {"key": "healing", "title": "Healing", "about": "Potions heal part at once and the rest over a few seconds. Max and Ancient Potions also raise the health gauge to its maximum for 15 minutes."},
+  {"key": "stamina", "title": "Food and stamina", "about": "Food raises the stamina (and for steaks the health) gauge. A Ration is also what the Portable BBQ Grill cooks a meal from: see Meals."},
+  {"key": "cures", "title": "Cures and climate", "about": "Blight cures and the hot / cold area drinks. A Sizzling Meal skill makes the drinks unnecessary."}
+ ],
+ "items": {
+  "Demondrug": {
+   "category": "attack", "boost": "Attack +5", "duration": "30 min",
+   "effects": ["Attack +5 for 30 minutes"],
+   "stacking": "Stacks with Might Seed / Might Pill, Demon Powder, the Powercharm and meal attack. Not with Mega Demondrug: the stronger drink replaces it.",
+   "notes": ["Fextralife says the effect persists through fainting; one Steam user says only the Mega version does. Unconfirmed."],
+   "related": ["Mega Demondrug", "Might Seed", "Demon Powder", "Powercharm"],
+   "source": "PlayerItemParam _KijinDrink_AddAttack 5, _KijinDrink_Time 1800 s; stacking: Fextralife, Steam tests", "confidence": "high"
+  },
+  "Mega Demondrug": {
+   "category": "attack", "boost": "Attack +7", "duration": "30 min",
+   "effects": ["Attack +7 for 30 minutes"],
+   "stacking": "Stacks with Might Seed / Might Pill, Demon Powder, the Powercharm and meal attack. Replaces a Demondrug's +5 rather than adding to it.",
+   "notes": ["Some guides say +10: the game data says +7."],
+   "related": ["Demondrug", "Might Seed", "Demon Powder", "Powercharm"],
+   "source": "PlayerItemParam _KijinDrink_G_AddAttack 7, _KijinDrink_G_Time 1800 s; stacking: Steam tests", "confidence": "high"
+  },
+  "Might Seed": {
+   "category": "attack", "boost": "Attack +10", "duration": "3 min",
+   "effects": ["Attack +10 for 3 minutes"],
+   "stacking": "Shares one boost with Might Pill and the Protein Fiend set bonus (Xu Wu's Vigor): only the highest applies. While a Might Pill runs, the seed's +10 is suspended and comes back when the pill ends, if the seed's own 3 minutes are not over. Stacks with the Demondrugs, Demon Powder and the Powercharm.",
+   "related": ["Might Pill", "Demon Powder", "Demondrug"],
+   "source": "PlayerItemParam _Kairiki_AddAttack 10, _Kairiki_Time 180 s; stacking: game8 501955, Fextralife Might Pill", "confidence": "high"
+  },
+  "Might Pill": {
+   "category": "attack", "boost": "Attack +25", "duration": "21 s",
+   "effects": ["Attack +25 for 21 seconds"],
+   "stacking": "Overrides a Might Seed (and Protein Fiend) while it runs: only the highest of the three applies. Stacks with the Demondrugs, Demon Powder and the Powercharm.",
+   "notes": ["Guides say 20 seconds; the game data says 21."],
+   "related": ["Might Seed", "Demon Powder", "Mega Demondrug"],
+   "source": "PlayerItemParam _Kairiki_G_AddAttack 25, _Kairiki_G_Time 21 s; stacking: game8 501955", "confidence": "high"
+  },
+  "Demon Powder": {
+   "category": "attack", "boost": "Attack +10 (area)", "duration": "3 min",
+   "effects": ["Attack +10 for 3 minutes, for you and every hunter nearby"],
+   "stacking": "Reported to stack with Might Seed / Might Pill, the Demondrugs and the Powercharm (community reports, no status-screen test found). Demon Ammo gives the same +10; whether the two add up is unknown.",
+   "notes": ["EZ Demon Powder (handed out on some quests) gives the same boost."],
+   "related": ["Might Seed", "Might Pill", "Mega Demondrug"],
+   "source": "PlayerItemParam _KijinPowder_AddAttack 10, _KijinPowder_Time 180 s; stacking: Fextralife, Steam", "confidence": "medium"
+  },
+  "Powercharm": {
+   "category": "attack", "boost": "Attack +6", "duration": "while carried",
+   "effects": ["Attack +6 as long as it is in your item pouch"],
+   "stacking": "Stacks with everything.",
+   "notes": ["Matches the status screen (checked 2026-10-08). The optimizer counts it by default (\"Powercharm in the pouch\" under Conditions)."],
+   "related": ["Armorcharm", "Mega Demondrug"],
+   "source": "PlayerItemParam _Talisman_Attack_Add 6; status-screen readings", "confidence": "high"
+  },
+  "Armorskin": {
+   "category": "defense", "boost": "Defense +15", "duration": "30 min",
+   "effects": ["Defense +15 for 30 minutes"],
+   "stacking": "Stacks with Adamant Seed / Pill, Hardshell Powder and the Armorcharm. Not with Mega Armorskin: the stronger drink replaces it.",
+   "notes": ["Fextralife says the effect persists through fainting. Unconfirmed."],
+   "related": ["Mega Armorskin", "Adamant Seed", "Hardshell Powder", "Armorcharm"],
+   "source": "PlayerItemParam _KoukaDrink_AddDefence 15, _KoukaDrink_Time 1800 s; stacking: Steam tests", "confidence": "high"
+  },
+  "Mega Armorskin": {
+   "category": "defense", "boost": "Defense +25", "duration": "30 min",
+   "effects": ["Defense +25 for 30 minutes"],
+   "stacking": "Stacks with Adamant Seed / Pill, Hardshell Powder and the Armorcharm. Replaces an Armorskin's +15.",
+   "related": ["Armorskin", "Adamant Seed", "Hardshell Powder", "Armorcharm"],
+   "source": "PlayerItemParam _KoukaDrink_G_AddDefence 25, _KoukaDrink_G_Time 1800 s", "confidence": "high"
+  },
+  "Adamant Seed": {
+   "category": "defense", "boost": "Defense +20", "duration": "3 min",
+   "effects": ["Defense +20 for 3 minutes"],
+   "stacking": "Presumably shares one boost with the Adamant Pill like Might Seed and Might Pill do (not confirmed). Stacks with the Armorskins, Hardshell Powder and the Armorcharm.",
+   "related": ["Adamant Pill", "Hardshell Powder", "Mega Armorskin"],
+   "source": "PlayerItemParam _Nintai_AddDefence 20, _Nintai_Time 180 s", "confidence": "high"
+  },
+  "Adamant Pill": {
+   "category": "defense", "boost": "Defense ×1.3", "duration": "90 s",
+   "effects": ["Defense ×1.3 for 90 seconds"],
+   "stacking": "A multiplier, not a flat bonus. Presumably overrides an Adamant Seed while it runs (not confirmed).",
+   "notes": ["A Steam user timed it at about 2:15; unexplained."],
+   "related": ["Adamant Seed", "Hardshell Powder", "Mega Armorskin"],
+   "source": "PlayerItemParam _Nintai_G_DefenceRate 1.3, _Nintai_G_Time 90 s", "confidence": "high"
+  },
+  "Hardshell Powder": {
+   "category": "defense", "boost": "Defense +20 (area)", "duration": "3 min",
+   "effects": ["Defense +20 for 3 minutes, for you and every hunter nearby"],
+   "stacking": "Stacks with the Armorskins, Adamant Seed / Pill and the Armorcharm (by analogy with Demon Powder).",
+   "notes": ["Armor Ammo gives the same +20 for 3 minutes."],
+   "related": ["Adamant Seed", "Adamant Pill", "Mega Armorskin"],
+   "source": "PlayerItemParam _KoukaPowder_AddDefence 20, _KoukaPowder_Time 180 s", "confidence": "medium"
+  },
+  "Armorcharm": {
+   "category": "defense", "boost": "Defense +12", "duration": "while carried",
+   "effects": ["Defense +12 as long as it is in your item pouch"],
+   "stacking": "Stacks with everything.",
+   "related": ["Powercharm", "Mega Armorskin"],
+   "source": "PlayerItemParam _Talisman_Defence_Add 12", "confidence": "high"
+  },
+  "Potion": {
+   "category": "healing", "boost": "Heals 35",
+   "effects": ["Heals 10 at once, then 25 more over about 3 seconds: 35 in total"],
+   "related": ["Mega Potion", "Max Potion"],
+   "source": "PlayerItemParam _Potion_HealParam: _StartHealValue 10, _HealValue 25; the Mega Potion's 15 + 55 = 70 matches game8", "confidence": "high"
+  },
+  "Mega Potion": {
+   "category": "healing", "boost": "Heals 70",
+   "effects": ["Heals 15 at once, then 55 more over about 3 seconds: 70 in total"],
+   "related": ["Potion", "Max Potion"],
+   "source": "PlayerItemParam _Potion_G_HealParam: _StartHealValue 15, _HealValue 55; game8 501851: up to 70 over 4 s", "confidence": "high"
+  },
+  "Max Potion": {
+   "category": "healing", "boost": "Full heal, health gauge +50", "duration": "15 min",
+   "effects": ["Heals fully", "Maximum health +50 (the gauge's full 150) for 15 minutes"],
+   "related": ["Ancient Potion", "Mega Potion"],
+   "source": "PlayerItemParam _Elixir_AddHealthParam: _AddValue 50, _Time 900 s (Elixir = Max Potion, inferred)", "confidence": "medium"
+  },
+  "Ancient Potion": {
+   "category": "healing", "boost": "Full heal, health and stamina gauges maxed", "duration": "15 min",
+   "effects": ["Heals fully", "Maximum health +50 for 15 minutes", "Stamina gauge to its maximum (150)"],
+   "related": ["Max Potion"],
+   "source": "PlayerItemParam _Elixir_G_AddHealthParam 50 / 900 s, _Elixir_G_AddStamina 150", "confidence": "medium"
+  },
+  "Herbal Medicine": {
+   "category": "healing", "boost": "Heals 20, cures poison",
+   "effects": ["Heals 20", "Cures poison"],
+   "related": ["Herbal Powder", "Antidote"],
+   "source": "PlayerItemParam _Kanpou_HealValue 20; item text", "confidence": "high"
+  },
+  "Lifepowder": {
+   "category": "healing", "boost": "Heals 35 (area)",
+   "effects": ["Heals 35 for you and every hunter nearby"],
+   "related": ["Dust of Life", "Herbal Powder"],
+   "source": "PlayerItemParam _LifePowder_Heal 35", "confidence": "high"
+  },
+  "Dust of Life": {
+   "category": "healing", "boost": "Heals 60 (area)",
+   "effects": ["Heals 60 for you and every hunter nearby"],
+   "related": ["Lifepowder"],
+   "source": "PlayerItemParam _LifePowder_G_Heal 60", "confidence": "high"
+  },
+  "Herbal Powder": {
+   "category": "healing", "boost": "Heals 20, cures poison (area)",
+   "effects": ["Heals 20 and cures poison for you and every hunter nearby"],
+   "related": ["Herbal Medicine", "Lifepowder"],
+   "source": "PlayerItemParam _KanpouPowder_Heal 20; item text", "confidence": "high"
+  },
+  "Immunizer": {
+   "category": "healing", "boost": "Recovery ×3", "duration": "5 min",
+   "effects": ["Natural recovery of the red part of the health gauge ×3 for 5 minutes"],
+   "related": ["Potion"],
+   "source": "PlayerItemParam _Immunizer_HealRate 3, _Immunizer_Time 300 s; Fextralife: 5 minutes", "confidence": "high"
+  },
+  "Ration": {
+   "category": "stamina", "boost": "Stamina +25",
+   "effects": ["Stamina +25"],
+   "notes": ["The Portable BBQ Grill cooks a meal from a Ration in the pouch."],
+   "related": ["Well-done Steak", "Energy Drink"],
+   "source": "PlayerItemParam _Ration_AddStamina 25", "confidence": "high"
+  },
+  "Well-done Steak": {
+   "category": "stamina", "boost": "Health and stamina gauges +50", "duration": "30 min",
+   "effects": ["Maximum health +50 for 30 minutes", "Stamina +50"],
+   "notes": ["Eating it starts Protein Fiend (Xu Wu's Vigor set bonus): attack +15 / +30 for 3 minutes."],
+   "related": ["Rare Steak", "Burnt Meat", "Ration"],
+   "source": "PlayerItemParam _WellDone_Steak_AddHealthParam 50 / 1800 s, _WellDone_Steak_AddStamina 50", "confidence": "high"
+  },
+  "Rare Steak": {
+   "category": "stamina", "boost": "Health and stamina gauges +25", "duration": "30 min",
+   "effects": ["Maximum health +25 for 30 minutes", "Stamina +25"],
+   "related": ["Well-done Steak", "Burnt Meat"],
+   "source": "PlayerItemParam _Rare_Steak_AddHealthParam 25 / 1800 s, _Rare_Steak_AddStamina 25", "confidence": "high"
+  },
+  "Burnt Meat": {
+   "category": "stamina", "boost": "Stamina +25, maybe health +25", "duration": "30 min",
+   "effects": ["Stamina +25", "Half the time also maximum health +25 for 30 minutes"],
+   "notes": ["The 50% is the data's _Burnt_Steak_SuccessRate 0.5, read together with the item text (\"may be a bit too charred to provide any healing\"): inferred."],
+   "related": ["Well-done Steak", "Rare Steak"],
+   "source": "PlayerItemParam _Burnt_Steak_AddHealthParam 25 / 1800 s, _Burnt_Steak_AddStamina 25, _Burnt_Steak_SuccessRate 0.5", "confidence": "medium"
+  },
+  "Energy Drink": {
+   "category": "stamina", "boost": "Stamina +25, wakes you",
+   "effects": ["Stamina +25", "Wakes you from sleep"],
+   "notes": ["Whether the +25 refills stamina or raises the gauge is not in the data."],
+   "related": ["Dash Juice", "Ration"],
+   "source": "PlayerItemParam _EnergyDrink_AddStamina 25; item text", "confidence": "medium"
+  },
+  "Dash Juice": {
+   "category": "stamina", "boost": "Stamina use ×0.75", "duration": "3 min",
+   "effects": ["Stamina +50", "Stamina use ×0.75 for 3 minutes"],
+   "related": ["Energy Drink"],
+   "source": "PlayerItemParam _DashJuice_AddStamina 50, _DashJuice_StaiminaReduceRate 0.75, _DashJuice_Time 180 s", "confidence": "high"
+  },
+  "Antidote": {
+   "category": "cures", "boost": "Cures poison",
+   "effects": ["Cures poison"],
+   "related": ["Herbal Medicine", "Nulberry"],
+   "source": "Item text", "confidence": "high"
+  },
+  "Nulberry": {
+   "category": "cures", "boost": "Cures blights",
+   "effects": ["Cures blights such as fireblight and waterblight"],
+   "related": ["Antidote", "Cleanser", "Deodorant"],
+   "source": "Item text (\"cures various blights\"); which ones exactly is not listed", "confidence": "medium"
+  },
+  "Cleanser": {
+   "category": "cures", "boost": "Removes frost and webbing",
+   "effects": ["Removes frost or webbing on you at once"],
+   "related": ["Nulberry", "Deodorant"],
+   "source": "Item text", "confidence": "high"
+  },
+  "Deodorant": {
+   "category": "cures", "boost": "Cures blast and stench (area)",
+   "effects": ["Cures blastblight and stench for you and everyone in the cloud"],
+   "related": ["Nulberry", "Cleanser"],
+   "source": "Item text", "confidence": "high"
+  },
+  "Hot Drink": {
+   "category": "cures", "boost": "Cold protection", "duration": "10 min",
+   "effects": ["Negates the effects of cold areas for 10 minutes"],
+   "related": ["Cool Drink"],
+   "source": "PlayerItemParam _HotDrink_Time 600 s", "confidence": "high"
+  },
+  "Cool Drink": {
+   "category": "cures", "boost": "Heat protection", "duration": "10 min",
+   "effects": ["Negates the effects of hot areas for 10 minutes"],
+   "related": ["Hot Drink"],
+   "source": "PlayerItemParam _CoolerDrink_Time 600 s", "confidence": "high"
+  }
+ }
+}

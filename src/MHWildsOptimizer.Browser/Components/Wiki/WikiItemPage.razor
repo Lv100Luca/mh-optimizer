@@ -1,0 +1,128 @@
+@inject AppState App
+@* An item's wiki page: the game's text, what it does in numbers, what it stacks with, and how it is made. *@
+@{
+    var i = Item;
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head item">
+        <div class="wiki-title">
+            <img class="icon" width="36" height="36" src="@GameIcons.Item(i.Icon, i.IconColor)" alt="" />
+            <div>
+                <h1>@i.Name</h1>
+                <div class="chip-row">
+                    <span class="muted small">@CategoryTitle</span>
+                    <RarityBadge Rarity="i.Rarity" />
+                    <span class="muted small">carry @i.CarryLimit</span>
+                </div>
+            </div>
+        </div>
+        @if (i.Description is { } d)
+        {
+            <p class="wiki-desc">@d</p>
+        }
+    </section>
+
+    <Section Title="What it does" Key="wiki-item-effect" Collapsible="false">
+        @if (i.Boost is not null || i.Duration is not null)
+        {
+            <div class="wiki-item-stats">
+                @if (i.Boost is { } boost)
+                {
+                    <div><span class="muted tiny">Effect</span><b>@boost</b></div>
+                }
+                @if (i.Duration is { } duration)
+                {
+                    <div><span class="muted tiny">Lasts</span><b>@duration</b></div>
+                }
+            </div>
+        }
+        <ul class="wiki-item-effects">
+            @foreach (var line in i.Effects)
+            {
+                <li>@line</li>
+            }
+        </ul>
+        @if (i.Stacking is { } stacking)
+        {
+            <p class="wiki-stacking"><span class="muted tiny">Stacking</span> @stacking</p>
+        }
+        @if (i.Notes is { Count: > 0 } notes)
+        {
+            <ul class="wiki-notes">
+                @foreach (var n in notes)
+                {
+                    <li>@n</li>
+                }
+            </ul>
+        }
+        <p class="wiki-source tiny">
+            <span class="wiki-conf @i.Confidence" title="@ConfidenceHint(i.Confidence)">@(i.Confidence ?? "unrated") confidence</span>
+            <span class="muted">@i.Source</span>
+        </p>
+    </Section>
+
+    @if (i.Recipes is { Count: > 0 } || i.UsedIn is { Count: > 0 } || i.Related is { Count: > 0 })
+    {
+        <Section Title="Crafting and related items" Key="wiki-item-craft" Collapsible="false">
+            @if (i.Recipes is { Count: > 0 } recipes)
+            {
+                <div class="wiki-src">
+                    <h3>Made from</h3>
+                    @foreach (var recipe in recipes)
+                    {
+                        <div class="chip-row">
+                            @for (var k = 0; k < recipe.Count; k++)
+                            {
+                                var part = recipe[k];
+                                @if (k > 0)
+                                {
+                                    <span class="muted">+</span>
+                                }
+                                <ItemChip Name="@part" Wiki="Wiki" />
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            @if (i.UsedIn is { Count: > 0 } usedIn)
+            {
+                <div class="wiki-src">
+                    <h3>Used to make</h3>
+                    <div class="chip-row">
+                        @foreach (var name in usedIn)
+                        {
+                            <ItemChip Name="@name" Wiki="Wiki" />
+                        }
+                    </div>
+                </div>
+            }
+            @if (i.Related is { Count: > 0 } related)
+            {
+                <div class="wiki-src">
+                    <h3>Compare with</h3>
+                    <div class="chip-row">
+                        @foreach (var name in related)
+                        {
+                            <ItemChip Name="@name" Wiki="Wiki" />
+                        }
+                    </div>
+                </div>
+            }
+        </Section>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiItem Item { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+
+    private string CategoryTitle => Wiki.Data.ItemCategories?.FirstOrDefault(c => c.Key == Item.Category)?.Title ?? Item.Category;
+
+    private static string ConfidenceHint(string? confidence) => confidence switch
+    {
+        "high" => "Game data and an independent test or the game's own text agree",
+        "medium" => "One good source, or game data whose meaning is inferred",
+        "low" => "A single secondary source or an unverified reading: take with salt",
+        _ => "",
+    };
+}

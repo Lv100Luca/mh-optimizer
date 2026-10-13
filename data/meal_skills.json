@@ -1,0 +1,315 @@
+{
+ "_about": "Meals and meal skills for the wiki (tools/build_wiki.py folds this into data/wiki.json). Curated 2026-10-13. Names and game texts: the game's English MealSkill.msg (dtlnor/MHWs-in-json natives/STM/GameDesign/Text/Excel_Equip/MealSkill.msg.23.json). Numbers: data/datamine/PlayerMealSkillParam.json, MealData / FoodData / MealDataLifeArea / MealDataLobby / MealSkillRandomTable (same dump), cross-checked with kiranico (data/food-skills), monsterhunterwiki.org (Meals_(MHWilds)), game8 (482549, 504746) and Fextralife. Durations are those since patch 1.021; older guides still show 30/50, 60 and 50 minutes. icon: the skill-category icon the game shows (MealSkillData _SkillIcon). Two unused entries (SKILL_031, SKILL_032, no name) are left out.",
+ "about": [
+  "A meal raises your health gauge by 50 and your stamina gauge to its maximum 150, adds attack, defense or elemental resistance, and gives meal skills. The boosts and the skills last until the meal runs out; eating again replaces the old meal and restarts the timer, and the timer stands still in camps, towns, the Grand Hub and the tent.",
+  "At the Portable BBQ Grill (from a Ration in the pouch, or at a tent) you pick a ration type and optionally one additional ingredient and one finishing touch. Each ingredient brings its own skill plus one random skill, so a grilled meal carries up to four. A meal invitation in a settlement or a Grand Hub Canteen voucher gives the bigger stat boosts and three fixed skills plus two random ones.",
+  "The optimizer counts a meal's attack after the percentage bonuses: the meal attack field under Conditions (+5 for an invitation or Canteen meal, +2 for grilled meat)."
+ ],
+ "tables": [
+  {
+   "title": "What a meal gives",
+   "columns": ["Meal", "Health", "Stamina", "Attack", "Defense", "Elem. res.", "Lasts", "Skills"],
+   "rows": [
+    ["Grill: Meat ration", "+50", "150", "+2", "", "", "50 min", "from ingredients"],
+    ["Grill: Fish ration", "+50", "150", "", "+4", "", "50 min", "from ingredients"],
+    ["Grill: Veggie ration", "+50", "150", "", "+2", "+3", "50 min", "from ingredients"],
+    ["+ additional ingredient", "", "", "", "", "", "+20 min", "its own + 1 random"],
+    ["+ finishing touch", "", "", "", "", "+5", "", "its own + 1 random"],
+    ["Meal invitation (settlement)", "+50", "150", "+5", "+10", "+10", "90 min", "3 fixed + 2 random"],
+    ["Grand Hub Canteen (voucher)", "+50", "150", "+5", "+10", "+10", "70 min", "3 fixed + 2 random"]
+   ]
+  },
+  {
+   "title": "Grill ingredients and their skills",
+   "columns": ["Ingredient", "Kind", "Skill"],
+   "rows": [
+    ["Kunafa Cheese", "additional ingredient", "Defender Meal (Lo)"],
+    ["Sharp Kunafa Cheese", "premium ingredient", "Defender Meal (Hi)"],
+    ["Droolshroom", "additional ingredient", "Black Belt Meal (Lo)"],
+    ["Delishroom", "premium ingredient", "Black Belt Meal (Hi)"],
+    ["Mud Shrimp", "additional ingredient", "Tumbler Meal (Lo)"],
+    ["Turbid Shrimp", "premium ingredient", "Tumbler Meal (Hi)"],
+    ["Fluffy Egg", "additional ingredient", "Caprice Meal (Lo)"],
+    ["Airy Egg", "premium ingredient", "Caprice Meal (Hi)"],
+    ["Sild Garlic", "additional ingredient", "Moxie Meal (Lo)"],
+    ["Specialty Sild Garlic", "premium ingredient", "Moxie Meal (Hi)"],
+    ["Wild Herb", "finishing touch", "Immunizer Meal"],
+    ["Eastern Honey", "finishing touch", "Medic Meal"],
+    ["Monster Chili", "finishing touch", "Sizzling Meal"],
+    ["Jeweled Mullet Roe", "finishing touch", "Swimmer Meal"],
+    ["Wild Seed Oil", "finishing touch", "Specialist Meal"],
+    ["Truffle Du Conga", "finishing touch", "Gatherer Meal"]
+   ]
+  },
+  {
+   "title": "Settlement and Canteen meals",
+   "columns": ["Meal", "Where", "Fixed skills"],
+   "rows": [
+    ["Springy Kunafa Cuisine", "Y'sai in Kunafa; Kunafa Meal Voucher", "Lucky, Insurance, Defender (Hi)"],
+    ["Hot Azuz Cuisine", "Maki in Azuz; Azuz Meal Voucher", "Carver, Insurance, Tumbler (Hi)"],
+    ["Fresh Sild Cuisine", "Tasheen in Sild; Sild Meal Voucher", "Capture Pro, Insurance, Moxie (Hi)"],
+    ["Colorful Suja Cuisine", "the Allhearken in Suja; Suja Meal Voucher", "Exploiter, Insurance, Caprice (Hi)"],
+    ["Blossomdance Sushi Meal", "festival voucher", "Defender (Hi), Gatherer, Riser"],
+    ["Flamefete Barbecue Meal", "festival voucher", "Moxie (Hi), Swimmer, Balanced"],
+    ["Dreamspell Tea Time Stand", "festival voucher", "Insurance, Medic, Break-time"],
+    ["Lumenhymn Ceremonial Platter", "festival voucher", "Insurance, Immunizer, Fortune Hunter"],
+    ["Classic Tonkotsu Ramen", "ICHIRAN Order Form", "Extra Noodles, Spicy Red (Attack), Sizzling"],
+    ["100% Tonkotsu-Free Ramen", "ICHIRAN Order Form", "Extra Noodles, Spicy Red (Energy), Sizzling"]
+   ]
+  },
+  {
+   "title": "Random skills",
+   "columns": ["Rolled by", "Pool"],
+   "rows": [
+    ["Normal ingredients, finishing touches, settlement meals", "13 skills, equal chance (1 in 13): Rider, Riser, Iron Carver, Escape Artist, Balanced, Trainer, Bulldozer, Hardy, Piping-Hot, Break-time, Fortune Hunter, Fisher, Top Cat"],
+    ["Premium ingredients", "Black Belt, Tumbler, Moxie, Caprice (Lo) 10% each; 12 of the 13 above 5% each (no Riser)"],
+    ["Festival and ICHIRAN meals", "their own pools: the Lo (Lumenhymn also Hi) combat skills, Lucky, Carver, Capture Pro, Exploiter and most of the 13"]
+   ]
+  }
+ ],
+ "notes": [
+  "Whether a meal survives fainting in Wilds: no source found.",
+  "A log message probably appears 5 minutes before the meal runs out (_MealEffectEndingLogTime 300).",
+  "Whether a random roll can repeat a skill the meal already has is not in the data."
+ ],
+ "source": "Game data (MealData, FoodData, MealDataLifeArea, MealDataLobby, MealSkillRandomTable, PlayerMealSkillParam) and game8 482549 / 504746 for the post-1.021 durations; monsterhunterwiki Meals_(MHWilds).",
+ "skills": {
+  "Defender Meal (Lo)": {
+   "icon": "defense", "description": "Sometimes decreases damage taken.",
+   "effects": ["12.5% chance per hit to take ×0.7 damage"],
+   "notes": ["Lo uses the data's small (_S) row: inferred, as for the other Lo / Hi pairs."],
+   "from": "Kunafa Cheese; random on some festival meals",
+   "source": "PlayerMealSkillParam _Defence_S_Probabiliry 12.5, _Defence_S_DamageRate 0.7", "confidence": "medium"
+  },
+  "Defender Meal (Hi)": {
+   "icon": "defense", "description": "Often decreases damage taken.",
+   "effects": ["25% chance per hit to take ×0.7 damage"],
+   "from": "Sharp Kunafa Cheese; Springy Kunafa Cuisine; Blossomdance Sushi Meal",
+   "source": "PlayerMealSkillParam _Defence_Probabiliry 25, _Defence_DamageRate 0.7", "confidence": "medium"
+  },
+  "Black Belt Meal (Lo)": {
+   "icon": "stamina", "description": "Reduces stamina depletion when performing stamina-draining moves such as evading, etc.",
+   "effects": ["Constitution +2 levels"],
+   "notes": ["Read from the data's name (MartialArts, Japanese 体術 = Constitution) and the game text."],
+   "from": "Droolshroom; random from premium ingredients",
+   "source": "PlayerMealSkillParam _MartialArts_S_Add_Lv 2", "confidence": "medium"
+  },
+  "Black Belt Meal (Hi)": {
+   "icon": "stamina", "description": "Greatly reduces stamina depletion when performing stamina-draining moves such as evading, etc.",
+   "effects": ["Constitution +3 levels"],
+   "notes": ["Read from the data's name (MartialArts, Japanese 体術 = Constitution) and the game text."],
+   "from": "Delishroom",
+   "source": "PlayerMealSkillParam _MartialArts_L_Add_Lv 3", "confidence": "medium"
+  },
+  "Tumbler Meal (Lo)": {
+   "icon": "utility", "description": "Slightly extends the invulnerability period when evading.",
+   "effects": ["Evade Window +2 levels"],
+   "notes": ["Read from the data's name (DodgeNoHit, Japanese 回避性能 = Evade Window) and the game text."],
+   "from": "Mud Shrimp; random from premium ingredients",
+   "source": "PlayerMealSkillParam _DodgeNoHit_S_Add_Lv 2", "confidence": "medium"
+  },
+  "Tumbler Meal (Hi)": {
+   "icon": "utility", "description": "Extends the invulnerability period when evading.",
+   "effects": ["Evade Window +3 levels"],
+   "from": "Turbid Shrimp; Hot Azuz Cuisine",
+   "source": "PlayerMealSkillParam _DodgeNoHit_L_Add_Lv 3", "confidence": "medium"
+  },
+  "Moxie Meal (Lo)": {
+   "icon": "utility", "description": "Prevents fainting one time when damage taken exceeds your remaining health.",
+   "effects": ["Once: a hit that would make you faint leaves you alive instead"],
+   "from": "Sild Garlic; random from premium ingredients",
+   "source": "Game text", "confidence": "high"
+  },
+  "Moxie Meal (Hi)": {
+   "icon": "utility", "description": "Prevents fainting one time and heals you when damage taken exceeds your remaining health.",
+   "effects": ["Once: a hit that would make you faint leaves you alive instead", "Then heals 40"],
+   "from": "Specialty Sild Garlic; Fresh Sild Cuisine; Flamefete Barbecue Meal",
+   "source": "PlayerMealSkillParam _Guts_L_HealValue 40", "confidence": "medium"
+  },
+  "Caprice Meal (Lo)": {
+   "icon": "attack", "description": "Repeatedly activates a temporary attack boost at random intervals.",
+   "effects": ["Attack +7 for 10 seconds", "Again every 3, 4 or 5 minutes (about one third each)"],
+   "from": "Fluffy Egg; random from premium ingredients",
+   "source": "PlayerMealSkillParam _Uneven_S_AttackAdd 7, _Uneven_AttackAddTime 10, _Uneven_IntervalList 180 / 240 / 300 s at 34 / 33 / 33 %", "confidence": "high"
+  },
+  "Caprice Meal (Hi)": {
+   "icon": "attack", "description": "Repeatedly activates a large temporary attack boost at random intervals.",
+   "effects": ["Attack +15 for 10 seconds", "Again every 3, 4 or 5 minutes (about one third each)"],
+   "from": "Airy Egg; Colorful Suja Cuisine",
+   "source": "PlayerMealSkillParam _Uneven_L_AttackAdd 15, _Uneven_AttackAddTime 10, _Uneven_IntervalList", "confidence": "high"
+  },
+  "Immunizer Meal": {
+   "icon": "defense", "description": "Lessens the effects of various ailments.",
+   "effects": ["Ailment resistance +1 level"],
+   "notes": ["Which ailment skills the extra level applies to is not in the data."],
+   "from": "Wild Herb; Lumenhymn Ceremonial Platter",
+   "source": "PlayerMealSkillParam _Immunity_AddLv 1", "confidence": "low"
+  },
+  "Medic Meal": {
+   "icon": "health", "description": "Increases the amount of health recovered when healing.",
+   "effects": ["Recovery Up +1 level"],
+   "from": "Eastern Honey; Dreamspell Tea Time Stand",
+   "source": "PlayerMealSkillParam _HealUp_AddLv 1 (Japanese name お食事医療術)", "confidence": "medium"
+  },
+  "Sizzling Meal": {
+   "icon": "defense", "description": "Negates the effects of hot or cold conditions and increases defense while in such areas.",
+   "effects": ["No Hot or Cool Drink needed", "Defense +5 in hot or cold areas"],
+   "from": "Monster Chili; ICHIRAN ramens",
+   "source": "PlayerMealSkillParam _CoolHot_AddDefence 5", "confidence": "high"
+  },
+  "Swimmer Meal": {
+   "icon": "attack", "description": "Increases attack when wet.",
+   "effects": ["Attack +3 while wet"],
+   "from": "Jeweled Mullet Roe; Flamefete Barbecue Meal",
+   "source": "PlayerMealSkillParam _WaterAdjust_AddAttack 3", "confidence": "high"
+  },
+  "Specialist Meal": {
+   "icon": "element", "description": "Increases the potency of abnormal status attacks.",
+   "effects": ["Status buildup up"],
+   "notes": ["The data has +3 status, capture +1 and ×1.05 capture; what exactly they apply to is unclear."],
+   "from": "Wild Seed Oil",
+   "source": "PlayerMealSkillParam _ConditionAttack_AddCondition 3, _ConditionAttack_AddCapture 1, _ConditionAttack_RateCapture 1.05", "confidence": "low"
+  },
+  "Gatherer Meal": {
+   "icon": "gathering", "description": "Sometimes increases the number of resources per gather of bones, ore, and other gatherable items.",
+   "effects": ["30% chance of one extra item per gather"],
+   "from": "Truffle Du Conga; Blossomdance Sushi Meal",
+   "source": "PlayerMealSkillParam _CollectUp_Rate 30, _CollectUp_AddPick 1", "confidence": "medium"
+  },
+  "Insurance Meal": {
+   "icon": "utility", "description": "Prevents your group from being penalized the first time a member faints.",
+   "effects": ["The first faint of the quest does not count toward the faint limit"],
+   "from": "Every settlement / Canteen meal, Dreamspell and Lumenhymn meals; never random",
+   "source": "Game text", "confidence": "high"
+  },
+  "Lucky Meal": {
+   "icon": "gathering", "description": "Sometimes increases the number of reward items received at the end of a quest.",
+   "effects": ["Sometimes more quest reward items"],
+   "notes": ["No number in the data."],
+   "from": "Springy Kunafa Cuisine; random on festival meals",
+   "source": "Game text", "confidence": "medium"
+  },
+  "Carver Meal": {
+   "icon": "gathering", "description": "Allows you to carve an additional one or two times.",
+   "effects": ["One extra carve, with a 50% chance of a second"],
+   "notes": ["The 50% is in the data; that one carve is certain is read from the game text. game8 says one to three."],
+   "from": "Hot Azuz Cuisine; random on festival meals",
+   "source": "PlayerMealSkillParam _HagitoriAdd_Probabiliry 50", "confidence": "low"
+  },
+  "Capture Pro Meal": {
+   "icon": "gathering", "description": "Increases the rewards you receive for captures.",
+   "effects": ["More capture rewards"],
+   "notes": ["No number in the data."],
+   "from": "Fresh Sild Cuisine; random on festival meals",
+   "source": "Game text", "confidence": "medium"
+  },
+  "Exploiter Meal": {
+   "icon": "gathering", "description": "Increases the rewards you receive for fully exploiting a wound.",
+   "effects": ["40% chance of an extra reward when you destroy a wound"],
+   "from": "Colorful Suja Cuisine; random on festival meals",
+   "source": "PlayerMealSkillParam _ScarBreakerAdd_Probabiliry 40", "confidence": "medium"
+  },
+  "Rider Meal": {
+   "icon": "utility", "description": "Makes it easier to mount monsters.",
+   "effects": ["Mount buildup ×1.25"],
+   "notes": ["The data also has 1.4, probably the cap with other mount bonuses."],
+   "from": "Random",
+   "source": "PlayerMealSkillParam _BattleRide_RideRate 1.25, _BattleRide_RideRateMax 1.4", "confidence": "medium"
+  },
+  "Riser Meal": {
+   "icon": "utility", "description": "Extends the invulnerability period when getting up.",
+   "effects": ["0.5 seconds more invulnerability when getting up"],
+   "from": "Random; Blossomdance Sushi Meal",
+   "source": "PlayerMealSkillParam _StandUpNoHit_Time 0.5", "confidence": "medium"
+  },
+  "Iron Carver Meal": {
+   "icon": "utility", "description": "Prevents knockbacks from attacks while carving.",
+   "effects": ["No knockback from hits while carving"],
+   "from": "Random",
+   "source": "Game text", "confidence": "high"
+  },
+  "Escape Artist Meal": {
+   "icon": "stamina", "description": "Decreases stamina depletion when fleeing from large monsters.",
+   "effects": ["Stamina use ×0.5 while fleeing from large monsters"],
+   "from": "Random",
+   "source": "PlayerMealSkillParam _Escape_StaminaRate 0.5", "confidence": "medium"
+  },
+  "Balanced Meal": {
+   "icon": "utility", "description": "Prevents you from getting knocked on your butt.",
+   "effects": ["No tripping onto your butt"],
+   "from": "Random; Flamefete Barbecue Meal",
+   "source": "Game text", "confidence": "high"
+  },
+  "Trainer Meal": {
+   "icon": "utility", "description": "Speeds up Palico growth.",
+   "effects": ["Faster Palico growth"],
+   "notes": ["Fextralife says ×1.5 Palico experience; not in the data."],
+   "from": "Random",
+   "source": "Game text", "confidence": "medium"
+  },
+  "Bulldozer Meal": {
+   "icon": "attack", "description": "Increases attack power when you strike right after an attack is deflected.",
+   "effects": ["After a bounce: attack ×1.05 for 5 seconds"],
+   "from": "Random",
+   "source": "PlayerMealSkillParam _RecoilAttack_Rate 1.05, _RecoilAttack_Time 5 (meaning read from the names)", "confidence": "medium"
+  },
+  "Hardy Meal": {
+   "icon": "defense", "description": "Prevents damage and ailments from the environment.",
+   "effects": ["No damage or ailments from the environment"],
+   "from": "Random",
+   "source": "Game text", "confidence": "high"
+  },
+  "Piping-Hot Meal": {
+   "icon": "offense", "description": "Greatly increases attack when health is dangerously low.",
+   "effects": ["Attack ×1.35 while health is at 10 or below"],
+   "notes": ["Whether the data's 10 is health points or percent is open; Fextralife reads it as 10 health. game8 measured +64 on 187 attack (about ×1.34)."],
+   "from": "Random",
+   "source": "PlayerMealSkillParam _Heroics_AttackRate 1.35, _Heroics_HealthBorder 10; game8 504821", "confidence": "medium"
+  },
+  "Break-time Meal": {
+   "icon": "attack", "description": "Grants a temporary attack boost when you use the Sit gesture for a while.",
+   "effects": ["Sit (gesture) for 5 seconds: attack +15 for 30 seconds"],
+   "from": "Random; Dreamspell Tea Time Stand",
+   "source": "PlayerMealSkillParam _RestBuff_NeedSitTime 5, _RestBuff_AttackAdd 15, _RestBuff_Time 30", "confidence": "high"
+  },
+  "Fortune Hunter Meal": {
+   "icon": "gathering", "description": "Increases the amount of zenny received at the end of a quest.",
+   "effects": ["More zenny at the end of a quest"],
+   "notes": ["Fextralife says ×1.5; not in the data."],
+   "from": "Random; Lumenhymn Ceremonial Platter",
+   "source": "Game text", "confidence": "medium"
+  },
+  "Fisher Meal": {
+   "icon": "utility", "description": "Increases the likelihood that fish will bite when fishing.",
+   "effects": ["Fish bite more readily"],
+   "from": "Random",
+   "source": "Game text", "confidence": "high"
+  },
+  "Top Cat Meal": {
+   "icon": "offense", "description": "Powers up Palico attack and defense.",
+   "effects": ["Palico attack and defense up one level"],
+   "from": "Random",
+   "source": "PlayerMealSkillParam _OtomoUp_AddLv 1", "confidence": "medium"
+  },
+  "Extra Noodles Meal": {
+   "icon": "item", "description": "The first two food or drink items used in a quest can be used an extra time.",
+   "effects": ["The first 2 food or drink items you use in a quest are not used up"],
+   "from": "ICHIRAN ramens (collaboration)",
+   "source": "PlayerMealSkillParam _CollabManzoku_Num 2", "confidence": "high"
+  },
+  "Spicy Red Meal (Attack)": {
+   "icon": "attack", "description": "Using a food or drink item temporarily boosts Focus Strike wound destruction damage and part damage.",
+   "effects": ["After using a food or drink item: more Focus Strike wound and part damage for 30 seconds"],
+   "notes": ["How much more is not in the data."],
+   "from": "Classic Tonkotsu Ramen (ICHIRAN collaboration)",
+   "source": "PlayerMealSkillParam _CollabBreakKing_Time 30", "confidence": "medium"
+  },
+  "Spicy Red Meal (Energy)": {
+   "icon": "stamina", "description": "Using a food or drink item temporarily boosts stamina recovery speed.",
+   "effects": ["After using a food or drink item: faster stamina recovery for 60 seconds"],
+   "notes": ["How much faster is not in the data."],
+   "from": "100% Tonkotsu-Free Ramen (ICHIRAN collaboration)",
+   "source": "PlayerMealSkillParam _CollabStaminaHighSpeedRate_Time 60", "confidence": "medium"
+  }
+ }
+}

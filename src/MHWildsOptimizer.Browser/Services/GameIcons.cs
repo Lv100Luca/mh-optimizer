@@ -33,6 +33,9 @@ public static class GameIcons
 
     public static string Talisman(int rarity) => $"icons/talisman/r{Math.Clamp(rarity, 0, 8)}.png";
 
+    /// <summary>An item's icon by its wilds.mhdb.io icon kind and color ("drug", "red"); tools/fetch_icons.py fetches the wiki items' ones.</summary>
+    public static string Item(string kind, string color) => $"icons/items/{kind}-{color}.png";
+
     public static string? Element(Element element) => element == Core.Domain.Element.None ? null : $"icons/elements/{element.ToString().ToLowerInvariant()}.png";
 
     public const string Affinity = "icons/ui/affinity-up.png";

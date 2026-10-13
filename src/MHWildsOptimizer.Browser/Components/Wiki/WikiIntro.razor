@@ -8,6 +8,84 @@
     <Section Title="@Title" Key="wiki-intro" Collapsible="false">
         @switch (Section)
         {
+            case Tab.WikiItems:
+                <p>
+                    The consumables you carry on every hunt and what they do in numbers (the game's own texts only say "temporarily"):
+                    how much attack or defense, for how long, and which of them add up.
+                </p>
+                @foreach (var category in Wiki.Data.ItemCategories ?? [])
+                {
+                    var items = (Wiki.Data.Items ?? []).Where(i => i.Category == category.Key).ToList();
+                    if (items.Count == 0) continue;
+                    <h3 class="wiki-subhead">@category.Title</h3>
+                    @if (category.About is { } about)
+                    {
+                        <p class="muted small">@about</p>
+                    }
+                    <div class="dmg-scroll">
+                        <table class="table wiki-item-table">
+                            <thead><tr><th></th><th>Item</th><th>Effect</th><th>Lasts</th></tr></thead>
+                            <tbody>
+                                @foreach (var i in items)
+                                {
+                                    <tr>
+                                        <td class="icon-cell"><img class="icon" width="22" height="22" src="@GameIcons.Item(i.Icon, i.IconColor)" alt="" /></td>
+                                        <td><button class="linklike" @onclick="() => App.OpenWiki(Section, i.Name)">@i.Name</button></td>
+                                        <td>@(i.Boost ?? "—")</td>
+                                        <td class="num">@(i.Duration ?? "—")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                break;
+            case Tab.WikiMeals:
+                var meals = Wiki.Data.Meals;
+                @foreach (var line in meals?.About ?? [])
+                {
+                    <p>@line</p>
+                }
+                @foreach (var table in meals?.Tables ?? [])
+                {
+                    <div class="wiki-subtable wiki-meal-table">
+                        <h3>@table.Title</h3>
+                        <div class="dmg-scroll">
+                            <table class="table">
+                                <thead><tr>@foreach (var c in table.Columns) { <th>@c</th> }</tr></thead>
+                                <tbody>
+                                    @foreach (var row in table.Rows)
+                                    {
+                                        <tr>@foreach (var c in row) { <td>@c</td> }</tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                @if (meals?.Notes is { Count: > 0 } notes)
+                {
+                    <ul class="wiki-notes">
+                        @foreach (var n in notes)
+                        {
+                            <li>@n</li>
+                        }
+                    </ul>
+                }
+                @if (meals?.Source is { } source)
+                {
+                    <p class="wiki-source tiny muted">@source</p>
+                }
+                <h3 class="wiki-subhead">Meal skills</h3>
+                <div class="chip-row">
+                    @foreach (var m in (meals?.Skills ?? []).OrderBy(m => m.Name))
+                    {
+                        <button class="chip" @onclick="() => App.OpenWiki(Section, m.Name)">
+                            <img class="icon" width="18" height="18" src="@GameIcons.SkillGeneric(m.Icon)" alt="" />@m.Name
+                        </button>
+                    }
+                </div>
+                break;
             case Tab.WikiArmor:
                 <p>
                     Every armor set, high and low rank: each piece's skills, decoration slots (and what Armor Transcendence makes of them),
@@ -65,6 +143,8 @@
     private string Title => Section switch
     {
         Tab.WikiArmor => "Armor sets",
+        Tab.WikiItems => "Items",
+        Tab.WikiMeals => "Meals",
         _ => "Skills",
     };
 
