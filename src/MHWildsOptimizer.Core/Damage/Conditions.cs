@@ -148,7 +148,7 @@ public sealed record Conditions
     public IReadOnlyList<(Conditions Part, double Share)> UptimeParts(ActiveSkills? skills = null)
     {
         var hasLatent = skills is null || Effective(SkillNames.LatentPower, skills.Level(SkillNames.LatentPower)) > 0;
-        var fury = skills is null ? 2 : (int)skills.SetTier(SkillNames.LeviathansFury);
+        var fury = skills is null ? 2 : (int)SetTier(skills, SkillNames.LeviathansFury);
         if (!(LatentPowerActive && hasLatent) && !(AzureBoltActive && fury > 0)) return [(this, 1)];
 
         var latent = LatentPowerActive ? Slices(LatentPowerUptime, t => DamageConstants.LatentPowerUptime(t), from: 0) : null;
@@ -170,7 +170,7 @@ public sealed record Conditions
         if (skills is null) return parts;
 
         // what each part turns on for this loadout; parts that turn on the same score the same
-        var roar = (int)skills.SetTier(SkillNames.ReyDausVoltage);
+        var roar = (int)SetTier(skills, SkillNames.ReyDausVoltage);
         return parts
             .GroupBy(p => (Latent: p.Part.LatentPowerActive && hasLatent && roar >= p.Part.LatentPowerMinRoarTier,
                            Bolt: p.Part.AzureBoltActive && fury >= Math.Max(1, p.Part.AzureBoltMinTier)))
@@ -208,11 +208,18 @@ public sealed record Conditions
     /// <summary>
     /// Per-skill caps for the score: 0 removes the skill from the optimization entirely, n counts it only up to level n
     /// (e.g. { "Burst": 1 } for Great Sword, where the five-hit boost is rarely reached). Levels above the cap are shown but not valued.
+    /// Set bonuses are capped by tier (1 = I), group skills only excluded (0).
     /// </summary>
     public Dictionary<string, int> SkillLimits { get; init; } = new();
 
     /// <summary>The level a skill is valued at under these conditions.</summary>
     public int Effective(string skill, int level) => SkillLimits.TryGetValue(skill, out var limit) ? Math.Min(level, limit) : level;
+
+    /// <summary>The tier a set bonus is valued at: the loadout's tier, capped by its skill limit.</summary>
+    public SetBonusTier SetTier(ActiveSkills skills, string setBonus) => (SetBonusTier)Effective(setBonus, (int)skills.SetTier(setBonus));
+
+    /// <summary>Whether a group skill is valued: active, and not excluded by a skill limit of 0.</summary>
+    public bool GroupActive(ActiveSkills skills, string groupSkill) => skills.GroupActive(groupSkill) && Effective(groupSkill, 1) > 0;
 
     public static Conditions Default => new();
 

@@ -206,13 +206,12 @@ public static class RequestLoader
             }
         }
 
-        // skill limits (0 = exclude, n = value only up to n)
+        // skill limits (0 = exclude, n = value only up to n; a set bonus by tier, a group skill only 0)
         foreach (var (name, limit) in request.Conditions.SkillLimits)
         {
             if (!data.SkillsByName.TryGetValue(name, out var skill)) { errors.Add($"Skill limit '{name}' is unknown."); continue; }
-            if (skill.Kind is SkillKind.Set or SkillKind.Group) { errors.Add($"Skill limit '{name}' is a {skill.Kind} skill."); continue; }
             if (limit < 0 || limit > skill.MaxLevel) { errors.Add($"Skill limit '{name}' {limit} is outside 0..{skill.MaxLevel}."); continue; }
-            if (targets.TryGetValue(name, out var target) && target > limit)
+            if (request.TargetSkills.TryGetValue(name, out var target) && target <= skill.MaxLevel && target > limit)
                 errors.Add($"Target '{name}' {target} is above its limit {limit}; raise the limit or lower the target.");
         }
 

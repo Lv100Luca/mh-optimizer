@@ -123,7 +123,7 @@
                     </div>
 
                     <div class="kv">
-                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Limits)">Skill limits</button></h4>
+                        <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Targets)">Skill limits</button></h4>
                         <div class="chip-row">
                             @if (limits.Count == 0)
                             {
@@ -131,7 +131,8 @@
                             }
                             @foreach (var (s, n) in limits)
                             {
-                                <SkillHover @key="s" Name="@s" Class="chip skill armor"><SkillIcon Name="@s" Size="18" />@s <b>@(n == 0 ? "excluded" : $"≤ {n}")</b></SkillHover>
+                                var kind = Cat.SkillsByName.GetValueOrDefault(s)?.Kind ?? SkillKind.Armor;
+                                <SkillHover @key="s" Name="@s" Class="@($"chip skill {kind.ToString().ToLowerInvariant()}")"><SkillIcon Name="@s" Kind="kind" Size="18" />@s <b>@(n == 0 ? "excluded" : kind == SkillKind.Set ? $"≤ {Fmt.Roman(n)}" : $"≤ {n}")</b></SkillHover>
                             }
                         </div>
                     </div>

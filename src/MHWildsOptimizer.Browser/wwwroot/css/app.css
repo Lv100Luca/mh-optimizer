@@ -305,9 +305,23 @@ dl.stats dd { margin: 0; }
 .picker-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .picker-tools .search { flex: 1; min-width: 200px; width: auto; }
 .available { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); }
-.skillopt { display: grid; grid-template-columns: 26px minmax(150px, 190px) auto auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); text-align: left; cursor: pointer; }
-.skillopt:last-child { border-bottom: none; }
-.skillopt:hover { background: var(--panel-2); }
+.skillopt-row { display: flex; border-bottom: 1px solid var(--border); }
+.skillopt-row:last-child { border-bottom: none; }
+.skillopt-row:hover { background: var(--panel-2); }
+.skillopt { flex: 1; min-width: 0; display: grid; grid-template-columns: 26px minmax(150px, 190px) auto auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.skillopt-exclude { flex: none; width: 40px; border: none; border-left: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; }
+.skillopt-exclude:hover { color: var(--err); background: rgba(224, 90, 79, 0.12); }
+/* a target / limit row: at least, at most, exclude */
+.skillrow .rule { display: inline-flex; align-items: center; gap: 6px; }
+.skillrow .rule .stepper-value { min-width: 64px; }
+.skillrow .rule > span, .skillrow .rule .stepper-value { white-space: nowrap; }
+.skillrow-actions { flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 700px) { .skillrow .rule .stepper-value { min-width: 48px; } .skillrow .exclude { padding: 0 8px; } }
+.skillrow .exclude { height: 32px; padding: 0 10px; border: 1px solid var(--border-2); border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.skillrow .exclude:hover, .skillrow .exclude.on { color: var(--err); border-color: var(--err); }
+.skillrow .exclude.on { background: rgba(224, 90, 79, 0.12); }
+.skillrow.excluded { border-left-color: var(--err); }
+.skillrow.excluded .skillrow-title b { text-decoration: line-through; opacity: 0.75; }
 .skillopt .name { font-weight: 600; }
 .skillopt .desc { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
 .skillopt.hl .name::after { content: " ★"; color: var(--accent); }

@@ -1,7 +1,7 @@
 @* − value + *@
 <span class="stepper">
     <button type="button" disabled="@(Value <= Min)" @onclick="() => ValueChanged.InvokeAsync(Value - 1)" aria-label="decrease">−</button>
-    <span class="stepper-value">@Value@Suffix</span>
+    <span class="stepper-value">@(Format?.Invoke(Value) ?? $"{Value}{Suffix}")</span>
     <button type="button" disabled="@(Value >= Max)" @onclick="() => ValueChanged.InvokeAsync(Value + 1)" aria-label="increase">+</button>
 </span>
 
@@ -11,4 +11,6 @@
     [Parameter] public int Min { get; set; }
     [Parameter] public int Max { get; set; }
     [Parameter] public string? Suffix { get; set; }
+    /// <summary>How the value is shown, in place of value + suffix.</summary>
+    [Parameter] public Func<int, string>? Format { get; set; }
 }

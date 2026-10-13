@@ -173,7 +173,7 @@ public static class DamageCalculator
             return CalculateSequence(weapon, skills, hurt, trace);
         var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
                          || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
-                         || skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
         if (!hurtSkills)
             return CalculateSequence(weapon, skills, full, trace);
 
@@ -198,7 +198,7 @@ public static class DamageCalculator
         if (cond.Effective(SkillNames.PeakPerformance, skills.Level(SkillNames.PeakPerformance)) == 0) return hurt;
         var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
                          || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
-                         || skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
         if (!hurtSkills) return full;
         return CalculateSequence(weapon, skills, full, false).Total >= CalculateSequence(weapon, skills, hurt, false).Total ? full : hurt;
     }
@@ -332,12 +332,12 @@ public static class DamageCalculator
             Flat("Peak Performance", L(SkillNames.PeakPerformance) switch { 1 => 3, 2 => 6, 3 => 10, 4 => 15, _ => 20 });
         if (cond.StaminaFull && L(SkillNames.MaximumMight) > 0)
             Aff("Maximum Might", 10 * Math.Min(L(SkillNames.MaximumMight), 3));
-        if (cond.LatentPowerActive && L(SkillNames.LatentPower) > 0 && (int)skills.SetTier(SkillNames.ReyDausVoltage) >= cond.LatentPowerMinRoarTier)
+        if (cond.LatentPowerActive && L(SkillNames.LatentPower) > 0 && (int)cond.SetTier(skills, SkillNames.ReyDausVoltage) >= cond.LatentPowerMinRoarTier)
             Aff("Latent Power", 10 * Math.Min(L(SkillNames.LatentPower), 5));
         if (cond.AdrenalineRushActive && L(SkillNames.AdrenalineRush) > 0)
         {
             Flat("Adrenaline Rush", 5 + 5 * Math.Min(L(SkillNames.AdrenalineRush), 5));
-            if (cond.AdrenalineRushRetriggered && skills.SetTier(SkillNames.SeregiossTenacity) == SetBonusTier.II)
+            if (cond.AdrenalineRushRetriggered && cond.SetTier(skills, SkillNames.SeregiossTenacity) == SetBonusTier.II)
                 Pct("Razor's Edge II", 1.05);
         }
         if (cond.CounterstrikeActive && L(SkillNames.Counterstrike) > 0)
@@ -357,7 +357,7 @@ public static class DamageCalculator
             var b = DamageConstants.Burst(type, L(SkillNames.Burst));
             Flat($"Burst {L(SkillNames.Burst)}", b.Attack);
             EleFlat($"Burst {L(SkillNames.Burst)}", b.Element);
-            switch (skills.SetTier(SkillNames.EbonyOdogaronsPower))
+            switch (cond.SetTier(skills, SkillNames.EbonyOdogaronsPower))
             {
                 case SetBonusTier.I: Flat("Burst Boost I", 8); break;
                 case SetBonusTier.II: Flat("Burst Boost II", 18); break;
@@ -372,7 +372,7 @@ public static class DamageCalculator
             ElePct($"{eleSkill} {lv}", pct);
             EleFlat($"{eleSkill} {lv}", flat);
         }
-        var gore = skills.SetTier(SkillNames.GoreMagalasTyranny);
+        var gore = cond.SetTier(skills, SkillNames.GoreMagalasTyranny);
         // Coalescence needs a natural recovery from a status; in practice that is the Frenzy cure of the Gore set bonus
         if (gore != SetBonusTier.None && cond.FrenzyOvercome && cond.CoalescenceActive && L(SkillNames.Coalescence) > 0)
             ElePct("Coalescence", DamageConstants.Coalescence(type, L(SkillNames.Coalescence)));
@@ -396,41 +396,41 @@ public static class DamageCalculator
             if (gore == SetBonusTier.II)
                 Flat("Black Eclipse II", cond.FrenzyOvercome ? 15 : 10);
         }
-        if (cond.AzureBoltActive && skills.SetTier(SkillNames.LeviathansFury) is var fury && fury != SetBonusTier.None && (int)fury >= cond.AzureBoltMinTier)
+        if (cond.AzureBoltActive && cond.SetTier(skills, SkillNames.LeviathansFury) is var fury && fury != SetBonusTier.None && (int)fury >= cond.AzureBoltMinTier)
             Aff("Azure Bolt", 15);
-        var omega = skills.SetTier(SkillNames.OmegaResonance);
+        var omega = cond.SetTier(skills, SkillNames.OmegaResonance);
         if (omega != SetBonusTier.None)
         {
             if (cond.Resonance == ResonanceMode.Local) Aff("Resonance (Local)", omega == SetBonusTier.II ? 40 : 20);
             if (cond.Resonance == ResonanceMode.Remote) Flat("Resonance (Remote)", omega == SetBonusTier.II ? 20 : 10);
         }
-        var gogma = skills.SetTier(SkillNames.Gogmapocalypse);
+        var gogma = cond.SetTier(skills, SkillNames.Gogmapocalypse);
         if (gogma != SetBonusTier.None && cond.MonsterEnraged)
         {
             ElePct("Mutual Hostility", gogma == SetBonusTier.II ? 1.30 : 1.20);
             EleFlat("Mutual Hostility", gogma == SetBonusTier.II ? 4 : 2);
         }
-        if (cond.RedHealth && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
+        if (cond.RedHealth && cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None)
             ElePct("Dark Arts", DamageConstants.DarkArts(type));
-        if (cond.PowerhouseActive && skills.SetTier(SkillNames.DoshagumasMight) is var dosha && dosha != SetBonusTier.None)
+        if (cond.PowerhouseActive && cond.SetTier(skills, SkillNames.DoshagumasMight) is var dosha && dosha != SetBonusTier.None)
             Flat("Powerhouse", dosha == SetBonusTier.II ? 25 : 10);
-        if (cond.ProteinFiendActive && skills.SetTier(SkillNames.XuWusVigor) is var xuwu && xuwu != SetBonusTier.None)
+        if (cond.ProteinFiendActive && cond.SetTier(skills, SkillNames.XuWusVigor) is var xuwu && xuwu != SetBonusTier.None)
             Flat("Protein Fiend", xuwu == SetBonusTier.II ? 30 : 15);
-        if (cond.BindingCounterActive && skills.SetTier(SkillNames.JinDahaadsRevolt) is var jin && jin != SetBonusTier.None)
+        if (cond.BindingCounterActive && cond.SetTier(skills, SkillNames.JinDahaadsRevolt) is var jin && jin != SetBonusTier.None)
             Flat("Binding Counter", jin == SetBonusTier.II ? 50 : 25);
-        if (cond.WarCryActive && skills.SetTier(SkillNames.BlangongasSpirit) is var blango && blango != SetBonusTier.None)
+        if (cond.WarCryActive && cond.SetTier(skills, SkillNames.BlangongasSpirit) is var blango && blango != SetBonusTier.None)
             Flat("War Cry", blango == SetBonusTier.II ? 20 : 10);
-        if (cond.FestivalActive && SkillNames.FestivalPrayers.Any(p => skills.SetTier(p) == SetBonusTier.II))
+        if (cond.FestivalActive && SkillNames.FestivalPrayers.Any(p => cond.SetTier(skills, p) == SetBonusTier.II))
             Pct("Festival Boon II", 1.09);
 
         // ---------------- group skills ----------------
-        if (cond.GutsNotYetTriggered && skills.GroupActive(SkillNames.LordsSoul))
+        if (cond.GutsNotYetTriggered && cond.GroupActive(skills, SkillNames.LordsSoul))
             Pct("Guts (Lord's Soul)", 1.05);
-        if (cond.ResuscitateActive && skills.GroupActive(SkillNames.LordsFury))
+        if (cond.ResuscitateActive && cond.GroupActive(skills, SkillNames.LordsFury))
             Flat("Resuscitate", 10);
-        if (cond.InspirationActive && skills.GroupActive(SkillNames.LordsFavor))
+        if (cond.InspirationActive && cond.GroupActive(skills, SkillNames.LordsFavor))
             Flat("Inspiration", 10);
-        if (cond.AffinitySlidingActive && skills.GroupActive(SkillNames.ButteryLeathercraft))
+        if (cond.AffinitySlidingActive && cond.GroupActive(skills, SkillNames.ButteryLeathercraft))
             Aff("Affinity Sliding", 30);
 
         // ---------------- items and meals ----------------
@@ -484,7 +484,7 @@ public static class DamageCalculator
         if (CountsShockwave(type, skills, cond))
             Proc(ShockwaveLabel, Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
                 profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
-        var badBlood = skills.SetTier(SkillNames.NuUdrasMutiny);
+        var badBlood = cond.SetTier(skills, SkillNames.NuUdrasMutiny);
         if (cond.BadBlood && badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
             Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
                 profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds) * profile.Hits, Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
@@ -578,7 +578,7 @@ public static class DamageCalculator
 
     /// <summary>Whether a Lv3 charged slash of this loadout sets off a Dark Arts shockwave that the score counts.</summary>
     public static bool CountsShockwave(WeaponType type, ActiveSkills skills, Conditions cond) =>
-        cond.DarkArtsShockwave && type == WeaponType.GreatSword && skills.SetTier(SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+        cond.DarkArtsShockwave && type == WeaponType.GreatSword && cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
 
     private static string Inv(FormattableString s) => FormattableString.Invariant(s);
 }

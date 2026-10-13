@@ -451,7 +451,8 @@ public sealed class ConfigEditor
 
     private void EditSkillLimits()
     {
-        var skills = _data.Skills.Where(s => s.Kind is SkillKind.Armor or SkillKind.Weapon).OrderBy(s => s.Kind).ThenBy(s => s.Name).ToList();
+        // set bonuses are capped by tier (1 = I), group skills only excluded (0)
+        var skills = _data.Skills.OrderBy(s => s.Kind).ThenBy(s => s.Name).ToList();
         var labels = skills.ToDictionary(s => $"{s.Name}  ({s.Kind.ToString().ToLowerInvariant()}, max {s.MaxLevel})", s => s);
         var current = _request.Conditions.SkillLimits;
         var prompt = new MultiSelectionPrompt<string>()

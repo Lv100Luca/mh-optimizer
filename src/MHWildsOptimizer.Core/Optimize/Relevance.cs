@@ -66,12 +66,14 @@ public sealed class Relevance
         groupTargets ??= new Dictionary<string, int>();
         // a sequence step can turn a condition on: count the skills any step can use
         c = Conditions.Union(c, c.Segments(weapon));
+        // a limit of 0 excludes a skill, set bonus or group skill from the optimization
+        bool Excluded(string name) => c.SkillLimits.TryGetValue(name, out var limit) && limit <= 0;
         var skills = new List<string>();
         var offensive = new HashSet<string>();
         void Add(string name, bool when = true)
         {
             if (!when || !data.SkillsByName.ContainsKey(name)) return;
-            if (c.SkillLimits.TryGetValue(name, out var limit) && limit <= 0) return; // excluded from the optimization
+            if (Excluded(name)) return;
             if (!skills.Contains(name)) skills.Add(name);
             offensive.Add(name);
         }
@@ -110,7 +112,7 @@ public sealed class Relevance
         Add(SkillNames.SpecialAmmoBoost, shots.Dragon > 0 || shots.Tracer > 0);
 
         var sets = new List<string>();
-        void Set(string name, bool when = true) { if (when && !sets.Contains(name)) sets.Add(name); }
+        void Set(string name, bool when = true) { if (when && !Excluded(name) && !sets.Contains(name)) sets.Add(name); }
         Set(SkillNames.GoreMagalasTyranny);
         Set(SkillNames.LeviathansFury, c.AzureBoltActive);
         Set(SkillNames.ReyDausVoltage, c.LatentPowerActive && c.LatentPowerUptime is null); // Thunderous Roar: the default uptime grows
@@ -129,7 +131,7 @@ public sealed class Relevance
         foreach (var s in setTargets.Keys) Set(s, data.SkillsByName.TryGetValue(s, out var ss) && ss.Kind == SkillKind.Set);
 
         var groups = new List<string>();
-        void Group(string name, bool when) { if (when && !groups.Contains(name)) groups.Add(name); }
+        void Group(string name, bool when) { if (when && !Excluded(name) && !groups.Contains(name)) groups.Add(name); }
         Group(SkillNames.LordsSoul, c.GutsNotYetTriggered);
         Group(SkillNames.LordsFury, c.ResuscitateActive);
         Group(SkillNames.LordsFavor, c.InspirationActive);

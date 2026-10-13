@@ -187,6 +187,27 @@ public class DamageCalculatorTests
         Assert.Equal(off.Total, excluded.Total, Tol);
     }
 
+    [Fact]
+    public void SkillLimitsCapSetBonusTiersAndExcludeGroupSkills()
+    {
+        var weapon = new EquippedWeapon(new GogmaWeaponSpec { Type = WeaponType.GreatSword, Focus = GogmaFocus.Attack }, TestData.Data).Stats;
+        var none = new Dictionary<string, int>();
+        var goreII = new Dictionary<string, int> { [SkillNames.GoreMagalasTyranny] = 4 };
+        var goreI = new Dictionary<string, int> { [SkillNames.GoreMagalasTyranny] = 2 };
+        var guts = new Dictionary<string, int> { [SkillNames.LordsSoul] = 3 };
+        var cond = Conditions.AllOff with { FrenzyOvercome = true, GutsNotYetTriggered = true };
+        double Total(Dictionary<string, int> sets, Dictionary<string, int> groups, Conditions c) =>
+            DamageCalculator.Calculate(weapon, new ActiveSkills(none, none, sets, groups), c).Total;
+        Conditions Limit(string name, int limit) => cond with { SkillLimits = new() { [name] = limit } };
+
+        var full = Total(goreII, guts, cond);
+        Assert.True(Total(goreI, guts, cond) < full);
+        Assert.True(Total(goreII, none, cond) < full);
+        Assert.Equal(Total(goreI, guts, cond), Total(goreII, guts, Limit(SkillNames.GoreMagalasTyranny, 1)), Tol);
+        Assert.Equal(Total(none, guts, cond), Total(goreII, guts, Limit(SkillNames.GoreMagalasTyranny, 0)), Tol);
+        Assert.Equal(Total(goreII, none, cond), Total(goreII, guts, Limit(SkillNames.LordsSoul, 0)), Tol);
+    }
+
     /// <summary>
     /// Status screen readings of 2026-10-08 (233-raw Great Sword, Powercharm, meal +5, nothing conditional active unless named);
     /// the game rounds down. Pins Attack Boost 3 / 5, Guts, Agitator 5, Resentment 5 and the Powercharm.

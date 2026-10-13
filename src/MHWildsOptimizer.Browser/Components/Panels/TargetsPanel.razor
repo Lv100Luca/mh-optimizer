@@ -6,17 +6,30 @@
     var relevance = resolved?.Relevance;
     var relevant = new HashSet<string>([.. relevance?.Skills ?? [], .. relevance?.SetBonuses ?? [], .. relevance?.GroupSkills ?? []]);
     var core = resolved?.Targets.Where(t => t.FromCore).ToList() ?? [];
-    var targetErrors = resolved?.Errors.Where(e => e.StartsWith("Target", StringComparison.Ordinal)).ToList() ?? [];
+    var limits = request.Conditions.SkillLimits;
+    var errors = resolved?.Errors.Where(e => e.StartsWith("Target", StringComparison.Ordinal) || e.StartsWith("Skill limit", StringComparison.Ordinal)).ToList() ?? [];
+    var burst = (request.Weapon.Spec?.Type ?? request.Weapon.Type) == "great-sword" ? 1 : 0;
 
     <div class="panel">
-        <Section Title="Target skills"
-                 Hint="Minimum skill levels every reported build must reach. Set bonuses and group skills can be required too, by tier: a set bonus at I needs 2 pieces, at II 4 pieces, a group skill 3 pieces (the Gogma weapon counts when it rolled the bonus). Everything else is filled by the optimizer for damage. Skills the optimizer already values under your conditions are marked.">
-            @foreach (var e in targetErrors)
-            {
-                <Alert Kind="error">@e</Alert>
-            }
-            <SkillPicker Mode="SkillPicker.PickerMode.Target" Values="request.TargetSkills" Highlight="relevant" HighlightLegend="★ valued under your conditions"
-                         ValuesChanged="v => App.PatchRequest(r => r with { TargetSkills = v })" />
+        <Section Title="Targets & limits"
+                 Hint="At least: the level every reported build must reach. Set bonuses and group skills can be required too, by tier: a set bonus at I needs 2 pieces, at II 4 pieces, a group skill 3 pieces (the Gogma weapon counts when it rolled the bonus). At most: levels (set bonus tiers) above it are shown but score nothing. Exclude: the optimizer never slots, chases or values it. Everything else is filled by the optimizer for damage; what it already values under your conditions is marked.">
+            <Actions>
+                @if (!limits.ContainsKey(BurstSkill))
+                {
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" title="Great Sword rarely reaches the five-hit Burst boost"
+                               OnClick="() => CapBurst(burst)">
+                        + Burst ≤ @burst (slow weapons)
+                    </MudButton>
+                }
+            </Actions>
+            <ChildContent>
+                @foreach (var e in errors)
+                {
+                    <Alert Kind="error">@e</Alert>
+                }
+                <SkillPicker Targets="request.TargetSkills" Limits="limits" Highlight="relevant" HighlightLegend="★ valued under your conditions"
+                             Changed="v => App.PatchRequest(r => r with { TargetSkills = v.Targets, Conditions = r.Conditions with { SkillLimits = v.Limits } })" />
+            </ChildContent>
         </Section>
 
         @if (core.Count > 0)
@@ -34,7 +47,7 @@
 
         @if (relevance is not null)
         {
-            <Section Title="What the optimizer values" Hint="Under the current conditions these skills, set bonuses and group skills change the score; others only matter if you make them a target. Required set bonuses and group skills are tracked even when they add nothing to the score.">
+            <Section Title="What the optimizer values" Hint="Under the current conditions these skills, set bonuses and group skills change the score; others only matter if you make them a target. Required set bonuses and group skills are tracked even when they add nothing to the score; excluded ones are left out.">
                 <div class="chip-row">
                     @foreach (var s in relevance.Skills)
                     {
@@ -61,4 +74,17 @@
             </Section>
         }
     </div>
+}
+
+@code {
+    private const string BurstSkill = "Burst";
+
+    /// <summary>Caps Burst (0 = excluded); a higher Burst target comes down with it, as in the picker.</summary>
+    private void CapBurst(int cap) => App.PatchRequest(r =>
+    {
+        var targets = new Dictionary<string, int>(r.TargetSkills);
+        if (targets.TryGetValue(BurstSkill, out var t) && t > cap)
+            if (cap > 0) targets[BurstSkill] = cap; else targets.Remove(BurstSkill);
+        return r with { TargetSkills = targets, Conditions = r.Conditions with { SkillLimits = new Dictionary<string, int>(r.Conditions.SkillLimits) { [BurstSkill] = cap } } };
+    });
 }

@@ -81,7 +81,7 @@ public class RequestTests
         {
             Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000, SetBonus = "Lord's Soul" },
             TargetSkills = new() { ["Nope"] = 1, ["Gogmapocalypse"] = 3, ["Attack Boost"] = 9, ["Burst"] = 5 },
-            Conditions = Conditions.Default with { SkillLimits = new() { ["Burst"] = 1, ["Imaginary"] = 1, ["Agitator"] = 9 }, AttackProfile = new AttackProfile { HitsPerMinute = 0, ChargedLv3Share = 1.5 } },
+            Conditions = Conditions.Default with { SkillLimits = new() { ["Burst"] = 1, ["Imaginary"] = 1, ["Agitator"] = 9, ["Gogmapocalypse"] = 3 }, AttackProfile = new AttackProfile { HitsPerMinute = 0, ChargedLv3Share = 1.5 } },
             Talismans = new TalismanSettings { File = "does-not-exist.json" },
             Options = new OptimizerOptions { TopN = 0, ExcludeSets = ["Imaginary Set"] },
         };
@@ -96,6 +96,7 @@ public class RequestTests
         Assert.Contains(r.Errors, e => e.Contains("'Burst' 5 is above its limit 1"));
         Assert.Contains(r.Errors, e => e.Contains("'Imaginary' is unknown"));
         Assert.Contains(r.Errors, e => e.Contains("'Agitator' 9 is outside"));
+        Assert.Contains(r.Errors, e => e.Contains("'Gogmapocalypse' 3 is outside 0..2"));
         Assert.Contains(r.Errors, e => e.Contains("hits_per_minute"));
         Assert.Contains(r.Errors, e => e.Contains("charged_lv3_share"));
         Assert.DoesNotContain(r.Errors, e => e.Contains("average_mv"));

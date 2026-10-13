@@ -5,13 +5,16 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Limits, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiBonuses, WikiArmor }
+public enum Tab { Inventory, Compare, Weapon, Pair, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiBonuses, WikiArmor }
 
 public static class Tabs
 {
     public static string Slug(this Tab tab) => tab.ToString().ToLowerInvariant();
 
-    public static Tab? Parse(string? slug) => Enum.TryParse<Tab>(slug, ignoreCase: true, out var t) && slug!.All(char.IsLetter) ? t : null;
+    /// <summary>The tab of a URL slug; "limits" is the old tab of the skill limits, now on the targets tab.</summary>
+    public static Tab? Parse(string? slug) =>
+        string.Equals(slug, "limits", StringComparison.OrdinalIgnoreCase) ? Tab.Targets
+        : Enum.TryParse<Tab>(slug, ignoreCase: true, out var t) && slug!.All(char.IsLetter) ? t : null;
 
     /// <summary>Tabs of the whole profile rather than of the open weapon (the wiki belongs to neither, but behaves the same).</summary>
     public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare || tab.IsWikiTab();
