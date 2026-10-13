@@ -18,7 +18,7 @@
     },
     "a5-results-cards": {
       "url": "{origin}/{profile}/weapon/{weapon}/results",
-      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Cards')?.click(); await sleep(1200); [...document.querySelectorAll('button')].find(b => b.innerText.includes('Show the swaps'))?.click(); await sleep(1200);"
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); await sleep(2000); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Cards')?.click(); await sleep(1200); [...document.querySelectorAll('button')].find(b => /Show the swaps|Show changes/.test(b.innerText))?.click(); await sleep(1200);"
     },
     "a6-results-tray": {
       "url": "{origin}/{profile}/weapon/{weapon}/results",

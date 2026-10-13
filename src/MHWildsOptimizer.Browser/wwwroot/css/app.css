@@ -805,13 +805,6 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 @media (max-width: 900px), (pointer: fine) and (max-width: 1450px) { .tray { left: 12px; right: 12px; } }
 
 /* results against a baseline */
-.pathcards { display: flex; gap: 12px; flex-wrap: wrap; }
-.pathcard { flex: 1 1 210px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start; text-align: left; padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--radius); background: var(--bg-2); color: var(--text); }
-button.pathcard { cursor: pointer; }
-button.pathcard:hover { border-color: var(--accent); }
-.pathcard.hl { border-color: var(--ok); }
-.pathcard .big { font-size: 19px; font-weight: 800; }
-.pathcard .big.plain { color: var(--text); }
 .table.results-table td { vertical-align: middle; }
 .results-table .dmg { font-size: 15px; color: var(--ok); }
 .results-table .dmg.plain { color: var(--text); }
