@@ -78,31 +78,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +4 and affinity +3% while active."
+    "description": "Attack +4 and affinity +3% while a large monster is enraged.",
+    "game_description": "Attack +4 and affinity +3% while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +8 and affinity +5% while active."
+    "description": "Attack +8 and affinity +5% while a large monster is enraged.",
+    "game_description": "Attack +8 and affinity +5% while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +12 and affinity +7% while active."
+    "description": "Attack +12 and affinity +7% while a large monster is enraged.",
+    "game_description": "Attack +12 and affinity +7% while active."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +16 and affinity +10% while active."
+    "description": "Attack +16 and affinity +10% while a large monster is enraged.",
+    "game_description": "Attack +16 and affinity +10% while active."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +20 and affinity +15% while active."
+    "description": "Attack +20 and affinity +15% while a large monster is enraged.",
+    "game_description": "Attack +20 and affinity +15% while active."
    }
   ]
  },
@@ -232,14 +237,14 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage.",
+    "description": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage to ×0.66.",
     "game_description": "Delays blastblight and reduces blast damage."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Delays blastblight by 50 s (about 25 s -> 75 s) and greatly reduces blast damage.",
+    "description": "Delays blastblight by 50 s (about 25 s -> 75 s) and reduces blast damage to ×0.50.",
     "game_description": "Greatly delays blastblight and greatly reduces blast damage."
    },
    {
@@ -320,7 +325,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Improves the effectiveness of flash attacks and items."
+    "description": "Flash attacks and items reach about twice as far (data 200); monsters are not blinded for longer.",
+    "game_description": "Improves the effectiveness of flash attacks and items."
    }
   ]
  },
@@ -649,19 +655,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "While active, reduces damage taken by 15%."
+    "description": "25% chance per hit to reduce the damage taken by 15%.",
+    "game_description": "While active, reduces damage taken by 15%."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "While active, reduces damage taken by 30%."
+    "description": "25% chance per hit to reduce the damage taken by 30%.",
+    "game_description": "While active, reduces damage taken by 30%."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "While active, reduces damage taken by 50%."
+    "description": "25% chance per hit to reduce the damage taken by 50%.",
+    "game_description": "While active, reduces damage taken by 50%."
    }
   ]
  },
@@ -1057,31 +1066,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Defense +50 while active."
+    "description": "Defense +50 while your health is at 35% or lower.",
+    "game_description": "Defense +50 while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +5% and defense +50 while active."
+    "description": "Attack +5% and defense +50 while your health is at 35% or lower.",
+    "game_description": "Attack +5% and defense +50 while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +5% and defense +100 while active."
+    "description": "Attack +5% and defense +100 while your health is at 35% or lower.",
+    "game_description": "Attack +5% and defense +100 while active."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10% and defense +100 while active."
+    "description": "Attack +10% and defense +100 while your health is at 35% or lower.",
+    "game_description": "Attack +10% and defense +100 while active."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +30% and defense-increasing effects are negated while active."
+    "description": "Attack +30% while your health is at 35% or lower, but defense-increasing effects are negated.",
+    "game_description": "Attack +30% and defense-increasing effects are negated while active."
    }
   ]
  },
@@ -1343,19 +1357,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Affinity +10% while active"
+    "description": "Affinity +10% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina.",
+    "game_description": "Affinity +10% while active"
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Affinity +20% while active"
+    "description": "Affinity +20% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina.",
+    "game_description": "Affinity +20% while active"
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Affinity +30% while active"
+    "description": "Affinity +30% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina.",
+    "game_description": "Affinity +30% while active"
    }
   ]
  },
@@ -1515,31 +1532,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +3 while active."
+    "description": "Attack +3 while your health is full.",
+    "game_description": "Attack +3 while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +6 while active."
+    "description": "Attack +6 while your health is full.",
+    "game_description": "Attack +6 while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10 while active."
+    "description": "Attack +10 while your health is full.",
+    "game_description": "Attack +10 while active."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15 while active."
+    "description": "Attack +15 while your health is full.",
+    "game_description": "Attack +15 while active."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +20 while active."
+    "description": "Attack +20 while your health is full.",
+    "game_description": "Attack +20 while active."
    }
   ]
  },
@@ -1675,31 +1697,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +5 while active."
+    "description": "Attack +5 while you have recoverable (red) health.",
+    "game_description": "Attack +5 while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10 while active."
+    "description": "Attack +10 while you have recoverable (red) health.",
+    "game_description": "Attack +10 while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15 while active."
+    "description": "Attack +15 while you have recoverable (red) health.",
+    "game_description": "Attack +15 while active."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +20 while active."
+    "description": "Attack +20 while you have recoverable (red) health.",
+    "game_description": "Attack +20 while active."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +25 while active."
+    "description": "Attack +25 while you have recoverable (red) health.",
+    "game_description": "Attack +25 while active."
    }
   ]
  },
@@ -1792,19 +1819,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases eating speed."
+    "description": "Drinks such as Potions go down ×1.3 faster (a Potion takes about 3.8 s instead of 4.6 s); other items are quicker too.",
+    "game_description": "Moderately increases eating speed."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases eating speed."
+    "description": "Drinks such as Potions go down ×2.0 faster (a Potion takes about 2.9 s instead of 4.6 s); other items are quicker too.",
+    "game_description": "Increases eating speed."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases eating speed."
+    "description": "Drinks such as Potions go down ×2.4 faster (a Potion takes about 2.6 s instead of 4.6 s); other items are quicker too.",
+    "game_description": "Greatly increases eating speed."
    }
   ]
  },
@@ -2093,31 +2123,36 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Items affect nearby allies with 33% of their efficacy."
+    "description": "Items affect allies within about 30 m with 33% of their efficacy.",
+    "game_description": "Items affect nearby allies with 33% of their efficacy."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Items affect nearby allies in a wider radius with 33% of their efficacy."
+    "description": "Items affect allies within about 45 m with 33% of their efficacy.",
+    "game_description": "Items affect nearby allies in a wider radius with 33% of their efficacy."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Items affect nearby allies in a wider radius with 66% of their efficacy."
+    "description": "Items affect allies within about 45 m with 66% of their efficacy.",
+    "game_description": "Items affect nearby allies in a wider radius with 66% of their efficacy."
    },
    {
     "level": 4,
     "name": null,
     "pieces_required": null,
-    "description": "Items affect nearby allies in a much wider radius with 66% of their efficacy."
+    "description": "Items affect allies within about 60 m with 66% of their efficacy.",
+    "game_description": "Items affect nearby allies in a much wider radius with 66% of their efficacy."
    },
    {
     "level": 5,
     "name": null,
     "pieces_required": null,
-    "description": "Items affect nearby allies in a much wider radius with full efficacy."
+    "description": "Items affect allies within about 60 m with full efficacy.",
+    "game_description": "Items affect nearby allies in a much wider radius with full efficacy."
    }
   ]
  },
@@ -2295,7 +2330,8 @@
     "level": 1,
     "name": "Forager's Luck",
     "pieces_required": 3,
-    "description": "Increases the chance of finding rare gathering points."
+    "description": "Increases the chance of finding rare gathering points (about +25%).",
+    "game_description": "Increases the chance of finding rare gathering points."
    }
   ]
  },
@@ -2396,7 +2432,8 @@
     "level": 1,
     "name": "Fleetfoot",
     "pieces_required": 3,
-    "description": "Increases movement speed while crouching, and makes it easier to escape large monsters' detection."
+    "description": "Crouch movement speed ×1.4, and makes it easier to escape large monsters' detection.",
+    "game_description": "Increases movement speed while crouching, and makes it easier to escape large monsters' detection."
    }
   ]
  },
@@ -2412,7 +2449,7 @@
     "level": 1,
     "name": "Adrenaline",
     "pieces_required": 3,
-    "description": "Temporarily reduces stamina depletion to ×0.5 when health is at 40% or lower.",
+    "description": "Reduces stamina depletion to ×0.5 while health is at 40% or lower.",
     "game_description": "Temporarily reduces stamina depletion when health is at 40% or lower."
    }
   ]
@@ -2659,7 +2696,8 @@
     "level": 1,
     "name": "Black Eclipse I",
     "pieces_required": 2,
-    "description": "Infects you with Frenzy when against large monsters."
+    "description": "Infects you with Frenzy when against large monsters. Grants affinity +15% for 60 s upon recovery.",
+    "game_description": "Infects you with Frenzy when against large monsters."
    },
    {
     "level": 2,
@@ -2799,7 +2837,7 @@
     "level": 1,
     "name": "Bubbly Dance I",
     "pieces_required": 2,
-    "description": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after evading 3 times.",
+    "description": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after 3 or 4 evades (by evade type).",
     "game_description": "Prevents major bubbleblight and grants you minor bubbleblight after evading several times."
    },
    {
@@ -3055,21 +3093,21 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Impact phial and Sticky Ammo damage ×1.10, and moderately increases Wyvern's Fire firing speed. Shelling fire attack +30.",
+    "description": "Impact phial and Sticky Ammo damage ×1.10, shell and Wyvern's Fire damage about +5%, Wyvern's Fire recharges ×1.2 faster. Shelling fire attack +30.",
     "game_description": "Moderately increases each attack and Wyvern's Fire firing speed. Shelling fire attack +30."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Impact phial and Sticky Ammo damage ×1.20, and increases Wyvern's Fire firing speed. Shelling fire attack +60.",
+    "description": "Impact phial and Sticky Ammo damage ×1.20, shell and Wyvern's Fire damage about +10%, Wyvern's Fire recharges ×1.5 faster. Shelling fire attack +60.",
     "game_description": "Increases each attack and Wyvern's Fire firing speed. Shelling fire attack +60."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Impact phial and Sticky Ammo damage ×1.30, and greatly increases Wyvern's Fire firing speed. Shelling fire attack +90.",
+    "description": "Impact phial and Sticky Ammo damage ×1.30, shell and Wyvern's Fire damage about +15%, Wyvern's Fire recharges ×2.0 faster. Shelling fire attack +90.",
     "game_description": "Greatly increases each attack and Wyvern's Fire firing speed. Shelling fire attack +90."
    }
   ]
@@ -3157,7 +3195,7 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Special sharpness with raw ×1.40 and element ×1.25.",
+    "description": "Special sharpness with raw ×1.40 and element ×1.25, for up to 300 s.",
     "game_description": "Activates skill effect."
    }
   ]
@@ -3174,7 +3212,7 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25).",
+    "description": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25), kept for up to 300 s.",
     "game_description": "Activates skill effect."
    }
   ]
@@ -3280,19 +3318,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly increases elemental attack and status buildup for charged attacks."
+    "description": "Charged attacks get element ×1.15 and status buildup ×1.05.",
+    "game_description": "Slightly increases elemental attack and status buildup for charged attacks."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases elemental attack and status buildup for charged attacks."
+    "description": "Charged attacks get element ×1.20 and status buildup ×1.10.",
+    "game_description": "Increases elemental attack and status buildup for charged attacks."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases elemental attack and status buildup for charged attacks."
+    "description": "Charged attacks get element ×1.25 and status buildup ×1.15.",
+    "game_description": "Greatly increases elemental attack and status buildup for charged attacks."
    }
   ]
  },
@@ -3444,21 +3485,21 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Increases elemental damage ×1.05 to ×1.07 by weapon while active.",
+    "description": "Critical hits deal elemental damage ×1.05 to ×1.07 by weapon.",
     "game_description": "Slightly increases elemental damage while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases elemental damage ×1.10 to ×1.14 by weapon while active.",
+    "description": "Critical hits deal elemental damage ×1.10 to ×1.14 by weapon.",
     "game_description": "Increases elemental damage while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Increases elemental damage ×1.15 to ×1.21 by weapon while active.",
+    "description": "Critical hits deal elemental damage ×1.15 to ×1.21 by weapon.",
     "game_description": "Greatly increases elemental damage while active."
    }
   ]
@@ -3700,19 +3741,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Slightly decreases the impact of attacks and reduces stamina depletion by 15%."
+    "description": "Reduces guard knockback by about 10% and guard stamina cost by 15%.",
+    "game_description": "Slightly decreases the impact of attacks and reduces stamina depletion by 15%."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Decreases the impact of attacks and reduces stamina depletion by 30%."
+    "description": "Reduces guard knockback by about 20% and guard stamina cost by 30%.",
+    "game_description": "Decreases the impact of attacks and reduces stamina depletion by 30%."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly decreases the impact of attacks and reduces stamina depletion by 50%."
+    "description": "Reduces guard knockback by about 30% and guard stamina cost by 50%.",
+    "game_description": "Greatly decreases the impact of attacks and reduces stamina depletion by 50%."
    }
   ]
  },
@@ -3728,19 +3772,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces damage taken by 10%, plus an additional 20% when conditions are met."
+    "description": "Reduces damage taken while guarding by 10%, and lets you guard attacks that normally cannot be guarded, taking 30% less from them.",
+    "game_description": "Reduces damage taken by 10%, plus an additional 20% when conditions are met."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces damage taken by 20%, plus an additional 30% when conditions are met."
+    "description": "Reduces damage taken while guarding by 20%, and lets you guard attacks that normally cannot be guarded, taking 50% less from them.",
+    "game_description": "Reduces damage taken by 20%, plus an additional 30% when conditions are met."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Reduces damage taken by 30%, plus an additional 50% when conditions are met."
+    "description": "Reduces damage taken while guarding by 30%, and lets you guard attacks that normally cannot be guarded, taking 80% less from them.",
+    "game_description": "Reduces damage taken by 30%, plus an additional 50% when conditions are met."
    }
   ]
  },
@@ -3872,7 +3919,8 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Grants an 80% chance of no sharpness loss while active."
+    "description": "Critical hits have an 80% chance of costing no sharpness.",
+    "game_description": "Grants an 80% chance of no sharpness loss while active."
    }
   ]
  },
@@ -3933,19 +3981,22 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +5% while active."
+    "description": "Attack +5% for about 11 s after a perfectly-timed guard.",
+    "game_description": "Attack +5% while active."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +10% while active."
+    "description": "Attack +10% for about 11 s after a perfectly-timed guard.",
+    "game_description": "Attack +10% while active."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Attack +15% while active."
+    "description": "Attack +15% for about 11 s after a perfectly-timed guard.",
+    "game_description": "Attack +15% while active."
    }
   ]
  },
@@ -3961,21 +4012,21 @@
     "level": 1,
     "name": null,
     "pieces_required": null,
-    "description": "Moderately increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.10.",
+    "description": "Bowgun reload speed about +5%. The first shot from a fully loaded magazine deals attack ×1.10.",
     "game_description": "Moderately increases bowgun reload speed and attack power of ammo when certain conditions are met."
    },
    {
     "level": 2,
     "name": null,
     "pieces_required": null,
-    "description": "Increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.15.",
+    "description": "Bowgun reload speed about +10%. The first shot from a fully loaded magazine deals attack ×1.15.",
     "game_description": "Increases bowgun reload speed and attack power of ammo when certain conditions are met."
    },
    {
     "level": 3,
     "name": null,
     "pieces_required": null,
-    "description": "Greatly increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.30.",
+    "description": "Bowgun reload speed about +15%. The first shot from a fully loaded magazine deals attack ×1.30.",
     "game_description": "Greatly increases bowgun reload speed and attack power of ammo when certain conditions are met."
    }
   ]

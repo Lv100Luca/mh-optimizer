@@ -52,6 +52,13 @@
  },
  "Agitator": {
   "trigger": "While the large monster is enraged",
+  "text": {
+   "1": "Attack +4 and affinity +3% while a large monster is enraged.",
+   "2": "Attack +8 and affinity +5% while a large monster is enraged.",
+   "3": "Attack +12 and affinity +7% while a large monster is enraged.",
+   "4": "Attack +16 and affinity +10% while a large monster is enraged.",
+   "5": "Attack +20 and affinity +15% while a large monster is enraged."
+  },
   "levels": {
    "1": [
     "Attack +4",
@@ -223,30 +230,33 @@
  "Artillery": {
   "trigger": "Shelling, Wyvern's Fire, Charge Blade impact phials, Sticky Ammo",
   "text": {
-   "1": "Impact phial and Sticky Ammo damage ×1.10, and moderately increases Wyvern's Fire firing speed. Shelling fire attack +30.",
-   "2": "Impact phial and Sticky Ammo damage ×1.20, and increases Wyvern's Fire firing speed. Shelling fire attack +60.",
-   "3": "Impact phial and Sticky Ammo damage ×1.30, and greatly increases Wyvern's Fire firing speed. Shelling fire attack +90."
+   "1": "Impact phial and Sticky Ammo damage ×1.10, shell and Wyvern's Fire damage about +5%, Wyvern's Fire recharges ×1.2 faster. Shelling fire attack +30.",
+   "2": "Impact phial and Sticky Ammo damage ×1.20, shell and Wyvern's Fire damage about +10%, Wyvern's Fire recharges ×1.5 faster. Shelling fire attack +60.",
+   "3": "Impact phial and Sticky Ammo damage ×1.30, shell and Wyvern's Fire damage about +15%, Wyvern's Fire recharges ×2.0 faster. Shelling fire attack +90."
   },
   "levels": {
    "1": [
     "Shelling fire attack +30",
     "Impact phial / Sticky Ammo damage ×1.10",
-    "Wyvern's Fire fires faster"
+    "Shell and Wyvern's Fire damage about +5%",
+    "Wyvern's Fire recharge ×1.2 (likely)"
    ],
    "2": [
     "Shelling fire attack +60",
     "Impact phial / Sticky Ammo damage ×1.20",
-    "Wyvern's Fire fires faster"
+    "Shell and Wyvern's Fire damage about +10%",
+    "Wyvern's Fire recharge ×1.5 (likely)"
    ],
    "3": [
     "Shelling fire attack +90",
     "Impact phial / Sticky Ammo damage ×1.30",
-    "Wyvern's Fire fires faster"
+    "Shell and Wyvern's Fire damage about +15%",
+    "Wyvern's Fire recharge ×2.0 (likely)"
    ]
   },
   "notes": [
    "Gunlance, Charge Blade (impact phials) and bowgun Sticky Ammo only; Switch Axe phials, element-phial CB and Bow are not affected.",
-   "Datamine slots [0] 5/10/15 and [1] 120/150/200 are most likely Wyvern's Fire speed factors (unconfirmed); game8 measured Wyvern's Fire 76 -> 80 -> 84 -> 89 damage at Lv0-3."
+   "SkillData [5, 120, 3, 110] / [10, 150, 6, 120] / [15, 200, 9, 130]: gunlance damage %, Wyvern's Fire speed factor (most likely the recharge; untested), shelling fire (true), phial / Sticky Ammo multiplier. game8 measured Wyvern's Fire 76 -> 80 -> 84 -> 89 at Lv0-3."
   ],
   "source": "Datamine SkillData [2] = shelling fire true 3/6/9, [3] = explosive ×1.10/1.20/1.30; in-game text and game8 agree.",
   "confidence": "high"
@@ -373,7 +383,7 @@
  "Bladescale Honing": {
   "trigger": "Narrowly evading a monster attack with the weapon drawn",
   "text": {
-   "1": "Special sharpness with raw ×1.40 and element ×1.25."
+   "1": "Special sharpness with raw ×1.40 and element ×1.25, for up to 300 s."
   },
   "levels": {
    "1": [
@@ -415,7 +425,7 @@
  "Bladescale Loading": {
   "trigger": "Narrowly evading a monster attack with the weapon drawn",
   "text": {
-   "1": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25)."
+   "1": "Loads 3 special rounds or coatings (bowgun ammo ×1.40, bow coating shots ×1.25), kept for up to 300 s."
   },
   "levels": {
    "1": [
@@ -487,8 +497,8 @@
  },
  "Blast Resistance": {
   "text": {
-   "1": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage.",
-   "2": "Delays blastblight by 50 s (about 25 s -> 75 s) and greatly reduces blast damage."
+   "1": "Delays blastblight by 25 s (about 25 s -> 50 s) and reduces blast damage to ×0.66.",
+   "2": "Delays blastblight by 50 s (about 25 s -> 75 s) and reduces blast damage to ×0.50."
   },
   "levels": {
    "1": [
@@ -504,7 +514,7 @@
    ]
   },
   "notes": [
-   "game8 measured the blast at about 50% / 33% damage instead of the datamine 66% / 50%.",
+   "game8 lists 50% / 33% damage, but those look derived from its countdown figures rather than tested; the data says ×0.66 / ×0.50.",
    "Blastblight can also be removed by rolling."
   ],
   "source": "Datamine SkillData _value[0] = extra countdown s, [1] = damage %; game8 timers (50 / 75 s) agree, its damage test differs.",
@@ -548,9 +558,13 @@
   "confidence": "high"
  },
  "Blindsider": {
+  "text": {
+   "1": "Flash attacks and items reach about twice as far (data 200); monsters are not blinded for longer."
+  },
   "levels": {
    "1": [
-    "Improves flash attacks and items"
+    "Flash reach about ×2 (data 200, likely)",
+    "Blind duration unchanged"
    ]
   },
   "notes": [
@@ -866,6 +880,11 @@
  },
  "Charge Master": {
   "trigger": "Charged attacks only",
+  "text": {
+   "1": "Charged attacks get element ×1.15 and status buildup ×1.05.",
+   "2": "Charged attacks get element ×1.20 and status buildup ×1.10.",
+   "3": "Charged attacks get element ×1.25 and status buildup ×1.15."
+  },
   "levels": {
    "1": [
     "Element ×1.15 on charged attacks",
@@ -1121,9 +1140,9 @@
  "Critical Element": {
   "trigger": "Critical hits (element part of the hit)",
   "text": {
-   "1": "Increases elemental damage ×1.05 to ×1.07 by weapon while active.",
-   "2": "Increases elemental damage ×1.10 to ×1.14 by weapon while active.",
-   "3": "Increases elemental damage ×1.15 to ×1.21 by weapon while active."
+   "1": "Critical hits deal elemental damage ×1.05 to ×1.07 by weapon.",
+   "2": "Critical hits deal elemental damage ×1.10 to ×1.14 by weapon.",
+   "3": "Critical hits deal elemental damage ×1.15 to ×1.21 by weapon."
   },
   "levels": {
    "1": [
@@ -1272,25 +1291,30 @@
  },
  "Divine Blessing": {
   "trigger": "Random chance when taking damage",
+  "text": {
+   "1": "25% chance per hit to reduce the damage taken by 15%.",
+   "2": "25% chance per hit to reduce the damage taken by 30%.",
+   "3": "25% chance per hit to reduce the damage taken by 50%."
+  },
   "levels": {
    "1": [
     "Damage taken -15% when it procs",
-    "Proc chance about 25%"
+    "Proc chance 25%"
    ],
    "2": [
     "Damage taken -30% when it procs",
-    "Proc chance about 25%"
+    "Proc chance 25%"
    ],
    "3": [
     "Damage taken -50% when it procs",
-    "Proc chance about 25%"
+    "Proc chance 25%"
    ]
   },
   "notes": [
    "Chance does not rise with level.",
    "game8 measured 101 procs in 291 hits (about 35%); other guides quote 20%."
   ],
-  "source": "Datamine SkillData _value[0] = 25 (chance %), [1] = damage taken % (85 / 70 / 50); reduction matches game text, chance unverified.",
+  "source": "Datamine SkillData [25, 85] / [25, 70] / [25, 50]: chance, damage multiplier.",
   "confidence": "medium"
  },
  "Doshaguma's Might": {
@@ -1971,6 +1995,7 @@
  "Gore Magala's Tyranny": {
   "trigger": "Against large monsters (Frenzy infection)",
   "text": {
+   "1": "Infects you with Frenzy when against large monsters. Grants affinity +15% for 60 s upon recovery.",
    "2": "Infects you with Frenzy and raises attack +10 when against large monsters. Grants attack +15 and affinity +15% for 60 s upon recovery."
   },
   "levels": {
@@ -2026,28 +2051,38 @@
  },
  "Guard": {
   "trigger": "Guarding",
+  "text": {
+   "1": "Reduces guard knockback by about 10% and guard stamina cost by 15%.",
+   "2": "Reduces guard knockback by about 20% and guard stamina cost by 30%.",
+   "3": "Reduces guard knockback by about 30% and guard stamina cost by 50%."
+  },
   "levels": {
    "1": [
     "Guard stamina cost -15%",
-    "Smaller guard knockback"
+    "Guard knockback about -10% (data 10)"
    ],
    "2": [
     "Guard stamina cost -30%",
-    "Smaller guard knockback"
+    "Guard knockback about -20% (data 20)"
    ],
    "3": [
     "Guard stamina cost -50%",
-    "Much smaller guard knockback"
+    "Guard knockback about -30% (data 30)"
    ]
   },
   "notes": [
-   "Data slot [0] 10/20/30 is most likely the knockback reduction; no tested meaning."
+   "Data slot [0] 10/20/30 is most likely a percentage cut of the guard knockback; nothing measures it. game8: at Lv3 strong knockbacks take about half as long and weak ones are practically negated."
   ],
   "source": "Datamine SkillData [1] = stamina × 0.85/0.70/0.50; matches in-game text.",
   "confidence": "high"
  },
  "Guard Up": {
   "trigger": "Guarding",
+  "text": {
+   "1": "Reduces damage taken while guarding by 10%, and lets you guard attacks that normally cannot be guarded, taking 30% less from them.",
+   "2": "Reduces damage taken while guarding by 20%, and lets you guard attacks that normally cannot be guarded, taking 50% less from them.",
+   "3": "Reduces damage taken while guarding by 30%, and lets you guard attacks that normally cannot be guarded, taking 80% less from them."
+  },
   "levels": {
    "1": [
     "Guard damage -10%",
@@ -2142,6 +2177,13 @@
  },
  "Heroics": {
   "trigger": "While health is 35% or lower",
+  "text": {
+   "1": "Defense +50 while your health is at 35% or lower.",
+   "2": "Attack +5% and defense +50 while your health is at 35% or lower.",
+   "3": "Attack +5% and defense +100 while your health is at 35% or lower.",
+   "4": "Attack +10% and defense +100 while your health is at 35% or lower.",
+   "5": "Attack +30% while your health is at 35% or lower, but defense-increasing effects are negated."
+  },
   "levels": {
    "1": [
     "Defense +50"
@@ -2269,6 +2311,9 @@
   "confidence": "high"
  },
  "Imparted Wisdom": {
+  "text": {
+   "1": "Increases the chance of finding rare gathering points (about +25%)."
+  },
   "levels": {
    "1": [
     "Higher chance of rare gathering points (parameter 25, likely +25%)"
@@ -2569,6 +2614,9 @@
  },
  "Master's Touch": {
   "trigger": "Critical hits",
+  "text": {
+   "1": "Critical hits have an 80% chance of costing no sharpness."
+  },
   "levels": {
    "1": [
     "80% chance a critical hit costs no sharpness"
@@ -2579,6 +2627,11 @@
  },
  "Maximum Might": {
   "trigger": "Stamina full for 3 s",
+  "text": {
+   "1": "Affinity +10% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina.",
+   "2": "Affinity +20% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina.",
+   "3": "Affinity +30% once your stamina has stayed full for 3 s; ends 2 s after you start using stamina."
+  },
   "levels": {
    "1": [
     "Affinity +10%"
@@ -2622,20 +2675,21 @@
  "Mizutsune's Prowess": {
   "trigger": "Evading",
   "text": {
-   "1": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after evading 3 times.",
+   "1": "Prevents major bubbleblight and grants you minor bubbleblight for 30 s after 3 or 4 evades (by evade type).",
    "2": "In addition to previous effects, also grants Evade Window Lv2 i-frames while afflicted with bubbleblight."
   },
   "levels": {
    "1": [
     "Immune to major bubbleblight",
-    "Minor bubbleblight for 30 s after 3 evades"
+    "Minor bubbleblight for 30 s after 3 or 4 evades"
    ],
    "2": [
     "As I, plus Evade Window Lv2 i-frames while bubbleblighted"
    ]
   },
   "notes": [
-   "The extra i-frames stack with the Evade Window skill up to its Lv5 cap."
+   "The extra i-frames stack with the Evade Window skill up to its Lv5 cap.",
+   "Bubble gauge 100; each evade adds 25 or 40 by evade type (_BubbleDance_MaxDodgeValue, _SkillBubbleDanceDodgeTypeData)."
   ],
   "source": "game8 and Wycademy tests; no per-level datamine numbers.",
   "confidence": "medium"
@@ -2673,17 +2727,20 @@
  },
  "Neopteron Camouflage": {
   "trigger": "While crouching",
+  "text": {
+   "1": "Crouch movement speed ×1.4, and makes it easier to escape large monsters' detection."
+  },
   "levels": {
    "1": [
-    "Crouch move speed ×1.6 (datamine 160)",
-    "Easier to escape detection (datamine 120)"
+    "Crouch move speed ×1.4",
+    "Easier to escape detection (data 120)"
    ]
   },
   "notes": [
-   "Wycademy reports +40% speed instead."
+   "PlayerSkillParam _CrouchMoveMotSpeedRate 1.4 matches Wycademy's +40%. The SkillData values 160 / 120 are unlabelled, probably detection-related."
   ],
   "source": "Datamine SkillData [160, 120]; multiplier reading is a guess.",
-  "confidence": "low"
+  "confidence": "medium"
  },
  "Normal Shots": {
   "trigger": "Normal Ammo, normal arrows, Flying Swallow Shot",
@@ -2727,22 +2784,31 @@
  },
  "Offensive Guard": {
   "trigger": "After a perfectly-timed guard",
+  "text": {
+   "1": "Attack +5% for about 11 s after a perfectly-timed guard.",
+   "2": "Attack +10% for about 11 s after a perfectly-timed guard.",
+   "3": "Attack +15% for about 11 s after a perfectly-timed guard."
+  },
   "levels": {
    "1": [
-    "Attack ×1.05"
+    "Attack ×1.05",
+    "Lasts about 11 s"
    ],
    "2": [
-    "Attack ×1.10"
+    "Attack ×1.10",
+    "Lasts about 11 s"
    ],
    "3": [
-    "Attack ×1.15"
+    "Attack ×1.15",
+    "Lasts about 11 s"
    ]
   },
   "notes": [
-   "Lasts a short time after the perfect guard; no Wilds duration found."
+   "Duration about 11 s (game8) or 12 s (GameWith), the same at every level; the game data has no timer for it.",
+   "A normal guard within about 0.5 s of raising the guard counts as perfectly timed; Charge Blade guard points trigger it too."
   ],
-  "source": "Datamine SkillData [0] = 105/110/115; in-game text.",
-  "confidence": "high"
+  "source": "Datamine SkillData [0] = 105/110/115; duration game8 / GameWith (no stopwatch test published).",
+  "confidence": "medium"
  },
  "Omega Resonance": {
   "trigger": "Local / Remote alternate every 90 s; needs an ally inside / outside the ring",
@@ -2772,9 +2838,9 @@
  "Opening Shot": {
   "trigger": "Bowguns: first shot from a fully loaded magazine",
   "text": {
-   "1": "Moderately increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.10.",
-   "2": "Increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.15.",
-   "3": "Greatly increases bowgun reload speed. The first shot from a fully loaded magazine deals attack ×1.30."
+   "1": "Bowgun reload speed about +5%. The first shot from a fully loaded magazine deals attack ×1.10.",
+   "2": "Bowgun reload speed about +10%. The first shot from a fully loaded magazine deals attack ×1.15.",
+   "3": "Bowgun reload speed about +15%. The first shot from a fully loaded magazine deals attack ×1.30."
   },
   "levels": {
    "1": [
@@ -2791,7 +2857,8 @@
    ]
   },
   "notes": [
-   "Light and Heavy Bowgun only. The 5/10/15 slots probably mean reload speed +5/10/15%; the trailing 110/110 slots are unexplained."
+   "Light and Heavy Bowgun only. The 5/10/15 slots probably mean reload speed +5/10/15%; the trailing 110/110 slots are unexplained.",
+   "game8 says the first shot gets +5 / +10 / +15 attack instead (untested); the game data table _FirstShot gives ×1.10 / ×1.15 / ×1.30."
   ],
   "source": "PlayerSkillParam _FirstShot [1.1, 1.15, 1.3] and SkillData [5,5,110,110]..[15,15,110,110]; slot meaning inferred.",
   "confidence": "medium"
@@ -2901,6 +2968,13 @@
  },
  "Peak Performance": {
   "trigger": "Health full",
+  "text": {
+   "1": "Attack +3 while your health is full.",
+   "2": "Attack +6 while your health is full.",
+   "3": "Attack +10 while your health is full.",
+   "4": "Attack +15 while your health is full.",
+   "5": "Attack +20 while your health is full."
+  },
   "levels": {
    "1": [
     "Attack +3"
@@ -3246,6 +3320,13 @@
  },
  "Resentment": {
   "trigger": "While you have red (recoverable) health",
+  "text": {
+   "1": "Attack +5 while you have recoverable (red) health.",
+   "2": "Attack +10 while you have recoverable (red) health.",
+   "3": "Attack +15 while you have recoverable (red) health.",
+   "4": "Attack +20 while you have recoverable (red) health.",
+   "5": "Attack +25 while you have recoverable (red) health."
+  },
   "levels": {
    "1": [
     "Attack +5"
@@ -3304,16 +3385,16 @@
  "Scale Layering": {
   "trigger": "While health is at or below 40%",
   "text": {
-   "1": "Temporarily reduces stamina depletion to ×0.5 when health is at 40% or lower."
+   "1": "Reduces stamina depletion to ×0.5 while health is at 40% or lower."
   },
   "levels": {
    "1": [
-    "Stamina use ×0.5",
-    "Lasts up to 90 s (likely)"
+    "Stamina use ×0.5"
    ]
   },
   "notes": [
-   "No cooldown between activations."
+   "No cooldown between activations.",
+   "game8: lasts as long as health stays at 40% or lower; a data value of 90 might be a 90 s limit (unconfirmed)."
   ],
   "source": "Common-effect _Hunki_ActiveHP 0.4 / _Hunki_StamitaRate 0.5 and SkillData [90]; game8 says 50%.",
   "confidence": "medium"
@@ -3525,22 +3606,31 @@
   "confidence": "high"
  },
  "Speed Eating": {
+  "text": {
+   "1": "Drinks such as Potions go down ×1.3 faster (a Potion takes about 3.8 s instead of 4.6 s); other items are quicker too.",
+   "2": "Drinks such as Potions go down ×2.0 faster (a Potion takes about 2.9 s instead of 4.6 s); other items are quicker too.",
+   "3": "Drinks such as Potions go down ×2.4 faster (a Potion takes about 2.6 s instead of 4.6 s); other items are quicker too."
+  },
   "levels": {
    "1": [
-    "Moderately increases eating and item-use speed"
+    "Drinking ×1.3 faster (Potion 273 -> 226 frames)",
+    "Eating and other items faster"
    ],
    "2": [
-    "Increases eating and item-use speed"
+    "Drinking ×2.0 faster (Potion 273 -> 173 frames)",
+    "Eating and other items faster"
    ],
    "3": [
-    "Greatly increases eating and item-use speed"
+    "Drinking ×2.4 faster (Potion 273 -> 154 frames)",
+    "Eating and other items faster"
    ]
   },
   "notes": [
-   "PlayerSkillParam _FastEatingData holds 7 rate groups per level (e.g. 1.1/1.35/1.45, 1.3/2.0/2.4, 1.2/1.4/1.6, 1.1/1.3/1.5); which action each applies to is not mapped."
+   "PlayerSkillParam _FastEatingData holds 7 rate groups per level; the 1.3 / 2.0 / 2.4 group matches game8's Potion frame timings within 2 frames. The other groups (e.g. 1.1/1.35/1.45, 1.2/1.4/1.6) are unmapped, most likely meat eating and other animation parts.",
+   "Lifepowder-type area items are not sped up (game8)."
   ],
-  "source": "Game text; datamine rates exist but are not mapped to actions.",
-  "confidence": "low"
+  "source": "PlayerSkillParam _FastEatingData; game8 Potion timings at 60 fps.",
+  "confidence": "medium"
  },
  "Speed Sharpening": {
   "levels": {
@@ -3895,30 +3985,38 @@
  },
  "Wide-Range": {
   "trigger": "Using healing/buff items",
+  "text": {
+   "1": "Items affect allies within about 30 m with 33% of their efficacy.",
+   "2": "Items affect allies within about 45 m with 33% of their efficacy.",
+   "3": "Items affect allies within about 45 m with 66% of their efficacy.",
+   "4": "Items affect allies within about 60 m with 66% of their efficacy.",
+   "5": "Items affect allies within about 60 m with full efficacy."
+  },
   "levels": {
    "1": [
     "Allies get 33% of the item effect",
-    "Radius 30"
+    "Radius about 30 m"
    ],
    "2": [
     "Allies get 33% of the item effect",
-    "Radius 45"
+    "Radius about 45 m"
    ],
    "3": [
     "Allies get 66% of the item effect",
-    "Radius 45"
+    "Radius about 45 m"
    ],
    "4": [
     "Allies get 66% of the item effect",
-    "Radius 60"
+    "Radius about 60 m"
    ],
    "5": [
     "Allies get 100% of the item effect",
-    "Radius 60"
+    "Radius about 60 m"
    ]
   },
   "notes": [
-   "Radius is the raw datamine value in game units; its real-world scale is not confirmed."
+   "Radius from the game data (_ItemWideEffectiveRadiusData 30/45/45/60/60); the game engine measures in metres, so very likely metres.",
+   "Shared: potions, Herbal Medicine (healing from Lv3), Antidote, Nulberry, drinks, seeds, pills, Demondrugs, Armorskins, and mushrooms with Mushroomancer except Mandragora. Recovery Up and Recovery Speed are not shared (game8)."
   ],
   "source": "Game text; PlayerSkillParam _ItemWideEffectiveEffectiveData 0.334/0.334/0.667/0.667/1.0 and _ItemWideEffectiveRadiusData 30/45/45/60/60.",
   "confidence": "high"
