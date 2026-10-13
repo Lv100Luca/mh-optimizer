@@ -272,6 +272,7 @@
         [nameof(Conditions.BurstHits)] = "Burst hits",
         [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
         [nameof(Conditions.AzureBoltUptime)] = "Azure Bolt uptime",
+        [nameof(Conditions.OffensiveGuardUptime)] = "Offensive Guard uptime",
         [nameof(Conditions.AttackProfile)] = "Attack",
         [nameof(Conditions.Target)] = "Target",
         [nameof(Conditions.SkillLimits)] = "Skill limits",
@@ -469,7 +470,7 @@
                     @* inside the card's label: clicks here must not toggle the checkbox *@
                     <span class="cond-uptime" @onclick:preventDefault="true">
                         <span class="muted small">Uptime</span>
-                        <Segmented T="double?" Small="true" Value="uptime.Get(v.Current)" Options="UptimeOptions"
+                        <Segmented T="double?" Small="true" Value="uptime.Get(v.Current)" Options="uptime.Options"
                                    ValueChanged="u => App.PatchConditions(c => uptime.Set(c, u))" />
                         <span class="muted small">@uptime.Auto</span>
                     </span>
@@ -486,13 +487,23 @@
         </label>
     };
 
-    /// <summary>Timed skills scored by their share of the hunt: the uptime of the condition (null: the build's default) and what the default is.</summary>
-    private static readonly Dictionary<string, (Func<Conditions, double?> Get, Func<Conditions, double?, Conditions> Set, string Auto)> Uptimes = new()
+    // before Uptimes: static fields initialize in this order
+    private static readonly IReadOnlyList<SegmentOption<double?>> UptimeOptions =
+        [new(null, "Auto", Hint: "The default for the build's set bonus tier"), .. new double?[] { 0.25, 0.5, 0.67, 0.85, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value)))];
+
+    private static readonly IReadOnlyList<SegmentOption<double?>> GuardUptimeOptions =
+        new double?[] { 0.1, 0.25, 0.5, 0.75, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value))).ToList();
+
+    /// <summary>Timed skills scored by their share of the hunt: the uptime of the condition (null: the build's default), the choices and what the default is.</summary>
+    private static readonly Dictionary<string, (Func<Conditions, double?> Get, Func<Conditions, double?, Conditions> Set, IReadOnlyList<SegmentOption<double?>> Options, string Auto)> Uptimes = new()
     {
-        [nameof(Conditions.LatentPowerActive)] = (c => c.LatentPowerUptime, (c, u) => c with { LatentPowerUptime = u },
+        [nameof(Conditions.LatentPowerActive)] = (c => c.LatentPowerUptime, (c, u) => c with { LatentPowerUptime = u }, UptimeOptions,
             $"Auto: {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.None))} without taking damage, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.I))} with Thunderous Roar I, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.II))} with II."),
-        [nameof(Conditions.AzureBoltActive)] = (c => c.AzureBoltUptime, (c, u) => c with { AzureBoltUptime = u },
+        [nameof(Conditions.AzureBoltActive)] = (c => c.AzureBoltUptime, (c, u) => c with { AzureBoltUptime = u }, UptimeOptions,
             $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
+        // no default to fall back on: null (saved before there was a choice) is all the time
+        [nameof(Conditions.OffensiveGuardActive)] = (c => c.OffensiveGuardUptime ?? 1, (c, u) => c with { OffensiveGuardUptime = u }, GuardUptimeOptions,
+            "How much of the hunt a perfect guard keeps it going."),
     };
 
     /// <summary>Burst's two stages: the first-hit boost (1 to 4 hits, stored as 1) and the full one (null: five hits).</summary>
@@ -504,9 +515,6 @@
 
     private static readonly IReadOnlyList<SegmentOption<SpiritGauge>> SpiritOptions =
         Enum.GetValues<SpiritGauge>().Select(g => new SegmentOption<SpiritGauge>(g, g == SpiritGauge.None ? "None" : $"{g} ×{Num(DamageConstants.SpiritGaugeRaw(g))}")).ToList();
-
-    private static readonly IReadOnlyList<SegmentOption<double?>> UptimeOptions =
-        [new(null, "Auto", Hint: "The default for the build's set bonus tier"), .. new double?[] { 0.25, 0.5, 0.67, 0.85, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value)))];
 
     private static string Pct(double share) => $"{share * 100:0}%";
 

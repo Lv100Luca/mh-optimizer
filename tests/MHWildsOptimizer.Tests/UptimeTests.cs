@@ -60,6 +60,21 @@ public class UptimeTests
     }
 
     [Fact]
+    public void OffensiveGuardIsWeightedByItsUptime()
+    {
+        var skills = Skills([(SkillNames.OffensiveGuard, 3)]);
+        var cond = Conditions.Default with { AzureBoltActive = false, OffensiveGuardActive = true, OffensiveGuardUptime = 0.25 };
+        var on = cond with { OffensiveGuardUptime = 1 };
+        var off = cond with { OffensiveGuardActive = false };
+        Assert.True(DamageCalculator.Calculate(Sa, skills, on).Total > DamageCalculator.Calculate(Sa, skills, off).Total);
+        Assert.Equal(Expected(skills, on, off, 0.25), DamageCalculator.Calculate(Sa, skills, cond).Total, Tol);
+        // no uptime set: on all the time, as before there was a choice
+        Assert.Single((cond with { OffensiveGuardUptime = null }).UptimeParts(skills));
+        Assert.Equal(DamageCalculator.Calculate(Sa, skills, on).Total, DamageCalculator.Calculate(Sa, skills, cond with { OffensiveGuardUptime = null }).Total, Tol);
+        Assert.Single(cond.UptimeParts(Skills([(SkillNames.AttackBoost, 5)])));
+    }
+
+    [Fact]
     public void BuildsWithoutTheSkillsAreScoredInOnePart()
     {
         var cond = Conditions.Default with { LatentPowerActive = true };

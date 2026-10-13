@@ -263,7 +263,7 @@ public static class DamageCalculator
             for (var i = 0; i < parts.Count; i++)
             {
                 var (part, r) = (parts[i].Part, results[i]);
-                notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
+                notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}, Offensive Guard {(part.OffensiveGuardActive ? "on" : "off")}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
             }
         }
         return main with
