@@ -557,7 +557,7 @@ public sealed class ConfigEditor
     {
         var pool = _data.TalismanPool;
         var name = AnsiConsole.Prompt(new TextPrompt<string>("Talisman name:").DefaultValue(existing?.Name ?? $"Talisman {_talismans.Count + 1}"));
-        var rarity = int.Parse(Pick("Rarity", ["4", "5", "6", "7"], (existing?.Rarity ?? 7).ToString()));
+        var rarity = int.Parse(Pick("Rarity", ["5", "6", "7", "8"], (existing?.Rarity ?? 7).ToString()));
 
         var skills = new Dictionary<string, int>();
         var primary = pool is null

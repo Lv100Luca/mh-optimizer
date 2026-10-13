@@ -258,7 +258,7 @@ public class ApiTests : IClassFixture<WebFixture>
         (await client.PutAsJsonAsync("/api/profiles/renames/weapons/one", new WeaponPayload(payload.Request, [build]), _json)).EnsureSuccessStatusCode();
         (await client.PutAsJsonAsync("/api/profiles/renames/weapons/two", new WeaponPayload(payload.Request, [build with { Name = "Other" }]), _json)).EnsureSuccessStatusCode();
 
-        var renamed = payload.Talismans!.Select(t => t.Name == "Secret Charm" ? t with { Name = "My best charm" } : t).ToList();
+        var renamed = payload.Talismans!.Select(t => t.Name == "Golden Age Charm" ? t with { Name = "My best charm" } : t).ToList();
         (await client.PutAsJsonAsync("/api/profiles/renames/talismans", new TalismansPayload(renamed, new() { ["Secret Charm"] = "My best charm" }), _json)).EnsureSuccessStatusCode();
 
         foreach (var weapon in new[] { "one", "two" })
@@ -277,7 +277,7 @@ public class ApiTests : IClassFixture<WebFixture>
         Arms = new BuildArmorInput { Piece = "G. Fulgur Vambraces β", Transcended = true, Decorations = ["Chain Jewel [3]", "Tenderizer Jewel [3]"] },
         Waist = new BuildArmorInput { Piece = "Dahaad Shardcoil γ", Decorations = ["Protection Jewel [1]"] },
         Legs = new BuildArmorInput { Piece = "Udra Miregreaves γ", Decorations = ["Furor Jewel [2]"] },
-        Talisman = new BuildTalismanInput { Name = "Secret Charm" },
+        Talisman = new BuildTalismanInput { Name = "Golden Age Charm" },
     };
 
     [Fact]

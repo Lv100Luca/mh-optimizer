@@ -90,6 +90,14 @@ public static partial class TalismanInputLoader
         return new TalismanConversion(new Talisman(input.Name, input.Rarity, grants, slots, TalismanSource.Random), errors, warnings);
     }
 
+    /// <summary>
+    /// The rarity the game shows for an entry saved before 2026-10-13, when the app offered R4-R7 for the game's 5-8: a weapon
+    /// decoration slot exists only on the rarity 8 Golden Age Charm, so an entry with one becomes rarity 8; every other entry
+    /// keeps what the user chose (the game's charm names were next to the picker, so those were entered as shown in the game).
+    /// </summary>
+    public static TalismanInput WithGameRarity(TalismanInput input) =>
+        input.Rarity < 8 && input.Slots.Any(s => TryParseSlot(s, out var slot) && slot.Kind == SkillKind.Weapon) ? input with { Rarity = 8 } : input;
+
     public static bool TryParseSlot(string text, out TalismanSlot slot)
     {
         slot = default!;

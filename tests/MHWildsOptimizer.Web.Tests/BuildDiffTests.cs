@@ -19,7 +19,7 @@ public class BuildDiffTests
         Arms = new BuildArmorInput { Piece = "G. Fulgur Vambraces β", Transcended = true, Decorations = ["Chain Jewel [3]", "Tenderizer Jewel [3]"] },
         Waist = new BuildArmorInput { Piece = "Dahaad Shardcoil γ", Decorations = ["Protection Jewel [1]"] },
         Legs = new BuildArmorInput { Piece = "Udra Miregreaves γ", Decorations = ["Furor Jewel [2]"] },
-        Talisman = new BuildTalismanInput { Name = "Secret Charm" },
+        Talisman = new BuildTalismanInput { Name = "Golden Age Charm" },
     };
 
     private static List<BuildDto> Score(params BuildInput[] builds)

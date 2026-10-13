@@ -27,9 +27,9 @@ public class PossibleTalismanTests(ITestOutputHelper output)
     public void RollTableIsLoaded()
     {
         var pool = TestData.Data.TalismanPool!;
-        Assert.Equal([4, 5, 6, 7], pool.PointRows.Select(r => r.Rarity).Distinct().Order());
+        Assert.Equal([5, 6, 7, 8], pool.PointRows.Select(r => r.Rarity).Distinct().Order());
         Assert.All(pool.PointRows, r => Assert.Equal(3, r.SkillPoints.Count));
-        // Critical Boost only rolls as the 4-point first skill (rarity 6 and 7, with two 1-point weapon skills)
+        // Critical Boost only rolls as the 4-point first skill (rarity 7 and 8, with two 1-point weapon skills)
         Assert.Contains(pool.LotSkills, s => s.Skill == "Critical Boost" && s.Level == 1 && s.Points == 4);
         Assert.Contains(pool.LotSkills, s => s.Skill == "Weakness Exploit" && s.Level == 1 && s.Points == 10);
     }
@@ -46,10 +46,10 @@ public class PossibleTalismanTests(ITestOutputHelper output)
         bool Has(Talisman t, string skill, int level) => t.Skills.Any(s => s.Skill == skill && s.Level == level);
         // a 10-point skill always comes alone in the armor-kind slots: Weakness Exploit and Agitator never share a talisman
         Assert.DoesNotContain(all, t => Has(t, "Weakness Exploit", 1) && Has(t, "Agitator", 1));
-        // Attack Boost 3 + Weakness Exploit 1 rolls at rarity 6 (up to a level-2 armor slot) and rarity 7 (weapon slot + armor slots)
+        // Attack Boost 3 + Weakness Exploit 1 rolls at rarity 7 (up to a level-2 armor slot) and rarity 8 (the Golden Age Charm: weapon slot + armor slots)
         var abWex = all.Where(t => Has(t, "Attack Boost", 3) && Has(t, "Weakness Exploit", 1)).ToList();
-        Assert.Contains(abWex, t => t.Rarity == 6 && t.Slots.SequenceEqual([new TalismanSlot(2, SkillKind.Armor)]));
-        Assert.Contains(abWex, t => t.Rarity == 7 && t.Slots.Any(s => s.Kind == SkillKind.Weapon));
+        Assert.Contains(abWex, t => t.Rarity == 7 && t.Slots.SequenceEqual([new TalismanSlot(2, SkillKind.Armor)]));
+        Assert.Contains(abWex, t => t.Rarity == 8 && t.Slots.Any(s => s.Kind == SkillKind.Weapon));
         Assert.DoesNotContain(abWex, t => t.Slots.Any(s => s.Level == 3));
         // every generated talisman passes the same validation as a user-entered one
         foreach (var t in all.Take(200))

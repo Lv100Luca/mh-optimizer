@@ -46,6 +46,7 @@ builder.Services.AddScoped<AppState>();
 builder.Services.AddScoped<ProfileTransfer>();
 
 var host = builder.Build();
+host.Services.GetRequiredService<BrowserProfileStore>().Migrate();
 // CP-SAT's workers are web workers: the browser's core count is what a run can use (Environment.ProcessorCount is 1 here)
 OptimizerOptions.ProcessorCount = Math.Max(1, ((IJSInProcessRuntime)host.Services.GetRequiredService<IJSRuntime>()).Invoke<int>("mhwo.cores"));
 // .NET runs interpreted here: a lighter self-check of each score model keeps that part of a run short

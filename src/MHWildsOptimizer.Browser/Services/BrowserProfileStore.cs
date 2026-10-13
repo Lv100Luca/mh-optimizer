@@ -22,6 +22,32 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
     private static string P(string profile) => $"{Prefix}{profile}:";
     private static string W(string profile, string name) => $"{P(profile)}w:{name}:";
 
+    /// <summary>Version of the stored data's conventions; <see cref="Migrate"/> brings older storage up to it.</summary>
+    public const string SchemaKey = "mhwo:schema";
+    public const string SchemaVersion = "2";
+
+    /// <summary>
+    /// One-time fixes of what earlier versions stored, run at startup. Version 2 (2026-10-13): random talismans carry the rarity
+    /// the game shows (the app had offered R4-R7 for the game's 5-8), see <see cref="ProfileRules.FixTalismanRarities(IReadOnlyList{TalismanInput})"/>.
+    /// </summary>
+    public void Migrate()
+    {
+        if (storage.GetString(SchemaKey) == SchemaVersion) return;
+        foreach (var profile in ProfileNames())
+        {
+            if (ProfileRules.FixTalismanRarities(LoadTalismans(profile)) is { } talismans)
+                storage.Set($"{P(profile)}talismans", talismans, Json);
+            foreach (var name in WeaponNames(profile))
+            {
+                if (ProfileRules.FixTalismanRarities(LoadBuilds(profile, name)) is { } builds)
+                    storage.Set($"{W(profile, name)}builds", builds, Json);
+                if (LoadResults(profile, name) is { } results && ProfileRules.FixTalismanRarities(results) is { } fixedResults)
+                    storage.SetCompressed($"{W(profile, name)}results", fixedResults, ApiJson.Options);
+            }
+        }
+        storage.SetString(SchemaKey, SchemaVersion);
+    }
+
     // ---------------------------------------------------------------- profiles
 
     private IEnumerable<string> ProfileNames() =>

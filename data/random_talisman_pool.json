@@ -1,10 +1,10 @@
 {
- "_about": "What random talismans (melded charms) can roll, from the game data (dtlnor/MHWs-in-json RandomAmulet* tables). Skill slot 1 draws from the primary pool (weapon-kind skills, 1-4 points), skill slots 2-3 from the secondary pool (armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. A talisman rolls one of point_rows for its rarity, then for each skill point value a lot_skills entry worth exactly that many points (1-4 points = weapon-kind table, 5-10 = armor-kind table, 0 = empty) and the slot pattern worth slot_points. Used for validating user-entered talismans and for the \"every possible talisman\" mode.",
+ "_about": "What random talismans (melded charms) can roll, from the game data (dtlnor/MHWs-in-json RandomAmulet* tables). Skill slot 1 draws from the primary pool (weapon-kind skills, 1-4 points), skill slots 2-3 from the secondary pool (armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. A talisman rolls one of point_rows for its rarity, then for each skill point value a lot_skills entry worth exactly that many points (1-4 points = weapon-kind table, 5-10 = armor-kind table, 0 = empty) and the slot pattern worth slot_points. Used for validating user-entered talismans and for the \"every possible talisman\" mode. Rarities are the ones the game shows (the RARE enum of the dump is one lower): 5 Unknown, 6 Historical, 7 Secret, 8 Golden Age Charm (the only one with a weapon slot).",
  "rarity_by_type": {
-  "AT_0189": 4,
-  "AT_0190": 5,
-  "AT_0191": 6,
-  "AT_0192": 7
+  "AT_0189": 5,
+  "AT_0190": 6,
+  "AT_0191": 7,
+  "AT_0192": 8
  },
  "point_budgets_by_type": {
   "AT_0189": {
@@ -29,7 +29,7 @@
     5,
     6
    ],
-   "rarity": 4
+   "rarity": 5
   },
   "AT_0190": {
    "skill1": [
@@ -56,7 +56,7 @@
     4,
     5
    ],
-   "rarity": 5
+   "rarity": 6
   },
   "AT_0191": {
    "skill1": [
@@ -85,7 +85,7 @@
     4,
     6
    ],
-   "rarity": 6
+   "rarity": 7
   },
   "AT_0192": {
    "skill1": [
@@ -113,7 +113,7 @@
     12,
     13
    ],
-   "rarity": 7
+   "rarity": 8
   },
   "AT_0193": {
    "skill1": [
@@ -1311,7 +1311,7 @@
  },
  "point_rows": [
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     7,
@@ -1320,7 +1320,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     6,
@@ -1329,7 +1329,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1338,7 +1338,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1347,7 +1347,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     9,
@@ -1356,7 +1356,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     10,
@@ -1365,7 +1365,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     7,
@@ -1374,7 +1374,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     6,
@@ -1383,7 +1383,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1392,7 +1392,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1401,7 +1401,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     9,
@@ -1410,7 +1410,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     10,
@@ -1419,7 +1419,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     7,
@@ -1428,7 +1428,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     6,
@@ -1437,7 +1437,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1446,7 +1446,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1455,7 +1455,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     9,
@@ -1464,7 +1464,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     10,
@@ -1473,7 +1473,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     7,
@@ -1482,7 +1482,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     6,
@@ -1491,7 +1491,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1500,7 +1500,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     8,
@@ -1509,7 +1509,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     9,
@@ -1518,7 +1518,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 4,
+   "rarity": 5,
    "skill_points": [
     1,
     10,
@@ -1527,7 +1527,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1536,7 +1536,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1545,7 +1545,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     6,
@@ -1554,7 +1554,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1563,7 +1563,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1572,7 +1572,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     9,
@@ -1581,7 +1581,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     10,
@@ -1590,7 +1590,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1599,7 +1599,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1608,7 +1608,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     6,
@@ -1617,7 +1617,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1626,7 +1626,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1635,7 +1635,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     9,
@@ -1644,7 +1644,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     10,
@@ -1653,7 +1653,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1662,7 +1662,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1671,7 +1671,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     6,
@@ -1680,7 +1680,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1689,7 +1689,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1698,7 +1698,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     9,
@@ -1707,7 +1707,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     10,
@@ -1716,7 +1716,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1725,7 +1725,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     1,
     1,
@@ -1734,7 +1734,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     6,
@@ -1743,7 +1743,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1752,7 +1752,7 @@
    "slot_points": 5
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     8,
@@ -1761,25 +1761,25 @@
    "slot_points": 5
   },
   {
-   "rarity": 5,
+   "rarity": 6,
    "skill_points": [
     2,
     9,
-    0
-   ],
-   "slot_points": 5
-  },
-  {
-   "rarity": 5,
-   "skill_points": [
-    2,
-    10,
     0
    ],
    "slot_points": 5
   },
   {
    "rarity": 6,
+   "skill_points": [
+    2,
+    10,
+    0
+   ],
+   "slot_points": 5
+  },
+  {
+   "rarity": 7,
    "skill_points": [
     4,
     1,
@@ -1788,7 +1788,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1797,7 +1797,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1806,7 +1806,7 @@
    "slot_points": 6
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1815,7 +1815,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     7,
@@ -1824,7 +1824,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     6,
@@ -1833,7 +1833,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     8,
@@ -1842,7 +1842,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     10,
@@ -1851,7 +1851,7 @@
    "slot_points": 1
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     4,
     1,
@@ -1860,7 +1860,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1869,7 +1869,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1878,7 +1878,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1887,7 +1887,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     7,
@@ -1896,7 +1896,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     6,
@@ -1905,7 +1905,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     8,
@@ -1914,7 +1914,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     10,
@@ -1923,7 +1923,7 @@
    "slot_points": 2
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     4,
     1,
@@ -1932,7 +1932,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1941,7 +1941,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1950,7 +1950,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     2,
     1,
@@ -1959,7 +1959,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     7,
@@ -1968,7 +1968,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     6,
@@ -1977,7 +1977,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     8,
@@ -1986,7 +1986,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 6,
+   "rarity": 7,
    "skill_points": [
     3,
     10,
@@ -1995,7 +1995,7 @@
    "slot_points": 4
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     4,
     1,
@@ -2004,7 +2004,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2013,7 +2013,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2022,7 +2022,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2031,7 +2031,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     7,
@@ -2040,7 +2040,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     6,
@@ -2049,7 +2049,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     8,
@@ -2058,7 +2058,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     10,
@@ -2067,7 +2067,7 @@
    "slot_points": 11
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     4,
     1,
@@ -2076,7 +2076,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2085,7 +2085,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2094,7 +2094,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2103,7 +2103,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     7,
@@ -2112,7 +2112,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     6,
@@ -2121,7 +2121,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     8,
@@ -2130,7 +2130,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     10,
@@ -2139,7 +2139,7 @@
    "slot_points": 12
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     4,
     1,
@@ -2148,7 +2148,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2157,7 +2157,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2166,7 +2166,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     2,
     1,
@@ -2175,7 +2175,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     7,
@@ -2184,7 +2184,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     6,
@@ -2193,7 +2193,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     8,
@@ -2202,7 +2202,7 @@
    "slot_points": 13
   },
   {
-   "rarity": 7,
+   "rarity": 8,
    "skill_points": [
     3,
     10,

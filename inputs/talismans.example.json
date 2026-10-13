@@ -6,8 +6,8 @@
     "slots": ["armor1", "armor1"]
   },
   {
-    "name": "Secret Charm",
-    "rarity": 7,
+    "name": "Golden Age Charm",
+    "rarity": 8,
     "skills": { "Attack Boost": 3, "Stun Resistance": 2, "Survival Expert": 1 },
     "slots": ["weapon1"]
   }

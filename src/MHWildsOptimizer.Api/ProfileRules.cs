@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Inputs;
 
 namespace MHWildsOptimizer.Api;
@@ -30,6 +31,37 @@ public static partial class ProfileRules
     {
         if (!builds.Any(b => b.Talisman is { } t && renames.ContainsKey(t.Name))) return null;
         return builds.Select(b => b.Talisman is { } t && renames.TryGetValue(t.Name, out var name) ? b with { Talisman = t with { Name = name } } : b).ToList();
+    }
+
+    /// <summary>Talismans as the game labels them (see <see cref="TalismanInputLoader.WithGameRarity"/>); null when nothing changes.</summary>
+    public static List<TalismanInput>? FixTalismanRarities(IReadOnlyList<TalismanInput> talismans)
+    {
+        var fixedList = talismans.Select(TalismanInputLoader.WithGameRarity).ToList();
+        return fixedList.Where((t, i) => !ReferenceEquals(t, talismans[i])).Any() ? fixedList : null;
+    }
+
+    /// <summary>
+    /// Builds whose possible talisman (spelled out with its rarity) was saved with the pool's old labels, R4-R7 for the game's
+    /// 5-8: its rarity goes up by one. Null when no build has one.
+    /// </summary>
+    public static List<BuildInput>? FixTalismanRarities(IReadOnlyList<BuildInput> builds)
+    {
+        if (!builds.Any(b => b.Talisman is { Skills: not null, Rarity: >= 4 and <= 7 })) return null;
+        return builds.Select(b => b.Talisman is { Skills: not null, Rarity: >= 4 and <= 7 } t ? b with { Talisman = t with { Rarity = t.Rarity + 1 } } : b).ToList();
+    }
+
+    /// <summary>Saved results whose possible talismans carry the pool's old labels; null when none does.</summary>
+    public static ResultDto? FixTalismanRarities(ResultDto results)
+    {
+        static bool Old(BuildTalismanDto? t) => t is { Source: TalismanSource.Possible, Rarity: >= 4 and <= 7 };
+        if (!results.Pairs.Any(p => p.Builds.Any(b => Old(b.Talisman)))) return null;
+        return results with
+        {
+            Pairs = results.Pairs.Select(p => p with
+            {
+                Builds = p.Builds.Select(b => Old(b.Talisman) ? b with { Talisman = b.Talisman! with { Rarity = b.Talisman.Rarity + 1 } } : b).ToList(),
+            }).ToList(),
+        };
     }
 
     /// <summary>

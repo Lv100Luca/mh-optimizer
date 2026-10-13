@@ -118,7 +118,7 @@
         _secondary = pool?.Secondary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Armor).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
         _primaryNames = _primary.Select(p => p.Skill).ToHashSet();
         _slotPatterns = (pool?.SlotPatterns.Select(p => string.Join(',', p)) ?? FallbackSlotPatterns).Distinct().ToList();
-        IReadOnlyList<int> rarities = pool is { Rarities.Count: > 0 } ? pool.Rarities : [4, 5, 6, 7];
+        IReadOnlyList<int> rarities = pool is { Rarities.Count: > 0 } ? pool.Rarities : [5, 6, 7, 8];
         _rarityOptions = rarities.Select(r => new SegmentOption<int>(r, $"R{r}", RarityLabel(r))).ToList();
     }
 

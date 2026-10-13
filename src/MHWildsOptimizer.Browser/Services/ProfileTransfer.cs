@@ -126,11 +126,15 @@ public sealed class ProfileTransfer(BrowserProfileStore store)
             var favorites = current.FavoriteDecorations.Union(settings.FavoriteDecorations).ToList();
             store.SaveSettings(profile, current with { ConditionPresets = presets, Sequences = sequences, FavoriteDecorations = favorites });
         }
-        if (plan.Talismans is { } talismans) store.SaveTalismans(profile, talismans);
+        if (plan.Talismans is { } talismans) store.SaveTalismans(profile, ProfileRules.FixTalismanRarities(talismans) ?? talismans);
         foreach (var (name, weapon) in plan.Weapons)
         {
-            store.SaveWeapon(profile, name, weapon.Request, weapon.Builds);
-            if (weapon.Results is { } results) store.SaveResults(profile, name, results.Text, results);
+            store.SaveWeapon(profile, name, weapon.Request, ProfileRules.FixTalismanRarities(weapon.Builds) ?? weapon.Builds);
+            if (weapon.Results is { } results)
+            {
+                results = ProfileRules.FixTalismanRarities(results) ?? results;
+                store.SaveResults(profile, name, results.Text, results);
+            }
         }
     }
 }

@@ -44,7 +44,7 @@ public class RequestFilesTests
 
             var reloadedTalismans = RequestFiles.LoadTalismansFor(reloaded, path);
             Assert.Equal(2, reloadedTalismans.Count);
-            Assert.Equal(["weapon1"], reloadedTalismans.Single(t => t.Name == "Secret Charm").Slots);
+            Assert.Equal(["weapon1"], reloadedTalismans.Single(t => t.Name == "Golden Age Charm").Slots);
 
             var resolved = RequestLoader.Load(path, TestData.Data);
             Assert.Empty(resolved.Errors);
@@ -66,7 +66,7 @@ public class RequestFilesTests
             Weapon = new WeaponStatsInput { Type = "long-sword", Attack = 660 },
             Talismans = new TalismanSettings { File = "missing.json", IncludeCraftable = false },
         };
-        var unsaved = new List<TalismanInput> { new() { Name = "Draft", Rarity = 7, Skills = new() { ["Attack Boost"] = 3 }, Slots = ["weapon1"] } };
+        var unsaved = new List<TalismanInput> { new() { Name = "Draft", Rarity = 8, Skills = new() { ["Attack Boost"] = 3 }, Slots = ["weapon1"] } };
         var resolved = RequestLoader.Resolve(request, TestData.Data, RepoRoot, unsaved);
         Assert.Empty(resolved.Errors);
         Assert.Single(resolved.Talismans);

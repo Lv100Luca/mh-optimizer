@@ -48,7 +48,7 @@ public class BuildInputTests
             Arms = new BuildArmorInput { Piece = "G. Fulgur Vambraces β", Transcended = true, Decorations = ["Chain Jewel [3]", "Tenderizer Jewel [3]"] },
             Waist = new BuildArmorInput { Piece = "Dahaad Shardcoil γ", Decorations = ["Protection Jewel [1]"] },
             Legs = new BuildArmorInput { Piece = "Udra Miregreaves γ", Decorations = ["Furor Jewel [2]"] },
-            Talisman = new BuildTalismanInput { Name = "Secret Charm", Decorations = ["Critical Jewel [1]"] },
+            Talisman = new BuildTalismanInput { Name = "Golden Age Charm", Decorations = ["Critical Jewel [1]"] },
         };
 
         var c = BuildInputLoader.Convert(input, request.Weapon, RandomTalismans(request), data);
@@ -137,7 +137,7 @@ public class BuildInputTests
                     Name = "Worn",
                     WeaponDecorations = ["Attack Jewel III [3]", null, null],
                     Arms = new BuildArmorInput { Piece = "G. Fulgur Vambraces β", Transcended = true, Decorations = [null, "Tenderizer Jewel [3]"] },
-                    Talisman = new BuildTalismanInput { Name = "Secret Charm" },
+                    Talisman = new BuildTalismanInput { Name = "Golden Age Charm" },
                 },
             };
             RequestFiles.SaveBuildsFor(builds, path);
@@ -150,7 +150,7 @@ public class BuildInputTests
             Assert.True(loaded.Arms!.Transcended);
             Assert.Equal([null, "Tenderizer Jewel [3]"], loaded.Arms.Decorations);
             Assert.Null(loaded.Head);
-            Assert.Equal("Secret Charm", loaded.Talisman!.Name);
+            Assert.Equal("Golden Age Charm", loaded.Talisman!.Name);
 
             RequestFiles.SaveBuildsFor([], path);
             Assert.False(File.Exists(Path.Combine(dir, "mine.builds.json")));

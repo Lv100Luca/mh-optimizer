@@ -64,11 +64,13 @@ for e in load('RandomAmuletAccSlot'):
     patterns.append({'slots': slots, 'points': e['_SlotPt']})
 
 # ---- point budgets per amulet type and the rarity of each type
+# The RARE enum is one below the rarity the game shows (Windproof Charm I is RARE3 in AmuletData, rarity 4 in the game),
+# so AT_0189..AT_0192 are the Unknown / Historical / Secret / Golden Age Charm, rarity 5..8 (melding points 1 / 3 / 6 / 10).
 rarity_of_type = {}
 for a in load('AmuletData'):
     t = tag(a['_AmuletType'])
     if t.startswith('AT_01') and int(t[3:]) >= 189:
-        rarity_of_type[t] = int(re.search(r'RARE(\d+)', a['_Rare']).group(1))
+        rarity_of_type[t] = int(re.search(r'RARE(\d+)', a['_Rare']).group(1)) + 1
 budgets = collections.defaultdict(lambda: {'skill1': set(), 'skill2': set(), 'skill3': set(), 'slot': set()})
 point_rows = []
 for e in load('RandomAmuletPtTable'):
@@ -87,7 +89,8 @@ out = {
               '(armor-kind skills, 5-10 points, 0 = empty). Decoration slots: weapon-kind slot = ACC_TYPE_00, armor-kind slot = ACC_TYPE_01. '
               'A talisman rolls one of point_rows for its rarity, then for each skill point value a lot_skills entry worth exactly '
               'that many points (1-4 points = weapon-kind table, 5-10 = armor-kind table, 0 = empty) and the slot pattern worth slot_points. '
-              'Used for validating user-entered talismans and for the "every possible talisman" mode.',
+              'Used for validating user-entered talismans and for the "every possible talisman" mode. Rarities are the ones the game shows '
+              '(the RARE enum of the dump is one lower): 5 Unknown, 6 Historical, 7 Secret, 8 Golden Age Charm (the only one with a weapon slot).',
     'rarity_by_type': rarity_of_type,
     'point_budgets_by_type': budgets,
     'slot_patterns': patterns,

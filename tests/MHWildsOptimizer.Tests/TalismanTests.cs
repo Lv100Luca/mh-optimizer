@@ -41,9 +41,21 @@ public class TalismanTests
         Assert.Contains(historical.Skills, s => s.Skill == "Maximum Might" && s.Level == 2);
         Assert.Equal([new TalismanSlot(1, SkillKind.Armor), new TalismanSlot(1, SkillKind.Armor)], historical.Slots);
 
-        var secret = talismans.Single(t => t.Name == "Secret Charm");
+        var secret = talismans.Single(t => t.Name == "Golden Age Charm");
         Assert.Equal(3, secret.Skills.Count);
         Assert.Equal([new TalismanSlot(1, SkillKind.Weapon)], secret.Slots);
+    }
+
+    [Fact]
+    public void WeaponSlotTalismansAreRarity8()
+    {
+        // entries saved when the picker offered R4-R7 (the game's 5-8): only the Golden Age Charm has a weapon slot
+        var golden = new TalismanInput { Name = "Talisman 2", Rarity = 7, Skills = new() { ["Critical Eye"] = 3, ["Agitator"] = 1 }, Slots = ["weapon1", "armor1"] };
+        var secret = new TalismanInput { Name = "Secret Charm", Rarity = 7, Skills = new() { ["Attack Boost"] = 3, ["Burst"] = 1 }, Slots = ["armor1", "armor1"] };
+        Assert.Equal(8, TalismanInputLoader.WithGameRarity(golden).Rarity);
+        Assert.Same(secret, TalismanInputLoader.WithGameRarity(secret));
+        var already = golden with { Rarity = 8 };
+        Assert.Same(already, TalismanInputLoader.WithGameRarity(already));
     }
 
     [Fact]
@@ -52,7 +64,7 @@ public class TalismanTests
         var data = TestData.Data;
         var c = TalismanInputLoader.Convert(new TalismanInput
         {
-            Name = "Fake", Rarity = 7,
+            Name = "Fake", Rarity = 8,
             Skills = new() { ["Agitator"] = 2, ["Gogmapocalypse"] = 1, ["Nope"] = 1, ["Attack Boost"] = 3 },
             Slots = ["weapon1", "x9"],
         }, data);
