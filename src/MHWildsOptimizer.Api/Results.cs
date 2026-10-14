@@ -71,14 +71,21 @@ public sealed record ResultDto(DateTimeOffset CompletedAt, double ElapsedSeconds
 /// <summary>Turns optimizer output into the JSON the client renders (equipment, decorations, skills with sources, stats).</summary>
 public static class ResultMapper
 {
-    public static ResultDto Map(OptimizationResult result, ResolvedRequest resolved, GameData data)
+    /// <param name="pacer">Pauses between builds (each a few to 20 ms in the browser, where this shares the page's thread).</param>
+    public static async Task<ResultDto> MapAsync(OptimizationResult result, ResolvedRequest resolved, GameData data, Pacer pacer)
     {
-        var pairs = result.PairResults.Select((pr, i) =>
+        var pairs = new List<PairResultDto>();
+        foreach (var (pr, i) in result.PairResults.Select((pr, i) => (pr, i)))
         {
+            var builds = new List<BuildDto>();
+            foreach (var (b, j) in pr.Builds.Select((b, j) => (b, j)))
+            {
+                builds.Add(MapBuild(j + 1, b, resolved.Conditions, data));
+                await pacer.PauseAsync();
+            }
             var parts = pr.Label.Split(" + ", 2);
-            return new PairResultDto(i + 1, pr.Label, parts[0], parts.Length > 1 ? parts[1] : "-", pr.BestScore, pr.StatesEvaluated, pr.WorkLabel, pr.CandidateSummary,
-                pr.Builds.Select((b, j) => MapBuild(j + 1, b, resolved.Conditions, data)).ToList());
-        }).ToList();
+            pairs.Add(new PairResultDto(i + 1, pr.Label, parts[0], parts.Length > 1 ? parts[1] : "-", pr.BestScore, pr.StatesEvaluated, pr.WorkLabel, pr.CandidateSummary, builds));
+        }
         return new ResultDto(DateTimeOffset.UtcNow, result.Elapsed.TotalSeconds, resolved.SkillPair.Mode, pairs, ResultsText.Render(result, resolved, data));
     }
 

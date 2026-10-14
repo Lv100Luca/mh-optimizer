@@ -33,7 +33,8 @@ RESULTS=1 node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luc
 ```
 
 `run` lists every long task as `[ms after the click, duration]`; the weapon `(new)` is the profile's new weapon (a fresh Great
-Sword), and `RESULTS=1` prints the builds as the table view shows them, to diff two builds of the app.
+Sword), `RUNS=2` runs again in the same page (without the first run's one-time costs: code .NET runs for the first time,
+scores it caches), and `RESULTS=1` prints the builds as the table view shows them, to diff two builds of the app.
 
 `background.mjs` times a run whose tab is in the background. Chrome and Edge run a hidden tab's timers about once a minute
 after five minutes ("intensive wake-up throttling"). Headless browsers only get the once-a-second throttling, so the

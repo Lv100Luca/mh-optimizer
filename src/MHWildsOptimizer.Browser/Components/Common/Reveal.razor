@@ -1,0 +1,40 @@
+@inject IJSRuntime JS
+@implements IDisposable
+@*
+    Shows its content one turn of the page later (mhwo.yieldToPage: input and painting go first). Each Reveal of a list
+    waits for a turn of its own, so heavy items (a result card is ~100 components, 15-40 ms in the browser's interpreted
+    .NET) come in one per task instead of freezing the page together. New content (Of changes) waits for its turn again.
+*@
+@if (_shown)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>What the content shows (compared by reference): when it changes, the content waits for its turn again.</summary>
+    [Parameter] public object? Of { get; set; }
+
+    private object? _of;
+    private bool _shown, _waiting, _disposed;
+
+    protected override void OnParametersSet()
+    {
+        if (ReferenceEquals(Of, _of)) return;
+        _of = Of;
+        _shown = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_shown || _waiting) return;
+        _waiting = true;
+        await JS.InvokeVoidAsync("mhwo.yieldToPage");
+        _waiting = false;
+        if (_disposed) return;
+        _shown = true;
+        StateHasChanged();
+    }
+
+    public void Dispose() => _disposed = true;
+}

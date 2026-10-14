@@ -174,7 +174,8 @@
                         {
                             @* they apply to every pair *@
                             <span class="muted">Compare with</span>
-                            <RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 260px" />
+                            @* a turn later: its first render scores every build it lists (~60 ms) *@
+                            <span style="min-width: 260px"><Reveal><RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 260px" /></Reveal></span>
                             <span class="muted">View</span>
                             <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="SetView" Options="ViewOptions" />
                         }
@@ -195,9 +196,10 @@
                 }
                 else
                 {
+                    @* a card at a time: all of a run's cards at once froze the page for a fifth of a second *@
                     @foreach (var row in pairRows)
                     {
-                        @Card(row, result, baseline, baselineRef, baseName)
+                        <Reveal @key="row.Key" Of="result">@Card(row, result, baseline, baselineRef, baseName)</Reveal>
                     }
                 }
             </div>

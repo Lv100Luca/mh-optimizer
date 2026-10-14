@@ -59,9 +59,13 @@ async function navigate(url) {
 // frame gaps and long tasks, kept on window.__perf
 const probe = `
   window.__perf = { frames: [], long: [] };
-  new PerformanceObserver(l => { for (const e of l.getEntries()) window.__perf.long.push([e.startTime, e.duration]); }).observe({ type: 'longtask', buffered: false });
-  const tick = t => { window.__perf.frames.push(performance.now()); requestAnimationFrame(tick); };
-  requestAnimationFrame(tick);`;
+  // once per page: a second run (RUNS) starts a new record, not a second observer
+  if (!window.__perfOn) {
+    window.__perfOn = true;
+    new PerformanceObserver(l => { for (const e of l.getEntries()) window.__perf.long.push([e.startTime, e.duration]); }).observe({ type: 'longtask', buffered: false });
+    const tick = t => { window.__perf.frames.push(performance.now()); requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }`;
 const summary = `
   const since = t0 => {
     const f = window.__perf.frames.filter(x => x >= t0);
@@ -187,31 +191,35 @@ try {
   if (what === 'run' || what === 'both') {
     await navigate(`${origin}/${profile}/${w}/results`);
     await sleep(Number(process.env.WARM ?? 10000)); // solver warm-up and lanes
-    const r = await evaluate(`
-      const sleep = ms => new Promise(r => setTimeout(r, ms));
-      ${probe}
-      ${summary}
-      for (let i = 0; i < 200 && ![...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer' && !b.disabled); i++) await sleep(250);
-      await sleep(300);
-      const t0 = performance.now();
-      [...document.querySelectorAll('button')].find(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer').click();
-      const afterClick = performance.now() - t0;
-      let running = null;
-      for (let i = 0; i < 6000 && running === null; i++) {
-        if ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run')) running = performance.now() - t0;
-        else await sleep(10);
-      }
-      await sleep(300);
-      // the log is folded away by default
-      [...document.querySelectorAll('button')].find(b => b.innerText.trim().startsWith('Show search log'))?.click();
-      let log = '';
-      while ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run') && performance.now() - t0 < 300000) { log = document.querySelector('.runlog')?.innerText ?? log; await sleep(100); }
-      const wall = performance.now() - t0;
-      const lines = log.split(String.fromCharCode(10));
-      // every long task of the run: [start after the click, duration] in ms
-      const tasks = window.__perf.long.filter(([s]) => s >= t0 - 5).map(([s, d]) => [+(s - t0).toFixed(0), +d.toFixed(0)]);
-      return JSON.stringify({ clickHandlerMs: +afterClick.toFixed(0), cancelButtonAt: running && +running.toFixed(0), wall: +(wall / 1000).toFixed(1), ...since(t0), tasks, firstLines: lines });`);
-    const o = JSON.parse(r); const lines = o.firstLines; delete o.firstLines; console.log('run', JSON.stringify(o)); console.log(lines.join(String.fromCharCode(10)));
+    // RUNS=2: a second run in the same page, without the first run's one-time costs
+    for (let n = 1; n <= Number(process.env.RUNS ?? 1); n++) {
+      if (n > 1) await sleep(2000);
+      const r = await evaluate(`
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+        ${probe}
+        ${summary}
+        for (let i = 0; i < 200 && ![...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer' && !b.disabled); i++) await sleep(250);
+        await sleep(300);
+        const t0 = performance.now();
+        [...document.querySelectorAll('button')].find(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer').click();
+        const afterClick = performance.now() - t0;
+        let running = null;
+        for (let i = 0; i < 6000 && running === null; i++) {
+          if ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run')) running = performance.now() - t0;
+          else await sleep(10);
+        }
+        await sleep(300);
+        // the log is folded away by default
+        [...document.querySelectorAll('button')].find(b => b.innerText.trim().startsWith('Show search log'))?.click();
+        let log = '';
+        while ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run') && performance.now() - t0 < 300000) { log = document.querySelector('.runlog')?.innerText ?? log; await sleep(100); }
+        const wall = performance.now() - t0;
+        const lines = log.split(String.fromCharCode(10));
+        // every long task of the run: [start after the click, duration] in ms
+        const tasks = window.__perf.long.filter(([s]) => s >= t0 - 5).map(([s, d]) => [+(s - t0).toFixed(0), +d.toFixed(0)]);
+        return JSON.stringify({ clickHandlerMs: +afterClick.toFixed(0), cancelButtonAt: running && +running.toFixed(0), wall: +(wall / 1000).toFixed(1), ...since(t0), tasks, firstLines: lines });`);
+      const o = JSON.parse(r); const lines = o.firstLines; delete o.firstLines; console.log(n > 1 ? `run ${n}` : 'run', JSON.stringify(o)); console.log(lines.join(String.fromCharCode(10)));
+    }
     // RESULTS=1: the builds as the table view shows them, to compare two builds of the app
     if (process.env.RESULTS) console.log(await evaluate(`
       const sleep = ms => new Promise(r => setTimeout(r, ms));

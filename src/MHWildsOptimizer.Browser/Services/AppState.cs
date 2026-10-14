@@ -813,7 +813,9 @@ public sealed partial class AppState : IDisposable
                         break;
                 }
             }, cts.Token, Engine);
-            SetRun(r => r.Status == RunStatus.Running ? r with { Status = RunStatus.Error, Error = "The run ended without a result.", FinishedAt = DateTimeOffset.Now } : r);
+            // a run that ended has said so (result or error): another re-render of the page for nothing took ~25 ms
+            if (_sessions.GetValueOrDefault(key)?.Run.Status == RunStatus.Running)
+                SetRun(r => r with { Status = RunStatus.Error, Error = "The run ended without a result.", FinishedAt = DateTimeOffset.Now });
             if (s.Name is not null) { RefreshWeapons(); TouchSaved(); }
         }
         catch (OperationCanceledException)
