@@ -1,20 +1,21 @@
 @inject AppState App
+@inherits HoverTip
 @* Shows the skill card while hovering the content, e.g. a set bonus chip. Display names like "Lord's Soul (Guts)" or
    "Gore Magala's Tyranny II" resolve to the catalog skill (a trailing tier becomes the level).
    The MudTooltip (a popover with components of its own) is only created once the pointer or the focus gets here, with the
    same markup standing in until then: a page lists up to a few hundred skills, and a tooltip each made every change slow. *@
 @if (_resolved is { } r)
 {
-    if (_armed)
+    if (Armed)
     {
-        <MudTooltip Placement="Placement.Bottom" Delay="250" Class="skilltip-pop" RootClass="skillhover" RootStyle="display: inline-flex" @bind-Visible="_visible">
-            <ChildContent><span class="@Class" title="@Title">@ChildContent</span></ChildContent>
+        <MudTooltip Placement="Placement.Bottom" Delay="250" Class="skilltip-pop" RootClass="skillhover" RootStyle="display: inline-flex" Visible="Visible" VisibleChanged="OnVisibleChanged">
+            <ChildContent><span @ref="Anchor" class="@Class" title="@Title">@ChildContent</span></ChildContent>
             <TooltipContent><SkillCard Skill="r.Skill" Level="@(Level ?? r.Level)" /></TooltipContent>
         </MudTooltip>
     }
     else
     {
-        <div class="mud-tooltip-root mud-tooltip-inline skillhover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="Arm">
+        <div class="mud-tooltip-root mud-tooltip-inline skillhover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="ArmFocus">
             <span class="@Class" title="@Title">@ChildContent</span>
         </div>
     }
@@ -33,19 +34,11 @@ else
 
     private string? _resolvedName;
     private (SkillDto Skill, int? Level)? _resolved;
-    private bool _armed, _visible;
 
     protected override void OnParametersSet()
     {
         if (_resolvedName == Name) return;
         _resolvedName = Name;
         _resolved = App.Index.ResolveSkill(Name);
-    }
-
-    /// <summary>The pointer arrived before the tooltip existed: create it, already showing.</summary>
-    private void Arm()
-    {
-        _armed = true;
-        _visible = true;
     }
 }

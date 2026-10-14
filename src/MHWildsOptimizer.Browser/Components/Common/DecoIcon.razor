@@ -1,4 +1,5 @@
 @inject AppState App
+@inherits HoverTip
 @* A decoration's icon (from a result's DecoDto or the catalog's DecorationDto), or an empty slot of a level when neither is given.
    With Card, hovering it (tapping on a phone) shows the jewel and the cards of the skills it carries. Like InfoHover, the
    MudTooltip is only created once the pointer gets there, with the same markup standing in until then: builds list dozens of jewels. *@
@@ -20,10 +21,10 @@ else
     {
         <img class="icon deco" width="@Size" height="@Size" src="@src" alt="@name" title="@text" />
     }
-    else if (_armed)
+    else if (Armed)
     {
-        <MudTooltip Placement="Placement.Bottom" Delay="150" Class="skilltip-pop" RootClass="decohover" RootStyle="display: inline-flex" @bind-Visible="_visible">
-            <ChildContent><img class="icon deco" width="@Size" height="@Size" src="@src" alt="@text" /></ChildContent>
+        <MudTooltip Placement="Placement.Bottom" Delay="150" Class="skilltip-pop" RootClass="decohover" RootStyle="display: inline-flex" Visible="Visible" VisibleChanged="OnVisibleChanged">
+            <ChildContent><img @ref="Anchor" class="icon deco" width="@Size" height="@Size" src="@src" alt="@text" /></ChildContent>
             <TooltipContent>
                 <div class="decotip">
                     <div class="decotip-head">
@@ -61,13 +62,4 @@ else
     [Parameter] public int Size { get; set; } = 24;
     /// <summary>Show the skill card on hover; off where the skills are written next to the icon (pickers) and a plain title does.</summary>
     [Parameter] public bool Card { get; set; } = true;
-
-    private bool _armed, _visible;
-
-    /// <summary>The pointer arrived before the tooltip existed: create it, already showing.</summary>
-    private void Arm()
-    {
-        _armed = true;
-        _visible = true;
-    }
 }
