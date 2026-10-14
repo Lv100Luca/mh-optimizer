@@ -9,13 +9,13 @@
 @{
     var skills = App.Catalog.Skills;
     var rows = skills.Where(s => Targets.ContainsKey(s.Name) || Limits.ContainsKey(s.Name) || _kept.Contains(s.Name)).ToList();
-    var available = Available(skills, rows);
+    var (available, byText) = Available(skills, rows);
 }
 <div class="skillpicker">
     <div class="selected">
         @if (rows.Count == 0)
         {
-            <p class="muted">No targets or limits yet. Pick from the list below: click a skill to require it, ⊘ to exclude it.</p>
+            <p class="muted">No targets or limits yet. Pick from the list below: a level to require the skill at it, ⊘ to exclude it.</p>
         }
         @foreach (var s in rows)
         {
@@ -45,6 +45,10 @@
                             @if (limit is { } cap)
                             {
                                 <text> · @(s.Kind == SkillKind.Set ? $"tiers above {Fmt.Roman(cap)}" : $"levels above {cap}") are shown but not valued</text>
+                            }
+                            @if (PresetLimits?.TryGetValue(s.Name, out var presetCap) == true && presetCap == limit)
+                            {
+                                <span class="preset-source" title="@($"Skill limits come with the {PresetLabel} preset (Conditions tab); every {PresetLabel} of the profile starts from it")"> · from the @PresetLabel preset</span>
                             }
                         }
                     </div>
@@ -76,28 +80,69 @@
     <div class="picker-tools">
         <SearchBox @bind-Value="_query" Class="search" Placeholder="Search skills, set bonuses, group skills…" />
         <Segmented T="SkillKind?" Small="true" @bind-Value="_kind" Options="KindOptions" />
-        <span class="muted small">@available.Count @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills") · click to require, ⊘ to exclude@(HighlightLegend is not null && Highlight is { Count: > 0 } ? $" · {HighlightLegend}" : "")</span>
+        <span class="muted small">@(available.Count + byText.Count) @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills") · pick the level to require, ⊘ to exclude@(HighlightLegend is not null && Highlight is { Count: > 0 } ? $" · {HighlightLegend}" : "")</span>
     </div>
     <div class="available">
         @foreach (var s in available)
         {
-            <div @key="s.Name" class="skillopt-row">
-                <button type="button" class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")" @onclick="() => Require(s)"
-                        title="@(s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "")">
-                    @* plain markup rather than SkillIcon / KindTag: the list has a few hundred rows *@
-                    <img class="icon" width="22" height="22" src="@GameIcons.Skill(s.Icon, s.Kind)" alt="" />
-                    <span class="name">@s.Name</span>
-                    <span class="kindtag @s.Kind.ToString().ToLowerInvariant()">@s.Kind.ToString().ToLowerInvariant()</span>
-                    <span class="muted">@(IsBonus(s) ? PiecesText(s) : $"max {s.MaxLevel}")</span>
-                    <span class="desc muted">@(s.Description ?? s.Ranks.FirstOrDefault()?.Description)</span>
-                </button>
-                <button type="button" class="skillopt-exclude" title="Exclude @s.Name: never slot, chase or value it" @onclick="() => SetExcluded(s, true)">⊘</button>
-            </div>
+            @Option(s)
+        }
+        @if (byText.Count > 0)
+        {
+            <div class="available-divider muted small">@(available.Count > 0 ? "Also mentioned in the description" : "Mentioned in the description")</div>
+            @foreach (var s in byText)
+            {
+                @Option(s)
+            }
         }
     </div>
 </div>
 
 @code {
+    /// <summary>
+    /// One skill to add: its name and description, and a button per level ("1 2 3", set bonuses "I · 2 pc  II · 4 pc") that
+    /// requires it at that level; plain markup rather than SkillIcon / KindTag, the list has a few hundred rows.
+    /// </summary>
+    private RenderFragment Option(SkillDto s) => __builder =>
+    {
+        var levels = s.Kind == SkillKind.Group ? [1] : Enumerable.Range(1, s.MaxLevel).ToArray();
+        <div @key="s.Name" class="skillopt-row">
+            <div class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")" title="@(s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "")">
+                <img class="icon" width="22" height="22" src="@GameIcons.Skill(s.Icon, s.Kind)" alt="" />
+                <span class="name">@s.Name</span>
+                <span class="kindtag @s.Kind.ToString().ToLowerInvariant()">@s.Kind.ToString().ToLowerInvariant()</span>
+                <span class="desc muted">@(s.Description ?? s.Ranks.FirstOrDefault()?.Description)</span>
+            </div>
+            <span class="skillopt-levels" role="group" aria-label="@($"Require {s.Name} at")">
+                @foreach (var level in levels)
+                {
+                    <button type="button" class="lvl" title="@RequireTitle(s, level)" @onclick="() => Require(s, level)">@LevelText(s, level)</button>
+                }
+            </span>
+            <button type="button" class="skillopt-exclude" title="Exclude @s.Name: never slot, chase or value it" @onclick="() => SetExcluded(s, true)">⊘</button>
+        </div>
+    };
+
+    /// <summary>"3", a set bonus tier "II · 4 pc", a group skill "3 pc".</summary>
+    private static string LevelText(SkillDto s, int level) => s.Kind switch
+    {
+        SkillKind.Set => $"{Fmt.Roman(level)} · {PiecesRequired(s, level)} pc",
+        SkillKind.Group => $"{PiecesRequired(s, level)} pc",
+        _ => level.ToString(CultureInfo.InvariantCulture),
+    };
+
+    private static string RequireTitle(SkillDto s, int level) => s.Kind switch
+    {
+        SkillKind.Set => $"Require {s.Name} {Fmt.Roman(level)}: every build carries {PiecesRequired(s, level)} pieces",
+        SkillKind.Group => $"Require {s.Name}: every build carries {PiecesRequired(s, level)} pieces",
+        _ => $"Require {s.Name} at level {level} or more",
+    };
+
+    /// <summary>Limits of the weapon type's preset, to say where a limit came from; null when there is no preset.</summary>
+    [Parameter] public IReadOnlyDictionary<string, int>? PresetLimits { get; set; }
+    /// <summary>The preset's weapon type, e.g. "Great Sword".</summary>
+    [Parameter] public string? PresetLabel { get; set; }
+
     /// <summary>Minimum levels (set bonuses: tier, group skills: 1) every build must reach.</summary>
     [Parameter, EditorRequired] public IReadOnlyDictionary<string, int> Targets { get; set; } = new Dictionary<string, int>();
     /// <summary>Caps for the score; 0 excludes the entry.</summary>
@@ -142,15 +187,25 @@
     private static readonly IReadOnlyList<SegmentOption<SkillKind?>> KindOptions =
         [new(null, "All"), new(SkillKind.Weapon, "Weapon skills"), new(SkillKind.Armor, "Armor skills"), new(SkillKind.Set, "Set bonuses"), new(SkillKind.Group, "Group skills")];
 
-    private List<SkillDto> Available(IEnumerable<SkillDto> skills, List<SkillDto> rows)
+    /// <summary>
+    /// The skills to pick from: those whose name (or rank name) matches the search, then those only their description
+    /// mentions ("speed eat" finds Speed Eating, and Quick Sheathe for its "Speeds up" only below it).
+    /// </summary>
+    private (List<SkillDto> ByName, List<SkillDto> ByText) Available(IEnumerable<SkillDto> skills, List<SkillDto> rows)
     {
         var shown = rows.Select(s => s.Name).ToHashSet();
         var sorted = skills
             .Where(s => !shown.Contains(s.Name))
             .Where(s => _kind is null || s.Kind == _kind)
             .OrderByDescending(s => Highlight?.Contains(s.Name) == true)
-            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase);
-        return LooseSearch.Filter(sorted, s => string.Join(' ', [s.Name, .. s.Ranks.Select(r => r.Name ?? ""), s.Description ?? ""]), _query);
+            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (string.IsNullOrWhiteSpace(_query)) return (sorted, []);
+        var (byName, closeName) = LooseSearch.Split(sorted, s => string.Join(' ', [s.Name, .. s.Ranks.Select(r => r.Name ?? "")]), _query);
+        var named = byName.Select(s => s.Name).ToHashSet();
+        var (byText, closeText) = LooseSearch.Split(sorted.Where(s => !named.Contains(s.Name)), s => s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "", _query);
+        // a typo: the close name matches, as before
+        return byName.Count + byText.Count > 0 ? (byName, byText) : (closeName, []);
     }
 
     /// <summary>Hands on the targets and limits after <paramref name="edit"/>; a limit at the max level is no limit.</summary>
@@ -165,7 +220,12 @@
         return Changed.InvokeAsync((targets, limits));
     }
 
-    private Task Require(SkillDto s) => Change(s, (t, l) => { t[s.Name] = s.MaxLevel; l.Remove(s.Name); });
+    /// <summary>Requires the skill at a level; a cap below it goes.</summary>
+    private Task Require(SkillDto s, int level) => Change(s, (t, l) =>
+    {
+        t[s.Name] = level;
+        if (l.TryGetValue(s.Name, out var cap) && cap < level) l.Remove(s.Name);
+    });
 
     /// <summary>A target above the cap raises the cap with it.</summary>
     private Task SetTarget(SkillDto s, int level) => Change(s, (t, l) =>

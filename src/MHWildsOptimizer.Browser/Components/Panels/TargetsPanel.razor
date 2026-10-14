@@ -8,17 +8,19 @@
     var core = resolved?.Targets.Where(t => t.FromCore).ToList() ?? [];
     var limits = request.Conditions.SkillLimits;
     var errors = resolved?.Errors.Where(e => e.StartsWith("Target", StringComparison.Ordinal) || e.StartsWith("Skill limit", StringComparison.Ordinal)).ToList() ?? [];
-    var burst = (request.Weapon.Spec?.Type ?? request.Weapon.Type) == "great-sword" ? 1 : 0;
+    var kind = request.Weapon.Spec?.Type ?? request.Weapon.Type ?? "great-sword";
+    var preset = App.Presets.GetValueOrDefault(kind)?.SkillLimits ?? Conditions.DefaultFor(kind).SkillLimits;
+    var presetLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
 
     <div class="panel">
         <Section Title="Targets & limits"
                  Hint="At least: the level every reported build must reach. Set bonuses and group skills can be required too, by tier: a set bonus at I needs 2 pieces, at II 4 pieces, a group skill 3 pieces (the Gogma weapon counts when it rolled the bonus). At most: levels (set bonus tiers) above it are shown but score nothing. Exclude: the optimizer never slots, chases or values it. Everything else is filled by the optimizer for damage; what it already values under your conditions is marked.">
             <Actions>
-                @if (!limits.ContainsKey(BurstSkill))
+                @if (kind == "great-sword" && !limits.ContainsKey(BurstSkill))
                 {
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" title="Great Sword rarely reaches the five-hit Burst boost"
-                               OnClick="() => CapBurst(burst)">
-                        + Burst ≤ @burst (slow weapons)
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" title="A Great Sword rarely lands the five hits in a row of Burst's full boost: only its first-hit boost counts"
+                               OnClick="() => CapBurst(1)">
+                        + Burst ≤ 1
                     </MudButton>
                 }
             </Actions>
@@ -28,6 +30,7 @@
                     <Alert Kind="error">@e</Alert>
                 }
                 <SkillPicker Targets="request.TargetSkills" Limits="limits" Highlight="relevant" HighlightLegend="★ valued under your conditions"
+                             PresetLimits="preset" PresetLabel="@presetLabel"
                              Changed="v => App.PatchRequest(r => r with { TargetSkills = v.Targets, Conditions = r.Conditions with { SkillLimits = v.Limits } })" />
             </ChildContent>
         </Section>

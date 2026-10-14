@@ -27,7 +27,12 @@
                     <span class="total" title="@ScoreTitle(b)">@Fmt.N(damage, 0)</span>
                     <span class="muted">@BuildDamage.Label(b)</span>
                 }
-                <span class="muted small" title="The same attack with every hunt condition on">every condition on: @Fmt.N(b.StatsAllOn.DamagePerExecution, 0)</span>
+                @if (Math.Round(b.StatsAllOn.DamagePerExecution) > Math.Round(damage))
+                {
+                    <span class="muted small" title="The same attack if every hunt condition on the Conditions tab were on: the most this build can deal, when everything its skills wait for happens at once">
+                        up to @Fmt.N(b.StatsAllOn.DamagePerExecution, 0) with every condition on
+                    </span>
+                }
             }
             else
             {
@@ -41,9 +46,16 @@
                 }
                 <span class="eq">=</span>
                 <span class="total">@Fmt.N(b.Score)</span>
-                <span class="muted small">every condition on: @Fmt.N(s.TotalAllConditions)</span>
+                @if (Math.Round(s.TotalAllConditions, 2) > Math.Round(b.Score, 2))
+                {
+                    <span class="muted small" title="The score if every hunt condition on the Conditions tab were on">up to @Fmt.N(s.TotalAllConditions) with every condition on</span>
+                }
             }
             @Delta
+            @if (b.Proof is { Kind: Core.Optimize.ProofKind.TimeLimit } proof)
+            {
+                <span class="badge-mini warnbadge" title="@ProofTitle(proof)">not proved</span>
+            }
         </div>
         <div class="statchips">
             <span class="statchip atk" title="@($"weapon {s.BaseAttack}")"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b></span>
@@ -107,7 +119,7 @@
             <span class="chip-row">
                 @foreach (var x in b.Skills)
                 {
-                    <SkillChip @key="x.Skill" Name="@x.Skill" Level="x.Level" Effective="x.Effective" />
+                    <SkillChip @key="x.Skill" Name="@x.Skill" Level="x.Level" Effective="x.Effective" Wasted="x.Wasted" />
                 }
             </span>
         </div>
@@ -123,7 +135,7 @@
                         <td class="piece">Weapon</td>
                         <td class="name">
                             <b>@w.Label</b>
-                            <div class="muted small">@w.TrueRaw attack, @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @(w.Sharpness is { } ws ? Fmt.TitleCase(ws) : "-") sharpness</div>
+                            <div class="muted small">@w.TrueRaw attack, @(w.Affinity)% affinity, @(w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {Fmt.TitleCase(w.Element)}"), @WeaponFinish(w)</div>
                             @if (w.SetBonus is not null || w.GroupSkill is not null)
                             {
                                 @* the rolled skills, shown like an armor piece's *@
@@ -327,6 +339,15 @@
             <span class="muted small slotdeco-levels" title="slot levels"><Slots Numbers="numbers" Named="named" /></span>
         </span>
     };
+
+    private static string ProofTitle(Core.Optimize.SolveProof p) =>
+        $"The solver found this build but ran out of its {p.TimeLimitSeconds:0.#} s time limit before it could prove it the best: a build up to {p.GapPercent:0.#}% better may exist (the solver's bound, usually far above what any build reaches). A longer time limit per solve in Options lets it finish.";
+
+    /// <summary>"White sharpness"; a bow has no sharpness but a coating ("Pierce coating").</summary>
+    private static string WeaponFinish(BuildWeaponDto w) =>
+        w.Sharpness is { } sharp ? $"{Fmt.TitleCase(sharp)} sharpness"
+        : w.Type == "bow" ? (w.Spec is { } spec ? $"{AttackProfile.CoatingName(Core.Gogma.GogmaConstants.BowCoatingOf(spec.Focus))} coating" : "bow coating")
+        : "no sharpness";
 
     private static string ScoreTitle(BuildDto b) =>
         $"Against the target, before the monster's defense rate and per-hit rounding. Score: EFR {Fmt.N(b.Efr)} + EFE {Fmt.N(b.Efe)}"

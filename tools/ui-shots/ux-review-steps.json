@@ -1,0 +1,36 @@
+{
+  "extra": {
+    "x-results-cards": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Cards')?.click(); await sleep(900);"
+    },
+    "x-results-table": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.segmented button')].find(b => b.innerText.trim() === 'Table')?.click(); await sleep(900);"
+    },
+    "x-weapon-picker-open": {
+      "url": "{origin}/{profile}/weapon/{weapon}/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const pick = [...document.querySelectorAll('.configpick')].find(p => p.innerText.includes('Weapon')); const i = pick.querySelector('.mud-input'); i.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); await sleep(900);"
+    },
+    "x-header-dirty-new": {
+      "url": "{origin}/{profile}/new/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.chip.pick')].find(b => b.innerText.trim() === 'Dragon')?.click(); await sleep(900); window.scrollTo(0, 0);"
+    },
+    "x-save-as-dialog": {
+      "url": "{origin}/{profile}/new/weapon",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.chip.pick')].find(b => b.innerText.trim() === 'Dragon')?.click(); await sleep(700); [...document.querySelectorAll('header button')].find(b => b.innerText.includes('Save as') || b.innerText.trim() === 'Save…')?.click(); await sleep(900);"
+    },
+    "x-new-from-results": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const pick = [...document.querySelectorAll('.configpick')].find(p => p.innerText.includes('Weapon')); pick.querySelector('.mud-input').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); await sleep(700); [...document.querySelectorAll('.mud-popover-open .mud-list-item')].find(e => e.innerText.includes('New weapon'))?.click(); await sleep(1200);"
+    },
+    "x-targets-speed-eat": {
+      "url": "{origin}/{profile}/weapon/{weapon}/targets",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const i = document.querySelector('.picker-tools input'); i.focus(); i.value = 'speed eat'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(700);"
+    },
+    "x-running": {
+      "url": "{origin}/{profile}/weapon/{weapon}/results",
+      "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('header button')].find(b => b.innerText.includes('Run optimizer'))?.click(); await sleep(20000);"
+    }
+  }
+}

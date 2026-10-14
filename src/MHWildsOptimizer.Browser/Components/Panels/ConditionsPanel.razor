@@ -62,203 +62,218 @@
             </ChildContent>
         </Section>
 
-        <Section Title="Hunt conditions"
-                 Hint="A toggle only matters when a build actually carries the skill behind it: the calculator never invents a skill. Off means the skill scores nothing, so the optimizer will not chase it.">
-            <Actions>
-                <div class="btn-row">
-                    <span class="muted small">@onCount of @hunt.Count on</span>
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Conditions.DefaultFor(kind))">Defaults</MudButton>
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOn)">All on</MudButton>
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOff)">All off</MudButton>
-                </div>
-            </Actions>
-            <ChildContent>
-                @foreach (var group in groups)
-                {
-                    <div @key="group" class="cond-group">
-                        <h3>@group</h3>
-                        <div class="cond-grid">
-                            @foreach (var x in hunt.Where(x => x.Group == group))
-                            {
-                                @Condition(x, v)
-                            }
-                            @if (group == ConditionCatalog.GroupHunter)
-                            {
-                                <div class="cond resonance">
-                                    <span class="cond-text">
-                                        <b>Meal attack</b>
-                                        <span class="muted small">The "Attack +N" of your meal's effects (0 without one). Flat, after the percentage bonuses.</span>
-                                        <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
-                                    </span>
-                                </div>
-                                @if (type == WeaponType.LongSword)
+        @if (Part == Parts.Hunt)
+        {
+            <Section Title="Hunt conditions"
+                     Hint="A toggle only matters when a build actually carries the skill behind it: the calculator never invents a skill. Off means the skill scores nothing, so the optimizer will not chase it.">
+                <Actions>
+                    <div class="btn-row">
+                        <span class="muted small">@onCount of @hunt.Count on</span>
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Conditions.DefaultFor(kind))">Defaults</MudButton>
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOn)">All on</MudButton>
+                        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="() => ApplyPreset(Catalog.ConditionsAllOff)">All off</MudButton>
+                    </div>
+                </Actions>
+                <ChildContent>
+                    @foreach (var group in groups)
+                    {
+                        <div @key="group" class="cond-group">
+                            <h3>@group</h3>
+                            <div class="cond-grid">
+                                @foreach (var x in hunt.Where(x => x.Group == group))
+                                {
+                                    @Condition(x, v)
+                                }
+                                @if (group == ConditionCatalog.GroupHunter)
                                 {
                                     <div class="cond resonance">
                                         <span class="cond-text">
-                                            <b>Spirit Gauge</b>
-                                            <span class="muted small">The Long Sword's gauge level: raw ×1.02 white, ×1.04 yellow, ×1.1 red. Crimson moves are always red; Helm Breaker and Release Slash use a lower level.</span>
-                                            <Segmented T="SpiritGauge" Small="true" Value="c.SpiritGauge" Options="SpiritOptions" ValueChanged="g => App.PatchConditions(x => x with { SpiritGauge = g })" />
+                                            <b>Meal attack</b>
+                                            <span class="muted small">The "Attack +N" of your meal's effects (0 without one). Flat, after the percentage bonuses.</span>
+                                            <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
+                                        </span>
+                                    </div>
+                                    @if (type == WeaponType.LongSword)
+                                    {
+                                        <div class="cond resonance">
+                                            <span class="cond-text">
+                                                <b>Spirit Gauge</b>
+                                                <span class="muted small">The Long Sword's gauge level: raw ×1.02 white, ×1.04 yellow, ×1.1 red. Crimson moves are always red; Helm Breaker and Release Slash use a lower level.</span>
+                                                <Segmented T="SpiritGauge" Small="true" Value="c.SpiritGauge" Options="SpiritOptions" ValueChanged="g => App.PatchConditions(x => x with { SpiritGauge = g })" />
+                                            </span>
+                                        </div>
+                                    }
+                                }
+                                @if (group == ConditionCatalog.GroupBonuses)
+                                {
+                                    <div class="cond resonance">
+                                        <span class="cond-text">
+                                            <b>Omega Resonance phase</b>
+                                            <span class="muted small">Omega Resonance alternates a Local (affinity) and a Remote (attack) phase every 90 s.</span>
+                                            <Segmented T="ResonanceMode" Small="true" Value="c.Resonance" ValueChanged="SetResonance" Options="ResonanceOptions" />
                                         </span>
                                     </div>
                                 }
-                            }
-                            @if (group == ConditionCatalog.GroupBonuses)
+                            </div>
+                        </div>
+                    }
+                    <p class="muted small">
+                        The attack the score is measured on and the monster part it hits are on
+                        <button type="button" class="linklike" @onclick="() => App.SetTab(Tab.Attack)">Attack &amp; target</button>.
+                    </p>
+                </ChildContent>
+            </Section>
+        }
+
+        @if (Part == Parts.Attack)
+        {
+            <Section Title="Attack and target"
+                     Hint="The score is damage per 100 MV of the attack against the target, on the raw-hitzone-100 scale of EFR: every hit deals its MV of raw and its element modifier × element, and element counts at the target's element hitzone ÷ raw hitzone. Proc damage (Dark Arts shockwave, Bad Blood) is spread over the attack the same way.">
+                <Actions>
+                    @if (customProfile)
+                    {
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => SetProfile(_ => new AttackProfile())">Back to the @weaponLabel default attack</MudButton>
+                    }
+                </Actions>
+                <ChildContent>
+                    @foreach (var e in profileErrors)
+                    {
+                        <Alert Kind="error">@e</Alert>
+                    }
+                    <div class="attack-target">
+                        <div class="attack-col">
+                            <h3>Attack</h3>
+                            @if (preset.Attacks.Count > 0)
                             {
-                                <div class="cond resonance">
-                                    <span class="cond-text">
-                                        <b>Omega Resonance phase</b>
-                                        <span class="muted small">Omega Resonance alternates a Local (affinity) and a Remote (attack) phase every 90 s.</span>
-                                        <Segmented T="ResonanceMode" Small="true" Value="c.Resonance" ValueChanged="SetResonance" Options="ResonanceOptions" />
-                                    </span>
+                                <SelectBox Value="@(savedSequence is not null ? SavedPrefix + savedSequence.Name : attackId)" Options="AttackOptions(preset, kind)"
+                                           ValueChanged="id => SetAttack(id, preset, kind)" Style="max-width: 360px" />
+                            }
+                            @if (profile.IsSequence)
+                            {
+                                <p class="muted small">
+                                    Your rotation in order. Every step adds its hits; a step can change hunt conditions (e.g. Maximum Might off after a tackle used stamina),
+                                    and steps are weighted by their share of the motion value, so big finishers count most without dropping the hits before them.
+                                </p>
+                                <SequenceEditor Steps="profile.Sequence ?? []" Preset="preset" Base="c" WeaponKind="@kind" WeaponLabel="@weaponLabel"
+                                                StepsChanged="steps => SetProfile(p => p with { Sequence = steps.ToList() })" />
+                            }
+                            else if (attack is not null)
+                            {
+                                <p class="muted small">@attack.Description</p>
+                                @HitTable(attack, weapon)
+                            }
+                            else
+                            {
+                                <p class="muted small">
+                                    Every hit counts as one element hit of the average motion value.
+                                    @(preset.Attacks.Count == 0 ? $"There is no attack data for the {weaponLabel} yet." : "")
+                                </p>
+                            }
+                            @if (attack is null && !profile.IsSequence)
+                            {
+                                <div class="form-grid profile">
+                                    <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV.">
+                                        <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
+                                                             ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
+                                    </Field>
+                                    <Field Label="Share of hits that are Lv3 charged slashes" Hint="Great Sword only: the Dark Arts shockwave (Soul of the Dark Knight) rides on them. 0 to 1.">
+                                        <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
+                                                             ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
+                                    </Field>
                                 </div>
+                            }
+                            @if (weapon is { Type: WeaponType.Bow, Coating: BowCoating.Pierce })
+                            {
+                                <div class="form-grid profile">
+                                    <Field Label="Pierce hits per arrow"
+                                           Hint="@($"With the Pierce coating every arrow passes through the monster and hits again, each hit weaker: x1.2, x1.2, x0.9, x0.5, then next to nothing. Big monsters and shots along the body take more hits. Default {DamageConstants.DefaultPierceHits}.")">
+                                        <OptionalNumberInput Value="@(profile.PierceHits is { } ph ? ph : (double?)null)" Preset="DamageConstants.DefaultPierceHits" Min="1" Max="8"
+                                                             ValueChanged="n => SetProfile(p => p with { PierceHits = n is { } v ? (int)Math.Round(v) : null })" />
+                                    </Field>
+                                </div>
+                            }
+                            @if (profile.HitsPerMinute is { } hitsPerMinute)
+                            {
+                                @* the input is gone; a value set before still counts for proc cooldowns, so it shows until dropped *@
+                                <p class="muted small">
+                                    Proc cooldowns count @Num(hitsPerMinute) landed hits per minute (set earlier) instead of the attack's own pace.
+                                    <button type="button" class="linklike" @onclick="() => SetProfile(p => p with { HitsPerMinute = null })">Use the attack's pace</button>
+                                </p>
                             }
                         </div>
-                    </div>
-                }
-            </ChildContent>
-        </Section>
 
-        <Section Title="Attack and target"
-                 Hint="The score is damage per 100 MV of the attack against the target, on the raw-hitzone-100 scale of EFR: every hit deals its MV of raw and its element modifier × element, and element counts at the target's element hitzone ÷ raw hitzone. Proc damage (Dark Arts shockwave, Bad Blood) is spread over the attack the same way.">
-            <Actions>
-                @if (customProfile)
-                {
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => SetProfile(_ => new AttackProfile())">Back to the @weaponLabel default attack</MudButton>
-                }
-            </Actions>
-            <ChildContent>
-                @foreach (var e in profileErrors)
-                {
-                    <Alert Kind="error">@e</Alert>
-                }
-                <div class="attack-target">
-                    <div class="attack-col">
-                        <h3>Attack</h3>
-                        @if (preset.Attacks.Count > 0)
-                        {
-                            <SelectBox Value="@(savedSequence is not null ? SavedPrefix + savedSequence.Name : attackId)" Options="AttackOptions(preset, kind)"
-                                       ValueChanged="id => SetAttack(id, preset, kind)" Style="max-width: 360px" />
-                        }
-                        @if (profile.IsSequence)
-                        {
-                            <p class="muted small">
-                                Your rotation in order. Every step adds its hits; a step can change hunt conditions (e.g. Maximum Might off after a tackle used stamina),
-                                and steps are weighted by their share of the motion value, so big finishers count most without dropping the hits before them.
-                            </p>
-                            <SequenceEditor Steps="profile.Sequence ?? []" Preset="preset" Base="c" WeaponKind="@kind" WeaponLabel="@weaponLabel"
-                                            StepsChanged="steps => SetProfile(p => p with { Sequence = steps.ToList() })" />
-                        }
-                        else if (attack is not null)
-                        {
-                            <p class="muted small">@attack.Description</p>
-                            @HitTable(attack, weapon)
-                        }
-                        else
-                        {
-                            <p class="muted small">
-                                Every hit counts as one element hit of the average motion value.
-                                @(preset.Attacks.Count == 0 ? $"There is no attack data for the {weaponLabel} yet." : "")
-                            </p>
-                        }
-                        @if (attack is null && !profile.IsSequence)
-                        {
-                            <div class="form-grid profile">
-                                <Field Label="Average motion value per hit" Hint="Converts element and proc damage per hit into damage per 100 MV.">
-                                    <OptionalNumberInput Value="profile.AverageMv" Preset="preset.AverageMv" Min="1" Max="1000"
-                                                         ValueChanged="n => SetProfile(p => p with { AverageMv = n })" />
-                                </Field>
-                                <Field Label="Share of hits that are Lv3 charged slashes" Hint="Great Sword only: the Dark Arts shockwave (Soul of the Dark Knight) rides on them. 0 to 1.">
-                                    <OptionalNumberInput Value="profile.ChargedLv3Share" Preset="preset.ChargedLv3Share" Min="0" Max="1" Step="0.05"
-                                                         ValueChanged="n => SetProfile(p => p with { ChargedLv3Share = n })" />
-                                </Field>
-                            </div>
-                        }
-                        @if (weapon is { Type: WeaponType.Bow, Coating: BowCoating.Pierce })
-                        {
-                            <div class="form-grid profile">
-                                <Field Label="Pierce hits per arrow"
-                                       Hint="@($"With the Pierce coating every arrow passes through the monster and hits again, each hit weaker: x1.2, x1.2, x0.9, x0.5, then next to nothing. Big monsters and shots along the body take more hits. Default {DamageConstants.DefaultPierceHits}.")">
-                                    <OptionalNumberInput Value="@(profile.PierceHits is { } ph ? ph : (double?)null)" Preset="DamageConstants.DefaultPierceHits" Min="1" Max="8"
-                                                         ValueChanged="n => SetProfile(p => p with { PierceHits = n is { } v ? (int)Math.Round(v) : null })" />
-                                </Field>
-                            </div>
-                        }
-                        @if (profile.HitsPerMinute is { } hitsPerMinute)
-                        {
-                            @* the input is gone; a value set before still counts for proc cooldowns, so it shows until dropped *@
-                            <p class="muted small">
-                                Proc cooldowns count @Num(hitsPerMinute) landed hits per minute (set earlier) instead of the attack's own pace.
-                                <button type="button" class="linklike" @onclick="() => SetProfile(p => p with { HitsPerMinute = null })">Use the attack's pace</button>
-                            </p>
-                        }
-                    </div>
-
-                    <div class="target-col">
-                        <h3>Target</h3>
-                        <Segmented T="TargetKind" Small="true" Value="target.Kind" ValueChanged="k => SetTargetKind(k, type)" Options="TargetKindOptions" />
-                        @switch (target.Kind)
-                        {
-                            case TargetKind.Monster:
-                                var monster = Catalog.Monsters.FirstOrDefault(m => m.Name == target.Monster);
-                                <div class="target-pickers">
-                                    <SearchSelect Value="@target.Monster" Placeholder="Pick a monster" Options="MonsterOptions" ValueChanged="m => SetMonster(m, type)" />
-                                    @if (monster is not null)
-                                    {
-                                        <SelectBox Value="@target.Part" Options="PartOptions(monster, type, element)" ValueChanged="part => SetPart(monster, part, type)" />
-                                    }
-                                </div>
-                                break;
-                            case TargetKind.Dummy:
-                                <Segmented T="string" Small="true" Value="@(target.Part ?? "")" ValueChanged="part => SetTarget(_ => Target.Dummy(part))"
-                                           Options="@(Catalog.DummyTargets.Select(d => new SegmentOption<string>(d.Part!, d.Part!)).ToList())" />
-                                <p class="muted small">Soft hide, no wounds. Hitzones read off community dummy tests; element assumed the same for every element.</p>
-                                break;
-                            default:
-                                <div class="form-grid profile">
-                                    <Field Label="Raw hitzone">
-                                        <NumberInput T="double" Value="target.RawHitzone" Min="1" Max="200" ValueChanged="n => SetTarget(t => t with { RawHitzone = n })" />
-                                    </Field>
-                                    <Field Label="Element hitzone">
-                                        <NumberInput T="double" Value="target.ElementHitzone" Min="0" Max="200" ValueChanged="n => SetTarget(t => t with { ElementHitzone = n })" />
-                                    </Field>
-                                </div>
-                                break;
-                        }
-                        <p class="small target-line">
-                            Raw hitzone <b>@Num(target.RawHitzone)</b>
-                            · @(element == Element.None ? "element hitzone" : $"{Fmt.Slug(element)} hitzone") <b>@Num(target.ElementHitzoneFor(element))</b>
-                            @if (element != Element.None)
+                        <div class="target-col">
+                            <h3>Target</h3>
+                            <Segmented T="TargetKind" Small="true" Value="target.Kind" ValueChanged="k => SetTargetKind(k, type)" Options="TargetKindOptions" />
+                            @switch (target.Kind)
                             {
-                                <span> → element at <b>@Percent(target.ElementRatio(element))%</b> of raw</span>
+                                case TargetKind.Monster:
+                                    var monster = Catalog.Monsters.FirstOrDefault(m => m.Name == target.Monster);
+                                    <div class="target-pickers">
+                                        <SearchSelect Value="@target.Monster" Placeholder="Pick a monster" Options="MonsterOptions" ValueChanged="m => SetMonster(m, type)" />
+                                        @if (monster is not null)
+                                        {
+                                            <SelectBox Value="@target.Part" Options="PartOptions(monster, type, element)" ValueChanged="part => SetPart(monster, part, type)" />
+                                        }
+                                    </div>
+                                    break;
+                                case TargetKind.Dummy:
+                                    <Segmented T="string" Small="true" Value="@(target.Part ?? "")" ValueChanged="part => SetTarget(_ => Target.Dummy(part))"
+                                               Options="@(Catalog.DummyTargets.Select(d => new SegmentOption<string>(d.Part!, d.Part!)).ToList())" />
+                                    <p class="muted small">Soft hide, no wounds. Hitzones read off community dummy tests; element assumed the same for every element.</p>
+                                    break;
+                                default:
+                                    <div class="form-grid profile">
+                                        <Field Label="Raw hitzone">
+                                            <NumberInput T="double" Value="target.RawHitzone" Min="1" Max="200" ValueChanged="n => SetTarget(t => t with { RawHitzone = n })" />
+                                        </Field>
+                                        <Field Label="Element hitzone">
+                                            <NumberInput T="double" Value="target.ElementHitzone" Min="0" Max="200" ValueChanged="n => SetTarget(t => t with { ElementHitzone = n })" />
+                                        </Field>
+                                    </div>
+                                    break;
                             }
-                            · @(target.WeakPoint ? "weak point (45+): Weakness Exploit counts" : "not a weak point: Weakness Exploit does not count")
+                            <p class="small target-line">
+                                Raw hitzone <b>@Num(target.RawHitzone)</b>
+                                · @(element == Element.None ? "element hitzone" : $"{Fmt.Slug(element)} hitzone") <b>@Num(target.ElementHitzoneFor(element))</b>
+                                @if (element != Element.None)
+                                {
+                                    <span> → element at <b>@Percent(target.ElementRatio(element))%</b> of raw</span>
+                                }
+                                · @(target.WeakPoint ? "weak point (45+): Weakness Exploit counts" : "not a weak point: Weakness Exploit does not count")
+                            </p>
+                        </div>
+                    </div>
+                    @if (resolved is { } rp)
+                    {
+                        <p class="small attack-summary">
+                            <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
+                            Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : type == WeaponType.LongSword ? "sharpness, Spirit Gauge" : "sharpness")),
+                            element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
+                            (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
                         </p>
-                    </div>
-                </div>
-                @if (resolved is { } rp)
-                {
-                    <p class="small attack-summary">
-                        <b>@rp.Name</b>: @Num(Math.Round(rp.Hits, 2)) hits, @Num(Math.Round(rp.TotalMv, 1)) MV.
-                        Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : type == WeaponType.LongSword ? "sharpness, Spirit Gauge" : "sharpness")),
-                        element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
-                        (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
-                    </p>
-                }
-                @if (procToggles.Count > 0)
-                {
-                    <div class="cond-grid">
-                        @foreach (var x in procToggles)
-                        {
-                            @Condition(x, v)
-                        }
-                    </div>
-                }
-            </ChildContent>
-        </Section>
+                    }
+                    @if (procToggles.Count > 0)
+                    {
+                        <div class="cond-grid">
+                            @foreach (var x in procToggles)
+                            {
+                                @Condition(x, v)
+                            }
+                        </div>
+                    }
+                </ChildContent>
+            </Section>
+        }
     </div>
 }
 
 @code {
+    /// <summary>The two tabs this panel serves: the hunt conditions, and the attack and target (what a score means).</summary>
+    public enum Parts { Hunt, Attack }
+
+    [Parameter] public Parts Part { get; set; } = Parts.Hunt;
+
     /// <summary>The condition group that holds the proc damage toggle; it is rendered with the attack profile, not as a hunt condition.</summary>
     public const string ProcGroup = ConditionCatalog.GroupProcs;
 

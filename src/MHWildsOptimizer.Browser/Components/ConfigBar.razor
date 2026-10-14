@@ -7,7 +7,16 @@
 @* Profile and weapon pickers, save / revert / delete, and the run button. Switching weapons keeps unsaved edits (they stay
    with their weapon, also across reloads), so there are no "discard?" questions here. *@
 <div class="configbar">
-    <div class="configpick">
+    @* the profile's actions sit before its picker, away from the weapon controls (Delete profile is in there) *@
+    <div class="configpick configprofile">
+        <MudMenu @ref="_menu" Icon="@Icons.Material.Filled.ManageAccounts" Size="Size.Small" Dense="true" AriaLabel="Profile actions" title="Profile: new, import, export, delete"
+                 AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
+            <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd" OnClick="NewProfile">New profile…</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="Import">Import…</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="Export">Export @App.Profile</MudMenuItem>
+            <MudDivider />
+            <MudMenuItem Icon="@Icons.Material.Filled.DeleteForever" OnClick="DeleteProfile">Delete @App.Profile…</MudMenuItem>
+        </MudMenu>
         <MudSelect T="string" Value="App.Profile" ValueChanged="PickProfile" Label="Profile" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
                    Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" ToStringFunc="@(p => p)">
             @foreach (var p in App.Profiles)
@@ -15,22 +24,25 @@
                 <MudSelectItem Value="p.Name">@p.Name <span class="muted small">· @Fmt.Plural(p.Weapons, "weapon"), @Fmt.Plural(p.Talismans, "talisman")</span></MudSelectItem>
             }
         </MudSelect>
-        <MudMenu @ref="_menu" Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AriaLabel="Profile actions" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
-            <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd" OnClick="NewProfile">New profile…</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="Import">Import…</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="Export">Export @App.Profile</MudMenuItem>
-            <MudDivider />
-            <MudMenuItem Icon="@Icons.Material.Filled.DeleteForever" OnClick="DeleteProfile">Delete @App.Profile…</MudMenuItem>
-        </MudMenu>
     </div>
 
-    <div class="configpick">
+    <span class="configdivider" aria-hidden="true"></span>
+
+    <div class="configpick configweapon">
         <MudSelect T="string" Value="@(App.Name ?? NewKey)" ValueChanged="PickWeapon" Label="Weapon" Variant="Variant.Outlined" Margin="Margin.Dense" Dense="true"
-                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
-            <MudSelectItem Value="@NewKey">New weapon@(App.Unsaved.Contains(AppState.NewWeapon) ? " *" : "")</MudSelectItem>
-            @foreach (var w in App.Weapons)
+                   Class="configsel" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" ToStringFunc="WeaponText">
+            <MudSelectItem Value="@NewKey">
+                <span class="weaponpick"><span class="weaponpick-new">+</span> New weapon@(App.Unsaved.Contains(AppState.NewWeapon) ? " (unsaved)" : "")</span>
+            </MudSelectItem>
+            @foreach (var w in App.Weapons.OrderBy(w => TypeOrder(w.Type)).ThenBy(w => w.Name, StringComparer.OrdinalIgnoreCase))
             {
-                <MudSelectItem Value="w.Name">@w.Name@(w.HasResults ? " ✓" : "")@(App.Unsaved.Contains(w.Name) ? " *" : "")</MudSelectItem>
+                <MudSelectItem Value="w.Name">
+                    <span class="weaponpick" title="@($"{TypeLabel(w.Type)}{(w.HasResults ? " · has a last run" : "")}")">
+                        <img src="@GameIcons.Weapon(w.Type)" alt="" width="20" height="20" />
+                        <span>@w.Name</span>
+                        <span class="muted small">@TypeLabel(w.Type)@(App.Unsaved.Contains(w.Name) ? " · unsaved" : "")</span>
+                    </span>
+                </MudSelectItem>
             }
         </MudSelect>
     </div>
@@ -41,27 +53,31 @@
     }
 
     <div class="btn-row configactions">
-        <MudButton Variant="@(App.Dirty && App.Name is not null ? Variant.Filled : Variant.Outlined)" Color="@(App.Dirty && App.Name is not null ? Color.Primary : Color.Default)"
-                   Size="Size.Small" Disabled="@(App.Name is null || !App.Dirty)" OnClick="() => App.SaveAsync()"
-                   title="@(App.Name is { } n ? $"Save {n}" : "Use Save as… first")">Save</MudButton>
+        <MudButton Variant="@(App.Dirty ? Variant.Filled : Variant.Outlined)" Color="@(App.Dirty ? Color.Primary : Color.Default)"
+                   Size="Size.Small" Disabled="@(App.Name is not null && !App.Dirty)" OnClick="Save"
+                   title="@(App.Name is { } n ? $"Save {n}" : "Save the new weapon under a name")">@(App.Name is null ? "Save…" : "Save")</MudButton>
         @if (App.Dirty)
         {
             <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" title="Drop the unsaved changes">Revert</MudButton>
         }
-        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="SaveAs">Save as…</MudButton>
         @if (App.Name is { } name)
         {
-            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Delete(name)" title="Delete this weapon">Delete</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Dense="true" AriaLabel="Weapon actions" title="@($"{name}: save as, delete")"
+                     AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                <MudMenuItem Icon="@Icons.Material.Filled.SaveAs" OnClick="SaveAs">Save as…</MudMenuItem>
+                <MudDivider />
+                <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="() => Delete(name)">Delete @name…</MudMenuItem>
+            </MudMenu>
         }
     </div>
 
     @if (App.Run.Status == RunStatus.Running)
     {
-        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun">Cancel run</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun" Class="configrun">Cancel run</MudButton>
     }
     else
     {
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver?.Problem is not null)"
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver?.Problem is not null)" Class="configrun"
                    OnClick="App.RunOptimizerAsync" StartIcon="@Icons.Material.Filled.PlayArrow"
                    title="@(App.Solver?.Problem ?? (App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first"))">Run optimizer</MudButton>
     }
@@ -97,9 +113,40 @@
         if (name is not null) App.CreateProfile(name);
     }
 
+    /// <summary>The picker's closed text: the weapon's name ("New weapon" for the unsaved one).</summary>
+    private static string WeaponText(string value) => value == NewKey ? "New weapon" : value;
+
+    private string TypeLabel(string kind) => Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? Fmt.TitleCase(kind);
+
+    /// <summary>Weapons grouped by type in the picker, in the order of the Weapon tab's type grid.</summary>
+    private int TypeOrder(string kind)
+    {
+        var i = Catalog.WeaponTypes.ToList().FindIndex(t => t.Kind == kind);
+        return i < 0 ? int.MaxValue : i;
+    }
+
+    /// <summary>Saves the open weapon; the new weapon has no name yet, so it asks for one.</summary>
+    private Task Save() => App.Name is null ? SaveAs() : App.SaveAsync();
+
+    /// <summary>A name that says what the weapon is ("Dragon Great Sword", "Great Sword 2"), not taken yet.</summary>
+    private string SuggestedName()
+    {
+        var request = App.Request;
+        if (request is null) return "My weapon";
+        var kind = ProfileRules.WeaponKind(request);
+        var element = request.Weapon.Spec?.Element ?? request.Weapon.Element;
+        // weapon names allow letters, digits, spaces, '-', '_' and '.': "Sword & Shield" becomes "Sword and Shield"
+        var label = new string(TypeLabel(kind).Replace("&", "and").Where(c => char.IsLetterOrDigit(c) || c is ' ' or '-' or '_' or '.').ToArray());
+        var name = (element == Element.None ? "" : Fmt.TitleCase(element) + " ") + label;
+        var taken = App.Weapons.Select(w => w.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (!taken.Contains(name)) return name;
+        for (var n = 2; ; n++)
+            if (!taken.Contains($"{name} {n}")) return $"{name} {n}";
+    }
+
     private async Task SaveAs()
     {
-        var target = await NameDialog.AskAsync(Dialogs, "Save as", "Weapon name", App.Name ?? "my-weapon", "Save",
+        var target = await NameDialog.AskAsync(Dialogs, App.Name is null ? "Save the new weapon" : "Save as", "Weapon name", App.Name is { } current ? $"{current} copy" : SuggestedName(), "Save",
             message: $"Saved in the profile {App.Profile}, in this browser.", validate: NameError);
         if (target is null) return;
         target = target.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ? target[..^5] : target;

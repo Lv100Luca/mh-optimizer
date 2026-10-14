@@ -1,5 +1,6 @@
 @inherits AppComponent
 @inject IDialogService Dialogs
+@inject BrowserProfileStore Store
 @if (App.Profile is { } profile)
 {
     var entries = App.Inventory;
@@ -117,11 +118,33 @@
                 </ChildContent>
             </Section>
         }
+
+        @{ var used = Store.StorageUsed(); }
+        <Section Key="storage" Title="Storage in this browser" Hint="Every profile with its weapons, talismans and last runs is saved in this browser only." DefaultCollapsed="true">
+            <p class="small">
+                This app uses <b>@StorageText(used)</b> of the about 5 MB the browser gives it (@Math.Round(100.0 * used / Quota)%).
+            </p>
+            <MudProgressLinear Value="@Math.Min(100, 100.0 * used / Quota)" Color="@(used > Quota * 0.8 ? Color.Warning : Color.Primary)" Rounded="true" Class="storage-bar" />
+            <p class="muted small">
+                Clearing the site data of this browser deletes them. Export your profiles now and then as a backup: the profile menu (left of the
+                profile picker) has Export, and Import brings a profile back (also on another device).
+            </p>
+        </Section>
     </div>
 }
 
 @code {
     private string _newKind = "great-sword";
+
+    /// <summary>What browsers give a site in local storage (about 5 MB, counted in characters).</summary>
+    private const long Quota = 5L * 1024 * 1024;
+
+    private static string StorageText(long chars) =>
+        chars < 1024 * 1024 ? $"{Math.Ceiling(chars / 1024.0)} KB" : $"{(chars / (1024.0 * 1024)).ToString("0.0", CultureInfo.InvariantCulture)} MB";
+
+    /// <summary>The rolled pair as a line: "Soul of the Dark Knight / Lord's Favor", "no rolled pair".</summary>
+    private static string PairText(string? set, string? group) =>
+        set is null && group is null ? "no rolled pair" : $"{set ?? "no set bonus"} / {group ?? "no group skill"}";
 
     /// <summary>Where a weapon sits on the chart: its own builds, its pick, and the best of its last run (scored now).</summary>
     private sealed record WeaponPoints(List<(string Name, double Value)> Own, (string Name, double Value)? Pick, double? RunBest, bool RunStale, bool Damage, string? Unit)
@@ -204,7 +227,7 @@
                         <span class="elem-dot" style="background: @GameIcons.ElementCss[element]" title="@Fmt.TitleCase(element)"></span>
                     }
                 </div>
-                <div class="muted small">@(e.Weapon is { } w ? $"{w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}" : "")</div>
+                <div class="muted small">@(e.Weapon is { } w ? PairText(w.SetBonus, w.GroupSkill) : "")</div>
                 <div class="muted tiny">@TargetsText(e)</div>
                 <div class="tiny">
                     @if (mark is not null && mark.Status != BatchStatus.Done)
@@ -477,8 +500,8 @@
         var (va, vb, digits) = BuildDamage.Compare(sa.Build!, sb.Build!);
         var rows = new List<(string Label, string A, string B)>
         {
-            ("Set bonus roll", wa.SetBonus ?? "-", wb.SetBonus ?? "-"),
-            ("Group skill roll", wa.GroupSkill ?? "-", wb.GroupSkill ?? "-"),
+            ("Set bonus roll", wa.SetBonus ?? "none", wb.SetBonus ?? "none"),
+            ("Group skill roll", wa.GroupSkill ?? "none", wb.GroupSkill ?? "none"),
             ("Attack", wa.TrueRaw.ToString(CultureInfo.InvariantCulture), wb.TrueRaw.ToString(CultureInfo.InvariantCulture)),
             ("Affinity", Fmt.Signed(wa.Affinity) + "%", Fmt.Signed(wb.Affinity) + "%"),
             ("Element", wa.Element == Element.None ? "none" : $"{wa.ElementDisplay} {Fmt.TitleCase(wa.Element)}", wb.Element == Element.None ? "none" : $"{wb.ElementDisplay} {Fmt.TitleCase(wb.Element)}"),

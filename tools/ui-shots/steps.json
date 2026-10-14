@@ -21,11 +21,11 @@
       "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const i = document.querySelector('.picker-tools input'); i.focus(); i.value = 'crit'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(600);"
     },
     "x-conditions-sequence": {
-      "url": "{origin}/{profile}/weapon/{weapon}/conditions",
+      "url": "{origin}/{profile}/weapon/{weapon}/attack",
       "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); const sel = document.querySelector('.attack-col .mud-select'); sel.querySelector('.mud-input')?.click(); sel.querySelector('input')?.click(); await sleep(600); [...document.querySelectorAll('.mud-popover .mud-list-item')].find(e => e.innerText.includes('Custom sequence'))?.click(); await sleep(800); document.querySelector('.attack-col').scrollIntoView();"
     },
     "x-conditions-monster": {
-      "url": "{origin}/{profile}/weapon/{weapon}/conditions",
+      "url": "{origin}/{profile}/weapon/{weapon}/attack",
       "js": "const sleep = ms => new Promise(r => setTimeout(r, ms)); [...document.querySelectorAll('.target-col .segmented button')].find(b => b.innerText.trim() === 'Monster').click(); await sleep(700); const i = document.querySelector('.target-pickers input'); i.focus(); i.click(); i.value = 'ra'; i.dispatchEvent(new Event('input', { bubbles: true })); await sleep(900);"
     },
     "x-results-details": {

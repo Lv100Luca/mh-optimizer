@@ -15,80 +15,51 @@
 
     <div class="panel two-col">
         <div class="col">
-            <Section Title="Weapon type" Hint="Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills. The Bow scores charged shots, Power Shots and its coating; bowguns are out of scope.">
-                <div class="type-grid">
-                    @foreach (var t in Catalog.WeaponTypes)
+            @{
+                var pairOn = request.SkillPair.Mode == SkillPairMode.Optimize;
+                var pool = Catalog.SkillPool;
+                var showTypes = _showTypes || App.Name is null;
+            }
+            <Section Title="Weapon type" Hint="@(showTypes ? "Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills. The Bow scores charged shots, Power Shots and its coating; bowguns are out of scope." : null)">
+                @if (showTypes)
+                {
+                    <div class="type-grid">
+                        @foreach (var t in Catalog.WeaponTypes)
+                        {
+                            <button type="button" disabled="@(!t.Supported)" class="type-card @(t.Kind == kind ? "active" : "")" @onclick="() => SetType(t.Kind)"
+                                    title="@(t.Supported ? $"{t.Label}: base attack {(t.Variants.GetValueOrDefault("attack")?.Raw.ToString(CultureInfo.InvariantCulture) ?? "?")} (attack focus)" : $"{t.Label}: out of scope")">
+                                <img src="@(t.Supported ? GameIcons.Weapon(t.Kind) : GameIcons.WeaponBase(t.Kind))" alt="" />
+                                <span>@t.Label</span>
+                                @if (t.CoreSkills.Count > 0)
+                                {
+                                    <small>@string.Join(", ", t.CoreSkills.Select(c => $"{c.Skill} {c.Level}"))</small>
+                                }
+                            </button>
+                        }
+                    </div>
+                    @if (_showTypes && App.Name is not null)
                     {
-                        <button type="button" disabled="@(!t.Supported)" class="type-card @(t.Kind == kind ? "active" : "")" @onclick="() => SetType(t.Kind)"
-                                title="@(t.Supported ? $"{t.Label}: base attack {(t.Variants.GetValueOrDefault("attack")?.Raw.ToString(CultureInfo.InvariantCulture) ?? "?")} (attack focus)" : $"{t.Label}: out of scope")">
-                            <img src="@(t.Supported ? GameIcons.Weapon(t.Kind) : GameIcons.WeaponBase(t.Kind))" alt="" />
-                            <span>@t.Label</span>
-                            @if (t.CoreSkills.Count > 0)
-                            {
-                                <small>@string.Join(", ", t.CoreSkills.Select(c => $"{c.Skill} {c.Level}"))</small>
-                            }
-                        </button>
+                        <button type="button" class="linklike small" @onclick="() => _showTypes = false">Keep the @(wt?.Label ?? kind)</button>
                     }
-                </div>
-            </Section>
-
-            <Section Title="Optimize the weapon"
-                     Hint="Let the optimizer choose parts of the weapon together with the armor: switch on what you have not rolled yet or want to compare. Parts left off stay as described below. Each result lists, per optimized part, how well every choice does on its armor.">
-                @{
-                    var described = mode == SpecMode;
-                    var pairOn = request.SkillPair.Mode == SkillPairMode.Optimize;
-                    var pool = Catalog.SkillPool;
                 }
-                @if (!described)
+                else
                 {
-                    <p class="muted">The weapon is entered as stats. <button class="linklike" @onclick="() => SetMode(SpecMode)">Describe it</button> to optimize its focus, element, parts or reinforcements.</p>
-                }
-                <div class="opt-grid">
-                    <Toggle Checked="@(described && opt.Focus)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { Focus = v })" Label="Focus"
-                            Hint="Attack, affinity or element: each one is searched with armor of its own." />
-                    <Toggle Checked="@(described && opt.Element)" CheckedChanged="v => PatchOptimize(o => o with { Element = v })" Label="Element" Disabled="@(!described || wt?.Gunner == true && !isBow)"
-                            Hint="The five elements, always infused; the target's hitzones decide." />
-                    <Toggle Checked="@(described && opt.AttackParts)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { AttackParts = v })" Label="Attack Infusion lines"
-                            Hint="How many of the three parts give +5 attack rather than +5% affinity." />
-                    <Toggle Checked="@(described && opt.Reinforcements)" Disabled="!described" CheckedChanged="v => PatchOptimize(o => o with { Reinforcements = v })" Label="Reinforcements"
-                            Hint="@(isBow ? "Which of attack, affinity and element fill the five lines." : "Which of attack, affinity, element and sharpness fill the five lines.")" />
-                    <Toggle Checked="pairOn" CheckedChanged="SetPairOptimized" Label="Skill pair"
-                            Hint="@($"The set bonus and group skill: all {pool.Pairs.Count} rollable pairs ({pool.SetBonuses.Count} × {pool.GroupSkills.Count}), every pair equally likely.")" />
-                </div>
-                @if (described && opt.Reinforcements)
-                {
-                    <Field Label="Best reinforcement tier to assume" Inline="true"
-                           Hint="Each type takes its best tiers up to this one, at most two of each (2x EX, 2x III, then II). EX lines are rare; III gives a weapon you can expect to roll.">
-                        <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
-                    </Field>
-                }
-                @if (pairOn)
-                {
-                    <Field Label="Best skill pairs to report" Inline="true"
-                           Hint="Pairs that score the same under your conditions are grouped and searched once; the results list the best groups.">
-                        <NumberInput T="int" Value="request.SkillPair.TopN" Min="1" Max="50" Width="90"
-                                     ValueChanged="n => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { TopN = n } })" />
-                    </Field>
-                }
-                @if (described && opt.Any || pairOn)
-                {
-                    <p class="muted small">
-                        @if (described && opt.Any)
+                    <div class="type-chosen">
+                        <img src="@GameIcons.Weapon(kind)" alt="" width="36" height="36" />
+                        <b>@(wt?.Label ?? kind)</b>
+                        @if (wt?.CoreSkills.Count > 0)
                         {
-                            @OptimizeSummary(opt)
+                            <span class="muted small">core skills @string.Join(", ", wt.CoreSkills.Select(c => $"{c.Skill} {c.Level}"))</span>
                         }
-                        @if (pairOn && resolved?.SkillPairCandidates is { } c)
-                        {
-                            <span> @Fmt.Plural(c, "candidate skill pair") will be searched.</span>
-                        }
-                    </p>
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => _showTypes = true" title="Make this weapon another type (its conditions follow that type's preset)">Change type</MudButton>
+                    </div>
                 }
             </Section>
 
             <Section Title="Stats"
                      Hint="@(mode == SpecMode
-                         ? "Describe the weapon the way the game shows it on the Production Bonus and Reinforcement Bonus screens; the true stats are computed."
-                         : "Enter the final numbers from the equipment screen.")">
+                         ? "Describe the weapon the way the game shows it on the Production Bonus and Reinforcement Bonus screens; the true stats are computed. Switch on 'Let the optimizer choose' for a part you have not rolled yet or want to compare: it is then chosen per build, together with the armor."
+                         : "Enter the final numbers from the equipment screen. A described weapon also lets the optimizer choose its parts.")">
                 <Actions>
                     <Segmented T="string" Small="true" Value="mode" ValueChanged="SetMode" Options="ModeOptions" />
                 </Actions>
@@ -96,60 +67,67 @@
                     @if (mode == SpecMode && spec is not null)
                     {
                         <div class="form-grid">
-                            <Field LabelContent="@OptLabel("Focus", opt.Focus)" Hint="@(isBow ? "The Artian focus decides the base raw / affinity variant and the bow's coating: attack Close-range, affinity Power, element Pierce." : "The Artian focus decides the base raw / affinity variant.")">
-                                <Segmented T="GogmaFocus" Value="spec.Focus" ValueChanged="focus => PatchSpec(s => s with { Focus = focus })" Options="FocusOptions(wt)" />
-                                @if (isBow)
-                                {
-                                    <p class="muted small">Coating: <b>@AttackProfile.CoatingName(Core.Gogma.GogmaConstants.BowCoatingOf(spec.Focus))</b> (from the @Fmt.TitleCase(spec.Focus) focus)</p>
-                                }
-                            </Field>
-
-                            <Field LabelContent="@OptLabel("Element", opt.Element)">
-                                <div class="chip-row">
-                                    @foreach (var e in Elements)
+                            <OptField Label="Focus" CanOptimize="true" Optimized="opt.Focus" OptimizedChanged="v => PatchOptimize(o => o with { Focus = v })"
+                                      Hint="@(isBow ? "The Artian focus decides the base raw / affinity variant and the bow's coating: attack Close-range, affinity Power, element Pierce." : "The Artian focus decides the base raw / affinity variant.")">
+                                <OptimizedContent>Attack, affinity and element focus each start a search with armor of their own, so the run takes up to three times as long. Each build shows how every focus does on its armor.</OptimizedContent>
+                                <ChildContent>
+                                    <Segmented T="GogmaFocus" Value="spec.Focus" ValueChanged="focus => PatchSpec(s => s with { Focus = focus })" Options="FocusOptions(wt)" />
+                                    @if (isBow)
                                     {
-                                        <button type="button" class="chip pick @(spec.Element == e ? "active" : "")" style="--tint: @GameIcons.ElementCss[e]" @onclick="() => SetSpecElement(e)">
-                                            @if (GameIcons.Element(e) is { } icon)
-                                            {
-                                                <img src="@icon" alt="" />
-                                            }
-                                            @Fmt.TitleCase(e)
-                                        </button>
+                                        <p class="muted small">Coating: <b>@AttackProfile.CoatingName(Core.Gogma.GogmaConstants.BowCoatingOf(spec.Focus))</b> (from the @Fmt.TitleCase(spec.Focus) focus)</p>
                                     }
-                                </div>
+                                </ChildContent>
+                            </OptField>
+
+                            <OptField Label="Element" CanOptimize="@(wt?.Gunner != true || isBow)" Optimized="opt.Element" OptimizedChanged="v => PatchOptimize(o => o with { Element = v })">
+                                <OptimizedContent>The five elements, always with the Element Infusion line: the target's hitzones decide.</OptimizedContent>
+                                <ChildContent>
+                                    <div class="chip-row">
+                                        @foreach (var e in Elements)
+                                        {
+                                            <button type="button" class="chip pick @(spec.Element == e ? "active" : "")" style="--tint: @GameIcons.ElementCss[e]" @onclick="() => SetSpecElement(e)">
+                                                @if (GameIcons.Element(e) is { } icon)
+                                                {
+                                                    <img src="@icon" alt="" />
+                                                }
+                                                @Fmt.TitleCase(e)
+                                            </button>
+                                        }
+                                    </div>
+                                </ChildContent>
+                            </OptField>
+
+                            <Field Label="Element Infusion line"
+                                   Hint="@(wt is not null ? $"In the game a line under Production Bonus. It is there when all three Artian parts you crafted the weapon from share the element, and adds +{wt.InfusionBonusDisplay} element on top of the base {wt.ElementBaseDisplay}. Two matching parts give the element without the line." : null)">
+                                <Toggle Checked="@((spec.Infused && spec.Element != Element.None) || opt.Element)" Disabled="@(spec.Element == Element.None || opt.Element)"
+                                        CheckedChanged="infused => PatchSpec(s => s with { Infused = infused })"
+                                        Label="@(opt.Element ? "Always on while the element is chosen per build" : spec.Element == Element.None ? "Needs an element" : "All three parts share the element")" />
                             </Field>
 
-                            <Field Label="Element infusion" Hint="@(wt is not null ? $"All three parts share the element: +{wt.InfusionBonusDisplay} element on top of the base {wt.ElementBaseDisplay}." : null)">
-                                <Toggle Checked="@(spec.Infused && spec.Element != Element.None)" Disabled="@(spec.Element == Element.None)"
-                                        CheckedChanged="infused => PatchSpec(s => s with { Infused = infused })" Label="Element Infusion line present" />
-                            </Field>
+                            <OptField Label="Attack Infusion lines" CanOptimize="true" Optimized="opt.AttackParts" OptimizedChanged="v => PatchOptimize(o => o with { AttackParts = v })"
+                                      Hint="Each Artian part gives +5 true attack or +5% affinity; count the 'Attack Infusion +5' lines under Production Bonus.">
+                                <OptimizedContent>Every split of the three parts into +5 attack and +5% affinity is tried.</OptimizedContent>
+                                <ChildContent>
+                                    <Segmented T="int" Value="spec.AttackParts" ValueChanged="n => PatchSpec(s => s with { AttackParts = n })" Options="AttackPartOptions" />
+                                </ChildContent>
+                            </OptField>
 
-                            <Field LabelContent="@OptLabel("Attack Infusion lines", opt.AttackParts)" Hint="Each Artian part gives +5 true attack or +5% affinity; count the 'Attack Infusion +5' lines.">
-                                <Segmented T="int" Value="spec.AttackParts" ValueChanged="n => PatchSpec(s => s with { AttackParts = n })" Options="AttackPartOptions" />
-                            </Field>
-
-                            <Field LabelContent="@OptLabel("Reinforcement bonuses", opt.Reinforcements)" Hint="@(isBow ? "Up to five; at most two identical lines, ammo at most twice. Element lines need an element." : "Up to five; at most two identical lines, sharpness at most twice. Element lines need an element.")">
-                                @{
-                                    var slots = ReinforcementSlots(spec);
-                                    var options = Catalog.Reinforcements
-                                        .Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None))
-                                        .Select(r => new SelectOption(r.Value, r.Label, Fmt.TitleCase(r.Type)))
-                                        .ToList();
-                                }
-                                <div class="reinforcements">
-                                    @for (var i = 0; i < slots.Length; i++)
-                                    {
-                                        var index = i;
-                                        <SelectBox Value="@(slots[index] == "" ? null : slots[index])" Placeholder="— empty —" Options="options"
-                                                   ValueChanged="v => SetReinforcement(index, v)" />
-                                    }
-                                </div>
-                                @if (slots.Where(r => r != "").GroupBy(r => r).Any(g => g.Count() > 2))
-                                {
-                                    <Alert Kind="error">More than two identical reinforcements.</Alert>
-                                }
-                            </Field>
+                            <OptField Label="Reinforcement Bonus lines" CanOptimize="true" Optimized="opt.Reinforcements" OptimizedChanged="v => PatchOptimize(o => o with { Reinforcements = v })"
+                                      Hint="@(isBow ? "Count each line of the Reinforcement Bonus screen: up to five, at most two of the same line, ammo lines at most two in all. Element lines need an element." : "Count each line of the Reinforcement Bonus screen: up to five, at most two of the same line, sharpness lines at most two in all. Element lines need an element.")">
+                                <OptimizedContent>
+                                    <span>Every split of the five lines over @(isBow ? "attack, affinity and element" : "attack, affinity, element and sharpness") is tried, each type at its best tiers up to</span>
+                                    <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
+                                    <span>(at most two of a tier). EX lines are rare; III gives a weapon you can expect to roll.</span>
+                                </OptimizedContent>
+                                <ChildContent>
+                                    @ReinforcementGrid(spec, wt)
+                                </ChildContent>
+                            </OptField>
                         </div>
+                        @if (opt.Any)
+                        {
+                            <p class="muted small">@OptimizeSummary(opt)</p>
+                        }
                     }
 
                     @if (mode == StatsMode)
@@ -208,34 +186,52 @@
                 </ChildContent>
             </Section>
 
-            <Section Title="Rolled skill pair" Hint="The two lines under 'Active Skills' on the weapon: one set bonus and one group skill. The weapon counts as one armor piece for each. Not used while the skill pair is optimized.">
-                <div class="form-grid">
-                    <Field>
-                        <LabelContent><span class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonus</span></LabelContent>
-                        <ChildContent>
-                            <SearchSelect Value="@w.SetBonus" Placeholder="(none)" Options="@(Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList())"
-                                       ValueChanged="v => App.PatchWeapon(x => x with { SetBonus = v })" />
-                        </ChildContent>
-                    </Field>
-                    <Field>
-                        <LabelContent><span class="with-icon"><SkillIcon Name="group" Kind="SkillKind.Group" /> Group skill</span></LabelContent>
-                        <ChildContent>
-                            <SearchSelect Value="@w.GroupSkill" Placeholder="(none)" Options="@(Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList())"
-                                       ValueChanged="v => App.PatchWeapon(x => x with { GroupSkill = v })" />
-                        </ChildContent>
-                    </Field>
-                </div>
-                @if (request.SkillPair.Mode == SkillPairMode.Optimize)
-                {
-                    <Alert Kind="info">
-                        The skill pair is <b>optimized</b>: every rollable pair is searched, so the rolled pair above is not used.
-                        <button class="linklike" @onclick="() => SetPairOptimized(false)">Use the rolled pair</button>
-                    </Alert>
-                }
+            <Section Title="Rolled skill pair" Hint="The two lines under 'Active Skills' on the weapon: one set bonus and one group skill. The weapon counts as one armor piece for each.">
+                <Actions>
+                    <span class="optfield-switch" title="@($"Search all {pool.Pairs.Count} rollable pairs ({pool.SetBonuses.Count} set bonuses × {pool.GroupSkills.Count} group skills), every pair equally likely")">
+                        <MudSwitch T="bool" Value="pairOn" ValueChanged="SetPairOptimized" Color="Color.Primary" Size="Size.Small" Label="Let the optimizer choose" />
+                    </span>
+                </Actions>
+                <ChildContent>
+                    @if (pairOn)
+                    {
+                        <div class="optfield-note">
+                            Every rollable pair is searched (@pool.Pairs.Count pairs; pairs that score the same under your conditions are searched once), so the pair below is not used.
+                            @if (resolved?.SkillPairCandidates is { } c)
+                            {
+                                <span> @Fmt.Plural(c, "candidate skill pair") will be searched.</span>
+                            }
+                        </div>
+                        <Field Label="Best skill pairs to report" Inline="true">
+                            <NumberInput T="int" Value="request.SkillPair.TopN" Min="1" Max="50" Width="90"
+                                         ValueChanged="n => App.PatchRequest(r => r with { SkillPair = r.SkillPair with { TopN = n } })" />
+                        </Field>
+                    }
+                    <div class="form-grid optfield-body" inert="@pairOn">
+                        <Field>
+                            <LabelContent><span class="with-icon"><SkillIcon Name="set" Kind="SkillKind.Set" /> Set bonus</span></LabelContent>
+                            <ChildContent>
+                                <SearchSelect Value="@w.SetBonus" Placeholder="(none)" Options="@(Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList())"
+                                              ValueChanged="v => App.PatchWeapon(x => x with { SetBonus = v })" />
+                            </ChildContent>
+                        </Field>
+                        <Field>
+                            <LabelContent><span class="with-icon"><SkillIcon Name="group" Kind="SkillKind.Group" /> Group skill</span></LabelContent>
+                            <ChildContent>
+                                <SearchSelect Value="@w.GroupSkill" Placeholder="(none)" Options="@(Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList())"
+                                              ValueChanged="v => App.PatchWeapon(x => x with { GroupSkill = v })" />
+                            </ChildContent>
+                        </Field>
+                    </div>
+                    @if (!pairOn && w.SetBonus is null && w.GroupSkill is null)
+                    {
+                        <p class="muted small">No rolled pair: the weapon adds no set bonus or group skill piece, as before its first reroll. Pick the two lines once you have them.</p>
+                    }
+                </ChildContent>
             </Section>
         </div>
 
-        <aside class="col side">
+        <aside class="col side sticky-side">
             <Section Title="Resolved weapon" Hint="What the optimizer will use (before any skills).">
                 @foreach (var e in weaponErrors)
                 {
@@ -402,15 +398,72 @@
     private static readonly IReadOnlyList<SegmentOption<ReinforcementTier>> TierOptions =
         [.. new[] { ReinforcementTier.EX, ReinforcementTier.III, ReinforcementTier.II }.Select(t => new SegmentOption<ReinforcementTier>(t, t.ToString()))];
 
-    /// <summary>A field label with an "optimized" badge when the optimizer chooses that part (the value below is then only a start).</summary>
-    private static RenderFragment OptLabel(string label, bool optimized) => __builder =>
+    /// <summary>The type grid of a saved weapon, opened with "Change type".</summary>
+    private bool _showTypes;
+
+    private static readonly ReinforcementTier[] Tiers = Enum.GetValues<ReinforcementTier>();
+
+    /// <summary>Types that may fill at most two lines in all, whatever their tiers.</summary>
+    private static bool TwoAtMost(ReinforcementType t) => t is ReinforcementType.Sharpness or ReinforcementType.Ammo;
+
+    /// <summary>
+    /// The Reinforcement Bonus lines as counts per type and tier ("2 × Attack EX"), the way they read off the game's screen:
+    /// at most five lines, two of the same, sharpness or ammo two in all; element lines only with an element.
+    /// </summary>
+    private RenderFragment ReinforcementGrid(GogmaWeaponSpecInput spec, WeaponTypeDto? wt) => __builder =>
     {
-        @label
-        @if (optimized)
-        {
-            <span class="badge-mini" title="The optimizer chooses this part; what is set here is not used">optimized</span>
-        }
+        var options = Catalog.Reinforcements.Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None)).ToList();
+        var counts = spec.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+        var total = spec.Reinforcements.Count;
+        var types = options.Select(o => o.Type).Distinct().ToList();
+        <div class="rf-grid">
+            <span></span>
+            @foreach (var tier in Tiers)
+            {
+                <span class="rf-tier">@tier</span>
+            }
+            @foreach (var type in types)
+            {
+                var typeTotal = options.Where(o => o.Type == type).Sum(o => counts.GetValueOrDefault(o.Value));
+                <span class="rf-type">@Fmt.TitleCase(type)</span>
+                @foreach (var tier in Tiers)
+                {
+                    var option = options.FirstOrDefault(o => o.Type == type && o.Tier == tier);
+                    if (option is null)
+                    {
+                        <span class="rf-none muted">—</span>
+                        continue;
+                    }
+                    var count = counts.GetValueOrDefault(option.Value);
+                    var max = Math.Min(2, count + (5 - total));
+                    if (TwoAtMost(type)) max = Math.Min(max, count + (2 - typeTotal));
+                    var value = option.Value;
+                    <span class="rf-cell @(count > 0 ? "on" : "")" title="@option.Label">
+                        <Stepper Value="count" Min="0" Max="max" Format="@(v => v == 0 ? "0" : $"{v}×")" ValueChanged="v => SetReinforcementCount(value, v)" />
+                    </span>
+                }
+            }
+        </div>
+        <p class="small rf-total">
+            <b>@total of 5</b> lines@(total > 0 ? ": " + string.Join(", ", spec.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).Select(g => $"{g.Count()}× {ReinforcementLabel(g.Key)}")) : "")
+            @if (total > 0)
+            {
+                <button type="button" class="linklike" @onclick="() => PatchSpec(s => s with { Reinforcements = [] })">clear</button>
+            }
+        </p>
     };
+
+    /// <summary>"attack EX" as the catalog shows it ("Attack EX").</summary>
+    private string ReinforcementLabel(string value) => Catalog.Reinforcements.FirstOrDefault(r => r.Value.Equals(value, StringComparison.OrdinalIgnoreCase))?.Label ?? value;
+
+    /// <summary>Sets how many lines of one reinforcement the weapon has; the list stays in the catalog's order.</summary>
+    private void SetReinforcementCount(string value, int count) => PatchSpec(s =>
+    {
+        var counts = s.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+        counts[value] = count;
+        var list = Catalog.Reinforcements.SelectMany(r => Enumerable.Repeat(r.Value, counts.GetValueOrDefault(r.Value))).Take(5).ToList();
+        return s with { Reinforcements = list };
+    });
 
     /// <summary>"Searches 3 foci x 5 elements x 46 reinforcement splits = 690 weapons for every build."</summary>
     private static string OptimizeSummary(Core.Gogma.WeaponOptimizeSettings o)
@@ -437,6 +490,7 @@
 
     private void SetType(string kind)
     {
+        _showTypes = false;
         if (App.Request?.Weapon.Spec is not null) PatchSpec(s => s with { Type = kind });
         else App.PatchWeapon(w => w with { Type = kind, Coating = kind == "bow" ? w.Coating : null });
     }
@@ -447,17 +501,6 @@
         Element = e,
         Infused = e != Element.None && s.Infused,
         Reinforcements = e == Element.None ? s.Reinforcements.Where(r => !r.StartsWith("element", StringComparison.OrdinalIgnoreCase)).ToList() : s.Reinforcements,
-    });
-
-    /// <summary>Five reinforcement slots; "" = empty.</summary>
-    private static string[] ReinforcementSlots(GogmaWeaponSpecInput spec) =>
-        [.. Enumerable.Range(0, 5).Select(i => i < spec.Reinforcements.Count ? spec.Reinforcements[i] : "")];
-
-    private void SetReinforcement(int index, string? value) => PatchSpec(s =>
-    {
-        var next = ReinforcementSlots(s);
-        next[index] = value ?? "";
-        return s with { Reinforcements = next.Where(r => r != "").ToList() };
     });
 
     private void SetSlot(int index, int level) => App.PatchWeapon(w =>

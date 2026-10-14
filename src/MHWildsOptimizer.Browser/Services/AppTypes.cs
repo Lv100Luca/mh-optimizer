@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals }
+public enum Tab { Inventory, Compare, Weapon, Attack, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals }
 
 public static class Tabs
 {
@@ -72,7 +72,9 @@ public sealed record Route(string? Profile, string? Weapon, bool WeaponGiven, Ta
 public enum RunStatus { Idle, Running, Done, Error, Cancelled }
 
 /// <param name="FromDisk">The result is the weapon's saved last run rather than produced in this session.</param>
-public sealed record RunState(RunStatus Status, IReadOnlyList<string> Log, ResultDto? Result, string? Error, DateTimeOffset? StartedAt, DateTimeOffset? FinishedAt, bool FromDisk)
+/// <param name="Stage">While running: where the run is, for people ("Weapon start 2 of 3 (Element focus) · armor search 1 · build 3 of 5").</param>
+public sealed record RunState(RunStatus Status, IReadOnlyList<string> Log, ResultDto? Result, string? Error, DateTimeOffset? StartedAt, DateTimeOffset? FinishedAt, bool FromDisk,
+    string? Stage = null)
 {
     public static readonly RunState Idle = new(RunStatus.Idle, [], null, null, null, null, false);
 

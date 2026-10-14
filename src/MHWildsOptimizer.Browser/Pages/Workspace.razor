@@ -54,8 +54,9 @@ else
                 case Tab.Inventory: <InventoryPanel /> break;
                 case Tab.Compare: <ComparePanel /> break;
                 case Tab.Weapon: <WeaponPanel /> break;
+                case Tab.Attack: <ConditionsPanel Part="ConditionsPanel.Parts.Attack" /> break;
                 case Tab.Targets: <TargetsPanel /> break;
-                case Tab.Conditions: <ConditionsPanel /> break;
+                case Tab.Conditions: <ConditionsPanel Part="ConditionsPanel.Parts.Hunt" /> break;
                 case Tab.Talismans: <TalismansPanel /> break;
                 case Tab.Options: <OptionsPanel /> break;
                 case Tab.Review: <ReviewPanel /> break;
@@ -114,11 +115,20 @@ else
         await App.InitializeAsync();
     }
 
-    private string Title => App.Tab == Tab.Inventory || App.Request is null
+    /// <summary>The browser tab's title; while a run goes it leads with the run's stage, so a background tab shows how far it got.</summary>
+    private string Title => (App.Run.Status == RunStatus.Running ? $"⏳ {RunTitle(App.Run)} · " : "") + (App.Tab == Tab.Inventory || App.Request is null
         ? "MH Wilds Optimizer"
         : App.Tab.IsWikiTab() ? $"{App.WikiEntry ?? Nav().First(n => n.Tab == App.Tab).Label} · Wiki · MH Wilds Optimizer"
         : App.Tab == Tab.Compare ? "Compare · MH Wilds Optimizer"
-        : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds Optimizer";
+        : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds Optimizer");
+
+    /// <summary>"Searching 3:12 · build 2 of 5": the deepest stage only, the title is short.</summary>
+    private static string RunTitle(RunState run)
+    {
+        var elapsed = run.StartedAt is { } started ? DateTimeOffset.Now - started : TimeSpan.Zero;
+        var last = run.Stage?.Split(" · ").LastOrDefault(x => x.Length > 0);
+        return $"Searching {(int)elapsed.TotalMinutes}:{elapsed.Seconds:00}" + (last is null ? "" : $" · {last}");
+    }
 
     private IEnumerable<NavItem> Nav()
     {
@@ -132,10 +142,11 @@ else
         string? Count(int n) => n > 0 ? n.ToString() : null;
 
         // profile-wide things first, then the open weapon's setup, then what comes out of it
-        yield return new(GroupProfile, Tab.Inventory, "Inventory", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
+        yield return new(GroupProfile, Tab.Inventory, "Weapons", GameIcons.WeaponBase(kind), busy > 0 ? $"{busy} …" : Count(App.Weapons.Count));
         yield return new(GroupProfile, Tab.Talismans, "Talismans", GameIcons.Talisman(7), Count(App.Talismans.Count));
         yield return new(GroupProfile, Tab.Compare, "Compare", GameIcons.SkillGeneric("handicraft"), Count(App.Tray.Count), App.Tray.Count > 0 ? "acc" : null);
         yield return new(GroupWeapon, Tab.Weapon, "Weapon", GameIcons.Weapon(kind));
+        yield return new(GroupWeapon, Tab.Attack, "Attack & target", GameIcons.Attack);
         yield return new(GroupWeapon, Tab.Targets, "Targets & limits", GameIcons.SkillGeneric("offense"), Count(rules));
         yield return new(GroupWeapon, Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
         yield return new(GroupWeapon, Tab.Options, "Options", GameIcons.Defense);

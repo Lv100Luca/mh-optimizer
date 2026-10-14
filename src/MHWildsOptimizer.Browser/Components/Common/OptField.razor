@@ -1,0 +1,45 @@
+@*
+    A field of the described weapon the optimizer can choose instead: the switch sits on the field's own label line, and while
+    it is on the field's value is not used (it is greyed out and cannot be edited).
+*@
+<div class="field optfield @(Optimized ? "optimized" : "")">
+    <div class="optfield-head">
+        <span class="field-label">
+            @Label
+            @if (Optimized)
+            {
+                <span class="badge-mini" title="The optimizer picks this per build; the value below is not used">chosen per build</span>
+            }
+        </span>
+        @if (CanOptimize)
+        {
+            <span class="optfield-switch" title="@SwitchHint">
+                <MudSwitch T="bool" Value="Optimized" ValueChanged="OptimizedChanged" Color="Color.Primary" Size="Size.Small" Label="Let the optimizer choose" />
+            </span>
+        }
+    </div>
+    @if (Optimized && OptimizedContent is not null)
+    {
+        <div class="optfield-note">@OptimizedContent</div>
+    }
+    <div class="optfield-body" inert="@Optimized">
+        @ChildContent
+    </div>
+    @if (Hint is not null && !Optimized)
+    {
+        <span class="field-hint">@Hint</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string? Hint { get; set; }
+    /// <summary>Whether the optimizer may choose this part (the weapon is described, not entered as stats).</summary>
+    [Parameter] public bool CanOptimize { get; set; }
+    [Parameter] public bool Optimized { get; set; }
+    [Parameter] public EventCallback<bool> OptimizedChanged { get; set; }
+    [Parameter] public string? SwitchHint { get; set; }
+    /// <summary>What the optimizer does with the part while it chooses it (and its settings).</summary>
+    [Parameter] public RenderFragment? OptimizedContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

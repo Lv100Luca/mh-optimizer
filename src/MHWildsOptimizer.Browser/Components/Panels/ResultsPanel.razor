@@ -1,5 +1,6 @@
 @inherits AppComponent
 @inject IJSRuntime JS
+@inject UiState Ui
 @{
     var run = App.Run;
     var result = run.Result;
@@ -53,7 +54,16 @@
         <ChildContent>
             @if (run.Status == RunStatus.Running)
             {
-                <div class="progress"><span class="spinner"></span> @(run.Log.Count > 0 ? run.Log[^1] : "starting…")</div>
+                <div class="progress">
+                    <span class="spinner"></span>
+                    <span class="progress-text">
+                        <b>@(string.IsNullOrEmpty(run.Stage) ? "Starting…" : run.Stage)</b>
+                        @if (run.Log.Count > 0)
+                        {
+                            <span class="muted small progress-last">@LastLine(run.Log[^1])</span>
+                        }
+                    </span>
+                </div>
             }
             @if (run.Status == RunStatus.Error)
             {
@@ -67,7 +77,7 @@
             {
                 <div class="runlog-wrap">
                     <button type="button" class="linklike" @onclick="() => _showLog = !_showLog">@(_showLog ? "Hide" : "Show") search log (@run.Log.Count lines)</button>
-                    @if (_showLog || run.Status == RunStatus.Running)
+                    @if (_showLog)
                     {
                         <pre class="runlog" id="@LogId">@string.Join("\n", run.Log)</pre>
                     }
@@ -86,6 +96,14 @@
                         @baseName is scored under this weapon's conditions here@(ownConditions ? ", without its own" : "")@(baselineRef.Weapon != App.ActiveKey ? $" (with {AppState.WeaponTitle(baselineRef.Weapon)} as its weapon)" : ""),
                         so both sides use the same assumptions.
                     </p>
+                }
+                @if (Unproved(result) is { Count: > 0 } unproved)
+                {
+                    <Alert Kind="info">
+                        @Fmt.Plural(unproved.Count, "build") hit the time limit before the solver proved @(unproved.Count == 1 ? "it" : "them") the best
+                        (marked <i>not proved</i>): a better build may exist, by up to @Fmt.N(unproved.Max(p => p.GapPercent), 1)% at most.
+                        A longer <button class="linklike" @onclick="() => App.SetTab(Tab.Options)">time limit per solve</button> lets the solver finish.
+                    </Alert>
                 }
                 @if (stale)
                 {
@@ -141,9 +159,16 @@
             <div @key="p.Rank" id="@($"pair-{p.Rank}")" class="pair-block">
                 <div class="pairhead">
                     <span class="rank" title="@($"{p.StatesEvaluated.ToString("N0", CultureInfo.InvariantCulture)} {(string.IsNullOrEmpty(p.WorkLabel) ? "final states scored" : p.WorkLabel)} · {p.CandidateSummary}")">#@p.Rank</span>
-                    <SkillHover Name="@p.SetBonus" Class="with-icon"><SkillIcon Name="@p.SetBonus" Kind="SkillKind.Set" Size="20" /><b>@p.SetBonus</b></SkillHover>
-                    <span class="muted">+</span>
-                    <SkillHover Name="@p.GroupSkill" Class="with-icon"><SkillIcon Name="@p.GroupSkill" Kind="SkillKind.Group" Size="20" /><b>@p.GroupSkill</b></SkillHover>
+                    @if (NoPair(p.SetBonus) && NoPair(p.GroupSkill))
+                    {
+                        <span class="muted" title="The weapon has no rolled set bonus or group skill (Weapon tab)">No rolled skill pair</span>
+                    }
+                    else
+                    {
+                        @PairPart(p.SetBonus, SkillKind.Set, "no set bonus")
+                        <span class="muted">+</span>
+                        @PairPart(p.GroupSkill, SkillKind.Group, "no group skill")
+                    }
                     <span class="pairhead-tools">
                         @if (firstPair)
                         {
@@ -151,7 +176,7 @@
                             <span class="muted">Compare with</span>
                             <RefSelect Value="baselineRef" ValueChanged="App.SetBaseline" OwnOnly="true" WeaponType="@App.WeaponKind" Placeholder="nothing" Style="min-width: 260px" />
                             <span class="muted">View</span>
-                            <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="v => _view = v" Options="ViewOptions" />
+                            <Segmented T="ResultsView" Small="true" Value="_view" ValueChanged="SetView" Options="ViewOptions" />
                         }
                         @if (pairRows.Count > 0)
                         {
@@ -189,8 +214,36 @@
 
     private enum ResultsView { Table, Cards }
 
-    // kept while the app runs, so coming back to Results shows the same view
-    private static ResultsView _view = ResultsView.Table;
+    // the cards show every build in full; the table is the short list. The choice is kept in this browser
+    private ResultsView? _picked;
+    private ResultsView _view => _picked ??= Ui.ResultsView == "table" ? ResultsView.Table : ResultsView.Cards;
+
+    private void SetView(ResultsView v)
+    {
+        _picked = v;
+        Ui.ResultsView = v == ResultsView.Table ? "table" : "cards";
+    }
+
+    private static bool NoPair(string? name) => string.IsNullOrEmpty(name) || name == "-";
+
+    private static RenderFragment PairPart(string name, SkillKind kind, string none) => __builder =>
+    {
+        if (NoPair(name))
+        {
+            <span class="muted">@none</span>
+        }
+        else
+        {
+            <SkillHover Name="@name" Class="with-icon"><SkillIcon Name="@name" Kind="kind" Size="20" /><b>@name</b></SkillHover>
+        }
+    };
+
+    /// <summary>The proofs of builds whose solve hit the time limit.</summary>
+    private static List<Core.Optimize.SolveProof> Unproved(ResultDto result) =>
+        result.Pairs.SelectMany(p => p.Builds).Select(b => b.Proof).OfType<Core.Optimize.SolveProof>().Where(p => p.Kind == Core.Optimize.ProofKind.TimeLimit).ToList();
+
+    /// <summary>A log line without its "[ 12.3s]" stamp.</summary>
+    private static string LastLine(string line) => line.StartsWith('[') && line.IndexOf(']') is var i and > 0 ? line[(i + 1)..].Trim() : line.Trim();
 
     /// <summary>Rows (or cards) opened to show how they differ from the baseline, by "pair:rank".</summary>
     private readonly HashSet<string> _open = [];
@@ -248,7 +301,7 @@
     private RenderFragment Table(List<Row> rows, ResultDto result, ScoredRef? baseline, BuildRef? baselineRef, string baseName) => __builder =>
     {
         var baseBuild = baseline?.Build;
-        var cols = baseBuild is not null ? 7 : 3;
+        var cols = baseBuild is not null ? 7 : 4;
         <div class="table-scroll">
             <table class="table results-table">
                 <thead>
@@ -258,6 +311,10 @@
                         @if (baseBuild is not null)
                         {
                             <th class="num" title="@($"This build minus {baseName}")">Gain</th>
+                        }
+                        else
+                        {
+                            <th>Skills</th>
                         }
                         @if (baseBuild is not null)
                         {
@@ -286,22 +343,56 @@
                         var label = Label(result, row);
                         <tr @key="row.Key" class="result-row @(open ? "open" : "") @(row.Diff is not null ? "clickable" : "")" @onclick="() => Toggle(row.Key)"
                             title="@(row.Diff is not null ? (open ? "Hide the swaps" : "Show what changes") : null)">
-                            <td class="nowrap">
-                                @if (row.Diff is not null)
+                            <td class="result-build">
+                                <div class="nowrap">
+                                    @if (row.Diff is not null)
+                                    {
+                                        <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
+                                    }
+                                    <span class="rank-chip @(row.Pair.Rank == 1 && b.Rank == 1 ? "best" : "")">Build @b.Rank</span>
+                                    @if (row.Rescored)
+                                    {
+                                        <span class="badge-mini" title="@($"Scored again under today's conditions; the run scored it {Fmt.N(row.RunScore)}")">now</span>
+                                    }
+                                    @if (b.Proof is { Kind: Core.Optimize.ProofKind.TimeLimit } proof)
+                                    {
+                                        <span class="badge-mini warnbadge" title="@($"Not proved the best: the {proof.TimeLimitSeconds:0.#} s time limit ran out (a build up to {proof.GapPercent:0.#}% better may exist)")">not proved</span>
+                                    }
+                                </div>
+                                @* what the build is, so the table can be read without opening the cards *@
+                                @if (b.Summary.ActiveSetBonuses.Count + b.Summary.ActiveGroupSkills.Count > 0)
                                 {
-                                    <span class="row-toggle" aria-expanded="@open">@(open ? "▾" : "▸")</span>
+                                    <div class="result-sets">
+                                        @foreach (var x in b.Summary.ActiveSetBonuses)
+                                        {
+                                            <span class="chip tiny skill set">@x</span>
+                                        }
+                                        @foreach (var x in b.Summary.ActiveGroupSkills)
+                                        {
+                                            <span class="chip tiny skill group">@x</span>
+                                        }
+                                    </div>
                                 }
-                                <span class="rank-chip @(row.Pair.Rank == 1 && b.Rank == 1 ? "best" : "")">Build @b.Rank</span>
-                                @if (row.Rescored)
-                                {
-                                    <span class="badge-mini" title="@($"Scored again under today's conditions; the run scored it {Fmt.N(row.RunScore)}")">now</span>
-                                }
+                                <div class="muted tiny result-armor" title="Head · chest · arms · waist · legs · talisman">
+                                    @string.Join(" · ", b.Armor.Select(a => a.Name).Concat(b.Talisman is { } t ? [t.Name] : []))
+                                </div>
                                 @if (b.WeaponOptions is { Count: > 0 })
                                 {
-                                    <div class="muted tiny weapon-line" title="The weapon this build got">@b.Weapon.SpecLabel</div>
+                                    <div class="muted tiny weapon-line" title="The weapon this build got">Weapon: @b.Weapon.SpecLabel</div>
                                 }
                             </td>
                             <td class="num"><b class="dmg">@BuildDamage.Text(b)</b></td>
+                            @if (baseBuild is null)
+                            {
+                                <td class="result-skills">
+                                    <span class="chip-row">
+                                        @foreach (var x in b.Skills)
+                                        {
+                                            <span class="chip tiny skill @x.Kind.ToString().ToLowerInvariant()">@x.Skill <b>@x.Level</b></span>
+                                        }
+                                    </span>
+                                </td>
+                            }
                             @if (row.Gain is { } gain)
                             {
                                 <td class="num nowrap"><Delta Value="gain" Digits="@(row.HasDamage ? 0 : 1)" /> <span class="muted small">@Pct(row.GainPct)</span></td>
@@ -463,13 +554,15 @@
     private string? Hint(RunState run, ResultDto? result, double? elapsed)
     {
         if (run.Status == RunStatus.Running)
-            return $"{elapsed?.ToString("F1", CultureInfo.InvariantCulture)} s elapsed · CP-SAT proves the best build for each skill pair (one solve per reported build).";
+            return $"{Clock(elapsed ?? 0)} elapsed · the solver proves the best build, then ranks the next ones; each step is capped by the time limits in Options. The run keeps going while you look at other tabs or weapons.";
         if (result is null) return null;
         var buildCount = result.Pairs.Sum(p => p.Builds.Count);
         var completed = result.CompletedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         return $"{result.Pairs.Count} skill pair{(result.Pairs.Count == 1 ? "" : "s")}, {buildCount} builds · search took {result.ElapsedSeconds.ToString("F1", CultureInfo.InvariantCulture)} s · {completed}"
             + (run.FromDisk && App.Name is { } name ? $" · last run of {name}" : "");
     }
+
+    private static string Clock(double seconds) => $"{(int)(seconds / 60)}:{(int)(seconds % 60):00}";
 
     private IEnumerable<string> BuildNames => App.Builds.Select(x => x.Name);
 

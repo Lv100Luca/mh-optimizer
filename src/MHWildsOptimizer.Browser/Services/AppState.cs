@@ -400,8 +400,8 @@ public sealed partial class AppState : IDisposable
     private Tab WeaponTab(Tab? tab = null) => tab ?? (Tab.IsProfileTab() ? Tab.Weapon : Tab);
 
     /// <summary>
-    /// Shows the unsaved new weapon. With a type, starts it over as a weapon of that type (with that type's condition preset),
-    /// after asking when it has unsaved edits.
+    /// Shows the unsaved new weapon on the Weapon tab. With a type, starts it over as a weapon of that type (with that type's
+    /// condition preset), after asking when it has unsaved edits.
     /// </summary>
     public async Task NewWeaponAsync(string? kind = null)
     {
@@ -417,7 +417,8 @@ public sealed partial class AppState : IDisposable
         _pushNext = true;
         _activeKey = NewWeapon;
         ShowCached();
-        Tab = WeaponTab();
+        // a new weapon is described first: its Results or My builds would only be empty
+        Tab = Tab.Weapon;
         Moved();
     }
 
@@ -792,6 +793,9 @@ public sealed partial class AppState : IDisposable
                     case ProgressEvent p:
                         SetRun(r => r with { Log = [.. r.Log, $"[{clock.Elapsed.TotalSeconds,5:0.0}s] {p.Message}"] });
                         break;
+                    case StageEvent st:
+                        SetRun(r => r with { Stage = st.Stage });
+                        break;
                     case ResultEvent result:
                         SetRun(r => r with { Status = RunStatus.Done, Result = result.Result, FinishedAt = DateTimeOffset.Now, FromDisk = false });
                         break;
@@ -844,7 +848,7 @@ public sealed partial class AppState : IDisposable
                 {
                     switch (e)
                     {
-                        case ProgressEvent p: Mark(weapon, new BatchMark(BatchStatus.Running, p.Message)); break;
+                        case StageEvent st: Mark(weapon, new BatchMark(BatchStatus.Running, st.Stage)); break;
                         case ResultEvent: outcome = new BatchMark(BatchStatus.Done); break;
                         case ErrorEvent x: outcome = new BatchMark(BatchStatus.Error, x.Message); break;
                     }

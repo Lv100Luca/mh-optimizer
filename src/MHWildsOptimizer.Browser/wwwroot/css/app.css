@@ -99,6 +99,8 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
   .navgroup { display: none; }
   .content { padding: 12px; }
   .two-col { grid-template-columns: 1fr !important; }
+  .two-col .col.sticky-side { position: static; }
+  .configdivider { display: none; }
   .statusbar .right { display: none; }
   /* narrow screens: header actions go below the title and wrap */
   .card-head { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "toggle title" ". hint" ". actions"; }
@@ -113,7 +115,13 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .configpick { display: flex; align-items: center; gap: 6px; }
 .configpick select { background: var(--panel); border: 1px solid var(--border-2); border-radius: 6px; padding: 6px 8px; max-width: 220px; }
 .configname.dirty { font-size: 11.5px; padding: 2px 8px; border-radius: 10px; color: var(--warn); border: 1px solid rgba(232, 176, 75, 0.5); white-space: nowrap; }
-.configactions { gap: 4px; }
+.configactions { gap: 4px; align-items: center; }
+/* profile on one side, the open weapon on the other */
+.configdivider { width: 1px; align-self: stretch; margin: 8px 4px; background: var(--border-2); }
+.weaponpick { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.weaponpick img { flex: 0 0 auto; }
+.weaponpick-new { width: 20px; text-align: center; font-weight: 700; color: var(--accent); }
+.configrun { margin-left: 8px; }
 .saveas { display: flex; align-items: center; gap: 4px; }
 .saveas input { background: var(--panel); border: 1px solid var(--border-2); border-radius: 6px; padding: 5px 8px; width: 160px; }
 
@@ -121,6 +129,8 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .panel { display: flex; flex-direction: column; gap: 16px; max-width: 1400px; }
 .two-col { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .two-col .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+/* the side card stays in view while the long left column scrolls */
+.two-col .col.sticky-side { position: sticky; top: 0; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 /* the first row (toggle, title, header actions) is centered, so a title sits level with taller buttons; the hint goes below the title */
 .card-head {
@@ -270,6 +280,28 @@ button.chip:hover { border-color: var(--accent); }
 .type-card.active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .type-card:disabled { opacity: 0.4; cursor: not-allowed; }
 .reinforcements { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+/* a saved weapon's type, with the grid behind Change type */
+.type-chosen { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* a weapon part the optimizer can choose: the switch on the label line, the value greyed while it chooses */
+.optfield-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.optfield-switch { display: inline-flex; align-items: center; font-size: 12.5px; color: var(--muted); }
+.optfield-switch .mud-switch { margin: 0; }
+.optfield-switch .mud-typography { font-size: 12.5px; }
+.optfield.optimized .optfield-body, .optfield-body[inert] { opacity: 0.4; }
+.optfield-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text); padding: 6px 10px; border-left: 2px solid var(--accent-2); background: rgba(79, 163, 230, 0.06); border-radius: 4px; }
+/* reinforcement lines as counts per type and tier */
+.rf-grid { display: grid; grid-template-columns: minmax(80px, auto) repeat(4, auto); gap: 4px 10px; align-items: center; justify-content: start; }
+.rf-tier { font-size: 11.5px; color: var(--muted); text-align: center; }
+.rf-type { font-size: 13px; }
+.rf-none { text-align: center; }
+.rf-cell .stepper-value { min-width: 26px; text-align: center; }
+.rf-cell:not(.on) .stepper-value { color: var(--muted); }
+.rf-cell.on .stepper-value { color: var(--accent); font-weight: 700; }
+.rf-total { margin: 6px 0 0; }
+.storage-bar { margin: 4px 0 10px; }
+/* whose settings a tab shows (the open weapon's, the profile's) */
+.scope-note { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius); background: var(--bg-2); border: 1px solid var(--border); color: var(--muted); }
+.scope-note b { color: var(--text); }
 .weapon-preview { display: flex; flex-direction: column; gap: 12px; }
 .weapon-head { display: flex; align-items: center; gap: 12px; }
 .weapon-head img { width: 48px; height: 48px; }
@@ -308,7 +340,13 @@ dl.stats dd { margin: 0; }
 .skillopt-row { display: flex; border-bottom: 1px solid var(--border); }
 .skillopt-row:last-child { border-bottom: none; }
 .skillopt-row:hover { background: var(--panel-2); }
-.skillopt { flex: 1; min-width: 0; display: grid; grid-template-columns: 26px minmax(150px, 190px) auto auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.skillopt { flex: 1; min-width: 0; display: grid; grid-template-columns: 26px minmax(150px, 190px) auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; background: transparent; color: var(--text); text-align: left; }
+/* a button per level: the skill is required at the level clicked */
+.skillopt-levels { flex: none; display: flex; align-items: center; gap: 3px; padding: 0 8px; }
+.skillopt-levels .lvl { min-width: 26px; padding: 2px 7px; border: 1px solid var(--border-2); border-radius: 4px; background: var(--bg-2); color: var(--text); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.skillopt-levels .lvl:hover, .skillopt-levels .lvl:focus-visible { border-color: var(--accent); color: var(--accent); }
+.available-divider { padding: 6px 10px; background: var(--bg-2); border-bottom: 1px solid var(--border); }
+.preset-source { color: var(--accent); }
 .skillopt-exclude { flex: none; width: 40px; border: none; border-left: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; }
 .skillopt-exclude:hover { color: var(--err); background: rgba(224, 90, 79, 0.12); }
 /* a target / limit row: at least, at most, exclude */
@@ -325,7 +363,10 @@ dl.stats dd { margin: 0; }
 .skillopt .name { font-weight: 600; }
 .skillopt .desc { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
 .skillopt.hl .name::after { content: " ★"; color: var(--accent); }
-@media (max-width: 700px), (pointer: fine) and (max-width: 1050px) { .skillopt { grid-template-columns: 26px 1fr auto; } .skillopt .desc, .skillopt .muted { display: none; } }
+@media (max-width: 700px), (pointer: fine) and (max-width: 1050px) {
+  .skillopt { grid-template-columns: 26px 1fr; } .skillopt .desc, .skillopt .muted, .skillopt .kindtag { display: none; }
+  .skillopt-levels { padding: 0 4px; gap: 2px; } .skillopt-levels .lvl { min-width: 24px; padding: 2px 5px; }
+}
 
 /* ---------------------------------------------------------------- conditions */
 .cond-group h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 6px 0 8px; }
@@ -368,7 +409,10 @@ dl.stats dd { margin: 0; }
 
 /* ---------------------------------------------------------------- results */
 .empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 30px; }
-.progress { display: flex; align-items: center; gap: 10px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+.progress { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.progress b { color: var(--text); font-weight: 600; }
+.progress-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.progress-last { font-family: ui-monospace, Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .spinner { width: 16px; height: 16px; border: 2px solid var(--border-2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .runlog { max-height: 260px; overflow: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font: 12px/1.5 ui-monospace, Consolas, monospace; color: var(--muted); margin: 6px 0 0; white-space: pre-wrap; }
@@ -806,6 +850,11 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
 /* results against a baseline */
 .table.results-table td { vertical-align: middle; }
+.results-table td.result-build { min-width: 240px; max-width: 420px; vertical-align: top; }
+.results-table .result-sets { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.results-table .result-armor { margin-top: 4px; white-space: normal; line-height: 1.4; }
+.results-table td.result-skills { vertical-align: top; }
+.results-table td.result-skills .chip-row { gap: 4px; }
 .results-table .dmg { font-size: 15px; color: var(--ok); }
 .results-table .dmg.plain { color: var(--text); }
 .results-table tr.result-base td { background: rgba(227, 182, 78, 0.05); }
@@ -818,6 +867,7 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .rank-chip { font-weight: 700; padding: 2px 9px; border-radius: 6px; background: var(--border); display: inline-block; }
 .rank-chip.best { background: var(--ok); color: #0d1a10; }
 .badge-mini { margin-left: 6px; padding: 0 5px; border-radius: 4px; font-size: 10.5px; color: var(--accent-2); border: 1px solid rgba(79, 163, 230, 0.55); }
+.badge-mini.warnbadge { color: var(--warn); border-color: rgba(232, 176, 75, 0.55); cursor: help; }
 @media (max-width: 1100px), (pointer: fine) and (max-width: 1650px) { .result-detail { grid-template-columns: 1fr; } }
 
 /* the Compare tab */

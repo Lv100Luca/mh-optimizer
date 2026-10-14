@@ -15,7 +15,7 @@ const files = Object.fromEntries([
 ].map((f) => [basename(f), readFileSync(f, 'utf8')]));
 const port = 9400 + Math.floor(Math.random() * 400);
 // a straggler from an earlier run would still answer on its port with its own state
-const killStragglers = () => { try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='msedge.exe'\\" | Where-Object { $_.CommandLine -like '*edge-shots-*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"`); } catch { } };
+const killStragglers = () => { try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='msedge.exe' OR Name='chrome.exe'\\" | Where-Object { $_.CommandLine -like '*edge-shots-*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"`); } catch { } };
 killStragglers();
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-shots-'));
 const edge = spawn(process.env.EDGE_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
@@ -96,7 +96,7 @@ try {
     await sleep(2000);`);
   const profile = basename(profileFolder);
   const steps = stepsFile ? JSON.parse(readFileSync(stepsFile, 'utf8')) : null;
-  const tabs = ['inventory', 'weapon', 'targets', 'limits', 'conditions', 'talismans', 'options', 'review', 'results', 'builds'];
+  const tabs = ['inventory', 'weapon', 'attack', 'targets', 'conditions', 'talismans', 'options', 'review', 'results', 'builds'];
   const w = encodeURIComponent(weapon);
   for (const tab of (process.env.ONLY_EXTRA ? [] : process.env.ONLY_TABS ? process.env.ONLY_TABS.split(',') : tabs)) {
     const url = tab === 'inventory' ? `${origin}/${profile}/inventory` : `${origin}/${profile}/weapon/${w}/${tab}`;

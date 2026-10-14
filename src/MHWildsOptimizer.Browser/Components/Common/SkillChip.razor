@@ -21,6 +21,8 @@
     /// <summary>The level the score values (skill limits); shown when lower than <see cref="Level"/>.</summary>
     [Parameter] public int? Effective { get; set; }
     [Parameter] public int? Max { get; set; }
+    /// <summary>Points the build has above the skill's max level (2 x Critical Jewel III for a level 5 skill: 1); they do nothing.</summary>
+    [Parameter] public int Wasted { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public bool Muted { get; set; }
     [Parameter] public string? Class { get; set; }
@@ -34,6 +36,10 @@
             @if (Effective is { } eff && eff < level)
             {
                 <span class="valued">valued at @eff</span>
+            }
+            @if (Wasted > 0)
+            {
+                <span class="valued" title="@($"The build has {level + Wasted} points of {Name}; levels above {level} do nothing")">+@Wasted over the max</span>
             }
         }
     </text>;

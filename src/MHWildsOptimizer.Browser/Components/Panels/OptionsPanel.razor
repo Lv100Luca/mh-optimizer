@@ -1,5 +1,4 @@
 @inherits AppComponent
-@inject BrowserProfileStore Store
 
 @if (App.Request is { } request)
 {
@@ -16,7 +15,9 @@
     if (!isThreadPreset) threadPresets.Add(new(-1, "Custom", Hint: "custom value"));
     var setWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.exclude_sets")).ToList() ?? [];
     var sets = LooseSearch.Filter(Catalog.ArmorSets.Where(s => s.Rarity >= o.MinRarity), s => string.Join(' ', [s.Name, .. s.SetBonus, s.GroupSkill ?? ""]), _query);
-    var used = Store.StorageUsed();
+    var weaponName = App.Name ?? "the new weapon";
+    var pairOptimized = request.SkillPair.Mode == SkillPairMode.Optimize;
+    var perSolve = Math.Min(Core.Optimize.CpSatParameters.MaxWorkersPerSolve, cores);
     var included = o.IncludeArmor.ToHashSet();
     var armorWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.include_armor")).ToList() ?? [];
     var pieceSearch = _pieceQuery.Trim() != "";
@@ -26,6 +27,10 @@
         .Take(60)
         .ToList();
 
+    <p class="scope-note small">
+        These options belong to <b>@weaponName</b>: every weapon keeps its own. What the whole profile shares (talismans, the condition presets)
+        has its own tabs; the storage of this browser is on <button type="button" class="linklike" @onclick="() => App.SetTab(Tab.Inventory)">Weapons</button>.
+    </p>
     <div class="panel two-col">
         <div class="col">
             <Section Title="Search options">
@@ -64,7 +69,7 @@
                            Hint="The best build of each skill pair is proved optimal. The next ones get this long each: a solve that finishes in time is proved too, one that does not is ranked by the best build it found (usually the same, but not guaranteed). Set it as high as the limit above to prove every build.">
                         <NumberInput T="double" Value="o.CpSatRankTimeLimitSeconds" Min="1" Max="3600" Step="1" Width="90" ValueChanged="v => Patch(x => x with { CpSatRankTimeLimitSeconds = v })" />
                     </Field>
-                    <Field Label="Threads" Hint="@($"CPU threads the search may use (this browser reports {cores} cores). Results are identical for any count; fewer threads only take longer. 0 = all cores of this browser.")">
+                    <Field Label="Threads" Hint="@($"CPU threads the search may use (this browser reports {cores} cores). One solve uses at most {perSolve} of them: more do not make a single solve faster. The rest solve skill pair classes side by side when the skill pair is optimized{(pairOptimized ? "" : "; with a rolled pair one solve runs at a time, so this run uses " + Math.Min(perSolve, threads <= 0 ? cores : threads))}. Results are identical for any count; fewer threads only take longer.")">
                         <div class="btn-row">
                             <Segmented T="int" Value="@(isThreadPreset ? threads : -1)" Options="threadPresets"
                                        ValueChanged="v => { if (v >= 0) Patch(x => x with { MaxThreads = v }); }" />
@@ -74,16 +79,6 @@
                 </div>
             </Section>
 
-            <Section Title="Storage" Hint="Profiles, weapons, talismans and last runs are saved in this browser only.">
-                <p class="small">
-                    This app uses <b>@StorageText(used)</b> of the about 5 MB the browser gives it (@Math.Round(100.0 * used / Quota)%).
-                </p>
-                <MudProgressLinear Value="@Math.Min(100, 100.0 * used / Quota)" Color="@(used > Quota * 0.8 ? Color.Warning : Color.Primary)" Rounded="true" Class="storage-bar" />
-                <p class="muted small">
-                    Clearing the site data of this browser deletes them. Export your profiles now and then as a backup: the menu next to the profile picker
-                    has Export, and Import brings a profile back (also on another device).
-                </p>
-            </Section>
         </div>
 
         <div class="col">
@@ -203,9 +198,6 @@
 }
 
 @code {
-    /// <summary>What browsers give a site in local storage (about 5 MB, counted in characters).</summary>
-    private const long Quota = 5L * 1024 * 1024;
-
     private static readonly IReadOnlyList<SegmentOption<int>> RarityOptions = new[] { 5, 6, 7, 8 }
         .Select(r => new SegmentOption<int>(r, $"R{r}+", RarityLabel(r)))
         .ToList();
@@ -214,9 +206,6 @@
 
     private static RenderFragment RarityLabel(int r) =>
         @<span class="with-icon"><img src="@GameIcons.Armor(ArmorPieceKind.Chest, r)" alt="" width="18" height="18" /> R@(r)+</span>;
-
-    private static string StorageText(long chars) =>
-        chars < 1024 * 1024 ? $"{Math.Ceiling(chars / 1024.0)} KB" : $"{(chars / (1024.0 * 1024)).ToString("0.0", CultureInfo.InvariantCulture)} MB";
 
     private void Patch(Func<OptimizerOptions, OptimizerOptions> fn) => App.PatchOptions(fn);
 
