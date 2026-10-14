@@ -108,7 +108,7 @@
                                 }
                                 else
                                 {
-                                    <SkillChip @key="t.Skill" Name="@t.Skill" Level="t.Level" Muted="t.FromCore" />
+                                    <SkillChip @key="t.Skill" Name="@t.Skill" Level="t.Level" />
                                 }
                             }
                             @if (targets.Count == 0)
@@ -116,10 +116,6 @@
                                 <span class="muted">none: pure damage optimization</span>
                             }
                         </div>
-                        @if (targets.Any(t => t.FromCore))
-                        {
-                            <div class="muted small">greyed = weapon core skill added by the options</div>
-                        }
                     </div>
 
                     <div class="kv">
@@ -159,7 +155,7 @@
                     <div class="kv">
                         <h4><button class="linklike" @onclick="() => App.SetTab(Tab.Options)">Options</button></h4>
                         <div class="small">
-                            transcendence @(options.AllowTranscendence ? "on" : "off") · core skills @(options.RequireWeaponCoreSkills ? "on" : "off") · top @options.TopN · rarity @(options.MinRarity)+ ·
+                            transcendence @(options.AllowTranscendence ? "on" : "off") · top @options.TopN · rarity @(options.MinRarity)+ ·
                             CP-SAT (exact, @options.CpSatTimeLimitSeconds.ToString(CultureInfo.InvariantCulture) s per solve) · @(options.MaxThreads > 0 ? $"{options.MaxThreads} threads" : "all threads") · @options.ExcludeSets.Count sets excluded
                             @if (options.IncludeArmor.Count > 0)
                             {

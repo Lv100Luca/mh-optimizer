@@ -5,48 +5,26 @@
     var resolved = App.Resolved;
     var relevance = resolved?.Relevance;
     var relevant = new HashSet<string>([.. relevance?.Skills ?? [], .. relevance?.SetBonuses ?? [], .. relevance?.GroupSkills ?? []]);
-    var core = resolved?.Targets.Where(t => t.FromCore).ToList() ?? [];
     var limits = request.Conditions.SkillLimits;
     var errors = resolved?.Errors.Where(e => e.StartsWith("Target", StringComparison.Ordinal) || e.StartsWith("Skill limit", StringComparison.Ordinal)).ToList() ?? [];
     var kind = request.Weapon.Spec?.Type ?? request.Weapon.Type ?? "great-sword";
     var preset = App.Presets.GetValueOrDefault(kind)?.SkillLimits ?? Conditions.DefaultFor(kind).SkillLimits;
     var presetLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
+    var starting = WeaponCoreSkills.StartingTargets(kind).ToDictionary(t => t.Skill, t => t.Level);
 
     <div class="panel">
         <Section Title="Targets & limits"
                  Hint="At least: the level every reported build must reach. Set bonuses and group skills can be required too, by tier: a set bonus at I needs 2 pieces, at II 4 pieces, a group skill 3 pieces (the Gogma weapon counts when it rolled the bonus). At most: levels (set bonus tiers) above it are shown but score nothing. Exclude: the optimizer never slots, chases or values it. Everything else is filled by the optimizer for damage; what it already values under your conditions is marked.">
-            <Actions>
-                @if (kind == "great-sword" && !limits.ContainsKey(BurstSkill))
-                {
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" title="A Great Sword rarely lands the five hits in a row of Burst's full boost: only its first-hit boost counts"
-                               OnClick="() => CapBurst(1)">
-                        + Burst ≤ 1
-                    </MudButton>
-                }
-            </Actions>
             <ChildContent>
                 @foreach (var e in errors)
                 {
                     <Alert Kind="error">@e</Alert>
                 }
                 <SkillPicker Targets="request.TargetSkills" Limits="limits" Highlight="relevant" HighlightLegend="★ valued under your conditions"
-                             PresetLimits="preset" PresetLabel="@presetLabel"
+                             PresetLimits="preset" StartingTargets="starting" PresetLabel="@presetLabel"
                              Changed="v => App.PatchRequest(r => r with { TargetSkills = v.Targets, Conditions = r.Conditions with { SkillLimits = v.Limits } })" />
             </ChildContent>
         </Section>
-
-        @if (core.Count > 0)
-        {
-            <Section Title="Added automatically" Hint="Weapon core skills come from the Options tab (require weapon core skills).">
-                <div class="chip-row">
-                    @foreach (var t in core)
-                    {
-                        <SkillChip @key="t.Skill" Name="@t.Skill" Level="t.Level" />
-                    }
-                    <button class="linklike" @onclick="() => App.SetTab(Tab.Options)">change in Options</button>
-                </div>
-            </Section>
-        }
 
         @if (relevance is not null)
         {
@@ -77,17 +55,4 @@
             </Section>
         }
     </div>
-}
-
-@code {
-    private const string BurstSkill = "Burst";
-
-    /// <summary>Caps Burst (0 = excluded); a higher Burst target comes down with it, as in the picker.</summary>
-    private void CapBurst(int cap) => App.PatchRequest(r =>
-    {
-        var targets = new Dictionary<string, int>(r.TargetSkills);
-        if (targets.TryGetValue(BurstSkill, out var t) && t > cap)
-            if (cap > 0) targets[BurstSkill] = cap; else targets.Remove(BurstSkill);
-        return r with { TargetSkills = targets, Conditions = r.Conditions with { SkillLimits = new Dictionary<string, int>(r.Conditions.SkillLimits) { [BurstSkill] = cap } } };
-    });
 }

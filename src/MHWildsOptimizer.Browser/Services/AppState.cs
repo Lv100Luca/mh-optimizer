@@ -231,12 +231,14 @@ public sealed partial class AppState : IDisposable
 
     private static string DraftPrefix(string profile) => $"mhwo.draft:{profile}:";
 
-    /// <summary>A new weapon request of a type, starting from the catalog default and the type's preset.</summary>
+    /// <summary>A new weapon request of a type, starting from the catalog default, the type's starting targets and its preset.</summary>
     private OptimizationRequest FreshRequest(string kind)
     {
         var r = Clone(Catalog.DefaultRequest);
         var weapon = r.Weapon.Spec is { } spec ? r.Weapon with { Spec = spec with { Type = kind } } : r.Weapon with { Type = kind };
-        return r with { Weapon = weapon, Conditions = Clone(PresetFor(kind)) };
+        var conditions = Clone(PresetFor(kind));
+        var targets = WeaponCoreSkills.FollowType(r.TargetSkills, null, kind, conditions.SkillLimits);
+        return r with { Weapon = weapon, TargetSkills = targets, Conditions = conditions };
     }
 
     /// <summary>Opens a profile: its data, the weapons with unsaved drafts from browser storage, and the new weapon.</summary>
@@ -267,7 +269,7 @@ public sealed partial class AppState : IDisposable
             try { draft = _storage.Get<Draft>(key, BrowserProfileStore.Json); }
             catch (JsonException) { draft = null; }
             if (draft is null) continue;
-            restored[sessionKey] = WeaponSession.Create(sessionKey, sessionKey == NewWeapon ? null : sessionKey, draft.Request, draft.Builds, true)
+            restored[sessionKey] = WeaponSession.Create(sessionKey, sessionKey == NewWeapon ? null : sessionKey, WeaponCoreSkills.FoldLegacyOption(draft.Request), draft.Builds, true)
                 with { ResultsPending = summary?.HasResults ?? false };
             written[sessionKey] = JsonSerializer.Serialize(draft, BrowserProfileStore.Json);
         }
@@ -549,13 +551,20 @@ public sealed partial class AppState : IDisposable
         OpenWeapon(copyName);
     }
 
-    /// <summary>Changes the open weapon's request; a new weapon type brings its own preset (the conditions the weapon overrides stay).</summary>
+    /// <summary>
+    /// Changes the open weapon's request; a new weapon type brings its own preset (the conditions the weapon overrides stay)
+    /// and starting targets (those of the old type go unless the weapon changed them).
+    /// </summary>
     public void PatchRequest(Func<OptimizationRequest, OptimizationRequest> fn) => UpdateActive(s =>
     {
         var next = fn(s.Request);
         var from = ProfileRules.WeaponKind(s.Request);
         var to = ProfileRules.WeaponKind(next);
-        if (from != to) next = next with { Conditions = ConditionPresets.Follow(next.Conditions, PresetFor(from), PresetFor(to)) };
+        if (from != to)
+        {
+            var conditions = ConditionPresets.Follow(next.Conditions, PresetFor(from), PresetFor(to));
+            next = next with { TargetSkills = WeaponCoreSkills.FollowType(next.TargetSkills, from, to, conditions.SkillLimits), Conditions = conditions };
+        }
         return s with { Request = next, Dirty = true };
     });
 

@@ -20,7 +20,7 @@
                 var pool = Catalog.SkillPool;
                 var showTypes = _showTypes || App.Name is null;
             }
-            <Section Title="Weapon type" Hint="@(showTypes ? "Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3); other melee types run without core skills. The Bow scores charged shots, Power Shots and its coating; bowguns are out of scope." : null)">
+            <Section Title="Weapon type" Hint="@(showTypes ? "Gogma Artian weapons only. Great Sword and Long Sword are fully modeled (core skills Focus 3 / Quick Sheathe 3, targets of every new one: see Targets & limits); other melee types run without core skills. The Bow scores charged shots, Power Shots and its coating; bowguns are out of scope." : null)">
                 @if (showTypes)
                 {
                     <div class="type-grid">
@@ -51,7 +51,7 @@
                         {
                             <span class="muted small">core skills @string.Join(", ", wt.CoreSkills.Select(c => $"{c.Skill} {c.Level}"))</span>
                         }
-                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => _showTypes = true" title="Make this weapon another type (its conditions follow that type's preset)">Change type</MudButton>
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => _showTypes = true" title="Make this weapon another type (its conditions follow that type's preset, its starting targets that type's)">Change type</MudButton>
                     </div>
                 }
             </Section>

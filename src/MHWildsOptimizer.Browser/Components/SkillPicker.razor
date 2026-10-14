@@ -50,6 +50,10 @@
                             {
                                 <span class="preset-source" title="@($"Skill limits come with the {PresetLabel} preset (Conditions tab); every {PresetLabel} of the profile starts from it")"> · from the @PresetLabel preset</span>
                             }
+                            @if (StartingTargets?.TryGetValue(s.Name, out var start) == true && start == target)
+                            {
+                                <span class="preset-source" title="@($"Every new {PresetLabel} starts with this target; change or remove it like any other")"> · @PresetLabel default</span>
+                            }
                         }
                     </div>
                 </div>
@@ -143,6 +147,8 @@
 
     /// <summary>Limits of the weapon type's preset, to say where a limit came from; null when there is no preset.</summary>
     [Parameter] public IReadOnlyDictionary<string, int>? PresetLimits { get; set; }
+    /// <summary>Targets a new weapon of the type starts with, to say where a target came from.</summary>
+    [Parameter] public IReadOnlyDictionary<string, int>? StartingTargets { get; set; }
     /// <summary>The preset's weapon type, e.g. "Great Sword".</summary>
     [Parameter] public string? PresetLabel { get; set; }
 

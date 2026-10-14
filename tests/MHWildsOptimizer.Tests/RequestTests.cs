@@ -33,10 +33,10 @@ public class RequestTests
         Assert.Equal(new GogmaSkillPair("Soul of the Dark Knight", "Lord's Favor"), r.SkillPairCandidates[0]);
 
         Assert.Equal(5, r.TargetSkills["Weakness Exploit"]);
-        Assert.Equal(3, r.TargetSkills["Focus"]);            // Great Sword core skill, added by default
+        Assert.Equal(3, r.TargetSkills["Focus"]);            // Great Sword core skill, a plain target
         Assert.Equal(5, r.TargetSkills.Count);
         Assert.Equal(1, r.Conditions.SkillLimits["Burst"]);
-        Assert.Equal([("Focus", 3)], r.AppliedCoreSkills);
+        Assert.Empty(r.AppliedCoreSkills);
 
         Assert.Equal(2, r.Talismans.Count(t => t.Source == TalismanSource.Random));
         Assert.Equal(TestData.Data.CraftableTalismans.Count, r.Talismans.Count(t => t.Source == TalismanSource.Crafted));
@@ -66,12 +66,12 @@ public class RequestTests
         Assert.Equal(30.0, r.Weapon.ElementTrue);
         Assert.Equal(294, r.SkillPairCandidates.Count);
         Assert.Contains(r.Warnings, w => w.Contains("No talismans"));
-        Assert.Equal(3, r.TargetSkills["Quick Sheathe"]);    // Long Sword core skill
+        Assert.False(r.TargetSkills.ContainsKey("Quick Sheathe")); // core skills are plain targets now
         Assert.Equal(3, r.TargetSkills["Critical Eye"]);
 
-        var noCore = RequestLoader.Resolve(request with { Options = new OptimizerOptions { RequireWeaponCoreSkills = false } }, TestData.Data, RepoRoot);
-        Assert.False(noCore.TargetSkills.ContainsKey("Quick Sheathe"));
-        Assert.Empty(noCore.AppliedCoreSkills);
+        var core = RequestLoader.Resolve(request with { Options = new OptimizerOptions { RequireWeaponCoreSkills = true } }, TestData.Data, RepoRoot);
+        Assert.Equal(3, core.TargetSkills["Quick Sheathe"]);  // the option still adds the Long Sword core skill
+        Assert.Equal([("Quick Sheathe", 3)], core.AppliedCoreSkills);
     }
 
     [Fact]
@@ -167,5 +167,45 @@ public class RequestTests
         Assert.Contains(r.Warnings, w => w.Contains("no armor piece named 'Imaginary Helm'"));
         Assert.Contains(r.Errors, e => e.Contains("No head armor is left"));
         Assert.Empty(RequestLoader.Resolve(request with { Options = options }, data, RepoRoot).Errors);
+    }
+
+    [Fact]
+    public void WeaponTypesStartWithTheirCoreSkillsAsTargets()
+    {
+        Assert.Equal([("Focus", 3), ("Stun Resistance", 3)], WeaponCoreSkills.StartingTargets("great-sword"));
+        Assert.Equal([("Quick Sheathe", 3)], WeaponCoreSkills.StartingTargets("long-sword"));
+        Assert.Empty(WeaponCoreSkills.StartingTargets("hammer"));
+        Assert.Empty(WeaponCoreSkills.StartingTargets("no-such-kind"));
+        Assert.Equal(new Dictionary<string, int> { ["Burst"] = 1 }, Conditions.DefaultFor("great-sword").SkillLimits);
+        Assert.Empty(Conditions.DefaultFor("long-sword").SkillLimits);
+
+        var none = new Dictionary<string, int>();
+        Assert.Equal(new Dictionary<string, int> { ["Focus"] = 3, ["Stun Resistance"] = 3 }, WeaponCoreSkills.FollowType(none, null, "great-sword", none));
+        // to Long Sword: the Great Sword's untouched starting targets go, a changed one stays
+        var gs = new Dictionary<string, int> { ["Focus"] = 3, ["Stun Resistance"] = 2, ["Agitator"] = 5 };
+        Assert.Equal(new Dictionary<string, int> { ["Stun Resistance"] = 2, ["Agitator"] = 5, ["Quick Sheathe"] = 3 },
+            WeaponCoreSkills.FollowType(gs, "great-sword", "long-sword", none));
+        // a limit below the starting level keeps it out
+        Assert.Equal(new Dictionary<string, int> { ["Focus"] = 3 },
+            WeaponCoreSkills.FollowType(none, "hammer", "great-sword", new Dictionary<string, int> { ["Stun Resistance"] = 0 }));
+    }
+
+    [Fact]
+    public void TheOldCoreSkillOptionIsWrittenIntoTheTargets()
+    {
+        var legacy = RequestLoader.Read(Path.Combine(RepoRoot, "inputs", "request.example.json")) with
+        {
+            TargetSkills = new() { ["Agitator"] = 5 },
+            Options = new OptimizerOptions { RequireWeaponCoreSkills = true },
+        };
+        var folded = WeaponCoreSkills.FoldLegacyOption(legacy);
+        Assert.Equal(new Dictionary<string, int> { ["Agitator"] = 5, ["Focus"] = 3 }, folded.TargetSkills); // no Stun Resistance: it was never a core skill
+        Assert.False(folded.Options.RequireWeaponCoreSkills);
+        Assert.Same(folded, WeaponCoreSkills.FoldLegacyOption(folded));
+        Assert.Equal(folded.TargetSkills, RequestLoader.Resolve(legacy, TestData.Data, RepoRoot).TargetSkills);
+
+        var json = System.Text.Json.JsonSerializer.Serialize(folded, RequestFiles.WriteOptions);
+        Assert.DoesNotContain("require_weapon_core_skills", json);
+        Assert.Contains("\"require_weapon_core_skills\": true", System.Text.Json.JsonSerializer.Serialize(legacy, RequestFiles.WriteOptions));
     }
 }

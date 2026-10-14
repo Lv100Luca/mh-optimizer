@@ -84,7 +84,7 @@ public class ApiTests : IClassFixture<WebFixture>
         Assert.True(dto.IsValid, string.Join("; ", dto.Errors));
         Assert.NotNull(dto.Weapon);
         Assert.Equal("great-sword", dto.Weapon.Type);
-        Assert.Contains(dto.Targets, t => t.Skill == "Focus" && t.FromCore);
+        Assert.Contains(dto.Targets, t => t.Skill == "Focus" && !t.FromCore);
         Assert.Equal(2, dto.Talismans.Random);
         Assert.NotNull(dto.Baseline);
         Assert.True(dto.Baseline.Total > 0);
@@ -286,7 +286,12 @@ public class ApiTests : IClassFixture<WebFixture>
         var payload = ExamplePayload();
         payload = payload with
         {
-            Request = payload.Request with { TargetSkills = new Dictionary<string, int> { ["Agitator"] = 5, ["Weakness Exploit"] = 5, ["Lord's Soul"] = 1 } },
+            // the old core-skill option, still honored by the API: Focus 3 comes in as a core skill
+            Request = payload.Request with
+            {
+                TargetSkills = new Dictionary<string, int> { ["Agitator"] = 5, ["Weakness Exploit"] = 5, ["Lord's Soul"] = 1 },
+                Options = payload.Request.Options with { RequireWeaponCoreSkills = true },
+            },
             Builds = [WornBuild(), new BuildInput { Name = "Typo", Head = new BuildArmorInput { Piece = "No Such Helm" } }],
         };
         var response = await _fixture.Client.PostAsJsonAsync("/api/evaluate", payload, _json);
@@ -452,7 +457,7 @@ public class ApiTests : IClassFixture<WebFixture>
         {
             Request = payload.Request with
             {
-                TargetSkills = new Dictionary<string, int> { ["Weakness Exploit"] = 3 },
+                TargetSkills = new Dictionary<string, int> { ["Weakness Exploit"] = 3, ["Focus"] = 3 },
                 Options = payload.Request.Options with { TopN = 2, MaxStatesPerDepth = 1000 },
             },
         };

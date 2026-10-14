@@ -3,8 +3,6 @@
 @if (App.Request is { } request)
 {
     var o = request.Options;
-    var kind = request.Weapon.Spec?.Type ?? request.Weapon.Type ?? "great-sword";
-    var core = Cat.WeaponTypes.GetValueOrDefault(kind)?.CoreSkills ?? [];
     var excluded = o.ExcludeSets.ToHashSet();
     var cores = OptimizerOptions.ProcessorCount;
     var threads = o.MaxThreads;
@@ -37,19 +35,6 @@
                 <div class="form-grid">
                     <Toggle Checked="o.AllowTranscendence" CheckedChanged="v => Patch(x => x with { AllowTranscendence = v })"
                             Label="Allow transcended slots" Hint="Armor Transcendence (HR 100+): rarity 5 armor gains +1 level on all three slot positions, rarity 6 on the first two." />
-                    <div>
-                        <Toggle Checked="o.RequireWeaponCoreSkills" CheckedChanged="v => Patch(x => x with { RequireWeaponCoreSkills = v })"
-                                Label="Require the weapon's core skills" Hint="@(core.Count > 0 ? null : "This weapon type has no core skills defined.")" />
-                        @if (core.Count > 0)
-                        {
-                            <span class="chip-row core-skills">
-                                @foreach (var c in core)
-                                {
-                                    <SkillChip @key="c.Skill" Name="@c.Skill" Level="c.Level" />
-                                }
-                            </span>
-                        }
-                    </div>
                     <Toggle Checked="request.Talismans.IncludeCraftable" CheckedChanged="v => App.PatchRequest(r => r with { Talismans = r.Talismans with { IncludeCraftable = v } })"
                             Label="@($"Include the {Catalog.CraftableTalismanCount} craftable charm lines")"
                             Hint="Every charm line at max rank (e.g. Challenger Charm III) next to your random talismans from the Talismans tab." />

@@ -13,6 +13,7 @@
   },
   "skill_pair": { "mode": "fixed", "top_n": 3 },
   "target_skills": {
+    "Focus": 3,
     "Critical Boost": 5,
     "Weakness Exploit": 5,
     "Agitator": 5,
@@ -33,5 +34,5 @@
     "guts_not_yet_triggered": true
   },
   "talismans": { "file": "talismans.example.json", "include_craftable": true },
-  "options": { "allow_transcendence": true, "top_n": 5, "min_rarity": 5, "exclude_sets": [], "require_weapon_core_skills": true }
+  "options": { "allow_transcendence": true, "top_n": 5, "min_rarity": 5, "exclude_sets": [] }
 }

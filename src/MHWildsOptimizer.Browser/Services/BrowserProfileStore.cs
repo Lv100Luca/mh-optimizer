@@ -179,7 +179,9 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
         return result.OrderBy(w => w.Type).ThenBy(w => w.Name, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
-    private OptimizationRequest? LoadRequest(string profile, string name) => storage.Get<OptimizationRequest>($"{W(profile, name)}request", Json);
+    /// <summary>The stored request, with the weapon core skills of an older one written into its targets.</summary>
+    private OptimizationRequest? LoadRequest(string profile, string name) =>
+        storage.Get<OptimizationRequest>($"{W(profile, name)}request", Json) is { } request ? WeaponCoreSkills.FoldLegacyOption(request) : null;
 
     private List<BuildInput> LoadBuilds(string profile, string name) => storage.Get<List<BuildInput>>($"{W(profile, name)}builds", Json) ?? [];
 
@@ -190,7 +192,7 @@ public sealed class BrowserProfileStore(BrowserStorage storage) : IProfileStore
 
     public WeaponDto SaveWeapon(string profile, string name, OptimizationRequest request, IReadOnlyList<BuildInput> builds)
     {
-        request = request with { Talismans = request.Talismans with { File = ProfileFiles.SharedTalismanReference } };
+        request = WeaponCoreSkills.FoldLegacyOption(request) with { Talismans = request.Talismans with { File = ProfileFiles.SharedTalismanReference } };
         storage.Set($"{W(profile, name)}request", request, Json);
         if (builds.Count > 0) storage.Set($"{W(profile, name)}builds", builds, Json);
         else storage.Remove($"{W(profile, name)}builds");

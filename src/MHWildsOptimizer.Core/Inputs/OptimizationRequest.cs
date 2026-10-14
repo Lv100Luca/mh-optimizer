@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MHWildsOptimizer.Core.Build;
 using MHWildsOptimizer.Core.Damage;
 using MHWildsOptimizer.Core.Data;
@@ -54,8 +55,13 @@ public sealed record OptimizerOptions
     /// stay open. <see cref="MinRarity"/> and <see cref="ExcludeSets"/> still apply to the listed pieces.
     /// </summary>
     public List<string> IncludeArmor { get; init; } = [];
-    /// <summary>Add the weapon's core skills to the targets (Great Sword: Focus 3, Long Sword: Quick Sheathe 3).</summary>
-    public bool RequireWeaponCoreSkills { get; init; } = true;
+    /// <summary>
+    /// Add the weapon's core skills (Great Sword: Focus 3, Long Sword: Quick Sheathe 3) to the targets when resolving. Off by
+    /// default since 2026-10-14: a new weapon carries them as plain target skills (<see cref="WeaponCoreSkills.StartingTargets(string?)"/>),
+    /// and the browser app writes the option of older requests into their targets (<see cref="WeaponCoreSkills.FoldLegacyOption"/>).
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool RequireWeaponCoreSkills { get; init; }
     /// <summary>Search beam: partial builds kept per armor slot. Larger is closer to exhaustive but slower (default 100000).</summary>
     public int MaxStatesPerDepth { get; init; } = 100_000;
     /// <summary>Worker threads for the search; 0 = all logical processors. Values above the processor count are capped.</summary>

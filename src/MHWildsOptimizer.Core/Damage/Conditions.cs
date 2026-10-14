@@ -242,12 +242,14 @@ public sealed record Conditions
     public static Conditions Default => new();
 
     /// <summary>
-    /// The defaults for a weapon type (API kind), where they differ from <see cref="Default"/>. Bow: charging and the Charging
-    /// Sidestep cost stamina, so the dash dance never has full stamina (Maximum Might); its charged shots, Power Shots and Power
-    /// Volleys are charged attacks (Charge Master).
+    /// The defaults for a weapon type (API kind), where they differ from <see cref="Default"/>. Great Sword: Burst counts at
+    /// level 1 only, its first-hit boost; the five hits in a row of the full boost are rarely landed. Bow: charging and the
+    /// Charging Sidestep cost stamina, so the dash dance never has full stamina (Maximum Might); its charged shots, Power
+    /// Shots and Power Volleys are charged attacks (Charge Master).
     /// </summary>
     public static Conditions DefaultFor(string weaponKind) => weaponKind switch
     {
+        "great-sword" => Default with { SkillLimits = new() { ["Burst"] = 1 } },
         "bow" => Default with { StaminaFull = false, ChargedAttack = true },
         _ => Default,
     };
