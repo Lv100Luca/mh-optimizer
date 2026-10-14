@@ -29,7 +29,11 @@ prints what they show. Compare a published build before and after a change, serv
 ```bash
 node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca Current gems
 node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca "the best" run
+RESULTS=1 node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca "(new)" run
 ```
+
+`run` lists every long task as `[ms after the click, duration]`; the weapon `(new)` is the profile's new weapon (a fresh Great
+Sword), and `RESULTS=1` prints the builds as the table view shows them, to diff two builds of the app.
 
 `background.mjs` times a run whose tab is in the background. Chrome and Edge run a hidden tab's timers about once a minute
 after five minutes ("intensive wake-up throttling"). Headless browsers only get the once-a-second throttling, so the

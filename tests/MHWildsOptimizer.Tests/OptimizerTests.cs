@@ -271,7 +271,7 @@ public class OptimizerTests(ITestOutputHelper output)
         var cache = new ScoreDecompositionCache();
         var builds = 0;
         ScoreDecomposition Get(GogmaWeaponStats w, Relevance rel) =>
-            cache.GetOrBuild(w, rel, cond, () => { builds++; return ScoreDecomposition.Build(w, rel, cond); }, out _);
+            cache.GetOrBuildAsync(w, rel, cond, () => { builds++; return Task.FromResult(ScoreDecomposition.Build(w, rel, cond)); }).GetAwaiter().GetResult().Score;
 
         var withPair = weapon with { SetBonus = "Gore Magala's Tyranny", GroupSkill = "Lord's Soul" };
         var relPair = Relevance.Build(withPair, targets, cond, data);

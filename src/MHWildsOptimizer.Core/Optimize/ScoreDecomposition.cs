@@ -95,7 +95,11 @@ public sealed class ScoreDecomposition
         return features;
     }
 
-    public static ScoreDecomposition Build(GogmaWeaponStats weapon, Relevance rel, Conditions cond)
+    public static ScoreDecomposition Build(GogmaWeaponStats weapon, Relevance rel, Conditions cond) =>
+        BuildAsync(weapon, rel, cond, Pacer.Never).GetAwaiter().GetResult();
+
+    /// <summary>Builds the model, pausing for the host between probes of the calculator (see <see cref="Pacer"/>).</summary>
+    public static async Task<ScoreDecomposition> BuildAsync(GogmaWeaponStats weapon, Relevance rel, Conditions cond, Pacer pacer)
     {
         var features = FeaturesOf(rel);
 
@@ -126,19 +130,21 @@ public sealed class ScoreDecomposition
             }
         }
 
-        var prober = new Prober(weapon, features, sides);
+        var prober = new Prober(weapon, features, sides, pacer);
 
-        // union-find over features; merge any two units whose contributions do not compose
+        // union-find over features; merge any two units whose contributions do not compose. A merge starts the checks over:
+        // the units and the pairs that were checked before keep their answers
         var parent = Enumerable.Range(0, features.Count).ToArray();
         int Find(int f) => parent[f] == f ? f : parent[f] = Find(parent[f]);
         List<ScoreUnit> units;
         while (true)
         {
-            units = Enumerable.Range(0, features.Count).GroupBy(Find).Select(g => prober.Tabulate(g.ToArray())).ToList();
+            units = [];
+            foreach (var g in Enumerable.Range(0, features.Count).GroupBy(Find)) units.Add(await prober.TabulateAsync(g.ToArray()));
             var merged = false;
             for (var a = 0; a < units.Count && !merged; a++)
                 for (var b = a + 1; b < units.Count && !merged; b++)
-                    if (!prober.ComposesIndependently(units[a], units[b]))
+                    if (!await prober.ComposesIndependentlyAsync(units[a], units[b]))
                     {
                         parent[Find(units[b].Features[0])] = Find(units[a].Features[0]);
                         merged = true;
@@ -192,7 +198,10 @@ public sealed class ScoreDecomposition
     }
 
     /// <summary>Compares the composed score with <see cref="DamageCalculator"/> on random feature values; returns the largest difference.</summary>
-    public double Verify(int samples, int seed = 1)
+    public double Verify(int samples, int seed = 1) => VerifyAsync(samples, Pacer.Never, seed).GetAwaiter().GetResult();
+
+    /// <inheritdoc cref="Verify"/>
+    public async Task<double> VerifyAsync(int samples, Pacer pacer, int seed = 1)
     {
         var rng = new Random(seed);
         var worst = 0.0;
@@ -201,6 +210,7 @@ public sealed class ScoreDecomposition
             var values = Features.Select(f => rng.Next(f.Max + 1)).ToArray();
             var expected = DamageCalculator.Calculate(_weapon, Skills(Features, values), _cond, trace: false).Total;
             worst = Math.Max(worst, Math.Abs(expected - Evaluate(values)));
+            await pacer.PauseAsync();
         }
         return worst;
     }
@@ -247,21 +257,35 @@ public sealed class ScoreDecomposition
     private static bool Near(double a, double b) => Math.Abs(a - b) <= 1e-9 * Math.Max(1.0, Math.Max(Math.Abs(a), Math.Abs(b)));
 
     /// <summary>Reads a feature combination's contributions off the calculator.</summary>
-    private sealed class Prober(GogmaWeaponStats weapon, List<Feature> features, List<ScoreSide> sides)
+    private sealed class Prober(GogmaWeaponStats weapon, List<Feature> features, List<ScoreSide> sides, Pacer pacer)
     {
         private readonly Dictionary<(string, int), Channels> _cache = new();
+        private readonly Dictionary<string, ScoreUnit> _units = new();
+        private readonly Dictionary<(ScoreUnit, ScoreUnit), bool> _composes = new();
         private readonly bool _hasElement = weapon.ElementTrue > 0;
         private readonly GogmaWeaponStats _w1 = weapon with { TrueRaw = (int)B1, Affinity = ProbeAffinity, ElementDisplay = weapon.ElementTrue > 0 ? E1 : 0, SetBonus = null, GroupSkill = null };
         private readonly GogmaWeaponStats _w2 = weapon with { TrueRaw = (int)B2, Affinity = ProbeAffinity, ElementDisplay = weapon.ElementTrue > 0 ? E2 : 0, SetBonus = null, GroupSkill = null };
 
-        public ScoreUnit Tabulate(int[] unitFeatures)
+        /// <summary>The unit of these features; the same instance every time they are asked for again.</summary>
+        public async ValueTask<ScoreUnit> TabulateAsync(int[] unitFeatures)
         {
+            var key = string.Join(",", unitFeatures);
+            if (_units.TryGetValue(key, out var known)) return known;
             var strides = new int[unitFeatures.Length];
             var states = 1;
             for (var i = 0; i < unitFeatures.Length; i++) { strides[i] = states; states *= features[unitFeatures[i]].Max + 1; }
             if (states > MaxUnitStates) throw new InvalidOperationException($"Interacting skills form a unit with {states} states: {string.Join(", ", unitFeatures.Select(f => features[f].Name))}");
-            var tables = sides.Select((_, side) => Enumerable.Range(0, states).Select(state => Probe(Values(unitFeatures, strides, state), side)).ToArray()).ToArray();
-            return new ScoreUnit { Features = unitFeatures, Strides = strides, Tables = tables };
+            var tables = new Channels[sides.Count][];
+            for (var side = 0; side < sides.Count; side++)
+            {
+                tables[side] = new Channels[states];
+                for (var state = 0; state < states; state++)
+                {
+                    tables[side][state] = Probe(Values(unitFeatures, strides, state), side);
+                    await pacer.PauseAsync();
+                }
+            }
+            return _units[key] = new ScoreUnit { Features = unitFeatures, Strides = strides, Tables = tables };
         }
 
         private int[] Values(int[] unitFeatures, int[] strides, int state)
@@ -271,19 +295,27 @@ public sealed class ScoreDecomposition
             return values;
         }
 
-        public bool ComposesIndependently(ScoreUnit a, ScoreUnit b)
+        /// <summary>Whether two units' contributions add up as the calculator has them; asked again, the earlier answer.</summary>
+        public async ValueTask<bool> ComposesIndependentlyAsync(ScoreUnit a, ScoreUnit b)
         {
-            for (var side = 0; side < sides.Count; side++)
-                for (var sa = 1; sa < a.States; sa++)
-                    for (var sb = 1; sb < b.States; sb++)
-                    {
-                        var values = Values(a.Features, a.Strides, sa);
-                        var vb = Values(b.Features, b.Strides, sb);
-                        for (var f = 0; f < values.Length; f++) values[f] += vb[f];
-                        var composed = Compose(a.Tables[side][sa], b.Tables[side][sb], sides[side]);
-                        if (composed is null || !Same(composed.Value, Probe(values, side))) return false;
-                    }
-            return true;
+            if (!_composes.TryGetValue((a, b), out var composes)) _composes[(a, b)] = composes = await Check();
+            return composes;
+
+            async ValueTask<bool> Check()
+            {
+                for (var side = 0; side < sides.Count; side++)
+                    for (var sa = 1; sa < a.States; sa++)
+                        for (var sb = 1; sb < b.States; sb++)
+                        {
+                            var values = Values(a.Features, a.Strides, sa);
+                            var vb = Values(b.Features, b.Strides, sb);
+                            for (var f = 0; f < values.Length; f++) values[f] += vb[f];
+                            var composed = Compose(a.Tables[side][sa], b.Tables[side][sb], sides[side]);
+                            if (composed is null || !Same(composed.Value, Probe(values, side))) return false;
+                            await pacer.PauseAsync();
+                        }
+                return true;
+            }
         }
 
         private Channels Probe(int[] values, int side)
@@ -312,22 +344,21 @@ public sealed class ScoreDecomposition
 
 /// <summary>
 /// Score models of one weapon and conditions by their features, built (and checked) once: the skill pair classes of an
-/// optimize-mode run differ only in the weapon's set bonus and group skill and usually share one model. Thread-safe.
+/// optimize-mode run differ only in the weapon's set bonus and group skill and usually share one model. Thread-safe; a
+/// search that asks while another one builds the model waits for that build.
 /// </summary>
 public sealed class ScoreDecompositionCache
 {
-    private readonly ConcurrentDictionary<(GogmaWeaponStats Weapon, Conditions Conditions, string Features), Lazy<ScoreDecomposition>> _models = new();
+    private readonly ConcurrentDictionary<(GogmaWeaponStats Weapon, Conditions Conditions, string Features), Lazy<Task<ScoreDecomposition>>> _models = new();
 
-    /// <param name="build">Builds the model when there is none for these features yet (e.g. <see cref="ScoreDecomposition.Build"/> and a check).</param>
-    /// <param name="built">Whether this call built it.</param>
-    public ScoreDecomposition GetOrBuild(GogmaWeaponStats weapon, Relevance rel, Conditions cond, Func<ScoreDecomposition> build, out bool built)
+    /// <param name="build">Builds the model when there is none for these features yet (e.g. <see cref="ScoreDecomposition.BuildAsync"/> and a check).</param>
+    /// <returns>The model, and whether this call built it.</returns>
+    public async Task<(ScoreDecomposition Score, bool Built)> GetOrBuildAsync(GogmaWeaponStats weapon, Relevance rel, Conditions cond, Func<Task<ScoreDecomposition>> build)
     {
         var key = (weapon with { SetBonus = null, GroupSkill = null, Spec = null }, cond,
                    string.Join("|", ScoreDecomposition.FeaturesOf(rel).Select(f => $"{f.Kind}:{f.Name}:{f.Max}")));
-        var created = new Lazy<ScoreDecomposition>(build);
+        var created = new Lazy<Task<ScoreDecomposition>>(build);
         var model = _models.GetOrAdd(key, created);
-        var value = model.Value;
-        built = ReferenceEquals(model, created);
-        return value;
+        return (await model.Value, ReferenceEquals(model, created));
     }
 }

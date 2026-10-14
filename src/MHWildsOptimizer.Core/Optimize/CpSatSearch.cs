@@ -68,6 +68,10 @@ internal sealed class CpSatSearch
 
     public ICpSatBackend Backend { get; init; } = NativeCpSatBackend.Instance;
 
+    private Pacer? _pacer;
+    /// <summary>Breaks up building the damage model and the CP model (the browser's page thread); by default with the backend's yields.</summary>
+    public Pacer Pacer { get => _pacer ??= new Pacer(Backend.YieldAsync, _ct); init => _pacer = value; }
+
     /// <summary>The run's status line; the search sets its last level (the build it solves). Null: not reported.</summary>
     public RunStage? Stage { get; init; }
 
@@ -137,7 +141,7 @@ internal sealed class CpSatSearch
 
     private async Task<IReadOnlyList<RankedBuild>> SolveUntilAsync(int topN)
     {
-        if (_model is null) Build();
+        if (_model is null) await BuildAsync();
         var (model, vars) = (_model!, _vars!);
         var maxSolves = Solves + topN - _builds.Count + 3;
 
@@ -154,6 +158,8 @@ internal sealed class CpSatSearch
             Stage?.Set(2, _builds.Count == 0
                 ? $"build 1 of {topN}: proving it the best (up to {OptimizerText.Seconds(_parameters.TimeLimitSeconds)})"
                 : $"build {number} of {topN} (up to {OptimizerText.Seconds(parameters.TimeLimitSeconds)})");
+            // building the model and handing it to the solver (serialized, through the page) are separate stretches of the host's thread
+            await Pacer.PauseAsync();
             var solveSw = Stopwatch.StartNew();
             var response = await Backend.SolveAsync(model, parameters, Lane, _ct);
             SolveTime += solveSw.Elapsed;
@@ -226,19 +232,22 @@ internal sealed class CpSatSearch
         }
     }
 
-    private void Build()
+    private async Task BuildAsync()
     {
         var sw = Stopwatch.StartNew();
         var built = true;
         Stage?.Set(2, "preparing the damage model");
-        var score = Scores is null ? CheckedScore() : Scores.GetOrBuild(_weapon, _rel, _cond, CheckedScore, out built);
+        ScoreDecomposition score;
+        if (Scores is null) score = await CheckedScoreAsync();
+        else (score, built) = await Scores.GetOrBuildAsync(_weapon, _rel, _cond, CheckedScoreAsync);
         _progress?.Report(built
             ? $"  damage model built in {sw.Elapsed.TotalSeconds:0.0} s ({Plural(score.Units.Count, "group")} of skills{(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts of the attack or uptime" : "")})"
             : "  damage model shared with an earlier search");
 
         _score = score;
-        _model = new CpModel();
-        _vars = BuildModel(_model, score);
+        var model = new CpModel();
+        _vars = await BuildModelAsync(model, score);
+        _model = model;
         if (Cutoff is { } cutoff) _cutoff = _model.Add(_vars.Score >= cutoff);
         ModelTime = sw.Elapsed;
     }
@@ -255,7 +264,7 @@ internal sealed class CpSatSearch
         _tightened = true;
         var sw = Stopwatch.StartNew();
         var aux = new CpModel();
-        var auxVars = BuildModel(aux, _score!);
+        var auxVars = await BuildModelAsync(aux, _score!);
         var keys = _vars!.Keys;
         var bounds = new Dictionary<string, long?>();
         var capped = 0;
@@ -279,10 +288,10 @@ internal sealed class CpSatSearch
 
     private static string Plural(int n, string one) => $"{n} {(n == 1 ? one : one + "s")}";
 
-    private ScoreDecomposition CheckedScore()
+    private async Task<ScoreDecomposition> CheckedScoreAsync()
     {
-        var score = ScoreDecomposition.Build(_weapon, _rel, _cond);
-        var mismatch = score.Verify(CpSatParameters.ScoreChecks);
+        var score = await ScoreDecomposition.BuildAsync(_weapon, _rel, _cond, Pacer);
+        var mismatch = await score.VerifyAsync(CpSatParameters.ScoreChecks, Pacer);
         if (mismatch > 1e-6) throw new InvalidOperationException($"CP-SAT score model differs from the damage calculator by {mismatch:0.######}.");
         return score;
     }
@@ -332,7 +341,7 @@ internal sealed class CpSatSearch
         return new RollVars(table, rows, skills);
     }
 
-    private Vars BuildModel(CpModel m, ScoreDecomposition score)
+    private async Task<Vars> BuildModelAsync(CpModel m, ScoreDecomposition score)
     {
         var keys = new List<(IntVar Var, long Ub, string Sig)>();
         // ---------------- choices ----------------
@@ -348,6 +357,7 @@ internal sealed class CpSatSearch
         // ---------------- decoration slots: nested capacity per kind ----------------
         for (var level = 1; level <= 3; level++)
         {
+            await Pacer.PauseAsync();
             var armorCap = new List<LinearExpr>();
             foreach (var list in pieces) foreach (var (c, x) in list) armorCap.Add(LinearExpr.Term(x, SlotsAtLeast(c.ArmorSlots, level)));
             for (var j = 0; j < tals.Count; j++) armorCap.Add(LinearExpr.Term(tals[j], SlotsAtLeast(_talismans[j].ArmorSlots, level)));
@@ -368,6 +378,7 @@ internal sealed class CpSatSearch
         var featureVars = new LinearExpr[score.Features.Count];
         for (var s = 0; s < _rel.Skills.Count; s++)
         {
+            await Pacer.PauseAsync();
             var terms = new List<LinearExpr>();
             foreach (var list in pieces) foreach (var (c, x) in list) if (c.Skills[s] != 0) terms.Add(LinearExpr.Term(x, c.Skills[s]));
             for (var j = 0; j < tals.Count; j++) if (_talismans[j].Skills[s] != 0) terms.Add(LinearExpr.Term(tals[j], _talismans[j].Skills[s]));
@@ -405,7 +416,12 @@ internal sealed class CpSatSearch
             m.Add(idx == LinearExpr.Sum(u.Features.Select((f, i) => LinearExpr.Term(featureVars[f], u.Strides[i]))));
             return idx;
         }).ToList();
-        var sideScores = score.Sides.Select((_, side) => SideScore(m, score, side, unitIndex, keys)).ToList();
+        var sideScores = new List<Bounded>();
+        for (var side = 0; side < score.Sides.Count; side++)
+        {
+            await Pacer.PauseAsync();
+            sideScores.Add(SideScore(m, score, side, unitIndex, keys));
+        }
         // a sequence's segments add up weighted by their share of the motion value (weights in 1e-8), per health side
         if (score.Sides.Count > score.HealthSides)
             sideScores = score.Sides.Select((s, i) => (s, i)).GroupBy(x => x.s.Health).Select(g =>

@@ -3,7 +3,7 @@
 //  run   - clicks "Run optimizer" and records frame gaps and long tasks until the run ends, then prints the run log
 //  gems  - opens a decoration slot picker on My builds, types a query key by key (QUERY), moves the mouse over the options
 //  check - drives the slot and armor pickers (filter, arrow keys, hover, Enter, Escape) and prints what they show
-//   node perf.mjs <origin> <profileFolder> <weapon> <run|gems|check|both>
+//   node perf.mjs <origin> <profileFolder> <weapon> <run|gems|check|both>     (weapon "(new)": the profile's new weapon)
 import { spawn, execSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -92,10 +92,11 @@ try {
     [...document.querySelectorAll('.mud-dialog button')].find(b => b.innerText.trim() === 'Import').click();
     await sleep(2000);`);
   const profile = basename(profileFolder);
-  const w = encodeURIComponent(weapon);
+  // "(new)" is the profile's new weapon (a fresh Great Sword unless the profile has a draft of it)
+  const w = weapon === '(new)' ? 'new' : `weapon/${encodeURIComponent(weapon)}`;
 
   if (what === 'gems' || what === 'both') {
-    await navigate(`${origin}/${profile}/weapon/${w}/builds`);
+    await navigate(`${origin}/${profile}/${w}/builds`);
     await sleep(1500);
     const query = process.env.QUERY ?? 'attack boost';
     const r = await evaluate(`
@@ -145,7 +146,7 @@ try {
   }
 
   if (what === 'check') {
-    await navigate(`${origin}/${profile}/weapon/${w}/builds`);
+    await navigate(`${origin}/${profile}/${w}/builds`);
     await sleep(1500);
     const step = async (js) => evaluate(`const sleep = ms => new Promise(r => setTimeout(r, ms)); ${js}`);
     const key = async (k) => { await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: { ArrowDown: 40, ArrowUp: 38, Enter: 13, Escape: 27 }[k] }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code: k }); await sleep(250); };
@@ -184,29 +185,39 @@ try {
   }
 
   if (what === 'run' || what === 'both') {
-    await navigate(`${origin}/${profile}/weapon/${w}/results`);
+    await navigate(`${origin}/${profile}/${w}/results`);
     await sleep(Number(process.env.WARM ?? 10000)); // solver warm-up and lanes
     const r = await evaluate(`
       const sleep = ms => new Promise(r => setTimeout(r, ms));
       ${probe}
       ${summary}
-      for (let i = 0; i < 200 && ![...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Run optimizer' && !b.disabled); i++) await sleep(250);
+      for (let i = 0; i < 200 && ![...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer' && !b.disabled); i++) await sleep(250);
       await sleep(300);
       const t0 = performance.now();
-      [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Run optimizer').click();
+      [...document.querySelectorAll('button')].find(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Run optimizer').click();
       const afterClick = performance.now() - t0;
       let running = null;
       for (let i = 0; i < 6000 && running === null; i++) {
-        if ([...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Cancel run')) running = performance.now() - t0;
+        if ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run')) running = performance.now() - t0;
         else await sleep(10);
       }
       await sleep(300);
+      // the log is folded away by default
+      [...document.querySelectorAll('button')].find(b => b.innerText.trim().startsWith('Show search log'))?.click();
       let log = '';
-      while ([...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Cancel run') && performance.now() - t0 < 300000) { log = document.querySelector('.runlog')?.innerText ?? log; await sleep(100); }
+      while ([...document.querySelectorAll('button')].some(b => (b.innerText.trim() || b.getAttribute('aria-label')) === 'Cancel run') && performance.now() - t0 < 300000) { log = document.querySelector('.runlog')?.innerText ?? log; await sleep(100); }
       const wall = performance.now() - t0;
       const lines = log.split(String.fromCharCode(10));
-      return JSON.stringify({ clickHandlerMs: +afterClick.toFixed(0), cancelButtonAt: running && +running.toFixed(0), wall: +(wall / 1000).toFixed(1), ...since(t0), firstLines: lines });`);
+      // every long task of the run: [start after the click, duration] in ms
+      const tasks = window.__perf.long.filter(([s]) => s >= t0 - 5).map(([s, d]) => [+(s - t0).toFixed(0), +d.toFixed(0)]);
+      return JSON.stringify({ clickHandlerMs: +afterClick.toFixed(0), cancelButtonAt: running && +running.toFixed(0), wall: +(wall / 1000).toFixed(1), ...since(t0), tasks, firstLines: lines });`);
     const o = JSON.parse(r); const lines = o.firstLines; delete o.firstLines; console.log('run', JSON.stringify(o)); console.log(lines.join(String.fromCharCode(10)));
+    // RESULTS=1: the builds as the table view shows them, to compare two builds of the app
+    if (process.env.RESULTS) console.log(await evaluate(`
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+      [...document.querySelectorAll('button, label')].find(b => b.innerText.trim() === 'Table')?.click();
+      await sleep(1000);
+      return [...document.querySelectorAll('.pair-block')].map(b => b.innerText).join(String.fromCharCode(10));`));
   }
 } finally {
   ws.close();

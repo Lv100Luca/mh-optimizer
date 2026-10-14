@@ -374,14 +374,20 @@ public sealed class Optimizer
         RollTable? Rolls, DecorationFiller Filler, ArmorPieceKind[] Kinds, string Summary);
 
     /// <param name="spellOutRolls">List every possible talisman among the talismans (the beam search) instead of a roll table.</param>
-    private ClassCandidates CandidatesFor(GogmaWeaponStats weapon, bool spellOutRolls = false)
+    private ClassCandidates CandidatesFor(GogmaWeaponStats weapon, bool spellOutRolls = false) =>
+        CandidatesForAsync(weapon, Pacer.Never, spellOutRolls).GetAwaiter().GetResult();
+
+    /// <inheritdoc cref="CandidatesFor"/>
+    private async Task<ClassCandidates> CandidatesForAsync(GogmaWeaponStats weapon, Pacer pacer, bool spellOutRolls = false)
     {
         var rel = Relevance.Build(weapon, _request, _data);
         var armor = Candidates.Armor(_data, rel, _request.Options);
+        await pacer.PauseAsync();
         var pool = _request.AllPossibleTalismans ? _data.TalismanPool : null;
         var talismans = Candidates.Talismans(
             pool is not null && spellOutRolls ? _request.Talismans.Concat(PossibleTalismans.Generate(pool, rel, _data)) : _request.Talismans, rel);
         var rolls = pool is not null && !spellOutRolls ? RollTable.Build(pool, rel) : null;
+        await pacer.PauseAsync();
         var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
         var summary = $"armor to search: {string.Join(", ", kinds.Select(k => $"{k} {armor[k].Count}"))} pieces, {talismans.Count} talismans"
                       + (rolls is not null ? $" + every possible roll ({rolls.Rows.Count} roll rows)" : "");
@@ -406,17 +412,23 @@ public sealed class Optimizer
     private async Task<ClassSearch> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, ScoreDecompositionCache scores,
         IProgress<string>? progress, CancellationToken ct, RunStage? stage = null)
     {
-        // the candidates and the model are synchronous work: a single-threaded host (the browser, where this shares the page's
-        // thread) gets to update the page between one class's setup and the next; natively the lanes' setups run in parallel
+        // the candidates and the model are long synchronous work: a single-threaded host (the browser, where this shares the
+        // page's thread) gets to update the page before and every few tens of ms during a class's setup (the pacer);
+        // natively the lanes' setups run in parallel
         await _cpSat.YieldAsync();
         ct.ThrowIfCancellationRequested();
+        var pacer = new Pacer(_cpSat.YieldAsync, ct);
         var sw = Stopwatch.StartNew();
-        var c = CandidatesFor(cls.Weapon);
+        var c = await CandidatesForAsync(cls.Weapon, pacer);
         var candidatesTime = sw.Elapsed;
         progress?.Report("  " + c.Summary);
+        await pacer.PauseAsync();
         var cp = new CpSatSearch(_data, c.Rel, cls.Weapon, _request.Conditions, c.Filler, c.Armor, c.Kinds, c.Talismans, topN,
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
-        { Backend = _cpSat, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds, Rolls = c.Rolls, Stage = stage };
+        {
+            Backend = _cpSat, Pacer = pacer, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds,
+            Rolls = c.Rolls, Stage = stage,
+        };
         var search = new ClassSearch(cls, c, cp, candidatesTime);
         search.Finish(await cp.RunAsync());
         progress?.Report($"  {cp.ProofSummary}");

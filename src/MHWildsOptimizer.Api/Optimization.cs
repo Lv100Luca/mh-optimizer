@@ -52,6 +52,9 @@ public static class Optimization
             return null;
         }
 
+        // in the browser the search's last steps, mapping the result and showing it share the page's thread (100-300 ms
+        // each): in one stretch they froze the page for about half a second
+        if (cpSat is not null) await cpSat.YieldAsync();
         var dto = ResultMapper.Map(result, resolved, data) with { InputsHash = ProfileRules.InputsHash(payload.Request, payload.Talismans ?? []) };
         if (profile is { Length: > 0 } && save is { Length: > 0 } && ProfileRules.IsValidName(profile) && ProfileRules.IsValidName(save) && store.ProfileExists(profile))
         {
@@ -61,6 +64,7 @@ public static class Optimization
                 onEvent(new ProgressEvent("Could not save the results: " + e.Message));
             }
         }
+        if (cpSat is not null) await cpSat.YieldAsync();
         onEvent(new ResultEvent(dto));
         return dto;
     }
