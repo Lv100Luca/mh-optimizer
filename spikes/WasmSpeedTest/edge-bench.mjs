@@ -19,7 +19,7 @@ const runs = Number(runsArg ?? 1);
 const port = 9333;
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-bench-'));
 const edge = spawn(process.env.EDGE_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-  ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run', '--window-size=1400,900', 'about:blank'],
+  ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run', '--window-size=1400,900', '--window-position=-32000,-32000', 'about:blank'],
   { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

@@ -42,7 +42,7 @@ const port = 9400 + Math.floor(Math.random() * 400);
 const profileDir = mkdtempSync(join(tmpdir(), tag));
 const chrome = spawn(chromePath, [
   '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run',
-  '--no-default-browser-check', '--window-size=1600,1000',
+  '--no-default-browser-check', '--window-size=1600,1000', '--window-position=-32000,-32000',
   // CI runners (Ubuntu 24.04) do not allow Chrome's sandbox
   ...(process.env.CI ? ['--no-sandbox'] : []),
   'about:blank'], { stdio: 'ignore' });

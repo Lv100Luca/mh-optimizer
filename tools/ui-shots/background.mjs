@@ -21,7 +21,7 @@ const killStragglers = () => { try { execSync(`powershell -NoProfile -Command "G
 killStragglers();
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-bg-'));
 const edge = spawn(process.env.EDGE_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-  [hide ? '--window-position=-32000,-32000' : '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run',
+  [...(hide ? [] : ['--headless=new']), '--window-position=-32000,-32000', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run',
    '--window-size=1600,1000', '--enable-features=IntensiveWakeUpThrottling:grace_period_seconds/10', 'about:blank'],
   { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

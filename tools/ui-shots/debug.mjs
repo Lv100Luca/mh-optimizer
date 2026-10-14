@@ -13,7 +13,7 @@ const files = Object.fromEntries([
 const port = 9300 + Math.floor(Math.random() * 90);
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-dbg-'));
 const edge = spawn('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-  ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run', '--window-size=1600,1000', '--force-device-scale-factor=1', 'about:blank'], { stdio: 'ignore' });
+  ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run', '--window-size=1600,1000', '--window-position=-32000,-32000', '--force-device-scale-factor=1', 'about:blank'], { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const t0 = Date.now();
 const log = (...a) => console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s]`, ...a);
