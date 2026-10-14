@@ -84,4 +84,25 @@
     </ItemGroup>
   </Target>
 
+  <!--
+    The static wiki pages search engines index (wwwroot/wiki, sitemap.xml, 404.html; git-ignored), written by
+    tools/build_pages.py from data/wiki.json when either is newer than the sitemap. Needs Python 3;
+    -p:BuildWikiPages=false skips it.
+  -->
+  <PropertyGroup>
+    <PythonExe Condition="'$(PythonExe)' == '' And '$(OS)' == 'Windows_NT'">python</PythonExe>
+    <PythonExe Condition="'$(PythonExe)' == ''">python3</PythonExe>
+  </PropertyGroup>
+
+  <Target Name="BuildWikiPages" BeforeTargets="BeforeBuild" Inputs="$(RepoDir)data\wiki.json;$(RepoDir)tools\build_pages.py"
+          Outputs="wwwroot\sitemap.xml" Condition="'$(BuildWikiPages)' != 'false'">
+    <Exec Command="$(PythonExe) tools/build_pages.py &quot;$(MSBuildProjectDirectory)/wwwroot&quot;" WorkingDirectory="$(RepoDir)" />
+  </Target>
+
+  <Target Name="IncludeWikiPages" AfterTargets="BuildWikiPages" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <Content Include="wwwroot\wiki\**\*;wwwroot\sitemap.xml;wwwroot\404.html" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+
 </Project>

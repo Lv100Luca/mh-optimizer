@@ -23,11 +23,30 @@ wildsbuilds.com {
 		Cache-Control "no-cache"
 	}
 
-	# page URLs such as /Luca/weapon/Current/results are client-side routes
-	try_files {path} /index.html
+	# The static wiki pages (tools/build_pages.py): /wiki/skills/agitator/ is wiki/skills/agitator/index.html. file_server
+	# redirects a URL without the trailing slash to the one with it, and an unknown page is a real 404, not the app.
+	@wiki path /wiki /wiki/*
+	handle @wiki {
+		file_server {
+			precompressed br gzip
+		}
+	}
 
-	# the publish output has a .br and a .gz next to every file
-	file_server {
-		precompressed br gzip
+	# everything else is a file or the app: page URLs such as /Luca/weapon/Current/results are client-side routes
+	handle {
+		try_files {path} /index.html
+		# the publish output has a .br and a .gz next to every file
+		file_server {
+			precompressed br gzip
+		}
+	}
+
+	# keeps the 404 status (search engines drop the URL) but shows a page with links back in
+	handle_errors {
+		@notfound expression {err.status_code} == 404
+		handle @notfound {
+			rewrite * /404.html
+			file_server
+		}
 	}
 }

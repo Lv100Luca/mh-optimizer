@@ -105,3 +105,6 @@ jobs:
           echo "$headers" | grep -qi '^cross-origin-opener-policy: same-origin' || { echo "::error::COOP header missing"; exit 1; }
           echo "$headers" | grep -qi '^cross-origin-embedder-policy: require-corp' || { echo "::error::COEP header missing"; exit 1; }
           curl -sSI --fail "$SITE_URL/solver/bridge.js" > /dev/null
+          # the static wiki pages (tools/build_pages.py) and the sitemap that lists them
+          curl -sSI --fail "$SITE_URL/wiki/skills/agitator/" > /dev/null
+          curl -sSI --fail "$SITE_URL/sitemap.xml" > /dev/null

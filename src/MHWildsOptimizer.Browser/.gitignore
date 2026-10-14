@@ -3,3 +3,7 @@ wwwroot/solver/
 # copied from data/ and the web client's icons on build (see the CopyGameAssets target)
 wwwroot/data/
 wwwroot/icons/
+# the static wiki pages, written from data/wiki.json on build (see the BuildWikiPages target)
+wwwroot/wiki/
+wwwroot/sitemap.xml
+wwwroot/404.html

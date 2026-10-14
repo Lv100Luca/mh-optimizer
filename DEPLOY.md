@@ -81,6 +81,9 @@ curl -sI https://wildsbuilds.com/ | grep -i cross-origin    # both headers: the 
 curl -sI https://wildsbuilds.com/solver/bridge.js | head -1  # 200
 curl -sI https://www.wildsbuilds.com/skills | grep -i location             # https://wildsbuilds.com/skills
 curl -sI https://mh-optimizer.luca-diegel.de/skills | grep -i location     # the same
+curl -sI https://wildsbuilds.com/wiki/skills/agitator/ | head -1             # 200: a static wiki page
+curl -sI https://wildsbuilds.com/wiki/skills/agitator | grep -i location    # adds the trailing slash
+curl -sI https://wildsbuilds.com/wiki/nope/ | head -1                       # 404
 ```
 
 In the browser, `crossOriginIsolated` in the console must be `true`; Options shows how many solver threads it got.
