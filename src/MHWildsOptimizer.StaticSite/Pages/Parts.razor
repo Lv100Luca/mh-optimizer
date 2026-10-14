@@ -1,0 +1,49 @@
+@* Small pieces several pages use, as static render fragments. *@
+@code {
+    public static RenderFragment Icon(string src, int size = 20, string alt = "") =>
+        @<img class="icon" src="@src" width="@size" height="@size" alt="@alt" loading="lazy">;
+
+    /// <summary>The closing box that sends readers to the optimizer.</summary>
+    public static RenderFragment OptimizerBox(string text) =>
+        @<aside class="cta-box"><p>@text</p><a class="button" href="/">Open the optimizer</a></aside>;
+
+    public static RenderFragment Source(string? source) =>
+        @<text>@if (!string.IsNullOrEmpty(source))
+        {
+            <p class="source muted">Source: @source</p>
+        }</text>;
+
+    public static RenderFragment Notes(IReadOnlyList<string>? notes) =>
+        @<text>@if (notes is { Count: > 0 })
+        {
+            <ul class="notes">
+                @foreach (var n in notes)
+                {
+                    <li>@n</li>
+                }
+            </ul>
+        }</text>;
+
+    public static RenderFragment Table(EffectTable table, string heading = "h3") =>
+        @<text>
+            @if (heading == "h2")
+            {
+                <h2>@table.Title</h2>
+            }
+            else
+            {
+                <h3>@table.Title</h3>
+            }
+            <div class="scroll">
+                <table>
+                    <thead><tr>@foreach (var c in table.Columns) { <th>@c</th> }</tr></thead>
+                    <tbody>
+                        @foreach (var row in table.Rows)
+                        {
+                            <tr>@foreach (var c in row) { <td>@c</td> }</tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </text>;
+}

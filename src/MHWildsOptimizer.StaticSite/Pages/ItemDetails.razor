@@ -1,0 +1,135 @@
+@* Everything about an item below its game text: key facts, effects, stacking, where to get it, what uses it. On an item's own
+   page the headings are h2, inside its category page h3. *@
+@{
+    var item = Item;
+    var s = item.Sources;
+}
+@if (Facts().ToList() is { Count: > 0 } facts)
+{
+    <table class="facts">
+        <tbody>
+            @foreach (var (label, value) in facts)
+            {
+                <tr><th>@label</th><td>@value</td></tr>
+            }
+        </tbody>
+    </table>
+}
+@if (item.Effects.Count > 0)
+{
+    @Heading("What it does")
+    <ul>
+        @foreach (var e in item.Effects)
+        {
+            <li>@e</li>
+        }
+    </ul>
+}
+@if (item.Stacking is { } stacking)
+{
+    @Heading("Stacking")
+    <p>@stacking</p>
+}
+@Parts.Notes(item.Notes)
+@if (item.Recipes is { Count: > 0 } || s is not null)
+{
+    @Heading("Where to get it")
+    <table class="facts">
+        <tbody>
+            @foreach (var line in s?.Other ?? [])
+            {
+                <tr><th>How</th><td>@line</td></tr>
+            }
+            @foreach (var recipe in item.Recipes ?? [])
+            {
+                <tr><th>Combine</th><td>@ItemLinks(recipe, " + ")</td></tr>
+            }
+            @if (s?.Gather is { } gather)
+            {
+                <tr>
+                    <th>Gather</th>
+                    <td>
+                        @for (var i = 0; i < gather.Count; i++)
+                        {
+                            if (i > 0)
+                            {
+                                <br>
+                            }
+                            <b>@gather[i].Region</b> <span class="muted">area@(gather[i].Areas.Count > 1 ? "s" : "") @string.Join(", ", gather[i].Areas)</span>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (s?.Retrieval is { } retrieval)
+            {
+                <tr><th>Retrieval</th><td>Material retrieval in @Text.JoinAnd(retrieval)</td></tr>
+            }
+            @if (s?.Shop == true)
+            {
+                <tr><th>Shop</th><td>Sold at the item shop</td></tr>
+            }
+            @if (s?.SupportShip == true)
+            {
+                <tr><th>Support ship</th><td>In the support ship's stock now and then</td></tr>
+            }
+        </tbody>
+    </table>
+    @if (s?.Monsters is { Count: > 0 } monsters)
+    {
+        <div class="scroll">
+            <table>
+                <thead><tr><th>Monster</th><th>Rank</th><th>How</th><th>Chance</th></tr></thead>
+                <tbody>
+                    @foreach (var m in monsters)
+                    {
+                        <tr><td>@m.Monster</td><td>@m.Rank</td><td>@m.How</td><td>@m.Chance%</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+@if (item.UsedIn is { Count: > 0 } usedIn)
+{
+    @Heading("Used in")
+    <p>@ItemLinks(usedIn, ", ")</p>
+}
+@if (item.Related is { Count: > 0 } related)
+{
+    <p class="related"><b>Related:</b> @ItemLinks(related, ", ")</p>
+}
+@Parts.Source(item.Source)
+
+@code {
+    [Parameter, EditorRequired] public WikiItem Item { get; set; } = default!;
+
+    /// <summary>2 on the item's own page, 3 inside its category page.</summary>
+    [Parameter] public int Level { get; set; } = 2;
+
+    private RenderFragment Heading(string text) => Level == 2 ? @<h2>@text</h2> : @<h3>@text</h3>;
+
+    private IEnumerable<(string, string)> Facts()
+    {
+        if (Item.Boost is { Length: > 0 } boost) yield return ("Effect", boost);
+        if (Item.Duration is { Length: > 0 } duration) yield return ("Lasts", duration);
+        yield return ("Rarity", Item.Rarity.ToString(CultureInfo.InvariantCulture));
+        yield return ("Carry limit", Item.CarryLimit.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private RenderFragment ItemLinks(IReadOnlyList<string> names, string separator) =>
+        @<text>@for (var i = 0; i < names.Count; i++)
+        {
+            if (i > 0)
+            {
+                @separator
+            }
+            if (Site.ItemsByName.GetValueOrDefault(names[i]) is { } linked)
+            {
+                <a href="@Site.ItemUrl(linked)">@names[i]</a>
+            }
+            else
+            {
+                @names[i]
+            }
+        }</text>;
+}

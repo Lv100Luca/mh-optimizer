@@ -85,6 +85,9 @@ public sealed record Catalog(
     IReadOnlyList<Target> DummyTargets,
     int ProcessorCount)
 {
+    /// <summary>The game version the dataset is from.</summary>
+    public const string CurrentGameVersion = "1.041";
+
     public static Catalog Build(GameData data)
     {
         var skills = data.Skills
@@ -153,7 +156,7 @@ public sealed record Catalog(
         }
 
         return new Catalog(
-            "1.041",
+            CurrentGameVersion,
             skills,
             decorations,
             sets,

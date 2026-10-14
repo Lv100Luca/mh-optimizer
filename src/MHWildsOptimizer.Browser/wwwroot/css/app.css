@@ -310,7 +310,7 @@ button.chip:hover { border-color: var(--accent); }
 .scope-note b { color: var(--text); }
 .weapon-preview { display: flex; flex-direction: column; gap: 12px; }
 .weapon-head { display: flex; align-items: center; gap: 12px; }
-.weapon-head img { width: 48px; height: 48px; }
+.weapon-head > img { width: 48px; height: 48px; flex: none; }
 .weapon-head .big { font-size: 17px; font-weight: 700; }
 dl.stats { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; margin: 0; align-items: center; }
 dl.stats dt { color: var(--muted); display: flex; align-items: center; gap: 6px; }
@@ -1001,10 +1001,6 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .wiki-subtable td:not(:first-child) { white-space: nowrap; }
 .wiki-notes { margin: 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; display: grid; gap: 3px; }
 .wiki-source { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: 0; }
-.wiki-conf { flex: none; padding: 0 6px; border-radius: 4px; border: 1px solid var(--border-2); color: var(--muted); }
-.wiki-conf.high { color: var(--ok); border-color: rgba(95, 191, 122, 0.5); }
-.wiki-conf.medium { color: var(--warn); border-color: rgba(232, 176, 75, 0.5); }
-.wiki-conf.low { color: var(--err); border-color: rgba(224, 90, 79, 0.5); }
 .wiki-src + .wiki-src { border-top: 1px solid var(--border); padding-top: 12px; }
 .wiki-src .chip { white-space: normal; }
 .table.wiki-armor-src td { padding-top: 4px; padding-bottom: 4px; }
@@ -1036,7 +1032,19 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .wiki-stacking { margin: 0 0 10px; }
 .wiki-stacking .tiny { text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px; }
 .table.wiki-item-table td { padding-top: 4px; padding-bottom: 4px; }
+/* where to get an item: a label column and what it says */
+.wiki-get { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 18px; margin: 0 0 10px; align-items: baseline; }
+.wiki-get dt { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.wiki-get dd { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.table.wiki-drops { width: auto; }
+.table.wiki-drops td { padding-top: 3px; padding-bottom: 3px; white-space: nowrap; }
+.table.wiki-drops tr.first:not(:first-child) td { border-top: 1px solid var(--border-2); }
+@media (max-width: 600px) {
+  .wiki-get { grid-template-columns: 1fr; gap: 2px; }
+  .wiki-get dd + dt { margin-top: 10px; }
+}
 .table.wiki-item-table td:nth-child(2) { white-space: nowrap; }
+.table.wiki-item-table td.wiki-get-summary { white-space: normal; min-width: 14em; }
 /* meal tables carry sentences: let them wrap, keep the first column readable */
 .wiki-meal-table td:not(:first-child) { white-space: normal; }
 .wiki-meal-table td:first-child { min-width: 10em; }

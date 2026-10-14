@@ -33,6 +33,7 @@ OWN_PAGE_ITEMS = [
     'Demondrug', 'Mega Demondrug', 'Might Seed', 'Might Pill', 'Demon Powder', 'Powercharm',
     'Armorskin', 'Mega Armorskin', 'Adamant Seed', 'Adamant Pill', 'Hardshell Powder', 'Armorcharm',
     'Mega Potion', 'Max Potion', 'Ancient Potion', 'Lifepowder', 'Dust of Life', 'Dash Juice',
+    'Nourishing Extract', 'Catalyst', 'Godbug Essence',
 ]
 
 KIND_LABEL = {'armor': 'Armor skill', 'weapon': 'Weapon skill', 'set': 'Set bonus', 'group': 'Group skill'}
@@ -58,11 +59,6 @@ DECO_COLOR = {
     'blue': 'blue', 'gray': 'gray', 'red': 'red', 'ivory': 'tan', 'brown': 'brown', 'lemon': 'lemon', 'moss-green': 'moss',
     'rose': 'rose', 'green': 'green', 'ultramarine': 'dark-blue', 'vermilion': 'vermilion', 'dark-purple': 'dark-purple',
     'sage-green': 'light-green',
-}
-CONFIDENCE = {
-    'high': 'Game data and an independent test or the game\'s own text agree.',
-    'medium': 'One good source, or game data whose meaning is inferred.',
-    'low': 'A single secondary source or an unverified reading.',
 }
 
 
@@ -125,6 +121,7 @@ def skill_url(name): return f'/wiki/skills/{slug(name)}/'
 def family_url(family): return f'/wiki/armor/{slug(family)}/'
 def set_url(set_name): return family_url(family_of(set_name)) + '#' + slug(set_name)
 def category_url(key): return f'/wiki/items/{key}/'
+def category_heading(category): return category['title'] + ('' if category['key'] == 'materials' else ' items')
 def item_url(name):
     item = ITEM_BY_NAME[name]
     return f'/wiki/items/{slug(name)}/' if name in OWN_PAGE else category_url(item['category']) + '#' + slug(name)
@@ -160,11 +157,8 @@ def slots_html(slots):
     return ''.join(f'<span class="slot">{n}</span>' for n in slots) if slots else '<span class="muted">—</span>'
 
 
-def source_line(source, confidence):
-    if not source and not confidence:
-        return ''
-    conf = f'<span class="conf {esc(confidence)}" title="{esc(CONFIDENCE.get(confidence, ""))}">{esc(confidence)} confidence</span> ' if confidence else ''
-    return f'<p class="source">{conf}<span class="muted">Source: {esc(source or "")}</span></p>'
+def source_line(source):
+    return f'<p class="source muted">Source: {esc(source)}</p>' if source else ''
 
 
 def table(columns, rows, cls=''):
@@ -300,7 +294,7 @@ def skill_page(skill):
         out.append(f'<h3>{esc(t["title"])}</h3>' + table(t['columns'], t['rows']))
     if fx.get('notes'):
         out.append('<ul class="notes">' + ''.join(f'<li>{esc(n)}</li>' for n in fx['notes']) + '</ul>')
-    out.append(source_line(fx.get('source'), fx.get('confidence')))
+    out.append(source_line(fx.get('source')))
 
     out.append('<h2>Where to get it</h2>')
     if src.get('decorations'):
@@ -482,21 +476,64 @@ def item_details(item, level=2):
         out.append(f'<{h}>Stacking</{h}><p>{esc(item["stacking"])}</p>')
     if item.get('notes'):
         out.append('<ul class="notes">' + ''.join(f'<li>{esc(n)}</li>' for n in item['notes']) + '</ul>')
-    if item.get('recipes'):
-        out.append(f'<{h}>Recipe{"s" if len(item["recipes"]) > 1 else ""}</{h}><ul>'
-                   + ''.join('<li>' + ' + '.join(item_link(x) for x in r) + '</li>' for r in item['recipes']) + '</ul>')
+    if item.get('recipes') or item.get('sources'):
+        out.append(f'<{h}>Where to get it</{h}>' + item_sources(item))
     if item.get('used_in'):
         used = item['used_in'] if isinstance(item['used_in'], list) else [item['used_in']]
         out.append(f'<{h}>Used in</{h}><p>' + ', '.join(item_link(x) if isinstance(x, str) else esc(x) for x in used) + '</p>')
     if item.get('related'):
         out.append(f'<p class="related"><b>Related:</b> ' + ', '.join(item_link(x) for x in item['related']) + '</p>')
-    out.append(source_line(item.get('source'), item.get('confidence')))
+    out.append(source_line(item.get('source')))
     return '\n'.join(out)
+
+
+def item_sources(item):
+    """Where to get an item: its recipes, curated lines, gathering spots, retrieval, shops and monster rewards."""
+    s = item.get('sources') or {}
+    rows = [('How', esc(line)) for line in s.get('other') or []]
+    rows += [('Combine', ' + '.join(item_link(x) for x in r)) for r in item.get('recipes') or []]
+    if s.get('gather'):
+        rows.append(('Gather', '<br>'.join(f'<b>{esc(g["region"])}</b> <span class="muted">area{"s" if len(g["areas"]) > 1 else ""} '
+                                           f'{", ".join(map(str, g["areas"]))}</span>' for g in s['gather'])))
+    if s.get('retrieval'):
+        rows.append(('Retrieval', 'Material retrieval in ' + esc(join_and(s['retrieval']))))
+    if s.get('shop'):
+        rows.append(('Shop', 'Sold at the item shop'))
+    if s.get('support_ship'):
+        rows.append(('Support ship', "In the support ship's stock now and then"))
+    out = '<table class="facts"><tbody>' + ''.join(f'<tr><th>{k}</th><td>{v}</td></tr>' for k, v in rows) + '</tbody></table>' if rows else ''
+    if s.get('monsters'):
+        out += table(['Monster', 'Rank', 'How', 'Chance'], [[m['monster'], m['rank'], m['how'], f'{m["chance"]}%'] for m in s['monsters']])
+    return out
+
+
+def source_summary(item):
+    """Where an item comes from in a few words, as WikiIndex.SourceSummary in the app."""
+    s = item.get('sources') or {}
+    parts = ['quest or cooking' if s.get('other') else None, 'combine' if item.get('recipes') else None,
+             'gather' if s.get('gather') else None, 'material retrieval' if s.get('retrieval') else None,
+             'item shop' if s.get('shop') else None, 'support ship' if s.get('support_ship') else None,
+             ', '.join(dict.fromkeys(m['monster'] for m in s['monsters'])) if s.get('monsters') else None]
+    text = ' · '.join(p for p in parts if p)
+    return text[:1].upper() + text[1:]
+
+
+def duration_words(duration):
+    """" for 30 min", " while carried", or nothing for instant effects."""
+    if not duration or duration in ('—', ''):
+        return ''
+    return f' for {duration}' if duration[0].isdigit() else f' {duration}'
+
+
+def join_and(items):
+    return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
 
 
 def item_meta(item):
     text = f'{item["name"]} in {GAME}: '
-    text += (item.get('boost') or '') + (f' for {item["duration"]}' if item.get('duration') and item['duration'] not in ('—', '') else '')
+    if item['category'] == 'materials':
+        return cut(text + (item.get('description') or '') + ' Where to get it: ' + source_summary(item) + '.', 300)
+    text += (item.get('boost') or '') + duration_words(item.get('duration'))
     text += '. ' + (item.get('stacking') or '')
     if item.get('recipes'):
         text += ' Recipe: ' + ' + '.join(item['recipes'][0]) + '.'
@@ -506,24 +543,31 @@ def item_meta(item):
 def item_page(item):
     category = next(c for c in CATEGORIES if c['key'] == item['category'])
     out = [f'<article><div class="head">{img(item_icon(item), 40)}<div><h1>{esc(item["name"])}</h1>'
-           f'<p class="sub">Item · <a href="{category_url(category["key"])}">{esc(category["title"])} items</a> · {GAME}</p></div></div>']
+           f'<p class="sub">Item · <a href="{category_url(category["key"])}">{esc(category_heading(category))}</a> · {GAME}</p></div></div>']
     if item.get('description'):
         out.append(f'<blockquote class="game-text">{esc(item["description"])}<cite>In-game description</cite></blockquote>')
     out.append(item_facts(item))
     out.append(item_details(item))
-    out.append(optimizer_box('Item boosts count in the optimizer: switch them on as conditions and it scores builds with them.'))
+    out.append(optimizer_box(f'{NAME} also finds the best build for your weapon: armor, decorations and talismans, scored by damage per attack.'
+                             if item['category'] == 'materials' else
+                             'Item boosts count in the optimizer: switch them on as conditions and it scores builds with them.'))
     out.append('</article>')
     page(item_url(item['name']), 'items', f'{item["name"]} · {GAME} · {NAME}', item_meta(item),
-         [('Wiki', '/wiki/'), ('Items', '/wiki/items/'), (f'{category["title"]} items', category_url(category['key']))], '\n'.join(out))
+         [('Wiki', '/wiki/'), ('Items', '/wiki/items/'), (category_heading(category), category_url(category['key']))], '\n'.join(out))
 
 
 def category_page(category):
     items = [i for i in ITEMS if i['category'] == category['key']]
-    out = [f'<article><h1>{esc(category["title"])} items</h1><p class="lead">{esc(category["about"])}</p>']
-    summary = ''.join(f'<tr><td>{img(item_icon(i), 24)}</td><td>{item_link(i["name"])}</td><td>{esc(i.get("boost") or "")}</td>'
-                      f'<td>{esc(i.get("duration") or "")}</td></tr>' for i in items)
-    out.append(f'<div class="scroll"><table class="items"><thead><tr><th></th><th>Item</th><th>Effect</th><th>Lasts</th></tr></thead>'
-               f'<tbody>{summary}</tbody></table></div>')
+    out = [f'<article><h1>{esc(category_heading(category))}</h1><p class="lead">{esc(category["about"])}</p>']
+    if category['key'] == 'materials':
+        summary = ''.join(f'<tr><td>{img(item_icon(i), 24)}</td><td>{item_link(i["name"])}</td><td>{esc(source_summary(i))}</td></tr>'
+                          for i in items)
+        head = '<th></th><th>Item</th><th>Where to get it</th>'
+    else:
+        summary = ''.join(f'<tr><td>{img(item_icon(i), 24)}</td><td>{item_link(i["name"])}</td><td>{esc(i.get("boost") or "")}</td>'
+                          f'<td>{esc(i.get("duration") or "")}</td></tr>' for i in items)
+        head = '<th></th><th>Item</th><th>Effect</th><th>Lasts</th>'
+    out.append(f'<div class="scroll"><table class="items"><thead><tr>{head}</tr></thead><tbody>{summary}</tbody></table></div>')
     for i in items:
         if i['name'] in OWN_PAGE:
             continue
@@ -533,18 +577,19 @@ def category_page(category):
         out.append(item_facts(i) + item_details(i, 3) + '</section>')
     out.append('</article>')
     names = ', '.join(i['name'] for i in items)
-    page(category_url(category['key']), 'items', f'{category["title"]} items · {GAME} · {NAME}',
-         cut(f'{category["title"]} items in {GAME}: {names}. {category["about"]}', 300),
+    page(category_url(category['key']), 'items', f'{category_heading(category)} · {GAME} · {NAME}',
+         cut(f'{category_heading(category)} in {GAME}: {names}. {category["about"]}', 300),
          [('Wiki', '/wiki/'), ('Items', '/wiki/items/')], '\n'.join(out))
 
 
 def items_index():
     out = [f'<h1>{GAME} items</h1>',
-           f'<p class="lead">What the common consumables in {GAME} do in exact numbers, how long they last and what stacks with what.</p>']
+           f'<p class="lead">What the common consumables in {GAME} do in exact numbers, how long they last and what stacks with what, '
+           'and where to get the materials they are made from.</p>']
     for c in CATEGORIES:
         items = [i for i in ITEMS if i['category'] == c['key']]
         lis = ''.join(f'<li>{img(item_icon(i))}{item_link(i["name"])}<span class="muted">{esc(i.get("boost") or "")}</span></li>' for i in items)
-        out.append(f'<h2><a href="{category_url(c["key"])}">{esc(c["title"])} items</a></h2><p class="muted">{esc(c["about"])}</p>'
+        out.append(f'<h2><a href="{category_url(c["key"])}">{esc(category_heading(c))}</a></h2><p class="muted">{esc(c["about"])}</p>'
                    f'<ul class="list">{lis}</ul>')
     page('/wiki/items/', 'items', f'Items · {GAME} · {NAME}',
          f'{GAME} consumables in exact numbers: Demondrug, Might Seed, Demon Powder, potions, food and cures, and how they stack.',
@@ -566,7 +611,7 @@ def meals_page():
                f'<thead><tr><th>Skill</th><th>In game</th><th>In numbers</th><th>From</th></tr></thead><tbody>{rows}</tbody></table></div>')
     if m.get('notes'):
         out.append('<ul class="notes">' + ''.join(f'<li>{esc(n)}</li>' for n in m['notes']) + '</ul>')
-    out.append(source_line(m.get('source'), None))
+    out.append(source_line(m.get('source')))
     out.append('</article>')
     page('/wiki/meals/', 'meals', f'Meals and meal skills · {GAME} · {NAME}',
          cut(f'How meals work in {GAME}: what each meal gives (health, stamina, attack, defense, duration) and all '
@@ -580,7 +625,8 @@ def wiki_index():
     cards = [
         ('/wiki/skills/', 'Skills', f'{len(SKILLS)} skills: exact numbers per level, and every decoration, charm and armor piece with them.'),
         ('/wiki/armor/', 'Armor', f'{len(FAMILIES)} armor families, low and high rank: skills, slots, defense and set bonuses.'),
-        ('/wiki/items/', 'Items', f'{len(ITEMS)} consumables: boosts, durations, recipes and what stacks.'),
+        ('/wiki/items/', 'Items', f'{sum(i["category"] != "materials" for i in ITEMS)} consumables: boosts, durations, recipes and what '
+                                  f'stacks, and where to get their {sum(i["category"] == "materials" for i in ITEMS)} materials.'),
         ('/wiki/meals/', 'Meals', f'How meals work and all {len(WIKI["meals"]["skills"])} meal skills.'),
     ]
     out = [f'<h1>{GAME} wiki</h1>',

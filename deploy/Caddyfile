@@ -23,7 +23,7 @@ wildsbuilds.com {
 		Cache-Control "no-cache"
 	}
 
-	# The static wiki pages (tools/build_pages.py): /wiki/skills/agitator/ is wiki/skills/agitator/index.html. file_server
+	# The static wiki pages (src/MHWildsOptimizer.StaticSite): /wiki/skills/agitator/ is wiki/skills/agitator/index.html. file_server
 	# redirects a URL without the trailing slash to the one with it, and an unknown page is a real 404, not the app.
 	@wiki path /wiki /wiki/*
 	handle @wiki {

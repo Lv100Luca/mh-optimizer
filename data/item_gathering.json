@@ -1,0 +1,346 @@
+{
+ "_about": "Where items are gathered: region -> area numbers, from the Gathering lists of the item pages on monsterhunterwiki.org (taken from Cola's interactive map of the game data, https://c-ola.github.io/wildsmap/). Written by tools/fetch_item_gathering.py; do not edit by hand.",
+ "items": {
+  "Adamant Seed": {
+   "Windward Plains": [
+    3,
+    6,
+    14,
+    17
+   ],
+   "Scarlet Forest": [
+    2,
+    7,
+    10,
+    13,
+    16
+   ],
+   "Iceshard Cliffs": [
+    9,
+    11,
+    13
+   ],
+   "Ruins of Wyveria": [
+    2,
+    4
+   ]
+  },
+  "Antidote Herb": {
+   "Windward Plains": [
+    10,
+    12
+   ],
+   "Scarlet Forest": [
+    6,
+    7,
+    10
+   ],
+   "Oilwell Basin": [
+    1,
+    8,
+    15
+   ],
+   "Iceshard Cliffs": [
+    3,
+    5
+   ],
+   "Ruins of Wyveria": [
+    6
+   ]
+  },
+  "Blue Mushroom": {
+   "Windward Plains": [
+    6,
+    7
+   ],
+   "Scarlet Forest": [
+    1,
+    2,
+    3,
+    7,
+    8,
+    9,
+    12,
+    13
+   ],
+   "Oilwell Basin": [
+    1
+   ],
+   "Ruins of Wyveria": [
+    1,
+    2,
+    3,
+    5,
+    7
+   ]
+  },
+  "Chillshroom": {
+   "Scarlet Forest": [
+    1
+   ],
+   "Oilwell Basin": [
+    8,
+    12,
+    13,
+    14,
+    15
+   ]
+  },
+  "Fire Herb": {
+   "Windward Plains": [
+    2,
+    7,
+    11
+   ],
+   "Scarlet Forest": [
+    2,
+    3,
+    6,
+    15,
+    16
+   ],
+   "Oilwell Basin": [
+    11,
+    16
+   ]
+  },
+  "Gloamgrass Bud": {
+   "Scarlet Forest": [
+    13,
+    15,
+    18
+   ],
+   "Ruins of Wyveria": [
+    1,
+    3,
+    4
+   ]
+  },
+  "Herb": {
+   "Windward Plains": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    8,
+    10,
+    14,
+    15,
+    16
+   ],
+   "Scarlet Forest": [
+    1,
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    11,
+    13,
+    14,
+    16,
+    18
+   ],
+   "Oilwell Basin": [
+    1,
+    3,
+    5,
+    8,
+    13,
+    14
+   ],
+   "Iceshard Cliffs": [
+    1,
+    7,
+    9,
+    13,
+    17
+   ],
+   "Ruins of Wyveria": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    15
+   ]
+  },
+  "Honey": {
+   "Windward Plains": [
+    1,
+    2,
+    6,
+    7,
+    8,
+    13
+   ],
+   "Scarlet Forest": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    16,
+    17
+   ],
+   "Oilwell Basin": [
+    3,
+    4,
+    5,
+    8
+   ],
+   "Iceshard Cliffs": [
+    3,
+    5,
+    7,
+    8,
+    10,
+    18
+   ],
+   "Ruins of Wyveria": [
+    2,
+    6,
+    7,
+    8,
+    9,
+    11,
+    13
+   ]
+  },
+  "Hot Pepper": {
+   "Windward Plains": [
+    9
+   ],
+   "Iceshard Cliffs": [
+    1,
+    5,
+    6,
+    7,
+    13,
+    15,
+    18
+   ]
+  },
+  "Mandragora": {
+   "Windward Plains": [
+    6
+   ],
+   "Scarlet Forest": [
+    2,
+    7,
+    11,
+    16
+   ],
+   "Iceshard Cliffs": [
+    5,
+    7,
+    13,
+    14
+   ],
+   "Ruins of Wyveria": [
+    8,
+    11
+   ]
+  },
+  "Might Seed": {
+   "Oilwell Basin": [
+    2,
+    9,
+    15,
+    16
+   ],
+   "Ruins of Wyveria": [
+    2,
+    6,
+    7,
+    14
+   ]
+  },
+  "Nitroshroom": {
+   "Windward Plains": [
+    11,
+    14,
+    15
+   ],
+   "Scarlet Forest": [
+    3,
+    7,
+    8,
+    12
+   ],
+   "Oilwell Basin": [
+    1,
+    8,
+    9,
+    11,
+    12,
+    15
+   ],
+   "Iceshard Cliffs": [
+    2,
+    8
+   ],
+   "Ruins of Wyveria": [
+    13
+   ]
+  },
+  "Nulberry": {
+   "Windward Plains": [
+    5,
+    7,
+    8,
+    12,
+    17
+   ],
+   "Scarlet Forest": [
+    1,
+    9,
+    11,
+    13,
+    14,
+    17,
+    18
+   ],
+   "Oilwell Basin": [
+    1,
+    12,
+    14
+   ],
+   "Iceshard Cliffs": [
+    7,
+    8,
+    13
+   ],
+   "Ruins of Wyveria": [
+    3,
+    4,
+    6,
+    9,
+    13,
+    15
+   ]
+  },
+  "Smokenut": {
+   "Scarlet Forest": [
+    6,
+    7,
+    8,
+    18
+   ],
+   "Oilwell Basin": [
+    1,
+    6,
+    7,
+    9
+   ],
+   "Ruins of Wyveria": [
+    13
+   ]
+  }
+ }
+}

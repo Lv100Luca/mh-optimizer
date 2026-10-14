@@ -1,0 +1,188 @@
+@* A skill: the game's texts with exact numbers, what each level does, and everything that carries it. *@
+@{
+    var s = Skill;
+    var fx = s.Effects;
+    var bonus = s.Kind is SkillKind.Set or SkillKind.Group;
+    var src = s.Sources;
+}
+<Layout Path="@Urls.Skill(s.Name)" Title="@($"{s.Name} {Text.KindLabel[s.Kind].ToLowerInvariant()} · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@Meta()" Crumbs="@([("Wiki", "/wiki/"), ("Skills", "/wiki/skills/")])">
+    <article>
+        <div class="head">
+            @Parts.Icon(Urls.SkillIcon(s), 40)
+            <div>
+                <h1>@s.Name</h1>
+                <p class="sub">@string.Join(" · ", Flags())</p>
+            </div>
+        </div>
+        @if (s.Description is { } d)
+        {
+            <p class="lead">@d</p>
+        }
+
+        <h2>@(bonus ? "Tiers" : "Levels")</h2>
+        @if (fx?.Trigger is { } trigger)
+        {
+            <p><b>When:</b> @trigger</p>
+        }
+        <div class="scroll">
+            <table class="levels">
+                <thead><tr><th>@(bonus ? "Tier" : "Lv")</th><th>Effect</th><th>In numbers</th></tr></thead>
+                <tbody>
+                    @foreach (var r in s.Ranks)
+                    {
+                        var lines = fx?.Levels.GetValueOrDefault(r.Level.ToString(CultureInfo.InvariantCulture)) ?? [];
+                        <tr>
+                            <td>
+                                @if (bonus && r.Pieces is { } pieces)
+                                {
+                                    <b>@(r.Name ?? $"Tier {r.Level}")</b><br><span class="muted">@pieces pieces</span>
+                                }
+                                else
+                                {
+                                    <b>@(r.Name ?? r.Level.ToString(CultureInfo.InvariantCulture))</b>
+                                }
+                            </td>
+                            <td>@r.Description</td>
+                            <td>
+                                @if (lines.Count == 0)
+                                {
+                                    <span class="muted">—</span>
+                                }
+                                @for (var i = 0; i < lines.Count; i++)
+                                {
+                                    if (i > 0)
+                                    {
+                                        <br>
+                                    }
+                                    @lines[i]
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @foreach (var t in fx?.Tables ?? [])
+        {
+            @Parts.Table(t)
+        }
+        @Parts.Notes(fx?.Notes)
+        @Parts.Source(fx?.Source)
+
+        <h2>Where to get it</h2>
+        @if (src.Decorations is { Count: > 0 } decos)
+        {
+            <h3>Decorations</h3>
+            <ul class="chips">
+                @foreach (var deco in decos)
+                {
+                    <li>@Parts.Icon(Urls.Decoration(deco))@deco.Name <b>Lv @deco.Level</b> <span class="muted">rarity @deco.Rarity</span></li>
+                }
+            </ul>
+        }
+        @if (src.Charms is { Count: > 0 } charms)
+        {
+            <h3>Charms</h3>
+            <p class="muted">The highest rank of each craftable charm.</p>
+            <ul class="chips">
+                @foreach (var c in charms)
+                {
+                    <li>@Parts.Icon(Urls.Talisman(c.Rarity))@c.Name <b>Lv @c.Level</b></li>
+                }
+            </ul>
+        }
+        @if (src.Sets is { Count: > 0 } sets)
+        {
+            <h3>Armor sets</h3>
+            <ul class="chips">
+                @foreach (var setName in sets)
+                {
+                    <li>
+                        @if (Site.Sets.GetValueOrDefault(setName) is { } set)
+                        {
+                            @Parts.Icon(Urls.Armor(set.Pieces[0].Piece, set.Rarity))
+                        }
+                        <a href="@Urls.Set(setName)">@setName</a>
+                    </li>
+                }
+            </ul>
+            @if (s.GogmaPool)
+            {
+                <p class="muted">A Gogma Artian weapon can roll this @(s.Kind == SkillKind.Set ? "set bonus" : "group skill"); the weapon then counts as one piece.</p>
+            }
+        }
+        @if (src.Armor is { Count: > 0 } armor)
+        {
+            <h3>Armor pieces <span class="muted">(@armor.Count)</span></h3>
+            <div class="scroll">
+                <table class="armor-src">
+                    <tbody>
+                        @foreach (var a in armor)
+                        {
+                            <tr>
+                                <td>@Parts.Icon(Urls.Armor(a.Piece, a.Rarity), 22, a.Piece.ToString())</td>
+                                <td>@a.Name</td>
+                                <td><a href="@Urls.Set(a.Set)">@a.Set</a></td>
+                                <td>@(a.Rank == "high" ? "High" : "Low") rank, rarity @a.Rarity</td>
+                                <td class="num"><b>Lv @a.Level</b></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @if (src.Weapons is { Count: > 0 } weapons)
+        {
+            <h3>Weapons with it built in <span class="muted">(@weapons.Count)</span></h3>
+            @foreach (var group in weapons.GroupBy(w => w.Kind).OrderBy(g => WeaponOrder(g.Key)))
+            {
+                <div class="weapon-group">
+                    <h4>@Parts.Icon(Urls.Weapon(group.Key))@Text.WeaponLabel.GetValueOrDefault(group.Key, group.Key)</h4>
+                    <p>@string.Join(", ", group.Select(w => w.Name + (s.MaxLevel > 1 ? $" (Lv {w.Level})" : "")))</p>
+                </div>
+            }
+        }
+        @if (src.Decorations is null && src.Charms is null && src.Sets is null && src.Armor is null && src.Weapons is null)
+        {
+            <p class="muted">Nothing in the game data carries this skill.</p>
+        }
+
+        @Parts.OptimizerBox($"Want {s.Name} in your build? The optimizer finds the armor, decorations and talismans that get you there with the most damage.")
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public WikiSkill Skill { get; set; } = default!;
+
+    private IEnumerable<string> Flags()
+    {
+        yield return Text.KindLabel[Skill.Kind];
+        yield return SiteIndex.Game;
+        if (Skill.Kind is not (SkillKind.Set or SkillKind.Group)) yield return $"max level {Skill.MaxLevel}";
+        if (Skill.WeaponOnly) yield return "only on weapons";
+        if (Skill.GogmaPool) yield return "Gogma Artian weapon roll";
+    }
+
+    private static int WeaponOrder(string kind) => Text.WeaponLabel.Keys.ToList() is var keys && keys.IndexOf(kind) is >= 0 and var i ? i : 99;
+
+    private string Meta()
+    {
+        var s = Skill;
+        var fx = s.Effects;
+        var head = $"{s.Name} ({Text.KindLabel[s.Kind].ToLowerInvariant()}) in {SiteIndex.Game}: ";
+        string text;
+        if (s.Kind is SkillKind.Set or SkillKind.Group)
+            text = head + string.Join(" ", s.Ranks.Where(r => r.Description is not null).Select(r => $"{r.Pieces} pieces: {r.Description}"));
+        else if (fx is { Levels.Count: > 0 })
+        {
+            var first = fx.Levels.GetValueOrDefault("1");
+            var last = fx.Levels.GetValueOrDefault(s.MaxLevel.ToString(CultureInfo.InvariantCulture));
+            text = head + (fx.Trigger is { } t ? t + ": " : "") + (first is null ? "" : "Lv 1 " + string.Join(", ", first))
+                   + (last is not null && s.MaxLevel > 1 ? $"; Lv {s.MaxLevel} {string.Join(", ", last)}." : ".");
+        }
+        else
+            text = head + SiteIndex.Summary(s);
+        return Text.Cut(text + " Exact numbers for every level and where to get it.");
+    }
+}

@@ -28,6 +28,10 @@ public static partial class Fmt
 
     public static string Plural(int n, string one, string? many = null) => $"{n} {(n == 1 ? one : many ?? one + "s")}";
 
+    /// <summary>"a, b and c".</summary>
+    public static string JoinAnd(IReadOnlyList<string> items) =>
+        items.Count < 2 ? string.Join("", items) : string.Join(", ", items.Take(items.Count - 1)) + " and " + items[^1];
+
     /// <summary>"Move · 2 hits · 283 MV": what an attack is, for the (i) next to its name (<paramref name="group"/> "Moves", "Combos", "Sequences").</summary>
     public static string AttackFacts(string group, double hits, double mv) =>
         $"{group.TrimEnd('s')} · {Plural((int)Math.Round(hits), "hit")} · {N(mv, 0)} MV";

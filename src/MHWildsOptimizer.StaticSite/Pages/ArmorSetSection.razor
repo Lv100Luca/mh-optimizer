@@ -1,0 +1,116 @@
+@* One set of an armor family: its bonuses, every piece with skills, slots, defense and resistances, and the skill totals. *@
+@{
+    var set = Set;
+    var pieces = set.Pieces.OrderBy(p => p.Piece).ToList();
+    var totals = pieces.SelectMany(p => p.Skills).GroupBy(k => k.Skill).Select(g => (Skill: g.Key, Level: g.Sum(k => k.Level)))
+        .OrderByDescending(t => t.Level).ThenBy(t => t.Skill, StringComparer.Ordinal).ToList();
+}
+<section id="@Urls.Slug(set.Name)">
+    <h2>@SiteIndex.SetLabel(set) <span class="muted">@(set.Rank == "low" ? "" : "high rank · ")rarity @set.Rarity</span></h2>
+    @if (SiteIndex.SetBonuses(set).Count > 0 || set.GroupSkill is not null)
+    {
+        <ul class="bonuses">
+            @foreach (var name in SiteIndex.SetBonuses(set))
+            {
+                <li><span class="tag set">Set bonus</span> @SkillLink(name) <span class="muted">@Tiers(name)</span></li>
+            }
+            @if (set.GroupSkill is { } group)
+            {
+                <li><span class="tag group">Group skill</span> @SkillLink(group) <span class="muted">@Tiers(group)</span></li>
+            }
+        </ul>
+    }
+    <div class="scroll">
+        <table class="armor">
+            <thead>
+                <tr>
+                    <th>Piece</th><th>Skills</th><th>Slots</th><th class="num">Defense</th>
+                    @foreach (var e in Text.Elements)
+                    {
+                        <th class="num" title="@(char.ToUpperInvariant(e[0]) + e[1..]) resistance">@Parts.Icon(Urls.Element(e), 16, e)</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in pieces)
+                {
+                    <tr>
+                        <td class="piece">
+                            <div>
+                                @Parts.Icon(Urls.Armor(p.Piece, p.Rarity), 24, p.Piece.ToString())
+                                <span>@p.Name<br><span class="muted">@p.Piece · rarity @p.Rarity</span></span>
+                            </div>
+                        </td>
+                        <td>
+                            @if (p.Skills.Count == 0)
+                            {
+                                <span class="muted">—</span>
+                            }
+                            @for (var i = 0; i < p.Skills.Count; i++)
+                            {
+                                if (i > 0)
+                                {
+                                    @(", ")
+                                }
+                                @SkillLink(p.Skills[i].Skill, p.Skills[i].Level)
+                            }
+                            @if (p.SetBonus is { Count: > 0 } own)
+                            {
+                                <br><span class="muted">@string.Join(", ", own)</span>
+                            }
+                        </td>
+                        <td class="slots">
+                            @if (p.Slots.Count == 0)
+                            {
+                                <span class="muted">—</span>
+                            }
+                            @foreach (var slot in p.Slots)
+                            {
+                                <span class="slot">@slot</span>
+                            }
+                        </td>
+                        <td class="num">@p.DefenseBase<span class="muted"> → @p.DefenseMax</span></td>
+                        @foreach (var e in Text.Elements)
+                        {
+                            var r = p.Resistances.GetValueOrDefault(e);
+                            <td class="num @(r < 0 ? "neg" : r > 0 ? "pos" : "muted")">@Text.Signed(r)</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (pieces.Count > 1 && totals.Count > 0)
+    {
+        <p class="totals">
+            <b>All @pieces.Count pieces:</b>
+            @for (var i = 0; i < totals.Count; i++)
+            {
+                if (i > 0)
+                {
+                    @(", ")
+                }
+                @SkillLink(totals[i].Skill, totals[i].Level)
+            }
+        </p>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public WikiArmorSet Set { get; set; } = default!;
+
+    private RenderFragment SkillLink(string name, int? level = null) =>
+        @<text>@if (Site.SkillsByName.ContainsKey(name))
+        {
+            <a href="@Urls.Skill(name)">@name@if (level is not null) { <text> </text><b>@level</b> }</a>
+        }
+        else
+        {
+            @name@if (level is not null) { <text> </text><b>@level</b> }
+        }</text>;
+
+    /// <summary>"2 pieces: Thunderous Roar I; 4 pieces: Thunderous Roar II".</summary>
+    private string Tiers(string name) => Site.SkillsByName.GetValueOrDefault(name) is { } skill
+        ? string.Join("; ", skill.Ranks.Select(r => $"{r.Pieces} pieces: {r.Name}"))
+        : "";
+}

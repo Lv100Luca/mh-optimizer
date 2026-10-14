@@ -1,0 +1,23 @@
+@* The wiki's front page: one card per section. *@
+@{
+    var materials = Site.Items.Count(i => i.Category == "materials");
+    (string Path, string Title, string About)[] cards =
+    [
+        ("/wiki/skills/", "Skills", $"{Site.Skills.Count} skills: exact numbers per level, and every decoration, charm and armor piece with them."),
+        ("/wiki/armor/", "Armor", $"{Site.Families.Count} armor families, low and high rank: skills, slots, defense and set bonuses."),
+        ("/wiki/items/", "Items", $"{Site.Items.Count - materials} consumables: boosts, durations, recipes and what stacks, and where to get their {materials} materials."),
+        ("/wiki/meals/", "Meals", $"How meals work and all {Site.Meals?.Skills.Count ?? 0} meal skills."),
+    ];
+}
+<Layout Path="/wiki/" Title="@($"{SiteIndex.Game} wiki: skills, armor, items · {SiteIndex.Name}")"
+        Description="@($"{SiteIndex.Game} wiki with exact numbers: every skill and level, every armor piece in low and high rank, items and meal skills.")">
+    <h1>@SiteIndex.Game wiki</h1>
+    <p class="lead">The game reference behind the @SiteIndex.Name optimizer: skills, armor, items and meals in @SiteIndex.Game, with the exact numbers from the game data.</p>
+    <div class="cards">
+        @foreach (var c in cards)
+        {
+            <a class="card" href="@c.Path"><h2>@c.Title</h2><p>@c.About</p></a>
+        }
+    </div>
+    @Parts.OptimizerBox($"{SiteIndex.Name} also finds the best build for your weapon: armor, decorations and talismans, scored by damage per attack.")
+</Layout>

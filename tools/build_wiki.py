@@ -7,7 +7,11 @@ Contents:
   Gogma weapon skill pool. Skills that exist only as innate weapon skills are flagged `weapon_only`.
 - armor_sets: every armor set (low and high rank) with its pieces: skills, slots, defense and resistances.
 - items, item_categories: the common consumables curated in data/item_effects.json (what they do in numbers, stacking), with the
-  game's text, icon, rarity and recipes from data/raw/items.json. Run tools/fetch_icons.py afterwards for new items' icons.
+  game's text, icon, rarity and recipes from data/raw/items.json, plus every material their recipes need (category
+  "materials"). Each item says where it comes from: gathering spots (data/item_gathering.json), material retrieval, the item
+  shop and the support ship (data/datamine CollectionItemData, ItemShopData, SupportShipData from dtlnor/MHWs-in-json) and
+  monster rewards (data/raw/monsters.json). After adding items, run tools/fetch_item_gathering.py and this script again, then
+  tools/fetch_icons.py for the new icons.
 - meals: how meals work and every meal skill, curated in data/meal_skills.json.
 
 Exact texts: a skill's `text` in skill_effects.json (the game's per-level wording with the exact numbers) replaces the game's
@@ -15,6 +19,7 @@ rank description, in data/wiki.json (the game's own wording kept as `game`) and 
 `game_description`), so the optimizer's skill cards and pickers show it too. Run this again after tools/build_dataset.py.
 """
 import json
+import os
 from collections import defaultdict
 
 RAW = 'data/raw/'
@@ -179,27 +184,115 @@ for i in raw_items.values():
             if i['name'] not in used_in[part['name']]:
                 used_in[part['name']].append(i['name'])
 
+
+def recipes_of(name):
+    return [[p['name'] for p in r['inputs']] for r in raw_items[name]['recipes'] if r['inputs']]
+
+
+# The materials: everything the curated items are made from, down to what is gathered, bought or carved, so every ingredient
+# on an item page links to a page that says where to get it.
+materials = []
+for name in item_fx['items']:
+    if name not in raw_items:
+        raise SystemExit(f'item_effects.json: no item called {name} in data/raw/items.json')
+todo = list(item_fx['items'])
+while todo:
+    for part in (p for r in recipes_of(todo.pop()) for p in r):
+        if part not in item_fx['items'] and part not in materials:
+            materials.append(part)
+            todo.append(part)
+materials.sort()
+
+# Where an item comes from: curated lines (`obtain` in item_effects.json), gathering spots (data/item_gathering.json, tools/fetch_item_gathering.py), material retrieval,
+# the item shop and the support ship (data/datamine, dtlnor/MHWs-in-json Facility tables), monster rewards (mhdb).
+REGIONS = ['Windward Plains', 'Scarlet Forest', 'Oilwell Basin', 'Iceshard Cliffs', 'Ruins of Wyveria']  # ST101..ST105
+DROP_KINDS = {
+    'target-reward': 'quest reward', 'carve': 'carve', 'carve-severed': 'carve (severed part)',
+    'carve-rotten': 'carve (rotted corpse)', 'carve-rotten-severed': 'carve (rotted severed part)',
+    'carve-crystallized': 'carve (crystallized corpse)', 'broken-part': 'break', 'broken-fragment': 'broken fragment',
+    'wound-destroyed': 'destroy a wound', 'tempered-wound-destroyed': 'destroy a wound (tempered)',
+}
+
+
+def datamine(name):
+    def simplify(o):
+        if isinstance(o, dict):
+            if len(o) == 1 and ('.' in next(iter(o)) or next(iter(o)) == '_Value'):
+                return simplify(next(iter(o.values())))
+            return {k: simplify(v) for k, v in o.items()}
+        return [simplify(x) for x in o] if isinstance(o, list) else o
+    return simplify(load(f'data/datamine/{name}.json'))[0]['_Values']
+
+
+def game_id(value):  # "[170]ITEM_0168" -> 170, mhdb's gameId
+    return int(value[1:value.index(']')])
+
+
+item_by_game_id = {i['gameId']: i['name'] for i in raw_items.values()}
+in_shop = {item_by_game_id.get(game_id(r['_ItemId'])) for r in datamine('ItemShopData')}
+on_ship = {item_by_game_id.get(game_id(r['_ItemId'])) for r in datamine('SupportShipData')}
+retrieval = {}
+for r in datamine('CollectionItemData'):
+    # one level per retrieval spot (the five regions' camps) and environment state; level 0 brings none
+    levels = zip(r['_FertilityLevel'], r['_AbnormalLevel'], r['_RuinLevel'])
+    regions = [REGIONS[k] for k, ls in enumerate(levels) if any(not l.endswith('LEVEL_00') for l in ls)]
+    retrieval[item_by_game_id.get(game_id(r['_ItemId']))] = regions
+gathering = load('data/item_gathering.json')['items'] if os.path.exists('data/item_gathering.json') else {}
+drops = defaultdict(dict)
+for m in load(RAW + 'monsters.json'):
+    for reward in m['rewards']:
+        for c in reward['conditions']:
+            how = DROP_KINDS.get(c['kind'], c['kind'].replace('-', ' '))
+            if c['part']:
+                how += ' ' + c['part'].replace('-', ' ')
+            key = (m['name'], c['rank'], how)
+            drops[reward['item']['name']][key] = max(drops[reward['item']['name']].get(key, 0), c['chance'])
+
+
+def sources_of(name, fx):
+    found = {
+        'other': fx.get('obtain'),
+        'gather': [{'region': r, 'areas': a} for r, a in gathering.get(name, {}).items()] or None,
+        'retrieval': retrieval.get(name) or None,
+        'shop': name in in_shop or None,
+        'support_ship': name in on_ship or None,
+        'monsters': [{'monster': m, 'rank': rank, 'how': how, 'chance': chance}
+                     for (m, rank, how), chance in sorted(drops[name].items(), key=lambda kv: (kv[0][0], kv[0][1] != 'low', kv[0][2]))]
+                    or None,
+    }
+    return {k: v for k, v in found.items() if v} or None
+
+
+def item_entry(name, category, fx):
+    i = raw_items[name]
+    return {
+        'id': i['id'], 'name': name, 'category': category, 'icon': i['icon']['kind'], 'icon_color': i['icon']['color'],
+        'rarity': i['rarity'], 'carry_limit': i['carryLimit'], 'description': i['description'],
+        'boost': fx.get('boost'), 'duration': fx.get('duration'), 'effects': fx.get('effects', []), 'stacking': fx.get('stacking'),
+        'notes': fx.get('notes'),
+        'recipes': recipes_of(name) or None,
+        'used_in': used_in.get(name) or None,
+        'related': fx.get('related'),
+        'sources': sources_of(name, fx),
+        'source': fx.get('source'), 'confidence': fx.get('confidence'),
+    }
+
+
 categories = item_fx['categories']
+if 'materials' not in {c['key'] for c in categories}:
+    raise SystemExit('item_effects.json: the materials category is missing')
 items = []
 for name, fx in item_fx['items'].items():
-    i = raw_items.get(name)
-    if i is None:
-        raise SystemExit(f'item_effects.json: no item called {name} in data/raw/items.json')
-    if fx['category'] not in {c['key'] for c in categories}:
+    if fx['category'] not in {c['key'] for c in categories} or fx['category'] == 'materials':
         raise SystemExit(f'item_effects.json: {name} has an unknown category {fx["category"]}')
     for other in fx.get('related', []):
         if other not in item_fx['items']:
             raise SystemExit(f'item_effects.json: {name} relates to {other}, which the wiki does not have')
-    items.append({
-        'id': i['id'], 'name': name, 'category': fx['category'], 'icon': i['icon']['kind'], 'icon_color': i['icon']['color'],
-        'rarity': i['rarity'], 'carry_limit': i['carryLimit'], 'description': i['description'],
-        'boost': fx.get('boost'), 'duration': fx.get('duration'), 'effects': fx['effects'], 'stacking': fx.get('stacking'),
-        'notes': fx.get('notes'),
-        'recipes': [[p['name'] for p in r['inputs']] for r in i['recipes'] if r['inputs']] or None,
-        'used_in': used_in.get(name) or None,
-        'related': fx.get('related'),
-        'source': fx.get('source'), 'confidence': fx.get('confidence'),
-    })
+    items.append(item_entry(name, fx['category'], fx))
+items += [item_entry(name, 'materials', {}) for name in materials]
+unsourced = [i['name'] for i in items if not i['sources'] and not i['recipes']]
+if unsourced:
+    print(f'no source and no recipe for {len(unsourced)} items (run tools/fetch_item_gathering.py?): {", ".join(unsourced)}')
 
 meal_fx = load('data/meal_skills.json')
 meals = {

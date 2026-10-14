@@ -51,7 +51,8 @@ public sealed class WikiIndex
         Items = (data.Items ?? []).ToDictionary(i => i.Name);
         ItemText = Items.Values.ToDictionary(i => i.Name, i => string.Join('\n', [
             i.Name, i.Description, i.Boost, i.Stacking, .. i.Effects, .. i.Notes ?? [], .. i.Recipes?.SelectMany(r => r) ?? [],
-            (data.ItemCategories ?? []).FirstOrDefault(c => c.Key == i.Category)?.Title,
+            (data.ItemCategories ?? []).FirstOrDefault(c => c.Key == i.Category)?.Title, SourceSummary(i),
+            .. i.Sources?.Gather?.Select(g => g.Region) ?? [], .. i.Sources?.Retrieval ?? [], .. i.Sources?.Monsters?.Select(m => m.Monster) ?? [],
         ]).ToLowerInvariant());
         MealSkills = (data.Meals?.Skills ?? []).ToDictionary(m => m.Name);
         MealText = MealSkills.Values.ToDictionary(m => m.Name, m => string.Join('\n', [
@@ -71,8 +72,26 @@ public sealed class WikiIndex
 
     public IReadOnlyDictionary<string, WikiItem> Items { get; }
 
-    /// <summary>Lower-case text a search matches: name, game text, effects, ingredients, category.</summary>
+    /// <summary>Lower-case text a search matches: name, game text, effects, ingredients, category, where it comes from.</summary>
     public IReadOnlyDictionary<string, string> ItemText { get; }
+
+    /// <summary>Where an item comes from in a few words: "Combine · gather · support ship".</summary>
+    public static string SourceSummary(WikiItem item)
+    {
+        var s = item.Sources;
+        string?[] parts =
+        [
+            s?.Other is not null ? "quest or cooking" : null,
+            item.Recipes is { Count: > 0 } ? "combine" : null,
+            s?.Gather is not null ? "gather" : null,
+            s?.Retrieval is not null ? "material retrieval" : null,
+            s?.Shop == true ? "item shop" : null,
+            s?.SupportShip == true ? "support ship" : null,
+            s?.Monsters is { } monsters ? string.Join(", ", monsters.Select(m => m.Monster).Distinct()) : null,
+        ];
+        var text = string.Join(" · ", parts.OfType<string>());
+        return text.Length == 0 ? "" : char.ToUpperInvariant(text[0]) + text[1..];
+    }
 
     public IReadOnlyDictionary<string, WikiMealSkill> MealSkills { get; }
 

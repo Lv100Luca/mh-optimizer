@@ -1,0 +1,21 @@
+@* Every item category with its items. *@
+<Layout Path="/wiki/items/" Title="@($"Items · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@($"{SiteIndex.Game} consumables in exact numbers: Demondrug, Might Seed, Demon Powder, potions, food and cures, and how they stack.")"
+        Crumbs="@([("Wiki", "/wiki/")])">
+    <h1>@SiteIndex.Game items</h1>
+    <p class="lead">What the common consumables in @SiteIndex.Game do in exact numbers, how long they last and what stacks with what, and where to get the materials they are made from.</p>
+    @foreach (var c in Site.Categories)
+    {
+        <h2><a href="@Urls.Category(c.Key)">@SiteIndex.CategoryHeading(c)</a></h2>
+        @if (c.About is { } about)
+        {
+            <p class="muted">@about</p>
+        }
+        <ul class="list">
+            @foreach (var i in Site.Items.Where(i => i.Category == c.Key))
+            {
+                <li>@Parts.Icon(Urls.ItemIcon(i))<a href="@Site.ItemUrl(i)">@i.Name</a><span class="muted">@i.Boost</span></li>
+            }
+        </ul>
+    }
+</Layout>

@@ -5,7 +5,8 @@
   {"key": "defense", "title": "Defense", "about": "The same pattern as attack: a drink (Armorskin or Mega Armorskin), a seed or pill (Adamant Seed or Adamant Pill), Hardshell Powder, and the Armorcharm on top."},
   {"key": "healing", "title": "Healing", "about": "Potions heal part at once and the rest over a few seconds. Max and Ancient Potions also raise the health gauge to its maximum for 15 minutes."},
   {"key": "stamina", "title": "Food and stamina", "about": "Food raises the stamina (and for steaks the health) gauge. A Ration is also what the Portable BBQ Grill cooks a meal from: see Meals."},
-  {"key": "cures", "title": "Cures and climate", "about": "Blight cures and the hot / cold area drinks. A Sizzling Meal skill makes the drinks unnecessary."}
+  {"key": "cures", "title": "Cures and climate", "about": "Blight cures and the hot / cold area drinks. A Sizzling Meal skill makes the drinks unnecessary."},
+  {"key": "materials", "title": "Materials", "about": "What the items above are made from: where to gather, retrieve, buy or carve each one, and what else it goes into."}
  ],
  "items": {
   "Demondrug": {
@@ -49,6 +50,7 @@
   },
   "Powercharm": {
    "category": "attack", "boost": "Attack +6", "duration": "while carried",
+   "obtain": ["A reward for one of two optional high rank quests at Wounded Hollow (from chapter 4): Rex's hunt of two Ajarakan and Cobb's hunt of two Hirabami give the Powercharm and the Armorcharm between them. It cannot be crafted or bought."],
    "effects": ["Attack +6 as long as it is in your item pouch"],
    "stacking": "Stacks with everything.",
    "notes": ["Matches the status screen (checked 2026-10-08). The optimizer counts it by default (\"Powercharm in the pouch\" under Conditions)."],
@@ -95,6 +97,7 @@
   },
   "Armorcharm": {
    "category": "defense", "boost": "Defense +12", "duration": "while carried",
+   "obtain": ["A reward for one of two optional high rank quests at Wounded Hollow (from chapter 4): Rex's hunt of two Ajarakan and Cobb's hunt of two Hirabami give the Powercharm and the Armorcharm between them. It cannot be crafted or bought."],
    "effects": ["Defense +12 as long as it is in your item pouch"],
    "stacking": "Stacks with everything.",
    "related": ["Powercharm", "Mega Armorskin"],
@@ -163,6 +166,7 @@
   },
   "Well-done Steak": {
    "category": "stamina", "boost": "Health and stamina gauges +50", "duration": "30 min",
+   "obtain": ["Grilled from Raw Meat (carved from herbivores) on the Portable BBQ Grill: lifted at the sear it is a Well-done Steak, too early a Rare Steak, too late Burnt Meat."],
    "effects": ["Maximum health +50 for 30 minutes", "Stamina +50"],
    "notes": ["Eating it starts Protein Fiend (Xu Wu's Vigor set bonus): attack +15 / +30 for 3 minutes."],
    "related": ["Rare Steak", "Burnt Meat", "Ration"],
@@ -170,12 +174,14 @@
   },
   "Rare Steak": {
    "category": "stamina", "boost": "Health and stamina gauges +25", "duration": "30 min",
+   "obtain": ["Grilled from Raw Meat (carved from herbivores) on the Portable BBQ Grill: lifted at the sear it is a Well-done Steak, too early a Rare Steak, too late Burnt Meat."],
    "effects": ["Maximum health +25 for 30 minutes", "Stamina +25"],
    "related": ["Well-done Steak", "Burnt Meat"],
    "source": "PlayerItemParam _Rare_Steak_AddHealthParam 25 / 1800 s, _Rare_Steak_AddStamina 25", "confidence": "high"
   },
   "Burnt Meat": {
    "category": "stamina", "boost": "Stamina +25, maybe health +25", "duration": "30 min",
+   "obtain": ["Grilled from Raw Meat (carved from herbivores) on the Portable BBQ Grill: lifted at the sear it is a Well-done Steak, too early a Rare Steak, too late Burnt Meat."],
    "effects": ["Stamina +25", "Half the time also maximum health +25 for 30 minutes"],
    "notes": ["The 50% is the data's _Burnt_Steak_SuccessRate 0.5, read together with the item text (\"may be a bit too charred to provide any healing\"): inferred."],
    "related": ["Well-done Steak", "Rare Steak"],

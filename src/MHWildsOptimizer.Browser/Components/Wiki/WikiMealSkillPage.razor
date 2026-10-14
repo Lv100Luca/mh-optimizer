@@ -40,10 +40,10 @@
                 }
             </ul>
         }
-        <p class="wiki-source tiny">
-            <span class="wiki-conf @m.Confidence">@(m.Confidence ?? "unrated") confidence</span>
-            <span class="muted">@m.Source</span>
-        </p>
+        @if (m.Source is { } source)
+        {
+            <p class="wiki-source tiny muted">Source: @source</p>
+        }
         <p class="muted small">
             How meals hand out their skills: <button class="linklike" @onclick="() => App.OpenWiki(Tab.WikiMeals)">Meals</button>.
         </p>

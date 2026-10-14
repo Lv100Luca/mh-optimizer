@@ -1,0 +1,46 @@
+@* Every armor family with its versions, rarity range and bonuses. *@
+<Layout Path="/wiki/armor/" Title="@($"All armor sets · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@($"Every {SiteIndex.Game} armor set, low and high rank: skills, decoration slots, defense, resistances and set bonuses of each piece.")"
+        Crumbs="@([("Wiki", "/wiki/")])">
+    <h1>@SiteIndex.Game armor</h1>
+    <p class="lead">All @Site.Families.Count armor families in @SiteIndex.Game, low and high rank on one page each: skills, decoration slots, defense, resistances and set bonuses of every piece.</p>
+    <div class="scroll">
+        <table class="armor-index">
+            <thead><tr><th></th><th>Armor</th><th>Versions</th><th class="num">Rarity</th><th>Set bonus / group skill</th></tr></thead>
+            <tbody>
+                @foreach (var (family, sets) in Site.Families.OrderBy(f => f.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    var rarities = sets.Select(s => s.Rarity).Distinct().Order().ToList();
+                    var bonuses = SiteIndex.Bonuses(sets);
+                    <tr>
+                        <td>@Parts.Icon(Urls.Armor(sets[^1].Pieces[0].Piece, sets[^1].Rarity), 22)</td>
+                        <td><a href="@Urls.Family(family)">@family</a></td>
+                        <td class="muted">@string.Join(", ", sets.Select(s => SiteIndex.SetLabel(s).Replace(family, "").Trim() is { Length: > 0 } v ? v : "—"))</td>
+                        <td class="num">@(rarities.Count > 1 ? $"{rarities[0]}–{rarities[^1]}" : rarities[0].ToString(CultureInfo.InvariantCulture))</td>
+                        <td>
+                            @if (bonuses.Count == 0)
+                            {
+                                <span class="muted">—</span>
+                            }
+                            @for (var i = 0; i < bonuses.Count; i++)
+                            {
+                                if (i > 0)
+                                {
+                                    @(", ")
+                                }
+                                if (Site.SkillsByName.ContainsKey(bonuses[i]))
+                                {
+                                    <a href="@Urls.Skill(bonuses[i])">@bonuses[i]</a>
+                                }
+                                else
+                                {
+                                    @bonuses[i]
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</Layout>

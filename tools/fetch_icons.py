@@ -38,10 +38,12 @@ WEAPONS = {
     'light-bowgun': 'Light_Bowgun',
 }
 ELEMENTS = ['Fire', 'Water', 'Thunder', 'Ice', 'Dragon']
-# mhdb item icon kind -> wiki icon name (matched by eye: a potion's jar is "Medicine", a drink's flask "Vial", the powder pile "Charm")
+# mhdb item icon kind -> wiki icon name, as the wiki's own item pages show them ("<item> (MHWilds)", Image = …): a potion's jar
+# is "Medicine", a drink's flask "Vial", the powders' bag "Sac" (the same icon as Flame Sac), an extract's flask "Chemical"
 ITEM_KINDS = {
-    'potion': 'Medicine', 'curative': 'Vial', 'powder': 'Charm', 'drug': 'Drug', 'pill': 'Pill', 'seed': 'Seed', 'meat': 'Meat',
+    'potion': 'Medicine', 'curative': 'Vial', 'powder': 'Sac', 'drug': 'Drug', 'pill': 'Pill', 'seed': 'Seed', 'meat': 'Meat',
     'whetstone': 'Whetstone', 'smoke': 'Smoke_Bomb', 'trap': 'Trap', 'mushroom': 'Mushroom', 'plant': 'Herb',
+    'extract': 'Chemical', 'honey': 'Webbing',
 }
 # mhdb color -> wiki color, as for decorations; the rest by name
 ITEM_COLORS = {'sky': 'Light_Blue', 'ivory': 'Tan', 'moss-green': 'Moss', 'ultramarine': 'Dark_Blue', 'sage-green': 'Light_Green',

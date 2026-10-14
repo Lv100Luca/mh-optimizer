@@ -1,0 +1,66 @@
+@* An item category: how its items work together, an overview table, and in full every item without a page of its own. *@
+@{
+    var items = Site.Items.Where(i => i.Category == Category.Key).ToList();
+    var heading = SiteIndex.CategoryHeading(Category);
+    var materials = Category.Key == "materials";
+}
+<Layout Path="@Urls.Category(Category.Key)" Title="@($"{heading} · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@Text.Cut($"{heading} in {SiteIndex.Game}: {string.Join(", ", items.Select(i => i.Name))}. {Category.About}")"
+        Crumbs="@([("Wiki", "/wiki/"), ("Items", "/wiki/items/")])">
+    <article>
+        <h1>@heading</h1>
+        @if (Category.About is { } about)
+        {
+            <p class="lead">@about</p>
+        }
+        <div class="scroll">
+            <table class="items">
+                <thead>
+                    <tr>
+                        <th></th><th>Item</th>
+                        @if (materials)
+                        {
+                            <th>Where to get it</th>
+                        }
+                        else
+                        {
+                            <th>Effect</th><th>Lasts</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in items)
+                    {
+                        <tr>
+                            <td>@Parts.Icon(Urls.ItemIcon(i), 24)</td>
+                            <td><a href="@Site.ItemUrl(i)">@i.Name</a></td>
+                            @if (materials)
+                            {
+                                <td>@SiteIndex.SourceSummary(i)</td>
+                            }
+                            else
+                            {
+                                <td>@i.Boost</td><td>@i.Duration</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @foreach (var i in items.Where(i => !Site.HasOwnPage(i)))
+        {
+            <section id="@Urls.Slug(i.Name)">
+                <h2>@Parts.Icon(Urls.ItemIcon(i), 28) @i.Name</h2>
+                @if (i.Description is { } d)
+                {
+                    <blockquote class="game-text">@d<cite>In-game description</cite></blockquote>
+                }
+                <ItemDetails Item="i" Level="3" />
+            </section>
+        }
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public WikiItemCategory Category { get; set; } = default!;
+}

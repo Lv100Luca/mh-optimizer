@@ -11,12 +11,14 @@
             case Tab.WikiItems:
                 <p>
                     The consumables you carry on every hunt and what they do in numbers (the game's own texts only say "temporarily"):
-                    how much attack or defense, for how long, and which of them add up.
+                    how much attack or defense, for how long, and which of them add up. The materials they are made from are here too,
+                    with where to gather, retrieve, buy or carve each one.
                 </p>
                 @foreach (var category in Wiki.Data.ItemCategories ?? [])
                 {
                     var items = (Wiki.Data.Items ?? []).Where(i => i.Category == category.Key).ToList();
                     if (items.Count == 0) continue;
+                    var materials = category.Key == "materials";
                     <h3 class="wiki-subhead">@category.Title</h3>
                     @if (category.About is { } about)
                     {
@@ -24,15 +26,34 @@
                     }
                     <div class="dmg-scroll">
                         <table class="table wiki-item-table">
-                            <thead><tr><th></th><th>Item</th><th>Effect</th><th>Lasts</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th></th><th>Item</th>
+                                    @if (materials)
+                                    {
+                                        <th>Where to get it</th>
+                                    }
+                                    else
+                                    {
+                                        <th>Effect</th><th>Lasts</th>
+                                    }
+                                </tr>
+                            </thead>
                             <tbody>
                                 @foreach (var i in items)
                                 {
                                     <tr>
                                         <td class="icon-cell"><img class="icon" width="22" height="22" src="@GameIcons.Item(i.Icon, i.IconColor)" alt="" /></td>
                                         <td><button class="linklike" @onclick="() => App.OpenWiki(Section, i.Name)">@i.Name</button></td>
-                                        <td>@(i.Boost ?? "—")</td>
-                                        <td class="num">@(i.Duration ?? "—")</td>
+                                        @if (materials)
+                                        {
+                                            <td class="wiki-get-summary">@WikiIndex.SourceSummary(i)</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@(i.Boost ?? "—")</td>
+                                            <td class="num">@(i.Duration ?? "—")</td>
+                                        }
                                     </tr>
                                 }
                             </tbody>
@@ -108,7 +129,7 @@
                     @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Armor), "armor skill") ·
                     @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind == SkillKind.Weapon), "weapon skill") ·
                     @Fmt.Plural(Wiki.Data.Skills.Count(s => s.Kind is SkillKind.Set or SkillKind.Group), "set skill") ·
-                    numbers from the game data (dtlnor/MHWs-in-json), kiranico and community tests, each rated by confidence.
+                    numbers from the game data (dtlnor/MHWs-in-json), kiranico and community tests.
                 </p>
                 <h3 class="wiki-subhead">Only on weapons</h3>
                 <p class="muted small">No decoration, armor piece or charm carries these: only certain weapons have them built in.</p>

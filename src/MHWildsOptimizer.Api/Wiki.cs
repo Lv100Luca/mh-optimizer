@@ -65,7 +65,10 @@ public sealed record WikiArmorPiece(
 /// <param name="About">What the category's items have in common (how they stack).</param>
 public sealed record WikiItemCategory(string Key, string Title, string? About);
 
-/// <summary>A consumable (curated in data/item_effects.json) with what it does in numbers.</summary>
+/// <summary>
+/// A consumable (curated in data/item_effects.json) with what it does in numbers, or a material one of them is made from
+/// (category "materials": no effects, the game's text says what it is for).
+/// </summary>
 /// <param name="Icon">The icon's mhdb kind ("drug"); with <paramref name="IconColor"/> the file icons/items/&lt;kind&gt;-&lt;color&gt;.png.</param>
 /// <param name="Description">The game's text.</param>
 /// <param name="Boost">The effect in a few words for the overview tables ("Attack +5").</param>
@@ -74,12 +77,32 @@ public sealed record WikiItemCategory(string Key, string Title, string? About);
 /// <param name="Recipes">Each recipe's ingredients (combining them makes one).</param>
 /// <param name="UsedIn">Items whose recipes use it.</param>
 /// <param name="Related">Other wiki items worth comparing it with.</param>
+/// <param name="Sources">Where to get it besides crafting; null when it can only be crafted.</param>
 /// <param name="Confidence">"high", "medium" or "low".</param>
 public sealed record WikiItem(
     int Id, string Name, string Category, string Icon, string IconColor, int Rarity, int CarryLimit, string? Description,
     string? Boost, string? Duration, IReadOnlyList<string> Effects, string? Stacking, IReadOnlyList<string>? Notes,
     IReadOnlyList<IReadOnlyList<string>>? Recipes, IReadOnlyList<string>? UsedIn, IReadOnlyList<string>? Related,
-    string? Source, string? Confidence);
+    WikiItemSources? Sources, string? Source, string? Confidence);
+
+/// <summary>Where an item comes from; each part null when it does not apply.</summary>
+/// <param name="Other">Curated lines for what the data does not cover (quest rewards, cooking).</param>
+/// <param name="Gather">Gathering spots by region.</param>
+/// <param name="Retrieval">The regions whose material retrieval brings it.</param>
+/// <param name="Shop">The item shop sells it.</param>
+/// <param name="SupportShip">The support ship stocks it now and then.</param>
+/// <param name="Monsters">Large-monster rewards, best chance per monster, rank and way.</param>
+public sealed record WikiItemSources(
+    IReadOnlyList<string>? Other, IReadOnlyList<WikiGatherSpot>? Gather, IReadOnlyList<string>? Retrieval, bool? Shop,
+    bool? SupportShip, IReadOnlyList<WikiMonsterDrop>? Monsters);
+
+/// <param name="Areas">The region's area numbers with a gathering point for it.</param>
+public sealed record WikiGatherSpot(string Region, IReadOnlyList<int> Areas);
+
+/// <param name="Rank">"low" or "high".</param>
+/// <param name="How">"quest reward", "carve", "break left front leg", …</param>
+/// <param name="Chance">Percent.</param>
+public sealed record WikiMonsterDrop(string Monster, string Rank, string How, int Chance);
 
 /// <summary>Meals and the meal skills they give (curated in data/meal_skills.json).</summary>
 /// <param name="About">How meals work: what a meal gives, how long it lasts, where the skills come from.</param>

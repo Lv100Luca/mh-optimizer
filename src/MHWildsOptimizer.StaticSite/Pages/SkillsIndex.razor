@@ -1,0 +1,29 @@
+@* Every skill by kind, each with its one-line summary. *@
+<Layout Path="/wiki/skills/" Title="@($"All skills · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@($"Every {SiteIndex.Game} skill with exact numbers per level: {Site.Skills.Count(s => s.Kind == SkillKind.Armor)} armor skills, set bonuses, group skills and weapon skills, and where to get each one.")"
+        Crumbs="@([("Wiki", "/wiki/")])">
+    <h1>@SiteIndex.Game skills</h1>
+    <p class="lead">All @Site.Skills.Count skills in @SiteIndex.Game: what every level does in exact numbers, and every decoration, charm, armor piece and weapon that carries them.</p>
+    <p class="toc">
+        @for (var i = 0; i < Text.KindSections.Count; i++)
+        {
+            if (i > 0)
+            {
+                @(" · ")
+            }
+            <a href="#@Text.KindSections[i].Key">@Text.KindSections[i].Title</a>
+        }
+    </p>
+    @foreach (var (kind, key, title, about) in Text.KindSections)
+    {
+        var skills = Site.Skills.Where(s => s.Kind == kind).ToList();
+        <h2 id="@key">@title <span class="muted">(@skills.Count)</span></h2>
+        <p class="muted">@about</p>
+        <ul class="list">
+            @foreach (var s in skills)
+            {
+                <li>@Parts.Icon(Urls.SkillIcon(s))<a href="@Urls.Skill(s.Name)">@s.Name</a><span class="muted">@Text.Cut(SiteIndex.Summary(s), 110)</span></li>
+            }
+        </ul>
+    }
+</Layout>

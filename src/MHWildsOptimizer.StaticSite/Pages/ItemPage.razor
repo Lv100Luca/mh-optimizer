@@ -1,0 +1,41 @@
+@* An item people search for by name, on a page of its own. *@
+@{
+    var item = Item;
+    var category = Site.CategoryOf(item);
+    var heading = SiteIndex.CategoryHeading(category);
+}
+<Layout Path="@Urls.Item(item.Name)" Title="@($"{item.Name} · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+        Crumbs="@([("Wiki", "/wiki/"), ("Items", "/wiki/items/"), (heading, Urls.Category(category.Key))])">
+    <article>
+        <div class="head">
+            @Parts.Icon(Urls.ItemIcon(item), 40)
+            <div>
+                <h1>@item.Name</h1>
+                <p class="sub">Item · <a href="@Urls.Category(category.Key)">@heading</a> · @SiteIndex.Game</p>
+            </div>
+        </div>
+        @if (item.Description is { } d)
+        {
+            <blockquote class="game-text">@d<cite>In-game description</cite></blockquote>
+        }
+        <ItemDetails Item="item" />
+        @Parts.OptimizerBox(item.Category == "materials"
+            ? $"{SiteIndex.Name} also finds the best build for your weapon: armor, decorations and talismans, scored by damage per attack."
+            : "Item boosts count in the optimizer: switch them on as conditions and it scores builds with them.")
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public WikiItem Item { get; set; } = default!;
+
+    private string Meta()
+    {
+        var item = Item;
+        var text = $"{item.Name} in {SiteIndex.Game}: ";
+        if (item.Category == "materials")
+            return Text.Cut(text + item.Description + " Where to get it: " + SiteIndex.SourceSummary(item) + ".");
+        text += item.Boost + Text.DurationWords(item.Duration) + ". " + item.Stacking;
+        if (item.Recipes is { Count: > 0 } recipes) text += " Recipe: " + string.Join(" + ", recipes[0]) + ".";
+        return Text.Cut(text);
+    }
+}

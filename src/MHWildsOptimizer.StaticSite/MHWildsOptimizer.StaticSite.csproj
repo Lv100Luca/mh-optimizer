@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!--
+    Writes the public wiki as static HTML: Razor components rendered at build time (HtmlRenderer), from data/wiki.json. The
+    browser app is WebAssembly, so a search engine that does not run it sees only index.html's start screen; these pages are
+    what gets indexed. The browser app's BuildWikiPages target runs it on every build, with the wwwroot to write into as
+    the only argument.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\MHWildsOptimizer.Api\MHWildsOptimizer.Api.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+@* One armor: the low rank set and the high rank α / β / γ sets together. *@
+@{
+    var top = Sets[^1];
+}
+<Layout Path="@Urls.Family(Family)" Title="@($"{Family} armor · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+        Crumbs="@([("Wiki", "/wiki/"), ("Armor", "/wiki/armor/")])">
+    <article>
+        <div class="head">
+            @Parts.Icon(Urls.Armor(top.Pieces[0].Piece, top.Rarity), 40)
+            <div>
+                <h1>@Family armor</h1>
+                <p class="sub">Armor · @SiteIndex.Game</p>
+            </div>
+        </div>
+        <p class="lead">Every piece of the @Family armor in @SiteIndex.Game, in @RankWords(): skills, decoration slots, defense and elemental resistances.</p>
+        @if (Sets.Count > 1)
+        {
+            <p class="toc">
+                @for (var i = 0; i < Sets.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        @(" · ")
+                    }
+                    <a href="#@Urls.Slug(Sets[i].Name)">@SiteIndex.SetLabel(Sets[i])</a>
+                }
+            </p>
+        }
+        @foreach (var set in Sets)
+        {
+            <ArmorSetSection Set="set" />
+        }
+        @Parts.OptimizerBox($"The optimizer weighs every {Family} piece against all other armor for your weapon and the skills you want.")
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public string Family { get; set; } = "";
+    [Parameter, EditorRequired] public IReadOnlyList<WikiArmorSet> Sets { get; set; } = [];
+
+    /// <summary>"low rank and high rank α, β and γ".</summary>
+    private string RankWords()
+    {
+        var ranks = new List<string>();
+        if (Sets.Any(s => s.Rank == "low")) ranks.Add("low rank");
+        var high = Sets.Where(s => s.Rank == "high" && "αβγ".Contains(s.Name[^1])).Select(s => s.Name[^1].ToString()).ToList();
+        if (high.Count > 0) ranks.Add("high rank " + Text.JoinAnd(high));
+        return string.Join(" and ", ranks);
+    }
+
+    private string Meta()
+    {
+        var bonuses = SiteIndex.Bonuses(Sets);
+        var skills = Sets.SelectMany(s => s.Pieces).SelectMany(p => p.Skills).Select(k => k.Skill).Distinct().ToList();
+        return Text.Cut($"{Family} armor in {SiteIndex.Game}: " + (bonuses.Count > 0 ? string.Join(", ", bonuses) + "; " : "")
+                        + $"skills {string.Join(", ", skills.Take(6))}{(skills.Count > 6 ? " and more" : "")}. "
+                        + $"Slots, defense and resistances for {string.Join(", ", Sets.Select(SiteIndex.SetLabel))}.");
+    }
+}

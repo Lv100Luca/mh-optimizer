@@ -1,7 +1,9 @@
 @inject AppState App
-@* An item's wiki page: the game's text, what it does in numbers, what it stacks with, and how it is made. *@
+@* An item's wiki page: the game's text, what it does in numbers, what it stacks with, where to get it and what it makes. *@
 @{
     var i = Item;
+    var src = i.Sources;
+    var hasEffect = i.Boost is not null || i.Duration is not null || i.Effects.Count > 0 || i.Stacking is not null || i.Notes is { Count: > 0 };
 }
 <div class="panel wiki-page">
     <section class="card wiki-head item">
@@ -22,68 +24,140 @@
         }
     </section>
 
-    <Section Title="What it does" Key="wiki-item-effect" Collapsible="false">
-        @if (i.Boost is not null || i.Duration is not null)
-        {
-            <div class="wiki-item-stats">
-                @if (i.Boost is { } boost)
-                {
-                    <div><span class="muted tiny">Effect</span><b>@boost</b></div>
-                }
-                @if (i.Duration is { } duration)
-                {
-                    <div><span class="muted tiny">Lasts</span><b>@duration</b></div>
-                }
-            </div>
-        }
-        <ul class="wiki-item-effects">
-            @foreach (var line in i.Effects)
-            {
-                <li>@line</li>
-            }
-        </ul>
-        @if (i.Stacking is { } stacking)
-        {
-            <p class="wiki-stacking"><span class="muted tiny">Stacking</span> @stacking</p>
-        }
-        @if (i.Notes is { Count: > 0 } notes)
-        {
-            <ul class="wiki-notes">
-                @foreach (var n in notes)
-                {
-                    <li>@n</li>
-                }
-            </ul>
-        }
-        <p class="wiki-source tiny">
-            <span class="wiki-conf @i.Confidence" title="@ConfidenceHint(i.Confidence)">@(i.Confidence ?? "unrated") confidence</span>
-            <span class="muted">@i.Source</span>
-        </p>
-    </Section>
-
-    @if (i.Recipes is { Count: > 0 } || i.UsedIn is { Count: > 0 } || i.Related is { Count: > 0 })
+    @if (hasEffect)
     {
-        <Section Title="Crafting and related items" Key="wiki-item-craft" Collapsible="false">
-            @if (i.Recipes is { Count: > 0 } recipes)
+        <Section Title="What it does" Key="wiki-item-effect" Collapsible="false">
+            @if (i.Boost is not null || i.Duration is not null)
             {
-                <div class="wiki-src">
-                    <h3>Made from</h3>
-                    @foreach (var recipe in recipes)
+                <div class="wiki-item-stats">
+                    @if (i.Boost is { } boost)
                     {
-                        <div class="chip-row">
-                            @for (var k = 0; k < recipe.Count; k++)
-                            {
-                                var part = recipe[k];
-                                @if (k > 0)
-                                {
-                                    <span class="muted">+</span>
-                                }
-                                <ItemChip Name="@part" Wiki="Wiki" />
-                            }
-                        </div>
+                        <div><span class="muted tiny">Effect</span><b>@boost</b></div>
+                    }
+                    @if (i.Duration is { } duration)
+                    {
+                        <div><span class="muted tiny">Lasts</span><b>@duration</b></div>
                     }
                 </div>
             }
+            <ul class="wiki-item-effects">
+                @foreach (var line in i.Effects)
+                {
+                    <li>@line</li>
+                }
+            </ul>
+            @if (i.Stacking is { } stacking)
+            {
+                <p class="wiki-stacking"><span class="muted tiny">Stacking</span> @stacking</p>
+            }
+            @if (i.Notes is { Count: > 0 } notes)
+            {
+                <ul class="wiki-notes">
+                    @foreach (var n in notes)
+                    {
+                        <li>@n</li>
+                    }
+                </ul>
+            }
+            @if (i.Source is { } source)
+            {
+                <p class="wiki-source tiny muted">Source: @source</p>
+            }
+        </Section>
+    }
+
+    @if (i.Recipes is { Count: > 0 } || src is not null)
+    {
+        <Section Title="Where to get it" Key="wiki-item-get" Collapsible="false">
+            <dl class="wiki-get">
+                @foreach (var line in src?.Other ?? [])
+                {
+                    <dt>How</dt>
+                    <dd>@line</dd>
+                }
+                @if (i.Recipes is { Count: > 0 } recipes)
+                {
+                    <dt>Combine</dt>
+                    <dd>
+                        @foreach (var recipe in recipes)
+                        {
+                            <div class="chip-row">
+                                @for (var k = 0; k < recipe.Count; k++)
+                                {
+                                    var part = recipe[k];
+                                    @if (k > 0)
+                                    {
+                                        <span class="muted">+</span>
+                                    }
+                                    <ItemChip Name="@part" Wiki="Wiki" />
+                                }
+                            </div>
+                        }
+                    </dd>
+                }
+                @if (src?.Gather is { Count: > 0 } gather)
+                {
+                    <dt>Gather</dt>
+                    <dd class="wiki-gather">
+                        @foreach (var spot in gather)
+                        {
+                            <div><b>@spot.Region</b> <span class="muted">@(spot.Areas.Count == 1 ? "area" : "areas") @string.Join(", ", spot.Areas)</span></div>
+                        }
+                    </dd>
+                }
+                @if (src?.Retrieval is { Count: > 0 } retrieval)
+                {
+                    <dt>Retrieval</dt>
+                    <dd>Material retrieval in @Fmt.JoinAnd(retrieval)</dd>
+                }
+                @if (src?.Shop == true)
+                {
+                    <dt>Shop</dt>
+                    <dd>Sold at the item shop</dd>
+                }
+                @if (src?.SupportShip == true)
+                {
+                    <dt>Support ship</dt>
+                    <dd>In the support ship's stock now and then</dd>
+                }
+                @if (src?.Monsters is { Count: > 0 } monsters)
+                {
+                    <dt>Monsters</dt>
+                    <dd>
+                        <div class="dmg-scroll">
+                            <table class="table wiki-drops">
+                                <thead><tr><th>Monster</th><th>Rank</th><th>How</th><th class="num">Chance</th></tr></thead>
+                                <tbody>
+                                    @foreach (var group in monsters.GroupBy(m => m.Monster))
+                                    {
+                                        var first = true;
+                                        @foreach (var drop in group)
+                                        {
+                                            <tr class="@(first ? "first" : "")">
+                                                <td>@(first ? drop.Monster : "")</td>
+                                                <td>@drop.Rank</td>
+                                                <td>@drop.How</td>
+                                                <td class="num">@drop.Chance%</td>
+                                            </tr>
+                                            first = false;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </dd>
+                }
+            </dl>
+            @if (SourceNote(src) is { } note)
+            {
+                <p class="wiki-source tiny muted">@note</p>
+            }
+        </Section>
+    }
+
+    @if (i.UsedIn is { Count: > 0 } || i.Related is { Count: > 0 })
+    {
+        <Section Title="Related items" Key="wiki-item-craft" Collapsible="false">
             @if (i.UsedIn is { Count: > 0 } usedIn)
             {
                 <div class="wiki-src">
@@ -118,11 +192,19 @@
 
     private string CategoryTitle => Wiki.Data.ItemCategories?.FirstOrDefault(c => c.Key == Item.Category)?.Title ?? Item.Category;
 
-    private static string ConfidenceHint(string? confidence) => confidence switch
+    /// <summary>Where the page's source lines come from, for the ones it shows.</summary>
+    private static string? SourceNote(WikiItemSources? s)
     {
-        "high" => "Game data and an independent test or the game's own text agree",
-        "medium" => "One good source, or game data whose meaning is inferred",
-        "low" => "A single secondary source or an unverified reading: take with salt",
-        _ => "",
-    };
+        if (s is null) return null;
+        var game = new[] { s.Retrieval is not null ? "retrieval" : null, s.Shop == true ? "shop" : null, s.SupportShip == true ? "support ship" : null }
+            .OfType<string>().ToList();
+        string?[] parts =
+        [
+            s.Gather is not null ? "gathering spots from Cola's map of the game data (c-ola.github.io/wildsmap, via monsterhunterwiki.org)" : null,
+            game.Count > 0 ? Fmt.JoinAnd(game) + " from the game data" : null,
+            s.Monsters is not null ? "monster rewards from wilds.mhdb.io" : null,
+        ];
+        var text = string.Join("; ", parts.OfType<string>());
+        return text.Length == 0 ? null : "Sources: " + text + ".";
+    }
 }

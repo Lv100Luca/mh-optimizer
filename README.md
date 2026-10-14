@@ -10,6 +10,7 @@ Build optimizer / set maker for Monster Hunter Wilds (Ver 1.041), centred on Gog
 * `src/MHWildsOptimizer.Api` – what the web UIs show (catalog, validation, build scoring, inventory, result mapping, the profile store contract), shared by the server and the browser app.
 * `src/MHWildsOptimizer.Web` – web front end: ASP.NET Core API + React client (`client/`), game icons under `client/public/icons` (fetched by `tools/fetch_icons.py`).
 * `src/MHWildsOptimizer.Browser` – the same UI as a static web app (Blazor WebAssembly + MudBlazor) that runs everything in the browser: profiles in browser storage, CP-SAT in WebAssembly. See [Browser app](#browser-app).
+* `src/MHWildsOptimizer.StaticSite` – the public wiki as static HTML for search engines: Razor pages rendered at build time from `data/wiki.json` into the browser app's `wwwroot/wiki` (with `sitemap.xml` and `404.html`).
 * `tests/MHWildsOptimizer.Tests` – xunit tests; `tests/MHWildsOptimizer.Web.Tests` – API integration tests.
 
 * `inputs/` – optimizer inputs: `request.example.json` (weapon as the game shows it, skill-pair mode, target skills, conditions, talisman file, options) and `talismans.example.json` (your random talismans with skills and decoration slots).

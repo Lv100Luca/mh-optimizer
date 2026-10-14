@@ -1,0 +1,50 @@
+@* How meals work and every meal skill. *@
+@{
+    var m = Site.Meals;
+}
+<Layout Path="/wiki/meals/" Title="@($"Meals and meal skills · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@Text.Cut($"How meals work in {SiteIndex.Game}: what each meal gives (health, stamina, attack, defense, duration) and all {m?.Skills.Count ?? 0} meal skills with their effects.")"
+        Crumbs="@([("Wiki", "/wiki/")])">
+    <article>
+        <h1>Meals in @SiteIndex.Game</h1>
+        @if (m is not null)
+        {
+            @for (var i = 0; i < m.About.Count; i++)
+            {
+                <p class="@(i == 0 ? "lead" : null)">@m.About[i]</p>
+            }
+            @foreach (var t in m.Tables ?? [])
+            {
+                @Parts.Table(t, "h2")
+            }
+            <h2>Meal skills <span class="muted">(@m.Skills.Count)</span></h2>
+            <div class="scroll">
+                <table class="meal-skills">
+                    <thead><tr><th>Skill</th><th>In game</th><th>In numbers</th><th>From</th></tr></thead>
+                    <tbody>
+                        @foreach (var s in m.Skills.OrderBy(s => s.Name, StringComparer.Ordinal))
+                        {
+                            <tr id="@Urls.Slug(s.Name)">
+                                <td>@Parts.Icon($"/icons/skills/{(string.IsNullOrEmpty(s.Icon) ? "utility" : s.Icon)}.png") <b>@s.Name</b></td>
+                                <td>@s.Description</td>
+                                <td>
+                                    @for (var i = 0; i < s.Effects.Count; i++)
+                                    {
+                                        if (i > 0)
+                                        {
+                                            <br>
+                                        }
+                                        @s.Effects[i]
+                                    }
+                                </td>
+                                <td class="muted">@s.From</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @Parts.Notes(m.Notes)
+            @Parts.Source(m.Source)
+        }
+    </article>
+</Layout>

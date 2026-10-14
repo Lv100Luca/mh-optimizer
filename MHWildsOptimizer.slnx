@@ -4,6 +4,7 @@
     <Project Path="src/MHWildsOptimizer.Browser/MHWildsOptimizer.Browser.csproj" />
     <Project Path="src/MHWildsOptimizer.Cli/MHWildsOptimizer.Cli.csproj" />
     <Project Path="src/MHWildsOptimizer.Core/MHWildsOptimizer.Core.csproj" />
+    <Project Path="src/MHWildsOptimizer.StaticSite/MHWildsOptimizer.StaticSite.csproj" />
     <Project Path="src/MHWildsOptimizer.Web/MHWildsOptimizer.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">

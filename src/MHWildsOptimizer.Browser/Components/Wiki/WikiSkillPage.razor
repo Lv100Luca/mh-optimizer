@@ -115,10 +115,10 @@
         }
         @if (fx is not null)
         {
-            <p class="wiki-source tiny">
-                <span class="wiki-conf @fx.Confidence" title="@ConfidenceHint(fx.Confidence)">@(fx.Confidence ?? "unrated") confidence</span>
-                <span class="muted">@fx.Source</span>
-            </p>
+            @if (fx.Source is { } source)
+            {
+                <p class="wiki-source tiny muted">Source: @source</p>
+            }
         }
         else
         {
@@ -262,14 +262,6 @@
     private static string Slug(SkillKind kind) => kind.ToString().ToLowerInvariant();
 
     private static string LowerFirst(string text) => text.Length > 1 && char.IsUpper(text[0]) && !char.IsUpper(text[1]) ? char.ToLowerInvariant(text[0]) + text[1..] : text;
-
-    private static string ConfidenceHint(string? confidence) => confidence switch
-    {
-        "high" => "Game data and an independent test or the game's own text agree",
-        "medium" => "One good source, or game data whose meaning is inferred",
-        "low" => "A single secondary source or an unverified reading: take with salt",
-        _ => "",
-    };
 
     /// <summary>The set's pieces that carry the bonus (Gogmazios pieces each carry a different one).</summary>
     private static int PieceCount(WikiArmorSet set, string bonus) =>

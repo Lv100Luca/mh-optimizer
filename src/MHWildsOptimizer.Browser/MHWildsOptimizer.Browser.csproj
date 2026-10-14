@@ -85,18 +85,25 @@
   </Target>
 
   <!--
-    The static wiki pages search engines index (wwwroot/wiki, sitemap.xml, 404.html; git-ignored), written by
-    tools/build_pages.py from data/wiki.json when either is newer than the sitemap. Needs Python 3;
-    -p:BuildWikiPages=false skips it.
+    The static wiki pages search engines index (wwwroot/wiki, sitemap.xml, 404.html; git-ignored): the Razor pages of
+    MHWildsOptimizer.StaticSite rendered from data/wiki.json, again whenever the data or the generator changed. The
+    reference only builds it (once, also in a solution build); this app does not load it. -p:BuildWikiPages=false skips it.
   -->
+  <ItemGroup Condition="'$(BuildWikiPages)' != 'false'">
+    <ProjectReference Include="..\MHWildsOptimizer.StaticSite\MHWildsOptimizer.StaticSite.csproj" ReferenceOutputAssembly="false" Private="false"
+                      OutputItemType="StaticSiteAssembly" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <PythonExe Condition="'$(PythonExe)' == '' And '$(OS)' == 'Windows_NT'">python</PythonExe>
-    <PythonExe Condition="'$(PythonExe)' == ''">python3</PythonExe>
+    <!-- the reference ships nothing with this app, so it need not be self-contained like it (NETSDK1150) -->
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+    <DotnetHost Condition="'$(DOTNET_HOST_PATH)' != ''">&quot;$(DOTNET_HOST_PATH)&quot;</DotnetHost>
+    <DotnetHost Condition="'$(DOTNET_HOST_PATH)' == ''">dotnet</DotnetHost>
   </PropertyGroup>
 
-  <Target Name="BuildWikiPages" BeforeTargets="BeforeBuild" Inputs="$(RepoDir)data\wiki.json;$(RepoDir)tools\build_pages.py"
-          Outputs="wwwroot\sitemap.xml" Condition="'$(BuildWikiPages)' != 'false'">
-    <Exec Command="$(PythonExe) tools/build_pages.py &quot;$(MSBuildProjectDirectory)/wwwroot&quot;" WorkingDirectory="$(RepoDir)" />
+  <Target Name="BuildWikiPages" DependsOnTargets="ResolveProjectReferences" BeforeTargets="BeforeBuild"
+          Inputs="$(RepoDir)data/wiki.json;@(StaticSiteAssembly)" Outputs="wwwroot/sitemap.xml" Condition="'$(BuildWikiPages)' != 'false'">
+    <Exec Command="$(DotnetHost) &quot;@(StaticSiteAssembly)&quot; &quot;$(MSBuildProjectDirectory)/wwwroot&quot;" />
   </Target>
 
   <Target Name="IncludeWikiPages" AfterTargets="BuildWikiPages" BeforeTargets="BeforeBuild">
