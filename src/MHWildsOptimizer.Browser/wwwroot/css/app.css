@@ -358,7 +358,10 @@ dl.stats dd { margin: 0; }
 .skillopt-row { display: flex; border-bottom: 1px solid var(--border); }
 .skillopt-row:last-child { border-bottom: none; }
 .skillopt-row:hover { background: var(--panel-2); }
-.skillopt { flex: 1; min-width: 0; display: grid; grid-template-columns: 26px minmax(150px, 190px) auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; background: transparent; color: var(--text); text-align: left; }
+.skillopt { flex: 1; min-width: 0; display: grid; grid-template-columns: 26px minmax(150px, 190px) auto 1fr; align-items: center; gap: 10px; padding: 6px 10px; border: none; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+/* the row requires the skill at its top level */
+.skillopt:hover .name { color: var(--accent); }
+.skillopt:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 /* a button per level: the skill is required at the level clicked */
 .skillopt-levels { flex: none; display: flex; align-items: center; gap: 3px; padding: 0 8px; }
 .skillopt-levels .lvl { min-width: 26px; padding: 2px 7px; border: 1px solid var(--border-2); border-radius: 4px; background: var(--bg-2); color: var(--text); font-size: 12px; cursor: pointer; white-space: nowrap; }

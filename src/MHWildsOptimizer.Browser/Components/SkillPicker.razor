@@ -15,7 +15,7 @@
     <div class="selected">
         @if (rows.Count == 0)
         {
-            <p class="muted">No targets or limits yet. Pick from the list below: a level to require the skill at it, ⊘ to exclude it.</p>
+            <p class="muted">No targets or limits yet. Pick from the list below: click a skill to require it at its top level, a level button for a lower one, ⊘ to exclude it.</p>
         }
         @foreach (var s in rows)
         {
@@ -80,7 +80,7 @@
     <div class="picker-tools">
         <SearchBox @bind-Value="_query" Class="search" Placeholder="Search skills, set bonuses, group skills…" />
         <Segmented T="SkillKind?" Small="true" @bind-Value="_kind" Options="KindOptions" />
-        <span class="muted small">@(available.Count + byText.Count) @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills") · pick the level to require, ⊘ to exclude@(HighlightLegend is not null && Highlight is { Count: > 0 } ? $" · {HighlightLegend}" : "")</span>
+        <span class="muted small">@(available.Count + byText.Count) @(_kind == SkillKind.Set ? "set bonuses" : _kind == SkillKind.Group ? "group skills" : "skills") · click to require at the top level or pick one, ⊘ to exclude@(HighlightLegend is not null && Highlight is { Count: > 0 } ? $" · {HighlightLegend}" : "")</span>
     </div>
     <div class="available">
         @foreach (var s in available)
@@ -100,19 +100,22 @@
 
 @code {
     /// <summary>
-    /// One skill to add: its name and description, and a button per level ("1 2 3", set bonuses "I · 2 pc  II · 4 pc") that
-    /// requires it at that level; plain markup rather than SkillIcon / KindTag, the list has a few hundred rows.
+    /// One skill to add: its name and description, which require it at its top level when clicked, and a button per level
+    /// ("1 2 3", set bonuses "I · 2 pc  II · 4 pc") for a lower one; plain markup rather than SkillIcon / KindTag, the
+    /// list has a few hundred rows.
     /// </summary>
     private RenderFragment Option(SkillDto s) => __builder =>
     {
         var levels = s.Kind == SkillKind.Group ? [1] : Enumerable.Range(1, s.MaxLevel).ToArray();
+        var description = s.Description ?? s.Ranks.FirstOrDefault()?.Description;
         <div @key="s.Name" class="skillopt-row">
-            <div class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")" title="@(s.Description ?? s.Ranks.FirstOrDefault()?.Description ?? "")">
+            <button type="button" class="skillopt @Kind(s) @(Highlight?.Contains(s.Name) == true ? "hl" : "")"
+                    title="@($"{description}\n\nClick: {RequireTitle(s, levels[^1])}")" @onclick="() => Require(s, levels[^1])">
                 <img class="icon" width="22" height="22" src="@GameIcons.Skill(s.Icon, s.Kind)" alt="" />
                 <span class="name">@s.Name</span>
                 <span class="kindtag @s.Kind.ToString().ToLowerInvariant()">@s.Kind.ToString().ToLowerInvariant()</span>
-                <span class="desc muted">@(s.Description ?? s.Ranks.FirstOrDefault()?.Description)</span>
-            </div>
+                <span class="desc muted">@description</span>
+            </button>
             <span class="skillopt-levels" role="group" aria-label="@($"Require {s.Name} at")">
                 @foreach (var level in levels)
                 {
