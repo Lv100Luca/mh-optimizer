@@ -12,8 +12,11 @@ public sealed record DecorationDto(int Id, string Name, SkillKind Kind, int Slot
 
 public sealed record ArmorSetPieceDto(int Id, string Name, ArmorPieceKind Kind, int Rarity, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<int> Slots, IReadOnlyList<int> SlotsTranscended);
 
-/// <summary>A craftable charm at one rank; <paramref name="IsMaxRank"/> marks the rank the optimizer uses.</summary>
-public sealed record CharmDto(string Name, int Rarity, bool IsMaxRank, IReadOnlyList<SkillGrant> Skills);
+/// <summary>
+/// A craftable charm at one rank; <paramref name="IsMaxRank"/> marks the rank the optimizer uses. <paramref name="Line"/> groups
+/// the ranks of one charm; <paramref name="Crafting"/> is the cost of this rank alone (the upgrade from the rank before it).
+/// </summary>
+public sealed record CharmDto(string Name, int Rarity, bool IsMaxRank, IReadOnlyList<SkillGrant> Skills, int Line = 0, int Level = 0, CharmCrafting? Crafting = null);
 
 public sealed record ArmorSetDto(string Name, int Rarity, IReadOnlyList<string> SetBonus, string? GroupSkill, IReadOnlyList<ArmorSetPieceDto> Pieces);
 
@@ -111,7 +114,7 @@ public sealed record Catalog(
             .OrderByDescending(s => s.Rarity).ThenBy(s => s.Name)
             .ToList();
 
-        var charms = data.Charms.Select(c => new CharmDto(c.Name, c.Rarity, c.IsMaxRank, c.Skills)).OrderBy(c => c.Name).ToList();
+        var charms = data.Charms.Select(c => new CharmDto(c.Name, c.Rarity, c.IsMaxRank, c.Skills, c.CharmId, c.Level, c.Crafting)).OrderBy(c => c.Name).ToList();
 
         var weaponTypes = Enum.GetValues<WeaponType>()
             .Select(t => new WeaponTypeDto(

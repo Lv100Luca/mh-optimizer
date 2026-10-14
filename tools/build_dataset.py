@@ -117,7 +117,11 @@ for c in charms:
     for r in ranks:
         out_charms.append({'charm_id': c['id'], 'name': r['name'], 'level': r['level'], 'rarity': r['rarity'],
                            'is_max_rank': r['level'] == top,
-                           'skills': [{'skill': x['skill']['name'], 'skill_id': x['skill']['id'], 'level': x['level']} for x in r['skills']]})
+                           'skills': [{'skill': x['skill']['name'], 'skill_id': x['skill']['id'], 'level': x['level']} for x in r['skills']],
+                           # rank I is crafted, every later rank is an upgrade of the one before it
+                           'crafting': {'zenny': r['crafting']['zennyCost'],
+                                        'materials': [{'item': m['item']['name'], 'quantity': m['quantity']} for m in r['crafting']['materials']]}
+                                       if r.get('crafting') else None})
 dump('charms', out_charms)
 
 # ---------------------------------------------------------------- skill sources index

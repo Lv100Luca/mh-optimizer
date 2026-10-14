@@ -26,7 +26,13 @@ public sealed class CatalogIndex
         ArmorByName = armor;
         DecorationsByName = catalog.Decorations.GroupBy(d => d.Name).ToDictionary(g => g.Key, g => g.First());
         CharmsByName = catalog.Charms.GroupBy(c => c.Name).ToDictionary(g => g.Key, g => g.Last());
+        _charmLines = catalog.Charms.GroupBy(c => c.Line).ToDictionary(g => g.Key, g => (IReadOnlyList<CharmDto>)g.OrderBy(c => c.Level).ToList());
     }
+
+    private readonly Dictionary<int, IReadOnlyList<CharmDto>> _charmLines;
+
+    /// <summary>Every rank of the charm's line, rank I first.</summary>
+    public IReadOnlyList<CharmDto> CharmRanks(CharmDto charm) => _charmLines.GetValueOrDefault(charm.Line) ?? [charm];
 
     public IReadOnlyDictionary<string, SkillDto> SkillsByName { get; }
     public IReadOnlyDictionary<string, ArmorSetDto> SetsByName { get; }

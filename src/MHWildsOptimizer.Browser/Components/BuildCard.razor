@@ -194,7 +194,13 @@
                         {
                             <td class="name">
                                 <b>@t.Name</b> <RarityBadge Rarity="t.Rarity" />
-                                <div class="muted small">@(t.Source switch { TalismanSource.Random => "your random talisman", TalismanSource.Possible => "possible roll, you may not own it", _ => "craftable charm" })</div>
+                                <div class="muted small">
+                                    @(t.Source switch { TalismanSource.Random => "your random talisman", TalismanSource.Possible => "possible roll, you may not own it", _ => "craftable charm" })
+                                    @if (t.Source == TalismanSource.Crafted)
+                                    {
+                                        <CharmCost Name="@t.Name" />
+                                    }
+                                </div>
                             </td>
                             <td class="skills">
                                 <span class="chip-row">
