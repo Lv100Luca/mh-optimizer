@@ -105,11 +105,16 @@ async function navigate(url, selector, seconds = 60) {
 // ---------------------------------------------------------------- checks
 
 try {
-  // plain HTTP: the static pages are what search engines get
-  for (const [path, needle] of [['/wiki/skills/agitator/', '<h1'], ['/wiki/items/', '<h1'], ['/sitemap.xml', '<urlset']]) {
+  // plain HTTP: the static pages are what search engines get. Each must be its own page: a server that answers a folder URL
+  // with the app's index.html also says 200
+  for (const [path, needle] of [
+    ['/wiki/', '<title>Monster Hunter Wilds wiki'], ['/wiki/skills/agitator/', '<title>Agitator'],
+    ['/wiki/items/materials/', '<title>Materials'], ['/sitemap.xml', '<urlset'],
+  ]) {
     let status = 0, body = '';
     try { const r = await fetch(origin + path); status = r.status; body = await r.text(); } catch (e) { body = String(e); }
-    check(`static page ${path}`, status === 200 && body.includes(needle), status === 200 ? '' : `HTTP ${status} ${body.slice(0, 120)}`);
+    const title = body.match(/<title>[^<]*<\/title>/)?.[0] ?? body.slice(0, 120);
+    check(`static page ${path}`, status === 200 && body.includes(needle), status === 200 && body.includes(needle) ? '' : `HTTP ${status}, got ${title}`);
   }
 
   await connect();

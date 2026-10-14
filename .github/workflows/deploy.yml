@@ -128,6 +128,11 @@ jobs:
           # Caddyfile is installed on the VPS by hand and a deploy cannot fix it
           status=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/wiki/skills/no-such-skill/")
           [ "$status" = 404 ] || echo "::warning::an unknown wiki page answered $status, not 404: install deploy/Caddyfile on the VPS (DEPLOY.md step 4)"
+          # www and the old subdomain move to the one address with the path kept (deploy/Caddyfile); a warning for the same reason
+          for host in www.wildsbuilds.com mh-optimizer.luca-diegel.de; do
+            got=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "https://$host/skills" || true)
+            [ "$got" = "301 $SITE_URL/skills" ] || echo "::warning::https://$host/skills answered '$got', not a 301 to $SITE_URL/skills: install deploy/Caddyfile on the VPS (DEPLOY.md step 4)"
+          done
 
       - uses: actions/setup-node@v5
         with:
