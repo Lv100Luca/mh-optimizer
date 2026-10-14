@@ -295,15 +295,22 @@ button.chip:hover { border-color: var(--accent); }
 .optfield-switch .mud-typography { font-size: 12.5px; }
 .optfield.optimized .optfield-body, .optfield-body[inert] { opacity: 0.4; }
 .optfield-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text); padding: 6px 10px; border-left: 2px solid var(--accent-2); background: rgba(79, 163, 230, 0.06); border-radius: 4px; }
-/* reinforcement lines as counts per type and tier */
-.rf-grid { display: grid; grid-template-columns: minmax(80px, auto) repeat(4, auto); gap: 4px 10px; align-items: center; justify-content: start; }
-.rf-tier { font-size: 11.5px; color: var(--muted); text-align: center; }
-.rf-type { font-size: 13px; }
-.rf-none { text-align: center; }
-.rf-cell .stepper-value { min-width: 26px; text-align: center; }
-.rf-cell:not(.on) .stepper-value { color: var(--muted); }
-.rf-cell.on .stepper-value { color: var(--accent); font-weight: 700; }
-.rf-total { margin: 6px 0 0; }
+/* the Reinforcement Bonus screen: five rows of bonus, level and value as the game prints them, level buttons */
+.rf-table { display: grid; grid-template-columns: minmax(150px, max-content) minmax(100px, max-content) auto; gap: 4px 14px; justify-content: start; max-width: 100%; }
+.rf-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center; padding: 3px 10px 3px 8px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; }
+.rf-row.rf-empty { background: transparent; border-style: dashed; }
+.rf-bonus { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.rf-bonus > img, .rf-icon { width: 20px; height: 20px; flex: none; }
+.rf-bonus .mud-input-control.selectbox { min-width: 120px; flex: 1; margin: 0; }
+.rf-potency { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 13.5px; }
+.rf-potency b { font-variant-numeric: tabular-nums; }
+.rf-row .segmented { justify-self: start; }
+.rf-clear { margin-top: 6px; }
+@media (max-width: 600px), (pointer: fine) and (max-width: 900px) {
+    .rf-table { grid-template-columns: minmax(0, 1fr) auto; }
+    .rf-row { row-gap: 4px; padding: 6px 8px; }
+    .rf-row .segmented { grid-column: 1 / -1; margin-left: 28px; }
+}
 .storage-bar { margin: 4px 0 10px; }
 /* whose settings a tab shows (the open weapon's, the profile's) */
 .scope-note { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius); background: var(--bg-2); border: 1px solid var(--border); color: var(--muted); }

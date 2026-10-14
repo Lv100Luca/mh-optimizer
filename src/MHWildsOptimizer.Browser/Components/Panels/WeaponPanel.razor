@@ -112,15 +112,15 @@
                                 </ChildContent>
                             </OptField>
 
-                            <OptField Label="Reinforcement Bonus lines" CanOptimize="true" Optimized="opt.Reinforcements" OptimizedChanged="v => PatchOptimize(o => o with { Reinforcements = v })"
-                                      Hint="@(isBow ? "Count each line of the Reinforcement Bonus screen: up to five, at most two of the same line, ammo lines at most two in all. Element lines need an element." : "Count each line of the Reinforcement Bonus screen: up to five, at most two of the same line, sharpness lines at most two in all. Element lines need an element.")">
+                            <OptField Label="Reinforcement Bonus" CanOptimize="true" Optimized="opt.Reinforcements" OptimizedChanged="v => PatchOptimize(o => o with { Reinforcements = v })"
+                                      Hint="@($"One row per line of the game's Reinforcement Bonus screen, top to bottom: pick the bonus, then its level. At most two identical lines, {(isBow ? "ammo" : "sharpness")} lines at most two in all; element lines need an element.")">
                                 <OptimizedContent>
                                     <span>Every split of the five lines over @(isBow ? "attack, affinity and element" : "attack, affinity, element and sharpness") is tried, each type at its best tiers up to</span>
                                     <Segmented T="ReinforcementTier" Small="true" Value="opt.MaxTier" ValueChanged="t => PatchOptimize(o => o with { MaxTier = t })" Options="TierOptions" />
                                     <span>(at most two of a tier). EX lines are rare; III gives a weapon you can expect to roll.</span>
                                 </OptimizedContent>
                                 <ChildContent>
-                                    @ReinforcementGrid(spec, wt)
+                                    @ReinforcementTable(spec, wt, kind)
                                 </ChildContent>
                             </OptField>
                         </div>
@@ -403,65 +403,120 @@
 
     private static readonly ReinforcementTier[] Tiers = Enum.GetValues<ReinforcementTier>();
 
-    /// <summary>Types that may fill at most two lines in all, whatever their tiers.</summary>
-    private static bool TwoAtMost(ReinforcementType t) => t is ReinforcementType.Sharpness or ReinforcementType.Ammo;
-
     /// <summary>
-    /// The Reinforcement Bonus lines as counts per type and tier ("2 × Attack EX"), the way they read off the game's screen:
-    /// at most five lines, two of the same, sharpness or ammo two in all; element lines only with an element.
+    /// The Reinforcement Bonus screen the way the game lists it, five rows top to bottom: the bonus, its level and value as the
+    /// game prints them ("Boost EX +10"), and the level buttons. At most two identical lines, sharpness or ammo two in all;
+    /// element lines only with an element.
     /// </summary>
-    private RenderFragment ReinforcementGrid(GogmaWeaponSpecInput spec, WeaponTypeDto? wt) => __builder =>
+    private RenderFragment ReinforcementTable(GogmaWeaponSpecInput spec, WeaponTypeDto? wt, string kind) => __builder =>
     {
-        var options = Catalog.Reinforcements.Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None)).ToList();
-        var counts = spec.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
-        var total = spec.Reinforcements.Count;
-        var types = options.Select(o => o.Type).Distinct().ToList();
-        <div class="rf-grid">
-            <span></span>
-            @foreach (var tier in Tiers)
+        var lines = spec.Reinforcements.Select(Line).ToList();
+        var rowsKey = string.Join(",", spec.Reinforcements);
+        var types =Catalog.Reinforcements.Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None))
+            .Select(r => r.Type).Distinct().ToList();
+        <div class="rf-table">
+            @for (var i = 0; i < Core.Gogma.GogmaConstants.ReinforcementSlots; i++)
             {
-                <span class="rf-tier">@tier</span>
-            }
-            @foreach (var type in types)
-            {
-                var typeTotal = options.Where(o => o.Type == type).Sum(o => counts.GetValueOrDefault(o.Value));
-                <span class="rf-type">@Fmt.TitleCase(type)</span>
-                @foreach (var tier in Tiers)
-                {
-                    var option = options.FirstOrDefault(o => o.Type == type && o.Tier == tier);
-                    if (option is null)
-                    {
-                        <span class="rf-none muted">—</span>
-                        continue;
-                    }
-                    var count = counts.GetValueOrDefault(option.Value);
-                    var max = Math.Min(2, count + (5 - total));
-                    if (TwoAtMost(type)) max = Math.Min(max, count + (2 - typeTotal));
-                    var value = option.Value;
-                    <span class="rf-cell @(count > 0 ? "on" : "")" title="@option.Label">
-                        <Stepper Value="count" Min="0" Max="max" Format="@(v => v == 0 ? "0" : $"{v}×")" ValueChanged="v => SetReinforcementCount(value, v)" />
+                var index = i;
+                var line = i < lines.Count ? lines[i] : null;
+                var others = lines.Where((_, j) => j != index).OfType<ReinforcementOptionDto>().ToList();
+                var options = types.Where(t => line?.Type == t || others.Count(o => o.Type == t) < Core.Gogma.GogmaConstants.MaxReinforcementsOfType(t))
+                    .Select(t => new SelectOption(Fmt.Slug(t), Fmt.TitleCase(t))).ToList();
+                <div class="rf-row @(line is null ? "rf-empty" : "")">
+                    <span class="rf-bonus">
+                        @if (line is not null && BonusIcon(line.Type, spec.Element) is { } icon)
+                        {
+                            <img src="@icon" alt="" />
+                        }
+                        else
+                        {
+                            <span class="rf-icon"></span>
+                        }
+                        @* keyed on all lines: a pick that moves the rows (Empty) or lands on another row leaves this row's value as it was, and MudSelect would keep showing the pick *@
+                        <SelectBox @key="@($"{index}:{rowsKey}")" Value="@(line is null ? null : Fmt.Slug(line.Type))" Placeholder="Empty" Options="options" ValueChanged="v => SetLineType(index, v)" />
                     </span>
-                }
+                    @if (line is null)
+                    {
+                        <span class="rf-potency muted">—</span>
+                        <span></span>
+                    }
+                    else
+                    {
+                        <span class="rf-potency"><span>Boost @line.Tier</span><b>+@BonusValue(line.Type, line.Tier, kind)</b></span>
+                        <Segmented T="ReinforcementTier" Small="true" Value="line.Tier" ValueChanged="t => SetLineTier(index, t)" Options="TierChoices(line.Type, others, kind)" />
+                    }
+                </div>
             }
         </div>
-        <p class="small rf-total">
-            <b>@total of 5</b> lines@(total > 0 ? ": " + string.Join(", ", spec.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).Select(g => $"{g.Count()}× {ReinforcementLabel(g.Key)}")) : "")
-            @if (total > 0)
-            {
-                <button type="button" class="linklike" @onclick="() => PatchSpec(s => s with { Reinforcements = [] })">clear</button>
-            }
-        </p>
+        @if (spec.Reinforcements.Count > 0)
+        {
+            <button type="button" class="linklike small rf-clear" @onclick="() => PatchSpec(s => s with { Reinforcements = [] })">Clear all lines</button>
+        }
     };
 
-    /// <summary>"attack EX" as the catalog shows it ("Attack EX").</summary>
-    private string ReinforcementLabel(string value) => Catalog.Reinforcements.FirstOrDefault(r => r.Value.Equals(value, StringComparison.OrdinalIgnoreCase))?.Label ?? value;
+    /// <summary>A Reinforcement Bonus line from its input form ("attack EX"); null when it cannot be read.</summary>
+    private ReinforcementOptionDto? Line(string text) => Catalog.Reinforcements.FirstOrDefault(r => r.Value.Equals(text, StringComparison.OrdinalIgnoreCase));
 
-    /// <summary>Sets how many lines of one reinforcement the weapon has; the list stays in the catalog's order.</summary>
-    private void SetReinforcementCount(string value, int count) => PatchSpec(s =>
+    private string LineValue(ReinforcementType type, ReinforcementTier tier) => Catalog.Reinforcements.First(r => r.Type == type && r.Tier == tier).Value;
+
+    /// <summary>The levels a bonus comes in; one already on two other rows is greyed.</summary>
+    private static IReadOnlyList<SegmentOption<ReinforcementTier>> TierChoices(ReinforcementType type, List<ReinforcementOptionDto> others, string kind) =>
+        [.. Tiers.Where(t => Core.Gogma.GogmaConstants.TierExists(type, t)).Select(t =>
+        {
+            var taken = others.Count(o => o.Type == type && o.Tier == t) >= Core.Gogma.GogmaConstants.MaxIdenticalReinforcements;
+            return new SegmentOption<ReinforcementTier>(t, t.ToString(),
+                Hint: taken ? $"Two other rows are {Fmt.TitleCase(type)} {t} already" : $"{Fmt.TitleCase(type)} Boost {t}: +{BonusValue(type, t, kind)}", Disabled: taken);
+        })];
+
+    /// <summary>The number the game prints after the line: true attack, affinity %, display element, sharpness points, ammo capacity.</summary>
+    private static int BonusValue(ReinforcementType type, ReinforcementTier tier, string kind) => type switch
     {
-        var counts = s.Reinforcements.GroupBy(x => x, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
-        counts[value] = count;
-        var list = Catalog.Reinforcements.SelectMany(r => Enumerable.Repeat(r.Value, counts.GetValueOrDefault(r.Value))).Take(5).ToList();
+        ReinforcementType.Attack => Core.Gogma.GogmaConstants.AttackReinforcement(tier),
+        ReinforcementType.Affinity => Core.Gogma.GogmaConstants.AffinityReinforcement(tier),
+        ReinforcementType.Element => Core.Gogma.GogmaConstants.ElementReinforcementDisplay(WeaponTypeInfo.FromApiKind(kind), tier),
+        ReinforcementType.Sharpness => Core.Gogma.GogmaConstants.SharpnessReinforcement(tier),
+        _ => Core.Gogma.GogmaConstants.AmmoReinforcement(tier),
+    };
+
+    private static string? BonusIcon(ReinforcementType type, Element element) => type switch
+    {
+        ReinforcementType.Attack => GameIcons.Attack,
+        ReinforcementType.Affinity => GameIcons.Affinity,
+        ReinforcementType.Element => GameIcons.Element(element),
+        ReinforcementType.Sharpness => GameIcons.Sharpness,
+        _ => null,
+    };
+
+    /// <summary>
+    /// Sets the bonus of one row. The row keeps its level when the new bonus has it free, else takes the best free level below
+    /// it (a new row the best one). An empty choice removes the row; the rows under it move up.
+    /// </summary>
+    private void SetLineType(int index, string? value) => PatchSpec(s =>
+    {
+        var list = s.Reinforcements.ToList();
+        if (value is null)
+        {
+            if (index < list.Count) list.RemoveAt(index);
+            return s with { Reinforcements = list };
+        }
+        var type = Enum.Parse<ReinforcementType>(value, ignoreCase: true);
+        var current = index < list.Count ? Line(list[index])?.Tier : null;
+        var others = list.Where((_, j) => j != index).Select(Line).ToList();
+        var free = Tiers.Where(t => Core.Gogma.GogmaConstants.TierExists(type, t)
+                                    && others.Count(o => o?.Type == type && o.Tier == t) < Core.Gogma.GogmaConstants.MaxIdenticalReinforcements).ToList();
+        if (free.Count == 0) return s;
+        var below = free.Where(t => t <= (current ?? ReinforcementTier.EX)).ToList();
+        var text = LineValue(type, below.Count > 0 ? below.Max() : free.Min());
+        if (index < list.Count) list[index] = text;
+        else list.Add(text);
+        return s with { Reinforcements = list };
+    });
+
+    private void SetLineTier(int index, ReinforcementTier tier) => PatchSpec(s =>
+    {
+        if (index >= s.Reinforcements.Count || Line(s.Reinforcements[index]) is not { } line) return s;
+        var list = s.Reinforcements.ToList();
+        list[index] = LineValue(line.Type, tier);
         return s with { Reinforcements = list };
     });
 

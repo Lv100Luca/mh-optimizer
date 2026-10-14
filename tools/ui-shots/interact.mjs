@@ -144,7 +144,7 @@ try {
       await navigate(`${origin}/${profile}/weapon/${w}/weapon`);
       await sleep(1500);
       for (const [i, pick] of [[0, 1], [0, 2]]) {
-        await evaluate(`const s = [...document.querySelectorAll('.reinforcements .mud-select')].filter(e => !e.parentElement.closest('.mud-select'))[${i}]; s.querySelector('.mud-input').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); await new Promise(r => setTimeout(r, 600));`);
+        await evaluate(`const s = [...document.querySelectorAll('.rf-table .mud-select')].filter(e => !e.parentElement.closest('.mud-select'))[${i}]; s.querySelector('.mud-input').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); await new Promise(r => setTimeout(r, 600));`);
         await step(`weapon reinforcement ${i}->${pick}`, `const items = [...document.querySelectorAll('.mud-popover-open .mud-list-item')].filter(e => !e.classList.contains('mud-list-item-disabled')); if (!items[${pick}]) return false; items[${pick}].click();`);
       }
       await step('weapon focus segment', `const b = [...document.querySelectorAll('.segmented button')].find(b => !b.classList.contains('active') && !b.disabled && b.closest('.form-grid')); if (!b) return false; b.click();`);
