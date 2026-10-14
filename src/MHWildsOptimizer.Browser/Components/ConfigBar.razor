@@ -49,7 +49,7 @@
 
     @if (App.Dirty)
     {
-        <span class="configname dirty" title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">unsaved changes</span>
+        <span class="configname dirty" title="Unsaved changes are kept in this browser (also across reloads) until you save or revert them">unsaved<span class="configname-more"> changes</span></span>
     }
 
     <div class="btn-row configactions">
@@ -58,7 +58,8 @@
                    title="@(App.Name is { } n ? $"Save {n}" : "Save the new weapon under a name")">@(App.Name is null ? "Save…" : "Save")</MudButton>
         @if (App.Dirty)
         {
-            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" title="Drop the unsaved changes">Revert</MudButton>
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="Revert" Class="configbtn configicon-compact" StartIcon="@Icons.Material.Filled.Undo"
+                       aria-label="Revert" title="Drop the unsaved changes"><span class="configbtn-label">Revert</span></MudButton>
         }
         @if (App.Name is { } name)
         {
@@ -71,15 +72,17 @@
         }
     </div>
 
+    @* when the top bar is short of room (app.css), these buttons show only their icon *@
     @if (App.Run.Status == RunStatus.Running)
     {
-        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun" Class="configrun">Cancel run</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="App.CancelRun" Class="configrun configbtn configicon-compact" StartIcon="@Icons.Material.Filled.Stop"
+                   aria-label="Cancel run" title="Cancel the run"><span class="configbtn-label">Cancel run</span></MudButton>
     }
     else
     {
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver?.Problem is not null)" Class="configrun"
-                   OnClick="App.RunOptimizerAsync" StartIcon="@Icons.Material.Filled.PlayArrow"
-                   title="@(App.Solver?.Problem ?? (App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first"))">Run optimizer</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved?.IsValid != true || App.Solver?.Problem is not null)" Class="configrun configbtn"
+                   OnClick="App.RunOptimizerAsync" StartIcon="@Icons.Material.Filled.PlayArrow" aria-label="Run optimizer"
+                   title="@(App.Solver?.Problem ?? (App.Resolved?.IsValid == true ? "Search for the best builds" : "Fix the validation errors first"))"><span class="configbtn-label">Run optimizer</span></MudButton>
     }
 </div>
 

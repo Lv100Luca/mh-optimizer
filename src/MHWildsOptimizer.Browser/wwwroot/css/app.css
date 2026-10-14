@@ -63,7 +63,8 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .app {
   display: grid;
   grid-template-columns: 220px 1fr;
-  grid-template-rows: 60px 1fr 32px;
+  /* the top row grows if the config bar ever wraps, instead of running over the page */
+  grid-template-rows: minmax(60px, auto) 1fr 32px;
   grid-template-areas: "top top" "nav main" "status status";
   zoom: var(--ui-zoom);
   /* the page is scaled with zoom on <html> (uiScale.ts), which scales vh too */
@@ -128,6 +129,8 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 .weaponpick img { flex: 0 0 auto; }
 .weaponpick-new { width: 20px; text-align: center; font-weight: 700; color: var(--accent); }
 .configrun { margin-left: 8px; }
+/* Revert and Cancel run show an icon only when the top bar is compact (below) */
+.configbtn.configicon-compact .mud-button-icon-start { display: none; }
 .saveas { display: flex; align-items: center; gap: 4px; }
 .saveas input { background: var(--panel); border: 1px solid var(--border-2); border-radius: 6px; padding: 5px 8px; width: 160px; }
 
@@ -778,6 +781,23 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .mud-snackbar { font-size: 14px; }
 .configbar .mud-input-control.configsel { width: 210px; flex: 0 0 auto; }
 .configpick .mud-icon-button { padding: 4px; }
+/*
+  The desktop layout down to where the mobile layout starts has too little room for the full top bar (window px as in
+  the breakpoints at the top, x 1.35 with a mouse): Revert, Run optimizer and Cancel run become icons, the unsaved
+  badge says "unsaved" and the pickers get narrower. Tablets in landscape also drop the subtitle under the title.
+*/
+@media (pointer: fine) and (min-width: 1451px) and (max-width: 1727px), (not (pointer: fine)) and (min-width: 901px) and (max-width: 1279px) {
+  .configbtn .configbtn-label, .configname-more { display: none; }
+  .configbtn.configicon-compact .mud-button-icon-start { display: inherit; }
+  .configbtn .mud-button-label .mud-button-icon-start { margin: 0; margin-inline: 0; }
+  .configbar .configbtn { min-width: 0; }
+  .configbtn.mud-button-filled, .configbtn.mud-button-outlined { padding-left: 11px; padding-right: 11px; }
+  .configbar .mud-input-control.configsel { width: 180px; }
+}
+@media (not (pointer: fine)) and (min-width: 901px) and (max-width: 1100px) {
+  .brand-sub { display: none; }
+  .configbar .mud-input-control.configsel { width: 160px; }
+}
 .toggle-row { display: flex; align-items: flex-start; gap: 6px; }
 .toggle-row .mud-switch { margin: -4px 0 0 -8px; }
 .toggle-row.disabled .toggle-text { opacity: 0.5; }
