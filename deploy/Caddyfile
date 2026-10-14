@@ -1,11 +1,16 @@
-# MH Wilds Optimizer - the Caddy block for the browser app.
-# Append it to the system Caddyfile (/etc/caddy/Caddyfile), then:
+# Wilds Builds - the Caddy blocks for the browser app.
+# Put them in the system Caddyfile (/etc/caddy/Caddyfile, replacing the old mh-optimizer.luca-diegel.de block), then:
 #   sudo systemctl reload caddy
-# Caddy obtains and renews the certificate itself (the DNS A record must point at this host).
+# Caddy obtains and renews the certificates itself (each name's DNS A record must point at this host).
 #
 # The site is static: the published wwwroot, copied to /opt/mh-optimizer/site by CI (.github/workflows/deploy.yml).
 
-mh-optimizer.luca-diegel.de {
+# one address for search engines and shared links: www and the old subdomain move here for good (301)
+www.wildsbuilds.com, mh-optimizer.luca-diegel.de {
+	redir https://wildsbuilds.com{uri} permanent
+}
+
+wildsbuilds.com {
 	root * /opt/mh-optimizer/site
 
 	# CP-SAT runs on WebAssembly threads, which need a cross-origin isolated page.

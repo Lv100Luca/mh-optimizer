@@ -1,6 +1,6 @@
 # Deploying the browser app
 
-The site is <https://mh-optimizer.luca-diegel.de>: the published `wwwroot` of `src/MHWildsOptimizer.Browser`, served
+The site is <https://wildsbuilds.com>: the published `wwwroot` of `src/MHWildsOptimizer.Browser`, served
 straight off the VPS disk by Caddy. There is no server code, container or database; everything runs in the browser.
 
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs the tests and publishes the app on every PR and push.
@@ -18,7 +18,9 @@ deploy restarts nothing and swaps the new files in at the end, so it can run at 
 
 ## One-time setup
 
-**1. DNS.** An A record `mh-optimizer.luca-diegel.de → 159.195.194.247` (DNS only, no proxy).
+**1. DNS.** In Cloudflare, A records for `wildsbuilds.com` and `www.wildsbuilds.com` → `159.195.194.247`, both DNS only
+(grey cloud): Caddy fetches the certificates itself and sends the cross-origin headers. The old
+`mh-optimizer.luca-diegel.de` record stays, so old links reach Caddy and get redirected.
 
 **2. The deploy user and the site directory**, on the VPS:
 
@@ -60,7 +62,8 @@ gh secret set VPS_SSH_KEY -R Lv100Luca/mh-optimizer < mh-deploy
 The deploy job prints the key's fingerprint; `ssh-keygen -lf /home/mh-deploy/.ssh/authorized_keys` on the VPS must show
 the same one.
 
-**4. Caddy.** Append [`deploy/Caddyfile`](deploy/Caddyfile) to `/etc/caddy/Caddyfile`, then:
+**4. Caddy.** Append [`deploy/Caddyfile`](deploy/Caddyfile) to `/etc/caddy/Caddyfile` (both blocks: the site, and the
+redirect of `www` and the old subdomain to it), then:
 
 ```bash
 sudo caddy validate --config /etc/caddy/Caddyfile
@@ -74,8 +77,10 @@ Caddy gets the certificate on the first request. Until the first deploy the dire
 ## Verify
 
 ```bash
-curl -sI https://mh-optimizer.luca-diegel.de/ | grep -i cross-origin    # both headers: the solver needs them
-curl -sI https://mh-optimizer.luca-diegel.de/solver/bridge.js | head -1  # 200
+curl -sI https://wildsbuilds.com/ | grep -i cross-origin    # both headers: the solver needs them
+curl -sI https://wildsbuilds.com/solver/bridge.js | head -1  # 200
+curl -sI https://www.wildsbuilds.com/skills | grep -i location             # https://wildsbuilds.com/skills
+curl -sI https://mh-optimizer.luca-diegel.de/skills | grep -i location     # the same
 ```
 
 In the browser, `crossOriginIsolated` in the console must be `true`; Options shows how many solver threads it got.

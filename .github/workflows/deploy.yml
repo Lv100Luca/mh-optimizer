@@ -68,7 +68,7 @@ jobs:
       VPS_HOST: ${{ vars.VPS_HOST }}
       VPS_USER: ${{ vars.VPS_USER }}
       VPS_PORT: ${{ vars.VPS_SSH_PORT || '22' }}
-      SITE_URL: https://mh-optimizer.luca-diegel.de
+      SITE_URL: https://wildsbuilds.com
     steps:
       - uses: actions/download-artifact@v4
         with:

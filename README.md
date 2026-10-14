@@ -73,7 +73,7 @@ dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
 
 In Rider, the shared run configuration **Browser app** (`.run/`) runs the development server.
 
-The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). It runs at <https://mh-optimizer.luca-diegel.de>, published by CI on every push to `main` and served by Caddy ([`DEPLOY.md`](DEPLOY.md), [`deploy/Caddyfile`](deploy/Caddyfile)). With nginx:
+The site is `publish/browser/wwwroot` (needs node 20+ for the solver bundle, like the server's client). It runs at <https://wildsbuilds.com>, published by CI on every push to `main` and served by Caddy ([`DEPLOY.md`](DEPLOY.md), [`deploy/Caddyfile`](deploy/Caddyfile)). With nginx:
 
 ```nginx
 server {
