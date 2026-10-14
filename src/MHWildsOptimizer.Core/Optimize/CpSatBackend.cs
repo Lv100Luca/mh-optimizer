@@ -48,6 +48,12 @@ public interface ICpSatBackend
     /// <summary>Solves <paramref name="model"/>; cancelling stops the search and throws <see cref="OperationCanceledException"/>.</summary>
     /// <param name="lane">0-based slot when several solves run at the same time (one per skill pair class), so a backend can keep them apart.</param>
     Task<CpSolverResponse> SolveAsync(CpModel model, CpSatParameters parameters, int lane, CancellationToken ct);
+
+    /// <summary>
+    /// Lets the host's other work run between synchronous stretches of a search. In the browser this shares the page's only
+    /// thread, and its <see cref="Task.Yield"/> resumes through a timer, which a background tab runs about once a minute.
+    /// </summary>
+    async Task YieldAsync() => await Task.Yield();
 }
 
 /// <summary>The OR-Tools native library; each solve runs on the thread pool, so solves on different lanes run in parallel.</summary>

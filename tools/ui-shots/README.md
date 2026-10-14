@@ -31,6 +31,21 @@ node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca Current 
 node tools/ui-shots/perf.mjs http://127.0.0.1:5251 inputs/profiles/Luca "the best" run
 ```
 
+`background.mjs` times a run whose tab is in the background. Chrome and Edge run a hidden tab's timers about once a minute
+after five minutes ("intensive wake-up throttling"). Headless browsers only get the once-a-second throttling, so the
+script runs a real browser window moved off the screen (it shows in the taskbar), starts a run of the weapon and prints
+the run's time, tab titles and log (`HIDE=0` runs headless with the tab in front instead). A step of a run that waits on
+a timer shows up as gaps of a minute in the log. Edge takes the grace period as a feature parameter (10 s here); a bare
+Chromium ignores it, so give it `WAIT_BEFORE_RUN=330` (seconds hidden before the run starts).
+
+```bash
+node tools/ui-shots/background.mjs http://127.0.0.1:5251 inputs/profiles/Luca "the best"
+EDGE_PATH=C:/path/to/chromium/chrome.exe WAIT_BEFORE_RUN=330 node tools/ui-shots/background.mjs http://127.0.0.1:5251 inputs/profiles/Luca "the best"
+```
+
+Every script takes `EDGE_PATH` for another Chromium browser (Chrome, a bare Chromium); they clean up `msedge.exe` and
+`chrome.exe` processes of their own temporary profiles only.
+
 `dropdowns.mjs` opens every dropdown (pickers, selects, search selects, the profile menu) on every tab and reports any
 popover with more than one scrolling element; run it at a few `SIZE`s (e.g. `1600,1000`, `1366,650`, `412,850`).
 

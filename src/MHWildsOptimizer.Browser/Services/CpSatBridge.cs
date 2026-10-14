@@ -58,6 +58,13 @@ public sealed class CpSatBridge(IJSRuntime js) : ICpSatBackend
         }
     }
 
+    /// <summary>
+    /// Lets the page update between stretches of a search, without a timer (app.js <c>yieldToPage</c>): .NET's own yield
+    /// resumes through one, and Chrome runs a background tab's timers about once a minute, so a run crawled while the tab
+    /// was hidden.
+    /// </summary>
+    public async Task YieldAsync() => await js.InvokeVoidAsync("mhwo.yieldToPage");
+
     /// <summary>The parameters as or-tools-wasm's options object (SatParameters fields in camelCase).</summary>
     private static Dictionary<string, object> Options(CpSatParameters p)
     {

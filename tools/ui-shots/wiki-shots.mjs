@@ -15,7 +15,7 @@ const files = Object.fromEntries([
   ...readdirSync(join(profileFolder, 'weapons')).filter((f) => f.endsWith('.json')).map((f) => join(profileFolder, 'weapons', f)),
 ].map((f) => [basename(f), readFileSync(f, 'utf8')]));
 const port = 9400 + Math.floor(Math.random() * 400);
-const killStragglers = () => { try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='msedge.exe'\\" | Where-Object { $_.CommandLine -like '*edge-shots-*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"`); } catch { } };
+const killStragglers = () => { try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='msedge.exe' OR Name='chrome.exe'\\" | Where-Object { $_.CommandLine -like '*edge-shots-*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"`); } catch { } };
 killStragglers();
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-shots-'));
 const edge = spawn(process.env.EDGE_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',

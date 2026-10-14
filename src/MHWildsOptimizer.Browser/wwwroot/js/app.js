@@ -37,8 +37,22 @@ window.mhwo = {
 
   copyText: async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } },
 
-  /** Resolves once the browser has painted the page's latest changes (after 100 ms at most: a background tab paints nothing). */
-  nextPaint: () => new Promise((resolve) => { requestAnimationFrame(() => setTimeout(resolve, 0)); setTimeout(resolve, 100); }),
+  /** Resolves once the browser has painted the page's latest changes (after 100 ms at most); a hidden tab paints nothing, so at once. */
+  nextPaint: () => new Promise((resolve) => {
+    if (document.hidden) { resolve(); return; }
+    requestAnimationFrame(() => setTimeout(resolve, 0));
+    setTimeout(resolve, 100);
+  }),
+
+  /**
+   * Resolves after the browser has handled what else is waiting (input, rendering), without a timer: Chrome runs a hidden
+   * tab's timers about once a minute, but delivers messages right away.
+   */
+  yieldToPage: () => new Promise((resolve) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => { channel.port1.close(); resolve(); };
+    channel.port2.postMessage(null);
+  }),
 
   /** Warns before leaving the page while there are unsaved edits or a run is going. */
   setLeaveWarning: (on) => { window.onbeforeunload = on ? (e) => { e.preventDefault(); return ''; } : null; },

@@ -97,6 +97,8 @@ public static class Endpoints
         _ = run.ContinueWith(_ => channel.Writer.TryComplete(), TaskScheduler.Default);
 
         await foreach (var e in channel.Reader.ReadAllAsync(ct))
+        {
+            if (e is StageEvent) continue; // the React client shows the progress log only
             yield return e switch
             {
                 ValidationEvent v => Event("validation", new { errors = v.Errors, warnings = v.Warnings }),
@@ -105,6 +107,7 @@ public static class Endpoints
                 ErrorEvent x => Event("error", new { message = x.Message }),
                 _ => throw new InvalidOperationException($"Unknown event {e}"),
             };
+        }
 
         string? error = null;
         try { await run; }

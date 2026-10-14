@@ -183,8 +183,7 @@ public static class RequestLoader
         var candidates = new List<GogmaSkillPair?>();
         if (request.SkillPair.Mode == SkillPairMode.Fixed)
         {
-            if (weapon.SetBonus is null && weapon.GroupSkill is null)
-                warnings.Add("Skill pair mode is 'fixed' but the weapon has neither set_bonus nor group_skill; the weapon will count for nothing.");
+            // a weapon without a rolled pair is a normal state (a new weapon starts like that): no warning
             candidates.Add(weapon.SetBonus is { } s && weapon.GroupSkill is { } g ? new GogmaSkillPair(s, g) : null);
         }
         else

@@ -11,6 +11,9 @@ public sealed record ValidationEvent(IReadOnlyList<string> Errors, IReadOnlyList
 
 public sealed record ProgressEvent(string Message) : OptimizeEvent;
 
+/// <summary>Where the run is, as one line for people: "Weapon start 2 of 3 (Element focus) · armor search 1 (at most 4) · build 3 of 5".</summary>
+public sealed record StageEvent(string Stage) : OptimizeEvent;
+
 public sealed record ResultEvent(ResultDto Result) : OptimizeEvent;
 
 public sealed record ErrorEvent(string Message) : OptimizeEvent;
@@ -39,7 +42,8 @@ public static class Optimization
         OptimizationResult result;
         try
         {
-            result = await new Optimizer(data, resolved, cpSat).RunAsync(new CallbackProgress(m => onEvent(new ProgressEvent(m))), ct);
+            result = await new Optimizer(data, resolved, cpSat) { Stage = s => onEvent(new StageEvent(s)) }
+                .RunAsync(new CallbackProgress(m => onEvent(new ProgressEvent(m))), ct);
         }
         catch (OperationCanceledException) { throw; }
         catch (Exception e)

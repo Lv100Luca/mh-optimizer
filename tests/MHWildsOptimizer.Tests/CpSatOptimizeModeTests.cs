@@ -60,7 +60,7 @@ public class CpSatOptimizeModeTests(ITestOutputHelper output)
         var plain = Search(1000).Run();
         var tightened = Search(0.001).Run();
         Thread.Sleep(100); // Progress<T> posts its reports
-        Assert.Contains(log, l => l.Contains("tightened:"));
+        Assert.Contains(log, l => l.Contains("narrowed "));
         Assert.Equal(plain.Select(b => b.Score), tightened.Select(b => b.Score));
         foreach (var l in log.Where(l => l.Contains("tighten"))) output.WriteLine(l);
     }

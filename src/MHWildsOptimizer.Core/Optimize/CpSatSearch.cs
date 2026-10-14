@@ -68,6 +68,18 @@ internal sealed class CpSatSearch
 
     public ICpSatBackend Backend { get; init; } = NativeCpSatBackend.Instance;
 
+    /// <summary>The run's status line; the search sets its last level (the build it solves). Null: not reported.</summary>
+    public RunStage? Stage { get; init; }
+
+    private ResolvedAttackProfile? _attack;
+
+    /// <summary>A score (per 100 MV) as the damage per attack the results show, for the progress log.</summary>
+    private string Damage(double score)
+    {
+        _attack ??= _cond.Attack(_weapon);
+        return OptimizerText.Damage(_attack.Value, score);
+    }
+
     /// <summary>The backend lane this search solves on (see <see cref="ICpSatBackend.SolveAsync"/>).</summary>
     public int Lane { get; set; }
 
@@ -138,6 +150,10 @@ internal sealed class CpSatSearch
             var trying = !_tightened && _builds.Count == 0 && tryFor >= Math.Min(1, TightenAfterSeconds);
             var parameters = ranking ? _parameters with { TimeLimitSeconds = RankTimeLimitSeconds!.Value }
                 : trying ? _parameters with { TimeLimitSeconds = tryFor } : _parameters;
+            var number = _builds.Count + 1;
+            Stage?.Set(2, _builds.Count == 0
+                ? $"build 1 of {topN}: proving it the best (up to {OptimizerText.Seconds(_parameters.TimeLimitSeconds)})"
+                : $"build {number} of {topN} (up to {OptimizerText.Seconds(parameters.TimeLimitSeconds)})");
             var solveSw = Stopwatch.StartNew();
             var response = await Backend.SolveAsync(model, parameters, Lane, _ct);
             SolveTime += solveSw.Elapsed;
@@ -145,14 +161,21 @@ internal sealed class CpSatSearch
             _ct.ThrowIfCancellationRequested();
             if (trying && status is CpSolverStatus.Feasible or CpSolverStatus.Unknown)
             {
-                _progress?.Report($"  solve 1 not done in {tryFor:0.#} s" +
-                                  (status == CpSolverStatus.Feasible ? $" (best {response.ObjectiveValue / ObjectiveScale / Micro:0.00}, bound {response.BestObjectiveBound / ObjectiveScale / Micro:0.00})" : "") +
-                                  ": tightening the model");
+                _progress?.Report($"  build 1 not proved within {tryFor:0.#} s" +
+                                  (status == CpSolverStatus.Feasible ? $" (best so far {Damage(response.ObjectiveValue / ObjectiveScale / Micro)}, at most {Damage(response.BestObjectiveBound / ObjectiveScale / Micro)} possible)" : "") +
+                                  ": narrowing the search");
+                Stage?.Set(2, "build 1: narrowing the search");
                 await TightenAsync();
                 continue;
             }
             Solves++;
-            if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) { _statuses.Add(status.ToString().ToLowerInvariant()); break; }
+            if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible))
+            {
+                _statuses.Add(status.ToString().ToLowerInvariant());
+                if (status == CpSolverStatus.Infeasible)
+                    _progress?.Report(_builds.Count == 0 ? "  no build reaches the targets" : $"  no further build reaches the targets ({Plural(_builds.Count, "build")} in all)");
+                break;
+            }
             if (status != CpSolverStatus.Optimal && !ranking) ProvedOptimal = false;
             _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : ranking ? "ranked" : "time limit");
 
@@ -164,7 +187,15 @@ internal sealed class CpSatSearch
                 for (var n = response.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
 
             var objective = response.ObjectiveValue / ObjectiveScale / Micro;
-            _progress?.Report($"  solve {Solves}: {status.ToString().ToLowerInvariant()} {objective:0.00} (bound {response.BestObjectiveBound / ObjectiveScale / Micro:0.00}) in {solveSw.ElapsedMilliseconds} ms");
+            var bound = response.BestObjectiveBound / ObjectiveScale / Micro;
+            var proof = status == CpSolverStatus.Optimal ? new SolveProof(ProofKind.Proved, 0, parameters.TimeLimitSeconds)
+                : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
+            _progress?.Report($"  build {number}: {Damage(objective)}, " + proof.Kind switch
+            {
+                ProofKind.Proved => number == 1 ? "proved the best" : "proved the next best",
+                ProofKind.Ranked => $"ranked, not proved within the {OptimizerText.Seconds(parameters.TimeLimitSeconds)} limit for builds 2 and on",
+                _ => $"best found when the {OptimizerText.Seconds(parameters.TimeLimitSeconds)} time limit ran out (up to {Damage(bound)} possible)",
+            } + $" in {solveSw.Elapsed.TotalSeconds:0.0} s");
 
             // exclude this armor + talisman combination for the next solve (hints and an objective cap from this solve made it slower)
             var used = new List<ILiteral>();
@@ -177,20 +208,33 @@ internal sealed class CpSatSearch
             if (loadout is null) continue;
             var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
             if (!_seen.Add(key)) continue;
-            _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, ""));
+            _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, "", Proof: proof));
         }
         Summary = $"cp-sat {Solves} solve(s): {string.Join(", ", _statuses.GroupBy(s => s).Select(g => $"{g.Count()} {g.Key}"))}";
+        Stage?.Set(2, null);
         return _builds.OrderByDescending(b => b.Score).Take(topN).ToList();
+    }
+
+    /// <summary>The builds found and how sure the search is of them: "5 builds: 1 proved, 4 ranked".</summary>
+    public string ProofSummary
+    {
+        get
+        {
+            var kinds = _builds.GroupBy(b => b.Proof?.Kind ?? ProofKind.Proved).OrderBy(g => g.Key)
+                .Select(g => $"{g.Count()} {g.Key switch { ProofKind.Proved => "proved", ProofKind.Ranked => "ranked", _ => "not proved (time limit)" }}");
+            return _builds.Count == 0 ? "no build found" : $"{Plural(_builds.Count, "build")}: {string.Join(", ", kinds)}";
+        }
     }
 
     private void Build()
     {
         var sw = Stopwatch.StartNew();
         var built = true;
+        Stage?.Set(2, "preparing the damage model");
         var score = Scores is null ? CheckedScore() : Scores.GetOrBuild(_weapon, _rel, _cond, CheckedScore, out built);
         _progress?.Report(built
-            ? $"  score model: {score.Units.Count} units ({string.Join(", ", score.Units.Where(u => u.Features.Length > 1).Select(u => string.Join(" + ", u.Features.Select(f => score.Features[f].Name))))} joint), {score.HealthSides} health side(s){(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts (sequence segments, uptime)" : "")}, built in {sw.ElapsedMilliseconds} ms"
-            : $"  score model: {score.Units.Count} units, shared with an earlier search");
+            ? $"  damage model built in {sw.Elapsed.TotalSeconds:0.0} s ({Plural(score.Units.Count, "group")} of skills{(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts of the attack or uptime" : "")})"
+            : "  damage model shared with an earlier search");
 
         _score = score;
         _model = new CpModel();
@@ -230,7 +274,7 @@ internal sealed class CpSatSearch
             capped++;
         }
         ModelTime += sw.Elapsed;
-        _progress?.Report($"  tightened: {capped} of {keys.Count} factors capped by {Plural(bounds.Count, "short solve")} in {sw.ElapsedMilliseconds} ms");
+        _progress?.Report($"  narrowed {capped} of {keys.Count} damage factors to what a build can reach ({Plural(bounds.Count, "short solve")}, {sw.Elapsed.TotalSeconds:0.0} s)");
     }
 
     private static string Plural(int n, string one) => $"{n} {(n == 1 ? one : one + "s")}";

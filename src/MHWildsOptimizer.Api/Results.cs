@@ -61,7 +61,7 @@ public sealed record BuildSummaryDto(
 public sealed record BuildDto(
     int Rank, double Score, double Efr, double Efe, double Procs, BuildSummaryDto Summary, BuildWeaponDto Weapon, IReadOnlyList<BuildArmorDto> Armor, BuildTalismanDto? Talisman,
     IReadOnlyList<DecoCountDto> Decorations, IReadOnlyList<BuildSkillDto> Skills, IReadOnlyList<SetBonusStateDto> SetBonuses, IReadOnlyList<GroupSkillStateDto> GroupSkills,
-    StatsDto StatsRequested, StatsDto StatsAllOn, string Text, IReadOnlyList<WeaponOption>? WeaponOptions = null);
+    StatsDto StatsRequested, StatsDto StatsAllOn, string Text, IReadOnlyList<WeaponOption>? WeaponOptions = null, SolveProof? Proof = null);
 
 public sealed record PairResultDto(int Rank, string Label, string SetBonus, string GroupSkill, double BestScore, long StatesEvaluated, string WorkLabel, string CandidateSummary, IReadOnlyList<BuildDto> Builds);
 
@@ -141,7 +141,7 @@ public static class ResultMapper
                     + Environment.NewLine + ResultsText.WeaponOptionsText(b)).TrimEnd();
 
         return new BuildDto(rank, b.Score, b.Result.EffectiveRaw, b.Result.EffectiveElement, b.Result.ProcDamage, summary, weapon, armor, talisman, decorations, skillList, setBonuses, groupSkills, requested, allOn, text,
-            b.WeaponOptions);
+            b.WeaponOptions, b.Proof);
     }
 
     private static DecoDto? Deco(Decoration? d) => d is null ? null : new DecoDto(d.Name, d.Slot, d.Kind, d.IconColor, d.Skills);
