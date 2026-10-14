@@ -162,6 +162,8 @@ try {
         for (let i = 0; i < 80 && !running(); i++) await sleep(250);
         const started = running();
         while (running() && performance.now() - t0 < ${runTimeout * 1000}) await sleep(500);
+        // result cards come in one per turn of the page after the run ends
+        for (let i = 0; i < 40 && !running() && !document.querySelector('.result-row, article.build'); i++) await sleep(250);
         const error = [...document.querySelectorAll('.alert-box')].map(a => a.innerText.trim()).filter(Boolean).join(' | ');
         return JSON.stringify({ started, finished: !running(), seconds: +((performance.now() - t0) / 1000).toFixed(1),
           rows: document.querySelectorAll('.result-row, article.build').length, error,
