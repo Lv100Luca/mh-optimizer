@@ -7,7 +7,7 @@
 @if (App.LoadError is { } error)
 {
     <div class="boot boot-error">
-        <h1>MH Wilds Optimizer</h1>
+        <h1>@AppName</h1>
         <p>The app could not start: @error</p>
     </div>
 }
@@ -23,8 +23,8 @@ else
             <div class="brand">
                 <img src="@GameIcons.Weapon("great-sword")" alt="" />
                 <div>
-                    <div class="brand-title">MH Wilds Optimizer</div>
-                    <div class="brand-sub">Gogma set maker · Ver @Catalog.GameVersion</div>
+                    <div class="brand-title">@AppName</div>
+                    <div class="brand-sub">MH Wilds build optimizer · Ver @Catalog.GameVersion</div>
                 </div>
             </div>
             <ConfigBar />
@@ -115,12 +115,14 @@ else
         await App.InitializeAsync();
     }
 
+    private const string AppName = "Wilds Builds";
+
     /// <summary>The browser tab's title; while a run goes it leads with the run's stage, so a background tab shows how far it got.</summary>
     private string Title => (App.Run.Status == RunStatus.Running ? $"⏳ {RunTitle(App.Run)} · " : "") + (App.Tab == Tab.Inventory || App.Request is null
-        ? "MH Wilds Optimizer"
-        : App.Tab.IsWikiTab() ? $"{App.WikiEntry ?? Nav().First(n => n.Tab == App.Tab).Label} · Wiki · MH Wilds Optimizer"
-        : App.Tab == Tab.Compare ? "Compare · MH Wilds Optimizer"
-        : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds Optimizer");
+        ? $"{AppName} · Monster Hunter Wilds build optimizer"
+        : App.Tab.IsWikiTab() ? $"{App.WikiEntry ?? Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds wiki · {AppName}"
+        : App.Tab == Tab.Compare ? $"Compare · {AppName}"
+        : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · {AppName}");
 
     /// <summary>"Searching 3:12 · build 2 of 5": the deepest stage only, the title is short.</summary>
     private static string RunTitle(RunState run)

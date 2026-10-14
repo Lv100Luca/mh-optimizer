@@ -4,29 +4,69 @@
     {
       "name": "web",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/MHWildsOptimizer.Web", "-p:BuildClient=true", "--", "--urls", "http://localhost:5216"],
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "src/MHWildsOptimizer.Web",
+        "-p:BuildClient=true",
+        "--",
+        "--urls",
+        "http://localhost:5216"
+      ],
       "port": 5216,
       "autoPort": false
     },
     {
       "name": "browser",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/MHWildsOptimizer.Browser", "--launch-profile", "http", "--no-launch-browser"],
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "src/MHWildsOptimizer.Browser",
+        "--launch-profile",
+        "http",
+        "--no-launch-browser"
+      ],
       "port": 5240,
       "autoPort": false
     },
     {
       "name": "browser-bow",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", ".claude/worktrees/bow-support/src/MHWildsOptimizer.Browser", "--launch-profile", "http", "-p:BuildSolver=false", "--no-launch-browser"],
+      "runtimeArgs": [
+        "run",
+        "--project",
+        ".claude/worktrees/bow-support/src/MHWildsOptimizer.Browser",
+        "--launch-profile",
+        "http",
+        "-p:BuildSolver=false",
+        "--no-launch-browser"
+      ],
       "port": 5240,
       "autoPort": false
     },
     {
       "name": "wasm-speedtest",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["spikes/WasmSpeedTest/serve.py", "5231", "spikes/WasmSpeedTest/out"],
+      "runtimeArgs": [
+        "spikes/WasmSpeedTest/serve.py",
+        "5231",
+        "spikes/WasmSpeedTest/out"
+      ],
       "port": 5231,
+      "autoPort": false
+    },
+    {
+      "name": "browser-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5250",
+        "--directory",
+        "src/MHWildsOptimizer.Browser/wwwroot"
+      ],
+      "port": 5250,
       "autoPort": false
     }
   ]

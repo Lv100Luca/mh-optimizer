@@ -54,6 +54,12 @@ code { background: var(--panel-2); padding: 0.1em 0.3em; border-radius: 4px; }
 /* ---------------------------------------------------------------- layout */
 .boot { padding: 4em; text-align: center; color: var(--muted); }
 .boot-error { color: var(--text); max-width: 40em; margin: 0 auto; text-align: left; }
+/* index.html's start screen: a short description under the loading line */
+.boot-intro { max-width: 40em; margin: 0 auto; padding: 4em 16px; text-align: left; }
+.boot-intro h1 { color: var(--accent); font-size: 32px; font-weight: 800; }
+.boot-intro .boot-tag { color: var(--text); font-size: 16px; margin-bottom: 1.5em; }
+.boot-intro .boot-loading { color: var(--text); margin-bottom: 1.5em; }
+.boot-intro ul { padding-left: 1.2em; }
 .app {
   display: grid;
   grid-template-columns: 220px 1fr;

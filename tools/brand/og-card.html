@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- The link preview image (src/MHWildsOptimizer.Browser/wwwroot/og.png, 1200 x 630) that og:image in index.html points to.
+     Regenerate from this folder:
+       chrome --headless=new --hide-scrollbars --allow-file-access-from-files --window-size=1200,630 --screenshot=og.png og-card.html -->
+<html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: radial-gradient(ellipse at 85% 20%, #2a2418 0%, #121419 55%), #121419;
+    color: #e8e6e1; font-family: "Segoe UI", system-ui, sans-serif;
+    display: flex; flex-direction: column; justify-content: center; padding: 0 84px; box-sizing: border-box;
+  }
+  .eyebrow { color: #9aa1ad; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  h1 { margin: 10px 0 0; font-size: 116px; line-height: 1; font-weight: 800; color: #e3b64e; letter-spacing: -.01em; }
+  .tag { margin-top: 26px; font-size: 36px; line-height: 1.35; max-width: 1040px; }
+  .tag b { color: #fff; font-weight: 600; }
+  .icons { display: flex; gap: 14px; margin-top: 48px; }
+  .icons img { width: 62px; height: 62px; }
+  .url { position: absolute; right: 84px; bottom: 44px; color: #9aa1ad; font-size: 28px; }
+  .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: #e3b64e; }
+</style></head>
+<body>
+  <div class="bar"></div>
+  <div class="eyebrow">Monster Hunter Wilds</div>
+  <h1>Wilds Builds</h1>
+  <div class="tag">The <b>build optimizer</b>: best armor, decorations and talismans for your weapon, scored by damage per attack.<br><span style="color:#9aa1ad">Plus a skill, armor and item wiki.</span></div>
+  <div class="icons" id="icons"></div>
+  <div class="url">wildsbuilds.com</div>
+<script>
+  const root = '../../src/MHWildsOptimizer.Browser/wwwroot/icons/weapons/';
+  for (const w of ['great-sword','long-sword','sword-shield','dual-blades','hammer','hunting-horn','lance','gunlance',
+                   'switch-axe','charge-blade','insect-glaive','light-bowgun','heavy-bowgun','bow']) {
+    const i = document.createElement('img'); i.src = root + w + '-r8.png'; document.getElementById('icons').append(i);
+  }
+</script>
+</body></html>

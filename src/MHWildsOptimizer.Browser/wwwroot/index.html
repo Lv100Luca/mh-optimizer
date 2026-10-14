@@ -4,7 +4,32 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MH Wilds Optimizer</title>
+    <title>Wilds Builds · Monster Hunter Wilds build optimizer</title>
+    <meta name="description" content="Free Monster Hunter Wilds build optimizer: finds the best armor, decorations and talismans for your weapon, including Gogma Artian skill rolls, scored by damage per attack. Plus a skill, armor and item wiki." />
+    <meta name="theme-color" content="#121419" />
+    <!-- link previews (Discord, Reddit, ...); the image is made from tools/brand/og-card.html -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wilds Builds" />
+    <meta property="og:title" content="Wilds Builds · Monster Hunter Wilds build optimizer" />
+    <meta property="og:description" content="Best armor, decorations and talismans for your weapon, scored by damage per attack. Plus a skill, armor and item wiki." />
+    <meta property="og:url" content="https://wildsbuilds.com/" />
+    <meta property="og:image" content="https://wildsbuilds.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "Wilds Builds",
+            "url": "https://wildsbuilds.com/",
+            "description": "Build optimizer for Monster Hunter Wilds: the best armor, decorations and talismans for your weapon, scored by damage per attack.",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any (runs in the browser)",
+            "browserRequirements": "Requires JavaScript and WebAssembly",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+        }
+    </script>
     <base href="/" />
     <link rel="preload" id="webassembly" />
     <link rel="icon" type="image/png" href="icons/weapons/great-sword-r8.png" />
@@ -15,8 +40,23 @@
 </head>
 
 <body>
+    <!-- what the page shows until the app starts, and all a search engine that does not run WebAssembly gets to read -->
     <div id="app">
-        <div class="boot">Loading the optimizer…</div>
+        <main class="boot boot-intro">
+            <h1>Wilds Builds</h1>
+            <p class="boot-tag">Monster Hunter Wilds build optimizer</p>
+            <p class="boot-loading">Loading the optimizer…</p>
+            <p>Enter your weapon, talismans and the skills you want, and Wilds Builds searches every armor, decoration and
+                talisman combination for the builds that deal the most damage with the attack you use. Gogma Artian weapons
+                can be searched over every set bonus and group skill roll.</p>
+            <ul>
+                <li>Damage per attack against a chosen monster part, or for your own attack sequence</li>
+                <li>Compare your builds side by side</li>
+                <li>A wiki of every skill, armor set, item and meal skill, with the exact numbers</li>
+                <li>Free, no account: everything runs and stays in your browser</li>
+            </ul>
+            <noscript><p><strong>Wilds Builds needs JavaScript and WebAssembly.</strong></p></noscript>
+        </main>
     </div>
 
     <div id="blazor-error-ui">
