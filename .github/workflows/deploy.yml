@@ -1,7 +1,8 @@
 name: Build and deploy
 
-# Tests and publishes the browser app on every PR and push; a push to main (or the Run workflow button on main) also
-# copies the site to the VPS, where Caddy serves it from disk. The site is static, so a deploy restarts nothing.
+# Tests, publishes and smoke-tests (tools/smoke) the browser app on every PR and push; a push to main (or the Run workflow
+# button on main) also copies the site to the VPS, where Caddy serves it from disk, and smoke-tests the live site. The site
+# is static, so a deploy restarts nothing.
 # See DEPLOY.md for the one-time VPS setup and the repo variables and secret this needs.
 on:
   pull_request:
@@ -51,6 +52,14 @@ jobs:
 
       - run: dotnet publish src/MHWildsOptimizer.Browser -c Release -o publish/browser
 
+      # the publish output in headless Chrome before it goes anywhere: boots cross-origin isolated, wiki pages render,
+      # the example weapon runs to results (tools/smoke/smoke.mjs)
+      - name: Browser smoke test
+        run: |
+          python3 spikes/WasmSpeedTest/serve.py 5251 publish/browser/wwwroot > /dev/null 2>&1 &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://127.0.0.1:5251/ && break; sleep 1; done
+          node tools/smoke/smoke.mjs http://127.0.0.1:5251
+
       - uses: actions/upload-artifact@v4
         with:
           name: site
@@ -70,6 +79,13 @@ jobs:
       VPS_PORT: ${{ vars.VPS_SSH_PORT || '22' }}
       SITE_URL: https://wildsbuilds.com
     steps:
+      # only for the smoke test after the copy; first, because checkout empties the workspace
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            tools/smoke
+            inputs
+
       - uses: actions/download-artifact@v4
         with:
           name: site
@@ -108,3 +124,15 @@ jobs:
           # the static wiki pages (MHWildsOptimizer.StaticSite) and the sitemap that lists them
           curl -sSI --fail "$SITE_URL/wiki/skills/agitator/" > /dev/null
           curl -sSI --fail "$SITE_URL/sitemap.xml" > /dev/null
+          # an unknown wiki page is a real 404 (deploy/Caddyfile), not the app answering 200; only a warning, because the
+          # Caddyfile is installed on the VPS by hand and a deploy cannot fix it
+          status=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/wiki/skills/no-such-skill/")
+          [ "$status" = 404 ] || echo "::warning::an unknown wiki page answered $status, not 404: install deploy/Caddyfile on the VPS (DEPLOY.md step 4)"
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # the same browser test as before the copy, now through Caddy (headers, caching, the live files)
+      - name: Browser smoke test (live site)
+        run: node tools/smoke/smoke.mjs "$SITE_URL"

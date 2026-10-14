@@ -3,10 +3,11 @@
 The site is <https://wildsbuilds.com>: the published `wwwroot` of `src/MHWildsOptimizer.Browser`, served
 straight off the VPS disk by Caddy. There is no server code, container or database; everything runs in the browser.
 
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs the tests and publishes the app on every PR and push.
-A push to `main` (or **Actions → Build and deploy → Run workflow** on `main`) also copies the site to
-`/opt/mh-optimizer/site` with rsync and checks that the page comes back with the cross-origin isolation headers. A
-deploy restarts nothing and swaps the new files in at the end, so it can run at any time.
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs the tests, publishes the app and smoke-tests the
+publish output in headless Chrome on every PR and push. A push to `main` (or **Actions → Build and deploy → Run
+workflow** on `main`) also copies the site to `/opt/mh-optimizer/site` with rsync, checks that the page comes back with
+the cross-origin isolation headers and runs the browser smoke test again on the live site. A deploy restarts nothing and
+swaps the new files in at the end, so it can run at any time.
 
 | What                 | Where                                                                      |
 |----------------------|----------------------------------------------------------------------------|
@@ -87,6 +88,14 @@ curl -sI https://wildsbuilds.com/wiki/nope/ | head -1                       # 40
 ```
 
 In the browser, `crossOriginIsolated` in the console must be `true`; Options shows how many solver threads it got.
+
+The browser smoke test does all of that and more in one go: it boots the app, checks `crossOriginIsolated`, opens static
+and in-app wiki pages, imports the example weapon (`inputs/request.example.json`) and runs it to results, and fails on any
+script error on the page. Node 22 and Chrome, nothing to install:
+
+```bash
+node tools/smoke/smoke.mjs https://wildsbuilds.com                  # CHROME_PATH=... for another Chromium
+```
 
 ## Things that bite
 
