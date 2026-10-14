@@ -412,41 +412,43 @@
     {
         var lines = spec.Reinforcements.Select(Line).ToList();
         var rowsKey = string.Join(",", spec.Reinforcements);
-        var types =Catalog.Reinforcements.Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None))
+        var types = Catalog.Reinforcements.Where(r => (wt?.Gunner == true ? !r.MeleeOnly : !r.GunnerOnly) && (!r.NeedsElement || spec.Element != Element.None))
             .Select(r => r.Type).Distinct().ToList();
-        <div class="rf-table">
-            @for (var i = 0; i < Core.Gogma.GogmaConstants.ReinforcementSlots; i++)
-            {
-                var index = i;
-                var line = i < lines.Count ? lines[i] : null;
-                var others = lines.Where((_, j) => j != index).OfType<ReinforcementOptionDto>().ToList();
-                var options = types.Where(t => line?.Type == t || others.Count(o => o.Type == t) < Core.Gogma.GogmaConstants.MaxReinforcementsOfType(t))
-                    .Select(t => new SelectOption(Fmt.Slug(t), Fmt.TitleCase(t))).ToList();
-                <div class="rf-row @(line is null ? "rf-empty" : "")">
-                    <span class="rf-bonus">
-                        @if (line is not null && BonusIcon(line.Type, spec.Element) is { } icon)
+        <div class="rf-wrap">
+            <div class="rf-table">
+                @for (var i = 0; i < Core.Gogma.GogmaConstants.ReinforcementSlots; i++)
+                {
+                    var index = i;
+                    var line = i < lines.Count ? lines[i] : null;
+                    var others = lines.Where((_, j) => j != index).OfType<ReinforcementOptionDto>().ToList();
+                    var options = types.Where(t => line?.Type == t || others.Count(o => o.Type == t) < Core.Gogma.GogmaConstants.MaxReinforcementsOfType(t))
+                        .Select(t => new SelectOption(Fmt.Slug(t), Fmt.TitleCase(t))).ToList();
+                    <div class="rf-row @(line is null ? "rf-empty" : "")">
+                        <span class="rf-bonus">
+                            @if (line is not null && BonusIcon(line.Type, spec.Element) is { } icon)
+                            {
+                                <img src="@icon" alt="" />
+                            }
+                            else
+                            {
+                                <span class="rf-icon"></span>
+                            }
+                            @* keyed on all lines: a pick that moves the rows (Empty) or lands on another row leaves this row's value as it was, and MudSelect would keep showing the pick *@
+                            <SelectBox @key="@($"{index}:{rowsKey}")" Value="@(line is null ? null : Fmt.Slug(line.Type))" Placeholder="Empty" Options="options" ValueChanged="v => SetLineType(index, v)" />
+                        </span>
+                        @if (line is null)
                         {
-                            <img src="@icon" alt="" />
+                            <span class="rf-potency muted">—</span>
+                            <span></span>
                         }
                         else
                         {
-                            <span class="rf-icon"></span>
+                            <span class="rf-potency"><span>Boost @line.Tier</span><b>+@BonusValue(line.Type, line.Tier, kind)</b></span>
+                            <Segmented T="ReinforcementTier" Small="true" Value="line.Tier" ValueChanged="t => SetLineTier(index, t)" Options="TierChoices(line.Type, others, kind)" />
                         }
-                        @* keyed on all lines: a pick that moves the rows (Empty) or lands on another row leaves this row's value as it was, and MudSelect would keep showing the pick *@
-                        <SelectBox @key="@($"{index}:{rowsKey}")" Value="@(line is null ? null : Fmt.Slug(line.Type))" Placeholder="Empty" Options="options" ValueChanged="v => SetLineType(index, v)" />
-                    </span>
-                    @if (line is null)
-                    {
-                        <span class="rf-potency muted">—</span>
-                        <span></span>
-                    }
-                    else
-                    {
-                        <span class="rf-potency"><span>Boost @line.Tier</span><b>+@BonusValue(line.Type, line.Tier, kind)</b></span>
-                        <Segmented T="ReinforcementTier" Small="true" Value="line.Tier" ValueChanged="t => SetLineTier(index, t)" Options="TierChoices(line.Type, others, kind)" />
-                    }
-                </div>
-            }
+                    </div>
+                }
+            </div>
         </div>
         @if (spec.Reinforcements.Count > 0)
         {
