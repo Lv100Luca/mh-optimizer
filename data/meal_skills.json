@@ -3,7 +3,7 @@
  "about": [
   "A meal raises your health gauge by 50 and your stamina gauge to its maximum 150, adds attack, defense or elemental resistance, and gives meal skills. The boosts and the skills last until the meal runs out; eating again replaces the old meal and restarts the timer, and the timer stands still in camps, towns, the Grand Hub and the tent.",
   "At the Portable BBQ Grill (from a Ration in the pouch, or at a tent) you pick a ration type and optionally one additional ingredient and one finishing touch. Each ingredient brings its own skill plus one random skill, so a grilled meal carries up to four. A meal invitation in a settlement or a Grand Hub Canteen voucher gives the bigger stat boosts and three fixed skills plus two random ones.",
-  "The optimizer counts a meal's attack after the percentage bonuses: the meal attack field under Conditions (+5 for an invitation or Canteen meal, +2 for grilled meat)."
+  "The optimizer counts a meal's attack after the percentage bonuses: the Meal section of the Buffs tab (+5 for an invitation or Canteen meal, +2 for grilled meat), which also counts the meal skills that add damage."
  ],
  "tables": [
   {

@@ -298,6 +298,8 @@
             lines.Add("Scored on: " + string.Join("; ", eff.Select((x, i) => $"{ColName(x.Col, oneWeapon)} {attacks[i]}")));
         if (eff.Select(x => x.C.MealAttack).Distinct().Count() > 1)
             lines.Add("Meal attack: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {x.C.MealAttack}")));
+        if (eff.Select(x => BuffCatalog.Text(x.C.Buffs)).Distinct().Count() > 1)
+            lines.Add("Buffs: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {BuffCatalog.Text(x.C.Buffs)}")));
         static string Uptime(double? u) => u is { } v ? $"{v * 100:0}%" : "auto";
         if (eff.Select(x => x.C.BurstFull).Distinct().Count() > 1)
             lines.Add("Burst: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {(x.C.BurstFull ? "5 hits" : "first hit")}")));

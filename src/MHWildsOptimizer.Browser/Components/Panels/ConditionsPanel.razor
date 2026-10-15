@@ -14,7 +14,7 @@
     var resolved = weapon is not null ? c.Attack(weapon) : (ResolvedAttackProfile?)null;
     var element = weapon?.Element ?? request.Weapon.Spec?.Element ?? Element.None;
     var weaponLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
-    var hunt = Catalog.Conditions.Where(x => x.Group != ProcGroup).ToList();
+    var hunt = Catalog.Conditions.Where(x => x.Group is not (ProcGroup or ConditionCatalog.GroupBuffs)).ToList();
     var procToggles = Catalog.Conditions.Where(x => x.Group == ProcGroup).ToList();
     var groups = hunt.Select(x => x.Group).Distinct().ToList();
     var onCount = hunt.Count(x => ConditionAccess.Get(c, x.Property));
@@ -86,13 +86,6 @@
                                 }
                                 @if (group == ConditionCatalog.GroupHunter)
                                 {
-                                    <div class="cond resonance">
-                                        <span class="cond-text">
-                                            <b>Meal attack</b>
-                                            <span class="muted small">The "Attack +N" of your meal's effects (0 without one). Flat, after the percentage bonuses.</span>
-                                            <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
-                                        </span>
-                                    </div>
                                     @if (type == WeaponType.LongSword)
                                     {
                                         <div class="cond resonance">
@@ -119,7 +112,8 @@
                     }
                     <p class="muted small">
                         The attack the score is measured on and the monster part it hits are on
-                        <button type="button" class="linklike" @onclick="() => App.SetTab(Tab.Attack)">Attack &amp; target</button>.
+                        <button type="button" class="linklike" @onclick="() => App.SetTab(Tab.Attack)">Attack &amp; target</button>;
+                        meals, items and teammate buffs on <button type="button" class="linklike" @onclick="() => App.SetTab(Tab.Buffs)">Buffs</button>.
                     </p>
                 </ChildContent>
             </Section>
@@ -291,6 +285,7 @@
     {
         [nameof(Conditions.Resonance)] = "Omega Resonance phase",
         [nameof(Conditions.MealAttack)] = "Meal attack",
+        [nameof(Conditions.Buffs)] = "Buffs",
         [nameof(Conditions.SpiritGauge)] = "Spirit Gauge",
         [nameof(Conditions.BurstHits)] = "Burst hits",
         [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
@@ -569,9 +564,12 @@
 
     private void SetProfile(Func<AttackProfile, AttackProfile> fn) => App.PatchConditions(c => c with { AttackProfile = fn(c.AttackProfile ?? new AttackProfile()) });
 
-    // presets only cover the hunt conditions: skill limits and the attack profile stay as they are
+    // presets only cover the hunt conditions: skill limits, the attack profile and the buffs stay as they are
     private void ApplyPreset(Conditions preset) =>
-        App.PatchConditions(c => AppState.Clone(preset) with { SkillLimits = c.SkillLimits, AttackProfile = c.AttackProfile });
+        App.PatchConditions(c => AppState.Clone(preset) with
+        {
+            SkillLimits = c.SkillLimits, AttackProfile = c.AttackProfile, Buffs = c.Buffs, MealAttack = c.MealAttack, Powercharm = c.Powercharm,
+        });
 
     private void ResetToPreset(Conditions typePreset) => App.PatchConditions(_ => AppState.Clone(typePreset));
 

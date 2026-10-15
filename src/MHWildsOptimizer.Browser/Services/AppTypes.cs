@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Attack, Targets, Conditions, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals }
+public enum Tab { Inventory, Compare, Weapon, Attack, Targets, Conditions, Buffs, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals }
 
 public static class Tabs
 {

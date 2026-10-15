@@ -53,10 +53,16 @@ public static class ConditionPresets
     private static bool ValueEquals(object? a, object? b) => (a, b) switch
     {
         (Dictionary<string, int> x, Dictionary<string, int> y) => x.Count == y.Count && x.All(kv => y.TryGetValue(kv.Key, out var v) && v == kv.Value),
+        (Dictionary<string, double> x, Dictionary<string, double> y) => x.Count == y.Count && x.All(kv => y.TryGetValue(kv.Key, out var v) && v == kv.Value),
         _ => Equals(a, b),
     };
 
-    private static object? Copy(object? value) => value is Dictionary<string, int> d ? new Dictionary<string, int>(d) : value;
+    private static object? Copy(object? value) => value switch
+    {
+        Dictionary<string, int> d => new Dictionary<string, int>(d),
+        Dictionary<string, double> d => new Dictionary<string, double>(d),
+        _ => value,
+    };
 }
 
 /// <summary>

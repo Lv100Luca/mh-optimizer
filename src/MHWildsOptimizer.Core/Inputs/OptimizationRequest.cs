@@ -237,6 +237,11 @@ public static class RequestLoader
         if (request.Conditions.AzureBoltUptime is < 0 or > 1) errors.Add("conditions.azure_bolt_uptime must be between 0 and 1.");
         if (request.Conditions.OffensiveGuardUptime is < 0 or > 1) errors.Add("conditions.offensive_guard_uptime must be between 0 and 1.");
         if (request.Conditions.BurstHits is < 1 or > DamageConstants.BurstFullHits) errors.Add($"conditions.burst_hits must be between 1 and {DamageConstants.BurstFullHits}.");
+        foreach (var (id, uptime) in request.Conditions.Buffs)
+        {
+            if (!BuffCatalog.ById.ContainsKey(id)) errors.Add($"Buff '{id}' is unknown.");
+            else if (uptime is < 0 or > 1) errors.Add($"conditions.buffs.{id} must be between 0 and 1.");
+        }
 
         // weapon core skills (Focus 3 for Great Sword, Quick Sheathe 3 for Long Sword)
         var applied = new List<(string Skill, int Level)>();

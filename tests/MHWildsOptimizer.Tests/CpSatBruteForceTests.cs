@@ -47,6 +47,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
     [InlineData("long sword")]
     [InlineData("great sword sequence")]
     [InlineData("bow dash dance")]
+    [InlineData("long sword buffed")]
     public void CpSatMatchesAnExhaustiveEnumeration(string name)
     {
         var data = TestData.Data;
@@ -72,6 +73,8 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
                 },
             };
         }
+        if (name == "long sword buffed")
+            conditions = conditions with { MealAttack = 5, Buffs = new() { ["mega-demondrug"] = 1, ["hh-attack-l2"] = 0.8, ["hh-affinity"] = 0.5, ["hh-bubble"] = 0.25, ["demon-powder"] = 0.5 } };
         if (name == "bow dash dance")
         {
             // Spread/Power Shots (a 3-slot weapon jewel) boosts the Power Shot and Volley share of the loop: the shot-skill multiplier in the CP model

@@ -176,7 +176,8 @@ public static class DamageCalculator
             return CalculateSequence(weapon, skills, hurt, trace);
         var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
                          || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
-                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None
+                         || HurtBuffs(cond);
         if (!hurtSkills)
             return CalculateSequence(weapon, skills, full, trace);
 
@@ -188,6 +189,10 @@ public static class DamageCalculator
         var (side, otherSide) = fullWins ? ("full health", "red/low health") : ("red/low health", "full health");
         return best with { Breakdown = [.. best.Breakdown, Inv($"Full health excludes red/low health, scored at {side} ({best.Total:0.#} vs {other.Total:0.#} at {otherSide})")] };
     }
+
+    /// <summary>Buffs that only count at red or low health (Piping-Hot Meal): every build has something on that side.</summary>
+    private static bool HurtBuffs(Conditions cond) =>
+        cond.Buffs.Count > 0 && BuffCatalog.Active(cond with { FullHealth = false }).Any(x => x.Buff.Requires is "low_health" or "red_health");
 
     /// <summary>
     /// The conditions <see cref="Calculate(GogmaWeaponStats, ActiveSkills, Conditions, bool)"/> scores the loadout at: with both
@@ -201,7 +206,8 @@ public static class DamageCalculator
         if (cond.Effective(SkillNames.PeakPerformance, skills.Level(SkillNames.PeakPerformance)) == 0) return hurt;
         var hurtSkills = cond.Effective(SkillNames.Resentment, skills.Level(SkillNames.Resentment)) > 0
                          || cond.Effective(SkillNames.Heroics, skills.Level(SkillNames.Heroics)) > 0
-                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
+                         || cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None
+                         || HurtBuffs(cond);
         if (!hurtSkills) return full;
         return CalculateSequence(weapon, skills, full, false).Total >= CalculateSequence(weapon, skills, hurt, false).Total ? full : hurt;
     }
@@ -266,7 +272,8 @@ public static class DamageCalculator
             for (var i = 0; i < parts.Count; i++)
             {
                 var (part, r) = (parts[i].Part, results[i]);
-                notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}, Offensive Guard {(part.OffensiveGuardActive ? "on" : "off")}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
+                var split = BuffCatalog.Splitting(cond).SelectMany(s => s.Ids).Select(id => $", {BuffCatalog.ById[id].Name} {(part.Buffs.ContainsKey(id) ? "on" : "off")}");
+                notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}, Offensive Guard {(part.OffensiveGuardActive ? "on" : "off")}{string.Concat(split)}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
             }
         }
         return main with
@@ -294,7 +301,7 @@ public static class DamageCalculator
 
         int L(string skill) => cond.Effective(skill, skills.Level(skill));
         void Pct(string label, double m) { if (m != 1.0) { rawPct *= m; if (trace) notes.Add(Inv($"{label}: raw x{m:0.###}")); } }
-        void Flat(string label, int v) { if (v != 0) { rawFlat += v; if (trace) notes.Add(Inv($"{label}: raw +{v}")); } }
+        void Flat(string label, double v) { if (v != 0) { rawFlat += v; if (trace) notes.Add(Inv($"{label}: raw +{v:0.##}")); } }
         void Aff(string label, int v) { if (v != 0) { affinity += v; if (trace) notes.Add(Inv($"{label}: affinity {(v >= 0 ? "+" : "")}{v}%")); } }
         var hasElement = weapon.ElementTrue > 0;
         void ElePct(string label, double m) { if (hasElement && m != 1.0) { elePct *= m; if (trace) notes.Add(Inv($"{label}: element x{m:0.###}")); } }
@@ -420,8 +427,9 @@ public static class DamageCalculator
             ElePct("Dark Arts", DamageConstants.DarkArts(type));
         if (cond.PowerhouseActive && cond.SetTier(skills, SkillNames.DoshagumasMight) is var dosha && dosha != SetBonusTier.None)
             Flat("Powerhouse", dosha == SetBonusTier.II ? 25 : 10);
+        var proteinFiend = 0;
         if (cond.ProteinFiendActive && cond.SetTier(skills, SkillNames.XuWusVigor) is var xuwu && xuwu != SetBonusTier.None)
-            Flat("Protein Fiend", xuwu == SetBonusTier.II ? 30 : 15);
+            Flat("Protein Fiend", proteinFiend = xuwu == SetBonusTier.II ? 30 : 15);
         if (cond.BindingCounterActive && cond.SetTier(skills, SkillNames.JinDahaadsRevolt) is var jin && jin != SetBonusTier.None)
             Flat("Binding Counter", jin == SetBonusTier.II ? 50 : 25);
         if (cond.WarCryActive && cond.SetTier(skills, SkillNames.BlangongasSpirit) is var blango && blango != SetBonusTier.None)
@@ -439,9 +447,25 @@ public static class DamageCalculator
         if (cond.AffinitySlidingActive && cond.GroupActive(skills, SkillNames.ButteryLeathercraft))
             Aff("Affinity Sliding", 30);
 
-        // ---------------- items and meals ----------------
+        // ---------------- items, meals and teammates ----------------
         if (cond.Powercharm) Flat("Powercharm", DamageConstants.PowercharmAttack);
         Flat("Meal", cond.MealAttack);
+        // flat raw and raw multipliers are linear in the score, so a timed buff counts at its share of the hunt exactly
+        foreach (var (buff, share) in BuffCatalog.Active(cond))
+        {
+            var label = share < 1 ? Inv($"{buff.Name} ({share:0.#%} of the time)") : buff.Name;
+            foreach (var part in buff.Parts)
+                switch (part.Effect)
+                {
+                    // the Might boost is shared with Protein Fiend: only the higher one counts
+                    case BuffEffect.RawFlat:
+                        Flat(label, share * (buff.Slot == BuffCatalog.SlotMight ? Math.Max(0, part.Value - proteinFiend) : part.Value));
+                        break;
+                    case BuffEffect.RawMultiplier: Pct(label, 1 + share * (part.Value - 1)); break;
+                    case BuffEffect.Affinity: Aff(label, (int)part.Value); break;
+                    case BuffEffect.ElementMultiplier: ElePct(label, part.Value); break;
+                }
+        }
 
         // ---------------- combine ----------------
         var trueRaw = weapon.TrueRaw * rawPct + rawFlat;

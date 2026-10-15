@@ -16,6 +16,8 @@ public static class ConditionCatalog
     public const string GroupBonuses = "Set bonus and group skill triggers";
     /// <summary>Not a hunt condition: whether proc damage is added to the score (the client renders it with the attack profile).</summary>
     public const string GroupProcs = "Proc damage";
+    /// <summary>Not a hunt condition: the Powercharm, shown with the other buffs on their own tab.</summary>
+    public const string GroupBuffs = "Buffs";
 
     private sealed record Meta(string Label, string Group, string Description, string[] Skills);
 
@@ -54,7 +56,7 @@ public static class ConditionCatalog
         [nameof(Conditions.AffinitySlidingActive)] = new("Affinity Sliding active", GroupBonuses, "Buttery Leathercraft: you slid recently.", ["Buttery Leathercraft (Affinity Sliding)"]),
         [nameof(Conditions.GutsNotYetTriggered)] = new("Guts not yet used", GroupBonuses, "Lord's Soul: Guts keeps its attack bonus until it saves you once.", ["Lord's Soul (Guts)"]),
 
-        [nameof(Conditions.Powercharm)] = new("Powercharm in the pouch", GroupHunter, "+6 attack for every build, added after the percentage bonuses like a meal's attack.", []),
+        [nameof(Conditions.Powercharm)] = new("Powercharm in the pouch", GroupBuffs, "+6 attack for every build, added after the percentage bonuses like a meal's attack.", []),
 
         [nameof(Conditions.DarkArtsShockwave)] = new("Count the Dark Arts shockwave", GroupProcs,
             "Soul of the Dark Knight on a Great Sword: every Lv3 charged slash sets off a 30 MV shockwave, at any health. The attack profile converts it to damage per 100 MV and adds it to the score. Azure Bolt bursts and Scorcher are too unreliable to build around and are never counted.",
@@ -72,7 +74,7 @@ public static class ConditionCatalog
     public static IReadOnlyList<ConditionDto> Build()
     {
         var defaults = Conditions.Default;
-        var order = new[] { GroupMonster, GroupHunter, GroupSkills, GroupBonuses, GroupProcs };
+        var order = new[] { GroupMonster, GroupHunter, GroupSkills, GroupBonuses, GroupProcs, GroupBuffs };
         return BoolProperties()
             .Select(p =>
             {

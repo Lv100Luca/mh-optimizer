@@ -96,6 +96,32 @@ public partial class OptimizerBenchmarks(ITestOutputHelper output)
             Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
         }, MinBestScore: 0),
 
+        // horn buffs all the time, then with uptimes that split the hunt into 2 and 4 parts (the cost of a split)
+        new Scenario("GS dragon, loose targets, horn buffs", new OptimizationRequest
+        {
+            Weapon = DragonGreatSword,
+            TargetSkills = new() { ["Stun Resistance"] = 3 },
+            Conditions = RedHealthConditions with { Buffs = new() { ["hh-attack-l2"] = 1, ["hh-affinity"] = 1, ["hh-element"] = 1, ["hh-bubble"] = 1 } },
+            Talismans = new TalismanSettings { IncludeCraftable = true },
+            Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
+        }, MinBestScore: 0),
+        new Scenario("GS dragon, loose targets, horn buffs, one split", new OptimizationRequest
+        {
+            Weapon = DragonGreatSword,
+            TargetSkills = new() { ["Stun Resistance"] = 3 },
+            Conditions = RedHealthConditions with { Buffs = new() { ["hh-attack-l2"] = 1, ["hh-affinity"] = 0.5, ["hh-element"] = 0.5, ["hh-bubble"] = 0.5 } },
+            Talismans = new TalismanSettings { IncludeCraftable = true },
+            Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
+        }, MinBestScore: 0),
+        new Scenario("GS dragon, loose targets, horn buffs, two splits", new OptimizationRequest
+        {
+            Weapon = DragonGreatSword,
+            TargetSkills = new() { ["Stun Resistance"] = 3 },
+            Conditions = RedHealthConditions with { Buffs = new() { ["hh-attack-l2"] = 1, ["hh-affinity"] = 0.75, ["hh-element"] = 0.75, ["hh-bubble"] = 0.25 } },
+            Talismans = new TalismanSettings { IncludeCraftable = true },
+            Options = new OptimizerOptions { TopN = 5, MinRarity = 5 },
+        }, MinBestScore: 0),
+
         // required set bonus tier II on a raw weapon (the weapon counts as one of the four pieces)
         new Scenario("LS raw, set bonus target", new OptimizationRequest
         {

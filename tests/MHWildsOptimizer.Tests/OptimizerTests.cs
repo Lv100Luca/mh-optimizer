@@ -226,7 +226,7 @@ public class OptimizerTests(ITestOutputHelper output)
     public static TheoryData<string> ScoreModelCases => new()
     {
         "default", "all on", "all off", "red health", "long sword raw",
-        "gs charge combo, hard part", "sa element phial, monster", "sa power phial, amped combo",
+        "gs charge combo, hard part", "sa element phial, monster", "sa power phial, amped combo", "buffed",
     };
 
     [Theory]
@@ -251,6 +251,15 @@ public class OptimizerTests(ITestOutputHelper output)
             "all on" => (dragonGs, Conditions.AllOn),
             "all off" => (dragonGs, Conditions.AllOff),
             "red health" => (dragonGs, Conditions.Default with { RedHealth = true, CounterstrikeActive = true, PowerhouseActive = true }),
+            // every kind of buff, Piping-Hot only on the low health side, the Might Seed under Protein Fiend
+            "buffed" => (dragonGs, Conditions.AllOn with
+            {
+                Buffs = new()
+                {
+                    ["mega-demondrug"] = 1, [BuffCatalog.MightSeed] = 0.5, ["demon-powder"] = 0.75, ["caprice-hi"] = 1, ["piping-hot"] = 1,
+                    ["hh-attack-l2"] = 0.8, ["hh-affinity"] = 0.5, ["hh-element"] = 0.75, ["hh-bubble"] = 0.25, ["palico-horn-l"] = 0.1,
+                },
+            }),
             _ => (rawLs, Conditions.AllOn),
         };
         var targets = new Dictionary<string, int> { ["Weakness Exploit"] = 3 };

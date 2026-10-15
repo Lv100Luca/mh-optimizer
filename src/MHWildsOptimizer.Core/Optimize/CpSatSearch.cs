@@ -452,6 +452,19 @@ internal sealed class CpSatSearch
 
     private static Bounded NewVar(CpModel m, long lb, long ub, string name) => new(m.NewIntVar(lb, ub, name), lb, ub);
 
+    /// <summary>
+    /// <paramref name="value"/> x <paramref name="product"/> (a product in 1e-4) x <paramref name="basePct"/>: a plain term without a
+    /// base multiplier, else rounded to 1e-4 through one division (the conditions' buffs).
+    /// </summary>
+    private static (LinearExpr Expr, long Lb, long Ub) Scaled(CpModel m, Bounded product, long value, double basePct, string name)
+    {
+        if (Math.Abs(basePct - 1) < 1e-12) return (LinearExpr.Term(product.Var, value), value * product.Lb, value * product.Ub);
+        var coef = (long)Math.Round(value * basePct * S);
+        var v = NewVar(m, product.Lb * coef / S, product.Ub * coef / S + 1, name);
+        m.AddDivisionEquality(v.Var, LinearExpr.Term(product.Var, coef), S);
+        return (v.Var, v.Lb, v.Ub);
+    }
+
     /// <summary>Score of one health side in micro points: EFR + EFE (crits and hits that cannot crit) + procs (+ the Dark Arts shockwave, fixed damage).</summary>
     /// <param name="keys">Collects the side's factors worth capping (<see cref="TightenAsync"/>).</param>
     private Bounded SideScore(CpModel m, ScoreDecomposition score, int side, List<IntVar> unitIndex, List<(IntVar Var, long Ub, string Sig)> keys)
@@ -489,21 +502,23 @@ internal sealed class CpSatSearch
         }
         static long Sum(List<Bounded> xs, Func<Bounded, long> f) => xs.Sum(f);
 
-        // raw: TR = B * prod(pct) + base flat + sum(flat), in 1e-4
+        // raw: TR = B * base pct * prod(pct) + base flat + sum(flat), in 1e-4
         var pct = Product(All(c => (long)Math.Round(c.RawPct * S), "pct"), $"rawPct{side}");
         var flats = All(c => (long)Math.Round(c.RawFlat * S), "flat");
         var baseFlat = (long)Math.Round(sc.BaseRawFlat * S);
-        var tr = NewVar(m, _weapon.TrueRaw * pct.Lb + baseFlat + Sum(flats, f => f.Lb), _weapon.TrueRaw * pct.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{side}");
-        m.Add(tr.Var == LinearExpr.Term(pct.Var, _weapon.TrueRaw) + baseFlat + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
-        keys.Add((tr.Var, tr.Ub, Sig("tr", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat)));
+        var scaled = Scaled(m, pct, _weapon.TrueRaw, sc.BaseRawPct, $"trPct{side}");
+        var tr = NewVar(m, scaled.Lb + baseFlat + Sum(flats, f => f.Lb), scaled.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{side}");
+        m.Add(tr.Var == scaled.Expr + baseFlat + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
+        keys.Add((tr.Var, tr.Ub, Sig($"tr{sc.BaseRawPct}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat)));
 
         // affinity, clamped
         var affs = All(c => (long)Math.Round(c.Affinity), "aff");
         var cap = DamageConstants.AffinityCap;
-        var affRaw = LinearExpr.Constant(_weapon.Affinity) + LinearExpr.Sum(affs.Select(a => (LinearExpr)a.Var));
-        var affLow = m.NewIntVar(-cap, Math.Max(-cap, _weapon.Affinity + Sum(affs, a => a.Ub)), $"affLow{side}");
+        var baseAff = _weapon.Affinity + sc.BaseAffinity;
+        var affRaw = LinearExpr.Constant(baseAff) + LinearExpr.Sum(affs.Select(a => (LinearExpr)a.Var));
+        var affLow = m.NewIntVar(-cap, Math.Max(-cap, baseAff + Sum(affs, a => a.Ub)), $"affLow{side}");
         m.AddMaxEquality(affLow, [affRaw, LinearExpr.Constant(-cap)]);
-        keys.Add((affLow, Math.Max(-cap, _weapon.Affinity + Sum(affs, a => a.Ub)), Sig("aff", 0, c => c.Affinity)));
+        keys.Add((affLow, Math.Max(-cap, baseAff + Sum(affs, a => a.Ub)), Sig("aff", sc.BaseAffinity, c => c.Affinity)));
         var aff = m.NewIntVar(-cap, cap, $"aff{side}");
         m.AddMinEquality(aff, [affLow, LinearExpr.Constant(cap)]);
         var affPos = m.NewIntVar(0, cap, $"affPos{side}");
@@ -518,7 +533,7 @@ internal sealed class CpSatSearch
         var negStep = (long)Math.Round((DamageConstants.NegativeCriticalMultiplier - 1.0) * S);
         var cf = NewVar(m, Micro + cap * negStep, Micro + critGain.Ub, $"cf{side}");
         m.Add(cf.Var == Micro + critGain.Var + LinearExpr.Term(affNeg, negStep));
-        keys.Add((cf.Var, cf.Ub, Sig("cf", sc.BaseCritMult, c => c.Affinity, c => c.CritMult)));
+        keys.Add((cf.Var, cf.Ub, Sig($"cf{sc.BaseAffinity}", sc.BaseCritMult, c => c.Affinity, c => c.CritMult)));
 
         // EFR in micro points = TR(1e-4) * CF(1e-6) * sharp(1e-4) / 1e8
         var sharp = (long)Math.Round(sc.RawFactor * S);
@@ -526,7 +541,7 @@ internal sealed class CpSatSearch
         m.AddMultiplicationEquality(trcf.Var, tr.Var, cf.Var);
         var efr = NewVar(m, Math.Min(trcf.Lb * sharp / 100_000_000, 0), trcf.Ub * sharp / 100_000_000 + 1, $"efr{side}");
         m.AddDivisionEquality(efr.Var, LinearExpr.Term(trcf.Var, sharp), 100_000_000);
-        keys.Add((efr.Var, efr.Ub, Sig($"efr{sc.RawFactor}|{sc.BaseCritMult}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat, c => c.Affinity, c => c.CritMult)));
+        keys.Add((efr.Var, efr.Ub, Sig($"efr{sc.RawFactor}|{sc.BaseCritMult}|{sc.BaseRawPct}|{sc.BaseAffinity}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat, c => c.Affinity, c => c.CritMult)));
 
         // bow shot skills multiply EFR after the flat bonuses (1e-4)
         var rawMults = All(c => (long)Math.Round(c.RawMult * S), "rmult");
@@ -562,13 +577,14 @@ internal sealed class CpSatSearch
             // element in 1e-5 true = display * prod(pct)(1e-4) + sum(flat * 1e5), capped
             var elePct = Product(All(c => (long)Math.Round(c.ElePct * S), "epct"), $"elePct{side}");
             var eleFlats = All(c => (long)Math.Round(c.EleFlat * 10 * S), "eflat");
-            var display = _weapon.ElementDisplay;
-            var eleRaw = NewVar(m, display * elePct.Lb + Sum(eleFlats, f => f.Lb), display * elePct.Ub + Sum(eleFlats, f => f.Ub), $"eleRaw{side}");
-            m.Add(eleRaw.Var == LinearExpr.Term(elePct.Var, display) + LinearExpr.Sum(eleFlats.Select(f => (LinearExpr)f.Var)));
+            var eleScaled = Scaled(m, elePct, _weapon.ElementDisplay, sc.BaseElePct, $"elePctB{side}");
+            var baseEle = (long)Math.Round(sc.BaseEleFlat * 10 * S);
+            var eleRaw = NewVar(m, eleScaled.Lb + baseEle + Sum(eleFlats, f => f.Lb), eleScaled.Ub + baseEle + Sum(eleFlats, f => f.Ub), $"eleRaw{side}");
+            m.Add(eleRaw.Var == eleScaled.Expr + baseEle + LinearExpr.Sum(eleFlats.Select(f => (LinearExpr)f.Var)));
             var eleCap = (long)Math.Round(sc.ElementCap * 10 * S);
             var ele = NewVar(m, Math.Min(eleRaw.Lb, eleCap), Math.Min(eleRaw.Ub, eleCap), $"ele{side}");
             m.AddMinEquality(ele.Var, [eleRaw.Var, LinearExpr.Constant(eleCap)]);
-            keys.Add((ele.Var, ele.Ub, Sig("ele", sc.ElementCap, c => c.ElePct, c => c.EleFlat)));
+            keys.Add((ele.Var, ele.Ub, Sig($"ele{sc.BaseElePct}|{sc.BaseEleFlat}", sc.ElementCap, c => c.ElePct, c => c.EleFlat)));
 
             var critEle = Single(All(c => (long)Math.Round(c.CritEleMult * S), "cele"), (long)Math.Round(sc.BaseCritEleMult * S));
             var ceGain = NewVar(m, 0, cap * Math.Max(0, critEle.Ub - S), $"ceGain{side}");
@@ -584,7 +600,7 @@ internal sealed class CpSatSearch
             var eleFactor = (long)Math.Round(sc.ElementScale * Micro);
             var efe = NewVar(m, ecMicro.Lb * eleFactor / Micro, ecMicro.Ub * eleFactor / Micro + 1, $"efe{side}");
             m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
-            keys.Add((efe.Var, efe.Ub, Sig($"efe{sc.ElementScale}|{sc.BaseCritEleMult}", sc.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
+            keys.Add((efe.Var, efe.Ub, Sig($"efe{sc.ElementScale}|{sc.BaseCritEleMult}|{sc.BaseElePct}|{sc.BaseEleFlat}|{sc.BaseAffinity}", sc.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
             terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
 
             // element of the hits that cannot crit in micro points = ele(1e-5) * factor(1e-6) / 1e5

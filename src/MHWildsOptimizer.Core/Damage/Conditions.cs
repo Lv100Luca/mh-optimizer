@@ -106,6 +106,11 @@ public sealed record Conditions
     public bool Powercharm { get; init; } = true;
     /// <summary>Attack from the meal (its "Attack +N" in the meal effects; 0 without one).</summary>
     public int MealAttack { get; init; }
+    /// <summary>
+    /// External buffs (items, meal skills, teammates) by <see cref="BuffDef.Id"/>, each with its share of the hunt (0 to 1; ignored
+    /// for buffs that are not <see cref="BuffDef.Timed"/>). See <see cref="BuffCatalog"/>.
+    /// </summary>
+    public Dictionary<string, double> Buffs { get; init; } = new();
 
     // ----- proc damage: extra damage instances, converted to per 100 MV with the attack profile (Azure Bolt bursts and Scorcher are never counted) -----
     /// <summary>Count the Dark Arts shockwave (Soul of the Dark Knight, Great Sword Lv3 charged slashes); it fires at any health.</summary>
@@ -155,32 +160,46 @@ public sealed record Conditions
     /// (uptime 1); the score is the parts' scores weighted by their share. The skills are independent, so their parts cross. A default uptime depends on a set bonus tier,
     /// so it splits into slices that only count from a tier on: Azure Bolt on from Leviathan's Fury I for 60% of the time, from II
     /// for another 25%, off for the rest gives 60% at tier I and 85% at tier II with fixed weights. With <paramref name="skills"/>,
-    /// parts that score alike for that loadout are merged (one part when it has neither skill).
+    /// parts that score alike for that loadout are merged (one part when it has neither skill). Buffs whose affinity or element
+    /// cannot be averaged split the hunt the same way (<see cref="BuffCatalog.Splitting"/>): a part carries them at uptime 1 or
+    /// without them, and parts with different buffs are never merged.
     /// </summary>
     public IReadOnlyList<(Conditions Part, double Share)> UptimeParts(ActiveSkills? skills = null)
     {
         var hasLatent = skills is null || Effective(SkillNames.LatentPower, skills.Level(SkillNames.LatentPower)) > 0;
         var fury = skills is null ? 2 : (int)SetTier(skills, SkillNames.LeviathansFury);
         var hasGuard = skills is null || Effective(SkillNames.OffensiveGuard, skills.Level(SkillNames.OffensiveGuard)) > 0;
-        if (!(LatentPowerActive && hasLatent) && !(AzureBoltActive && fury > 0) && !(OffensiveGuardActive && hasGuard)) return [(this, 1)];
+        var buffs = Buffs.Count > 0 ? BuffCatalog.Splitting(this) : [];
+        if (!(LatentPowerActive && hasLatent) && !(AzureBoltActive && fury > 0) && !(OffensiveGuardActive && hasGuard) && buffs.Count == 0) return [(this, 1)];
 
         var latent = LatentPowerActive ? Slices(LatentPowerUptime, t => DamageConstants.LatentPowerUptime(t), from: 0) : null;
         var bolt = AzureBoltActive ? Slices(AzureBoltUptime, t => DamageConstants.AzureBoltUptime(t), from: 1) : null;
         var guard = OffensiveGuardActive ? Slices(OffensiveGuardUptime ?? 1, _ => 1, from: 0) : null; // no default by tier: null is all the time
-        if (latent is null && bolt is null && guard is null) return [(this, 1)];
+        if (latent is null && bolt is null && guard is null && buffs.Count == 0) return [(this, 1)];
+
+        // every on / off combination of the buff splits, as the buffs of the part (on: uptime 1, off: left out)
+        var buffParts = new List<(Dictionary<string, double> Buffs, double Share)> { (Buffs, 1.0) };
+        foreach (var (uptime, ids) in buffs)
+            buffParts = buffParts.SelectMany(bp => new[]
+            {
+                (Buffs: bp.Buffs.ToDictionary(kv => kv.Key, kv => ids.Contains(kv.Key) ? 1.0 : kv.Value), Share: bp.Share * uptime),
+                (Buffs: bp.Buffs.Where(kv => !ids.Contains(kv.Key)).ToDictionary(), Share: bp.Share * (1 - uptime)),
+            }).ToList();
 
         var parts = new List<(Conditions Part, double Share)>();
         foreach (var (lpOn, lpTier, lpShare) in latent ?? [(LatentPowerActive, LatentPowerMinRoarTier, 1.0)])
         foreach (var (abOn, abTier, abShare) in bolt ?? [(AzureBoltActive, AzureBoltMinTier, 1.0)])
         foreach (var (ogOn, _, ogShare) in guard ?? [(OffensiveGuardActive, 0, 1.0)])
+        foreach (var (partBuffs, bShare) in buffParts)
         {
-            var share = lpShare * abShare * ogShare;
+            var share = lpShare * abShare * ogShare * bShare;
             if (share <= 0) continue;
             parts.Add((this with
             {
                 LatentPowerActive = lpOn, LatentPowerMinRoarTier = lpTier, LatentPowerUptime = latent is null ? LatentPowerUptime : 1,
                 AzureBoltActive = abOn, AzureBoltMinTier = abTier, AzureBoltUptime = bolt is null ? AzureBoltUptime : 1,
                 OffensiveGuardActive = ogOn, OffensiveGuardUptime = guard is null ? OffensiveGuardUptime : 1,
+                Buffs = partBuffs,
             }, share));
         }
         if (skills is null) return parts;
@@ -190,7 +209,8 @@ public sealed record Conditions
         return parts
             .GroupBy(p => (Latent: p.Part.LatentPowerActive && hasLatent && roar >= p.Part.LatentPowerMinRoarTier,
                            Bolt: p.Part.AzureBoltActive && fury >= Math.Max(1, p.Part.AzureBoltMinTier),
-                           Guard: p.Part.OffensiveGuardActive && hasGuard))
+                           Guard: p.Part.OffensiveGuardActive && hasGuard,
+                           Buffs: string.Join(",", p.Part.Buffs.Keys.Order(StringComparer.Ordinal))))
             .Select(g => (g.First().Part with
             {
                 LatentPowerActive = g.Key.Latent, LatentPowerMinRoarTier = 0, AzureBoltActive = g.Key.Bolt, AzureBoltMinTier = 0,
@@ -296,7 +316,7 @@ public sealed record Conditions
     };
 
     /// <summary><see cref="AllOn"/> with the attack and target of <paramref name="basis"/>, so the two compare on the same attack.</summary>
-    public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target, MealAttack = basis.MealAttack };
+    public static Conditions AllOnLike(Conditions basis) => AllOn with { AttackProfile = basis.AttackProfile, Target = basis.Target, MealAttack = basis.MealAttack, Buffs = basis.Buffs };
 
     /// <summary><paramref name="basis"/> with every toggle on that is on in any of <paramref name="parts"/> (the segments of a sequence): what can matter somewhere.</summary>
     public static Conditions Union(Conditions basis, IReadOnlyList<Conditions> parts)

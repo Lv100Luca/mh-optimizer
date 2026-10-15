@@ -53,7 +53,7 @@
    "obtain": ["A reward for one of two optional high rank quests at Wounded Hollow (from chapter 4): Rex's hunt of two Ajarakan and Cobb's hunt of two Hirabami give the Powercharm and the Armorcharm between them. It cannot be crafted or bought."],
    "effects": ["Attack +6 as long as it is in your item pouch"],
    "stacking": "Stacks with everything.",
-   "notes": ["Matches the status screen (checked 2026-10-08). The optimizer counts it by default (\"Powercharm in the pouch\" under Conditions)."],
+   "notes": ["Matches the status screen (checked 2026-10-08). The optimizer counts it by default (on the Buffs tab)."],
    "related": ["Armorcharm", "Mega Demondrug"],
    "source": "PlayerItemParam _Talisman_Attack_Add 6; status-screen readings", "confidence": "high"
   },

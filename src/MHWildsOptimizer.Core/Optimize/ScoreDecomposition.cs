@@ -40,9 +40,14 @@ public sealed class ScoreUnit
 /// <param name="RawFactor">EFR per true raw and crit factor: the attack's MV-weighted sharpness (and phial), <see cref="ResolvedAttackProfile.RawFactor"/>.</param>
 /// <param name="SharpEle">The weapon's element sharpness modifier (the Dark Arts shockwave's element).</param>
 /// <param name="ShockwaveRawShare">Shockwave damage per 100 MV = this x EFR + <paramref name="ShockwaveConstant"/>.</param>
-/// <param name="BaseRawFlat">Flat raw the conditions give every build (Powercharm, meal); the units' flat raw comes on top.</param>
+/// <param name="BaseRawFlat">Flat raw the conditions give every build (Powercharm, meal, buffs); the units' flat raw comes on top.</param>
+/// <param name="BaseRawPct">Raw multiplier the conditions give every build (buffs); the units' multipliers multiply it.</param>
+/// <param name="BaseAffinity">Affinity the conditions give every build (buffs).</param>
+/// <param name="BaseElePct">Element multiplier the conditions give every build (buffs).</param>
+/// <param name="BaseEleFlat">True element the conditions give every build.</param>
 public sealed record ScoreSide(Conditions Conditions, int Health, double Weight, ResolvedAttackProfile Attack, double RawFactor, double SharpEle,
-    double BaseCritMult, double BaseCritEleMult, double ElementCap, double ShockwaveRawShare, double ShockwaveConstant, double BaseRawFlat = 0)
+    double BaseCritMult, double BaseCritEleMult, double ElementCap, double ShockwaveRawShare, double ShockwaveConstant, double BaseRawFlat = 0,
+    double BaseRawPct = 1, int BaseAffinity = 0, double BaseElePct = 1, double BaseEleFlat = 0)
 {
     /// <summary>Element per true element point per 100 MV of the segment's attack, sharpness included: <see cref="ResolvedAttackProfile.ElementFactor"/>.</summary>
     public double ElementScale => Attack.ElementFactor;
@@ -56,8 +61,8 @@ public sealed record ScoreSide(Conditions Conditions, int Health, double Weight,
 
 /// <summary>
 /// The damage formula as seen by an exact solver:
-/// raw = TR * (prod rawMult * rawFactor * critFactor(clamp(affinity), critMult) + noCritRawFactor) with TR = B * prod rawPct + base flat
-/// + sum rawFlat, element = min(E * prod elePct + sum eleFlat, cap) * (critElementFactor * <see cref="ScoreSide.ElementScale"/>
+/// raw = TR * (prod rawMult * rawFactor * critFactor(clamp(affinity), critMult) + noCritRawFactor) with TR = B * base pct * prod rawPct
+/// + base flat + sum rawFlat, element = min(E * base pct * prod elePct + base flat + sum eleFlat, cap) * (critElementFactor * <see cref="ScoreSide.ElementScale"/>
 /// + <see cref="ScoreSide.ElementNoCrit"/>), plus procs and the attack's fixed damage;
 /// per health side the segments of a sequence add up weighted by their share of the motion value, and the best health side wins.
 /// The per-feature contributions are not re-implemented: they are probed from <see cref="DamageCalculator"/> with two
@@ -130,10 +135,13 @@ public sealed class ScoreDecomposition
                 var p = r.Attack;
                 // timed skills split the segment by time, with fixed weights (the tier-gated slices, see Conditions.UptimeParts)
                 foreach (var (part, share) in segments[i].UptimeParts())
+                {
+                    var b = BaseOf(bare, none, part);
                     sides.Add(new ScoreSide(part, health, p.TotalMv / totalMv * share, p, p.RawFactor, r.SharpnessElementModifier,
                         r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap,
                         DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / p.RawFactor * p.Shockwaves * p.PerHundredMv,
-                        Shockwave(0, r.SharpnessElementModifier, p), r.TrueRaw - bare.TrueRaw));
+                        Shockwave(0, r.SharpnessElementModifier, p), b.RawFlat, b.RawPct, b.Affinity, b.ElePct, b.EleFlat));
+                }
             }
         }
 
@@ -164,6 +172,17 @@ public sealed class ScoreDecomposition
         return new ScoreDecomposition(bare, cond, features, units, sides);
     }
 
+    /// <summary>What the conditions give every build (no skills): read off the calculator with the two probe weapons.</summary>
+    private static (double RawPct, double RawFlat, int Affinity, double ElePct, double EleFlat) BaseOf(GogmaWeaponStats bare, ActiveSkills none, Conditions cond)
+    {
+        var hasElement = bare.ElementTrue > 0;
+        var r1 = DamageCalculator.Calculate(bare with { TrueRaw = (int)B1, Affinity = ProbeAffinity, ElementDisplay = hasElement ? E1 : 0 }, none, cond, trace: false);
+        var r2 = DamageCalculator.Calculate(bare with { TrueRaw = (int)B2, Affinity = ProbeAffinity, ElementDisplay = hasElement ? E2 : 0 }, none, cond, trace: false);
+        var rawPct = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
+        var elePct = hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
+        return (rawPct, r1.TrueRaw - B1 * rawPct, r1.Affinity - ProbeAffinity, elePct, hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0);
+    }
+
     /// <summary>Dark Arts shockwave per 100 MV, as <see cref="DamageCalculator"/> counts it.</summary>
     /// <param name="effectiveRawPerMv">True raw x weapon sharpness x crit factor.</param>
     private static double Shockwave(double effectiveRawPerMv, double sharpEle, ResolvedAttackProfile profile) =>
@@ -189,14 +208,14 @@ public sealed class ScoreDecomposition
 
     private double SideTotal(Channels ch, ScoreSide side)
     {
-        var trueRaw = _weapon.TrueRaw * ch.RawPct + ch.RawFlat + side.BaseRawFlat;
-        var aff = Math.Clamp(_weapon.Affinity + ch.Affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);
+        var trueRaw = _weapon.TrueRaw * side.BaseRawPct * ch.RawPct + ch.RawFlat + side.BaseRawFlat;
+        var aff = Math.Clamp(_weapon.Affinity + side.BaseAffinity + ch.Affinity, -DamageConstants.AffinityCap, DamageConstants.AffinityCap);
         var critFactor = aff >= 0 ? 1.0 + aff / 100.0 * (ch.CritMult - 1.0) : 1.0 + -aff / 100.0 * (DamageConstants.NegativeCriticalMultiplier - 1.0);
         var efr = trueRaw * side.RawFactor * ch.RawMult * critFactor;
         double efe = 0;
         if (HasElement)
         {
-            var ele = Math.Min(_weapon.ElementTrue * ch.ElePct + ch.EleFlat, side.ElementCap);
+            var ele = Math.Min(_weapon.ElementTrue * side.BaseElePct * ch.ElePct + side.BaseEleFlat + ch.EleFlat, side.ElementCap);
             var critEle = aff > 0 ? 1.0 + aff / 100.0 * (ch.CritEleMult - 1.0) : 1.0;
             efe = ele * (critEle * side.ElementScale + side.ElementNoCrit);
         }
@@ -334,15 +353,16 @@ public sealed class ScoreDecomposition
             var cond = sides[side].Conditions;
             var r1 = DamageCalculator.Calculate(_w1, skills, cond, trace: false);
             var r2 = DamageCalculator.Calculate(_w2, skills, cond, trace: false);
-            var rawPct = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
-            var elePct = _hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
+            var s = sides[side];
+            var rawSlope = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
+            var eleSlope = _hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
             var profile = sides[side].Attack;
             var shockwave = cond.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
-            // the conditions' own flat raw and the attack's fixed damage are the side's base, not part of any unit
-            var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct - sides[side].BaseRawFlat, r1.Affinity - ProbeAffinity, elePct,
-                _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock - sides[side].Fixed, shockwave,
+            // what the conditions give every build and the attack's fixed damage are the side's base, not part of any unit
+            var ch = new Channels(rawSlope / s.BaseRawPct, r1.TrueRaw - B1 * rawSlope - s.BaseRawFlat, r1.Affinity - ProbeAffinity - s.BaseAffinity, eleSlope / s.BaseElePct,
+                _hasElement ? r1.ElementTrue - E1 / 10.0 * eleSlope - s.BaseEleFlat : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock - s.Fixed, shockwave,
                 r1.ShotMultiplier);
             _cache[key] = ch;
             return ch;

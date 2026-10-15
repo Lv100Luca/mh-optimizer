@@ -1,0 +1,234 @@
+@inherits AppComponent
+
+@if (App.Request is { } request)
+{
+    var c = request.Conditions;
+    var kind = request.Weapon.Spec?.Type ?? request.Weapon.Type ?? "great-sword";
+    var preset = App.PresetFor(kind);
+    var weaponLabel = Cat.WeaponTypes.GetValueOrDefault(kind)?.Label ?? kind;
+    var meal = MealOf(c);
+    var summary = Summary(c);
+
+    <div class="panel">
+        <Section Title="Buffs"
+                 Hint="@($"Items, meals and what teammates give. They count for every build alike, so they raise every score but rarely change which build wins; they matter when a skill competes with them (Protein Fiend shares the Might Seed's boost) or for element and affinity caps. Saved with the {weaponLabel} preset like the hunt conditions.")">
+            <Actions>
+                <div class="btn-row">
+                    @if (!SameBuffs(c, preset))
+                    {
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => App.PatchConditions(x => x with { Buffs = new(preset.Buffs), MealAttack = preset.MealAttack, Powercharm = preset.Powercharm })"
+                                   title="@($"Use the buffs of the {weaponLabel} preset")">Reset to preset</MudButton>
+                    }
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="c.Buffs.Count == 0 && c.MealAttack == 0 && !c.Powercharm"
+                               OnClick="() => App.PatchConditions(x => x with { Buffs = new(), MealAttack = 0, Powercharm = false })">None</MudButton>
+                </div>
+            </Actions>
+            <ChildContent>
+                <p class="small">
+                    Every build gets: <b>@summary</b>
+                </p>
+                <p class="muted small">
+                    Flat attack and raw multipliers that only run part of the hunt count at their uptime: a +10 boost for half the hunt counts as +5.
+                    Affinity and element boosts do not average (the caps): with an uptime below 100% the hunt is scored in a part with them and one without.
+                    Boosts with the same uptime are taken to run at the same time. Every such split adds a part to the search, so it gets slower.
+                </p>
+            </ChildContent>
+        </Section>
+
+        <Section Title="Meal" Hint="Pick a meal to set its attack and the damage skills it always brings, or set them one by one. Only meal skills that change damage are listed.">
+            <ChildContent>
+                <div class="buff-meal">
+                    <Field Label="Meal">
+                        <SelectBox Value="@(meal?.Name ?? Custom)" Options="MealOptions(meal is null)" ValueChanged="SetMeal" Style="max-width: 360px" />
+                    </Field>
+                    <Field Label="Meal attack" Hint="The meal's &quot;Attack +N&quot;: +5 for a settlement or Canteen meal, +2 for a grilled meat ration. Flat, after the percentage bonuses.">
+                        <NumberInput T="int" Value="c.MealAttack" Min="0" Max="50" Width="90" ValueChanged="n => App.PatchConditions(x => x with { MealAttack = n })" />
+                    </Field>
+                </div>
+                @if (meal is not null)
+                {
+                    <p class="muted small">@meal.Description</p>
+                }
+                <div class="cond-grid">
+                    @foreach (var group in Groups(BuffCategory.Meal))
+                    {
+                        @Card(group, c)
+                    }
+                </div>
+            </ChildContent>
+        </Section>
+
+        <Section Title="Items" Hint="Consumables and charms. Drinks replace each other, and so do the Might Seed and Pill; the slots stack with each other.">
+            <ChildContent>
+                <div class="cond-grid">
+                    <label class="cond @(c.Powercharm ? "on" : "")">
+                        <input type="checkbox" checked="@c.Powercharm" @onchange="e => App.PatchConditions(x => x with { Powercharm = e.Value is true })" />
+                        <span class="cond-text">
+                            <b>Powercharm</b>
+                            <span class="muted small">Attack +@DamageConstants.PowercharmAttack while it is in the item pouch.</span>
+                        </span>
+                    </label>
+                    @foreach (var group in Groups(BuffCategory.Item))
+                    {
+                        @Card(group, c)
+                    }
+                </div>
+            </ChildContent>
+        </Section>
+
+        <Section Title="Teammates" Hint="Hunting Horn melodies and the Echo Bubble, the Palico's horn and a teammate's Demon Ammo. A horn melody does not stack with itself; playing it twice (or an encore) reaches its stronger second tier.">
+            <ChildContent>
+                <div class="cond-grid">
+                    @foreach (var group in Groups(BuffCategory.Support))
+                    {
+                        @Card(group, c)
+                    }
+                </div>
+            </ChildContent>
+        </Section>
+    </div>
+}
+
+@code {
+    private const string Custom = "custom";
+
+    /// <summary>The buffs of a category as cards: one per slot (pick one of them) or per buff without a slot.</summary>
+    private static IEnumerable<BuffDef[]> Groups(BuffCategory category) =>
+        BuffCatalog.All.Where(b => b.Category == category).GroupBy(b => b.Slot ?? b.Id).Select(g => g.ToArray());
+
+    private static readonly Dictionary<string, (string Title, string About)> Slots = new()
+    {
+        [BuffCatalog.SlotDrink] = ("Demondrug", "Attack +5 (Demondrug) or +7 (Mega Demondrug) for 30 minutes."),
+        [BuffCatalog.SlotMight] = ("Might Seed or Pill", "Attack +10 for 3 minutes (seed) or +25 for 21 s (pill). Shares one boost with Protein Fiend: only the highest counts."),
+        [BuffCatalog.SlotCaprice] = ("Caprice Meal", "Attack +7 (Lo) or +15 (Hi) for 10 s every 3 to 5 minutes."),
+        [BuffCatalog.SlotHornAttack] = ("Attack Up melody", "Hunting Horn: raw x1.03 / x1.05 (S) or x1.05 / x1.10 (L), the second value after an encore."),
+        [BuffCatalog.SlotHornElement] = ("Elemental Attack Boost melody", "Hunting Horn: element x1.08, x1.10 after an encore."),
+        [BuffCatalog.SlotPalicoHorn] = ("Palico horn", "Raw x1.10 (S) or x1.15 (L) for about 2 minutes, at most every 10 minutes."),
+    };
+
+    /// <summary>A buff's label inside its slot's picker.</summary>
+    private static readonly Dictionary<string, string> ShortNames = new()
+    {
+        ["mega-demondrug"] = "Mega", [BuffCatalog.MightSeed] = "Seed", [BuffCatalog.MightPill] = "Pill", ["caprice-lo"] = "Lo", ["caprice-hi"] = "Hi",
+        ["hh-attack-s"] = "S x1.03", ["hh-attack-s2"] = "S encore x1.05", ["hh-attack-l"] = "L x1.05", ["hh-attack-l2"] = "L encore x1.10",
+        ["hh-element"] = "x1.08", ["hh-element2"] = "Encore x1.10", ["palico-horn-s"] = "S x1.10", ["palico-horn-l"] = "L x1.15",
+    };
+
+    private static readonly IReadOnlyList<SegmentOption<double>> UptimeOptions =
+        new[] { 0.05, 0.1, 0.25, 0.5, 0.75, 1 }.Select(u => new SegmentOption<double>(u, $"{u * 100:0}%")).ToList();
+
+    private RenderFragment Card(BuffDef[] group, Conditions c) => __builder =>
+    {
+        var picked = group.FirstOrDefault(b => c.Buffs.ContainsKey(b.Id));
+        var single = group.Length == 1;
+        var shown = picked ?? group[0];
+        var (title, about) = single ? (shown.Name, shown.Description) : Slots.GetValueOrDefault(shown.Slot!, (shown.Name, shown.Description));
+        <label @key="shown.Slot ?? shown.Id" class="cond @(picked is not null ? "on" : "") @(single ? "" : "resonance")" title="@shown.Source">
+            @if (single)
+            {
+                <input type="checkbox" checked="@(picked is not null)" @onchange="e => Set(group, e.Value is true ? shown : null)" />
+            }
+            <span class="cond-text">
+                <b>@title</b>
+                @if (!single)
+                {
+                    <span @onclick:preventDefault="true">
+                        <Segmented T="string" Small="true" Value="@(picked?.Id ?? "")" ValueChanged="id => Set(group, group.FirstOrDefault(b => b.Id == id))"
+                                   Options="@(group.Select(b => new SegmentOption<string>(b.Id, ShortNames.GetValueOrDefault(b.Id, b.Name), Hint: b.Description)).Prepend(new SegmentOption<string>("", "None")).ToList())" />
+                    </span>
+                }
+                <span class="muted small">@(picked?.Description ?? about)</span>
+                @if (picked is { Requires: { } requires } && !ConditionToggles.Get(c, requires))
+                {
+                    <span class="small warn">Not counted: @ConditionCatalog.LabelOf(requires) is off under Conditions.</span>
+                }
+                @if (picked is { Timed: true })
+                {
+                    <span class="cond-uptime" @onclick:preventDefault="true">
+                        <span class="muted small">Uptime</span>
+                        <Segmented T="double" Small="true" Value="Snap(c.Buffs[picked.Id])" Options="UptimeOptions"
+                                   ValueChanged="u => App.PatchConditions(x => x with { Buffs = new(x.Buffs) { [picked.Id] = u } })" />
+                        @if (picked.Splits && c.Buffs[picked.Id] < 1)
+                        {
+                            <span class="muted small">Scored as @Pct(c.Buffs[picked.Id]) of the hunt with it and @Pct(1 - c.Buffs[picked.Id]) without.</span>
+                        }
+                    </span>
+                }
+            </span>
+        </label>
+    };
+
+    private static string Pct(double share) => $"{share * 100:0}%";
+
+    private static double Snap(double uptime) => UptimeOptions.Select(o => o.Value).OrderBy(u => Math.Abs(u - uptime)).First();
+
+    /// <summary>Picks <paramref name="buff"/> in its group (null: none of them).</summary>
+    private void Set(BuffDef[] group, BuffDef? buff) => App.PatchConditions(x =>
+    {
+        var buffs = new Dictionary<string, double>(x.Buffs);
+        var uptime = group.Select(b => buffs.GetValueOrDefault(b.Id, -1)).FirstOrDefault(u => u >= 0, -1);
+        foreach (var b in group) buffs.Remove(b.Id);
+        if (buff is not null) buffs[buff.Id] = buff.Timed && uptime >= 0 ? uptime : buff.DefaultUptime;
+        return x with { Buffs = buffs };
+    });
+
+    private static MealPreset? MealOf(Conditions c)
+    {
+        var skills = c.Buffs.Keys.Where(id => BuffCatalog.ById.TryGetValue(id, out var b) && b.Category == BuffCategory.Meal).ToHashSet();
+        return BuffCatalog.Meals.FirstOrDefault(m => m.Attack == c.MealAttack && skills.SetEquals(m.Skills));
+    }
+
+    private static IReadOnlyList<SelectOption> MealOptions(bool custom) =>
+        BuffCatalog.Meals.Select(m => new SelectOption(m.Name, m.Name))
+            .Concat(custom ? [new SelectOption(Custom, "Custom (set below)")] : [])
+            .ToList();
+
+    private void SetMeal(string? name)
+    {
+        if (BuffCatalog.Meals.FirstOrDefault(m => m.Name == name) is not { } meal) return;
+        App.PatchConditions(x =>
+        {
+            var buffs = x.Buffs.Where(kv => !(BuffCatalog.ById.TryGetValue(kv.Key, out var b) && b.Category == BuffCategory.Meal)).ToDictionary();
+            foreach (var id in meal.Skills) buffs[id] = BuffCatalog.ById[id].DefaultUptime;
+            return x with { MealAttack = meal.Attack, Buffs = buffs };
+        });
+    }
+
+    private static bool SameBuffs(Conditions a, Conditions b) =>
+        a.MealAttack == b.MealAttack && a.Powercharm == b.Powercharm
+        && a.Buffs.Count == b.Buffs.Count && a.Buffs.All(kv => b.Buffs.TryGetValue(kv.Key, out var v) && v == kv.Value);
+
+    /// <summary>
+    /// "attack +23.5, raw x1.1; 25% of the hunt also raw x1.1, affinity +25%": what the buffs add to every build, at their uptime
+    /// (Protein Fiend aside), and what the buffs that split the hunt add in their part.
+    /// </summary>
+    private static string Summary(Conditions c)
+    {
+        var splits = BuffCatalog.Splitting(c);
+        var split = splits.SelectMany(x => x.Ids).ToHashSet();
+        var text = Effects(BuffCatalog.Active(c).Where(x => !split.Contains(x.Buff.Id)), (c.Powercharm ? DamageConstants.PowercharmAttack : 0) + c.MealAttack);
+        var parts = splits.Select(x => $"{Pct(x.Uptime)} of the hunt also {Effects(BuffCatalog.Active(c).Where(b => x.Ids.Contains(b.Buff.Id)), 0)}");
+        return string.Join("; ", parts.Prepend(text));
+    }
+
+    private static string Effects(IEnumerable<(BuffDef Buff, double Share)> buffs, double flat)
+    {
+        double raw = 1, ele = 1;
+        var aff = 0;
+        foreach (var (buff, share) in buffs)
+            foreach (var p in buff.Parts)
+                switch (p.Effect)
+                {
+                    case BuffEffect.RawFlat: flat += p.Value * share; break;
+                    case BuffEffect.RawMultiplier: raw *= 1 + share * (p.Value - 1); break;
+                    case BuffEffect.Affinity: aff += (int)p.Value; break;
+                    case BuffEffect.ElementMultiplier: ele *= p.Value; break;
+                }
+        var parts = new List<string>();
+        if (raw != 1) parts.Add($"raw x{raw.ToString("0.###", CultureInfo.InvariantCulture)}");
+        if (flat != 0) parts.Add($"attack +{flat.ToString("0.##", CultureInfo.InvariantCulture)}");
+        if (aff != 0) parts.Add($"affinity +{aff}%");
+        if (ele != 1) parts.Add($"element x{ele.ToString("0.##", CultureInfo.InvariantCulture)}");
+        return parts.Count == 0 ? "nothing" : string.Join(", ", parts);
+    }
+}

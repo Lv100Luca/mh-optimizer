@@ -57,6 +57,7 @@ else
                 case Tab.Attack: <ConditionsPanel Part="ConditionsPanel.Parts.Attack" /> break;
                 case Tab.Targets: <TargetsPanel /> break;
                 case Tab.Conditions: <ConditionsPanel Part="ConditionsPanel.Parts.Hunt" /> break;
+                case Tab.Buffs: <BuffsPanel /> break;
                 case Tab.Talismans: <TalismansPanel /> break;
                 case Tab.Options: <OptionsPanel /> break;
                 case Tab.Review: <ReviewPanel /> break;
@@ -135,7 +136,8 @@ else
     private IEnumerable<NavItem> Nav()
     {
         var request = App.Request!;
-        var conditionsOn = Catalog.Conditions.Count(c => c.Group != ConditionCatalog.GroupProcs && ConditionAccess.Get(request.Conditions, c.Property));
+        var conditionsOn = Catalog.Conditions.Count(c => c.Group is not (ConditionCatalog.GroupProcs or ConditionCatalog.GroupBuffs) && ConditionAccess.Get(request.Conditions, c.Property));
+        var buffsOn = request.Conditions.Buffs.Count + (request.Conditions.Powercharm ? 1 : 0) + (request.Conditions.MealAttack > 0 ? 1 : 0);
         var rules = request.TargetSkills.Keys.Union(request.Conditions.SkillLimits.Keys).Count();
         var errors = App.Resolved?.Errors.Count ?? 0;
         var warnings = App.Resolved?.Warnings.Count ?? 0;
@@ -151,6 +153,7 @@ else
         yield return new(GroupWeapon, Tab.Attack, "Attack & target", GameIcons.Attack);
         yield return new(GroupWeapon, Tab.Targets, "Targets & limits", GameIcons.SkillGeneric("offense"), Count(rules));
         yield return new(GroupWeapon, Tab.Conditions, "Conditions", GameIcons.SkillGeneric("attack"), $"{conditionsOn} on");
+        yield return new(GroupWeapon, Tab.Buffs, "Buffs", GameIcons.Item("drug", "red"), Count(buffsOn));
         yield return new(GroupWeapon, Tab.Options, "Options", GameIcons.Defense);
         yield return new(GroupBuilds, Tab.Review, "Review", GameIcons.SkillGeneric("item"),
             errors > 0 ? $"{errors} err" : warnings > 0 ? $"{warnings} warn" : "ok", errors > 0 ? "err" : warnings > 0 ? "warn" : "ok");

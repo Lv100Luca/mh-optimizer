@@ -562,6 +562,7 @@
         if (ta != tb) lines.Add($"Target: {ta} for {a}, {tb} for {b}");
         if (System.Text.Json.JsonSerializer.Serialize(ca.AttackProfile) != System.Text.Json.JsonSerializer.Serialize(cb.AttackProfile)) lines.Add("They are scored on different attacks.");
         if (ca.MealAttack != cb.MealAttack) lines.Add($"Meal attack: {ca.MealAttack} for {a}, {cb.MealAttack} for {b}");
+        if (BuffCatalog.Text(ca.Buffs) is var ba && ba != BuffCatalog.Text(cb.Buffs)) lines.Add($"Buffs: {ba} for {a}, {BuffCatalog.Text(cb.Buffs)} for {b}");
         if (ca.Resonance != cb.Resonance) lines.Add($"Omega Resonance: {Fmt.TitleCase(ca.Resonance)} for {a}, {Fmt.TitleCase(cb.Resonance)} for {b}");
         return lines;
     }
