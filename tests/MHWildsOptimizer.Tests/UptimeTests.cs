@@ -35,6 +35,18 @@ public class UptimeTests
         Assert.Equal(DamageCalculator.Calculate(Sa, skills, off).Total, DamageCalculator.Calculate(Sa, skills, cond with { LatentPowerUptime = 0 }).Total, Tol);
     }
 
+    [Fact]
+    public void ATimedSkillGivesTheAffinityRangeAndItsShare()
+    {
+        var skills = Skills([(SkillNames.LatentPower, 5)]);
+        var cond = Conditions.Default with { AzureBoltActive = false, LatentPowerActive = true, LatentPowerUptime = 0.25 };
+        var off = DamageCalculator.Calculate(Sa, skills, cond with { LatentPowerActive = false });
+        var r = DamageCalculator.Calculate(Sa, skills, cond);
+        Assert.Equal((off.Affinity, off.Affinity + 50), r.AffinityRange);
+        Assert.Contains(("Latent Power: affinity +50%", 0.25), r.TimedLines);
+        Assert.Null(off.AffinityRange);
+    }
+
     [Theory]
     [InlineData(0, 0.5)]
     [InlineData(2, 150.0 / 270)]

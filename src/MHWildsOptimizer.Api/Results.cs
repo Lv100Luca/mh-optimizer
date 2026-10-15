@@ -56,7 +56,7 @@ public sealed record BuildSummaryDto(
     Element Element, double ElementTrue, int ElementDisplay, double Efr, double Efe, double Procs, double Total, double TotalAllConditions,
     IReadOnlyList<string> ActiveSetBonuses, IReadOnlyList<string> ActiveGroupSkills,
     IReadOnlyList<string> AffinitySources, IReadOnlyList<string> RawSources, IReadOnlyList<string> ElementSources, IReadOnlyList<string> ProcSources,
-    IReadOnlyList<string> DependsOn, string Description);
+    IReadOnlyList<string> DependsOn, string Description, int? AffinityMin = null, int? AffinityMax = null);
 
 public sealed record BuildDto(
     int Rank, double Score, double Efr, double Efe, double Procs, BuildSummaryDto Summary, BuildWeaponDto Weapon, IReadOnlyList<BuildArmorDto> Armor, BuildTalismanDto? Talisman,
@@ -142,7 +142,7 @@ public static class ResultMapper
 
         var summary = new BuildSummaryDto(s.Attack, s.DisplayAttack, s.BaseAttack, s.Affinity, s.BaseAffinity, s.CritMultiplier, s.Sharpness, s.Element, s.ElementTrue, s.ElementDisplay,
             s.Efr, s.Efe, s.Procs, s.Total, s.TotalAllConditions, s.ActiveSetBonuses, s.ActiveGroupSkills, s.AffinitySources, s.RawSources, s.ElementSources, s.ProcSources,
-            s.DependsOn, s.Description);
+            s.DependsOn, s.Description, s.AffinityRange?.Min, s.AffinityRange?.Max);
 
         var text = (LoadoutReport.Render(loadout, data, cond, label is null ? ResultsText.BuildTitle(rank, b) : ResultsText.BuildTitle(label, b)).TrimEnd()
                     + Environment.NewLine + ResultsText.WeaponOptionsText(b)).TrimEnd();

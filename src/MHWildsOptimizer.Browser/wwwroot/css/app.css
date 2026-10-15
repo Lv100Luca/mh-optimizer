@@ -530,6 +530,11 @@ dl.stats dd { margin: 0; }
 .statchip.aff b { color: var(--accent); }
 .statchip.crit b { color: #ffa14f; }
 .statchip.sharp, .statchip.ele { border-color: var(--tint); color: var(--tint); }
+.stathover .statchip { cursor: help; }
+.stattip table { border-collapse: collapse; }
+.stattip td { padding: 1px 0; }
+.stattip td:last-child { padding-left: 16px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stattip tr.total td { border-top: 1px solid var(--border-2); padding-top: 3px; font-weight: 600; }
 .build-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 10px; }
 .build-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
 .build-row .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; min-width: 54px; padding-top: 4px; }

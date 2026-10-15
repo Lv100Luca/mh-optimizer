@@ -110,6 +110,12 @@ public sealed record DamageResult(
 
     /// <summary>The sources of <see cref="ProcDamage"/>, per 100 MV; traced results of one attack or segment only (a sequence's steps carry their own).</summary>
     public IReadOnlyList<ProcPart> ProcParts { get; init; } = [];
+
+    // scored per part of the hunt (Conditions.UptimeParts): lowest and highest affinity of the parts, null when equal
+    public (int Min, int Max)? AffinityRange { get; init; }
+
+    // traced, per part of the hunt: breakdown lines missing from some parts, with the share of the time they are in
+    public IReadOnlyList<(string Line, double Share)> TimedLines { get; init; } = [];
 }
 
 /// <summary>Damage of one proc source (Dark Arts shockwave, Bad Blood): per 100 MV in <see cref="DamageResult.ProcParts"/>, per execution in <see cref="AttackDamage.Procs"/>.</summary>
@@ -276,9 +282,16 @@ public static class DamageCalculator
                 notes.Add(Inv($"Part of the time ({parts[i].Share:0.#%}, Latent Power {(part.LatentPowerActive ? "on" : "off")}, Azure Bolt {(part.AzureBoltActive ? "on" : "off")}, Offensive Guard {(part.OffensiveGuardActive ? "on" : "off")}{string.Concat(split)}): affinity {r.Affinity}%, EFR {r.EffectiveRaw:0.#}, EFE {r.EffectiveElement:0.#}, procs {r.ProcDamage:0.#}"));
             }
         }
+        var (minAff, maxAff) = (results.Min(r => r.Affinity), results.Max(r => r.Affinity));
+        var timedLines = trace
+            ? results.SelectMany((r, i) => r.Breakdown.Distinct().Select(l => (Line: l, parts[i].Share)))
+                .GroupBy(x => x.Line).Select(g => (g.Key, g.Sum(x => x.Share))).Where(x => x.Item2 < 0.9999).ToList()
+            : [];
         return main with
         {
             Affinity = (int)Math.Round(Average(r => r.Affinity)),
+            AffinityRange = minAff != maxAff ? (minAff, maxAff) : null,
+            TimedLines = timedLines,
             EffectiveRaw = Average(r => r.EffectiveRaw),
             EffectiveElement = Average(r => r.EffectiveElement),
             ProcDamage = Average(r => r.ProcDamage),

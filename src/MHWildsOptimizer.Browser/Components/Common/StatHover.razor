@@ -1,0 +1,22 @@
+@* A stat chip that shows Tip while hovered or focused (tapped on a phone). Lazy like InfoHover. *@
+@inherits HoverTip
+@if (Armed)
+{
+    <MudTooltip Placement="Placement.Bottom" Delay="150" Class="infotip-pop" RootClass="stathover" RootStyle="display: inline-flex" Visible="Visible" VisibleChanged="OnVisibleChanged">
+        <ChildContent><span @ref="Anchor" class="@Class" style="@Style" tabindex="0">@ChildContent</span></ChildContent>
+        <TooltipContent><div class="infotip stattip">@Tip</div></TooltipContent>
+    </MudTooltip>
+}
+else
+{
+    <span class="mud-tooltip-root mud-tooltip-inline stathover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="ArmFocus">
+        <span class="@Class" style="@Style" tabindex="0">@ChildContent</span>
+    </span>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Tip { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+}

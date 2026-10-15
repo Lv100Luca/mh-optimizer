@@ -58,9 +58,15 @@
             }
         </div>
         <div class="statchips">
-            <span class="statchip atk" title="@($"weapon {s.BaseAttack}")"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b></span>
-            <span class="statchip aff" title="@($"base {s.BaseAffinity}%")"><img src="@GameIcons.Affinity" alt="" />AFF <b>@(s.Affinity)%</b></span>
-            <span class="statchip crit">CRIT <b>x@(Fmt.N(s.CritMultiplier, 2))</b></span>
+            <StatHover Class="statchip atk" Tip="AttackTip(b)"><img src="@GameIcons.Attack" alt="" />ATK <b>@Fmt.N(s.Attack, 0)</b></StatHover>
+            <StatHover Class="statchip aff" Tip="AffinityTip(b)">
+                <img src="@GameIcons.Affinity" alt="" />AFF <b>@(s.Affinity)%</b>
+                @if (s.AffinityMin is { } lo && s.AffinityMax is { } hi)
+                {
+                    <small>@lo-@(hi)%</small>
+                }
+            </StatHover>
+            <StatHover Class="statchip crit" Tip="CritTip(b)">CRIT <b>x@(Fmt.N(s.CritMultiplier, 2))</b></StatHover>
             @if (s.Sharpness is { } sharp)
             {
                 <span class="statchip sharp" style="--tint: @GameIcons.SharpnessCss[sharp]"><img src="@GameIcons.Sharpness" alt="" />@Fmt.TitleCase(sharp)</span>
@@ -351,6 +357,83 @@
     private static string ScoreTitle(BuildDto b) =>
         $"Against the target, before the monster's defense rate and per-hit rounding. Score: EFR {Fmt.N(b.Efr)} + EFE {Fmt.N(b.Efe)}"
         + (b.Procs > 0 ? $" + procs {Fmt.N(b.Procs)}" : "") + $" = {Fmt.N(b.Score)} per 100 MV; it ranks builds the same as the damage.";
+
+    // "Agitator (+15%)", "Latent Power, 50% of the time (+50%)": the value is the first parenthesis that starts with a sign or x
+    private static readonly Regex SourceParts = new(@"^(?<label>.+?) \((?<value>[+\-x]\d.*)\)$");
+    private static readonly Regex TimeShare = new(@"^(?<label>.+), (?<share>[\d.]+% of the time)$");
+
+    private static bool AnyTimed(IReadOnlyList<string> sources) => sources.Any(x => x.Contains("% of the time ("));
+
+    private static RenderFragment SourceRows(string baseLabel, string baseValue, IReadOnlyList<string> sources) => __builder =>
+    {
+        <tr><td>@baseLabel</td><td>@baseValue</td></tr>
+        @foreach (var src in sources)
+        {
+            var m = SourceParts.Match(src);
+            var (label, value) = m.Success ? (m.Groups["label"].Value, m.Groups["value"].Value) : (src, "");
+            var t = TimeShare.Match(label);
+            <tr>
+                <td>@(t.Success ? t.Groups["label"].Value : label)@if (t.Success) {<span class="muted">, @t.Groups["share"].Value</span>}</td>
+                <td>@value</td>
+            </tr>
+        }
+    };
+
+    private static RenderFragment AttackTip(BuildDto b) => __builder =>
+    {
+        var s = b.Summary;
+        <table>
+            @SourceRows("Weapon", s.BaseAttack.ToString(), s.RawSources)
+            <tr class="total"><td>Attack</td><td>@Fmt.N(s.Attack, 0)</td></tr>
+        </table>
+        <span class="muted">@s.DisplayAttack as shown in game.</span>
+        @if (AnyTimed(s.RawSources))
+        {
+            <span class="muted">Some boosts are on for part of the hunt. The attack is the one of its longest part.</span>
+        }
+    };
+
+    private static RenderFragment AffinityTip(BuildDto b) => __builder =>
+    {
+        var s = b.Summary;
+        var range = s.AffinityMin is not null && s.AffinityMax is not null;
+        <table>
+            @SourceRows("Weapon", $"{s.BaseAffinity}%", s.AffinitySources)
+            <tr class="total"><td>@(range ? "Average" : "Affinity")</td><td>@(s.Affinity)%</td></tr>
+            @if (range)
+            {
+                <tr><td>Lowest</td><td>@(s.AffinityMin)%</td></tr>
+                <tr><td>Highest</td><td>@(s.AffinityMax)%</td></tr>
+            }
+        </table>
+        @if (range || AnyTimed(s.AffinitySources))
+        {
+            <span class="muted">Timed sources are on for part of the hunt. Each part is scored with its own affinity.</span>
+        }
+        @if (s.Affinity >= 100)
+        {
+            <span class="muted">Capped at 100%.</span>
+        }
+    };
+
+    private static RenderFragment CritTip(BuildDto b) => __builder =>
+    {
+        var s = b.Summary;
+        var r = b.StatsRequested;
+        var level = b.Skills.FirstOrDefault(x => x.Skill == Core.Damage.SkillNames.CriticalBoost)?.Effective ?? 0;
+        <table>
+            <tr><td>@(level > 0 ? $"Critical Boost {level}" : "Base crit")</td><td>x@(Fmt.N(s.CritMultiplier, 2))</td></tr>
+            @if (r.ElementTrue > 0)
+            {
+                <tr><td>Element crit</td><td>x@(Fmt.N(r.CritElement, 2))</td></tr>
+            }
+            <tr class="total"><td>Raw per hit at @(s.Affinity)%</td><td>x@(Fmt.N(r.CritFactor, 3))</td></tr>
+        </table>
+        @if (s.Affinity < 0)
+        {
+            <span class="muted">Negative affinity: feeble hits do x0.75 instead.</span>
+        }
+    };
 
     private static RenderFragment StatsBlock(string title, StatsDto r, string weaponType) => __builder =>
     {

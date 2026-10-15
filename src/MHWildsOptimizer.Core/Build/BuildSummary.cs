@@ -59,16 +59,22 @@ public sealed record BuildSummary(
             .ToList();
 
         // modifier lines look like "Label: affinity +15%", "Label: raw +20", "Label: raw x1.05", "Label: element x1.2", "Label: proc +12.3 per 100 MV (...)"
-        var mods = r.Breakdown.Skip(1).Where(l => l.Contains(": ") && !l.StartsWith("Raw ") && !l.StartsWith("Element ")).ToList();
+        static bool IsMod(string l) => l.Contains(": ") && !l.StartsWith("Raw ") && !l.StartsWith("Element ") && !l.StartsWith("Weapon: ")
+                                       && !l.StartsWith("Part of the time ") && !l.StartsWith("Sequence part ");
+        // lines on for only part of the hunt carry their share; the main part's breakdown holds them on or off
+        var timed = r.TimedLines.Where(x => IsMod(x.Line)).ToList();
+        var timedLines = timed.Select(x => x.Line).ToHashSet();
+        var mods = r.Breakdown.Skip(1).Where(l => IsMod(l) && !timedLines.Contains(l)).Select(l => (Line: l, Share: 1.0)).Concat(timed).ToList();
         var aff = Sources(mods, "affinity");
         var raw = Sources(mods, "raw");
         var ele = Sources(mods, "element");
         var procs = Sources(mods, "proc");
-        var depends = mods.Where(m => !m.Contains(": proc ")).Select(m => ConditionFor(m[..m.IndexOf(':')])).Where(d => d is not null).Distinct().ToList()!;
+        var depends = mods.Select(m => m.Line).Where(m => !m.Contains(": proc ")).Select(m => ConditionFor(m[..m.IndexOf(':')])).Where(d => d is not null).Distinct().ToList()!;
         if (procs.Count > 0) depends.Add("attack profile");
 
         var parts = new List<string>();
-        parts.Add(string.Format(inv, "{0}% affinity with x{1:0.00} crits", r.Affinity, r.CriticalMultiplier) + (aff.Count > 0 ? $" from {Join(aff)}" : ""));
+        var range = r.AffinityRange is { } rg ? string.Format(inv, " ({0}% to {1}% over the hunt)", rg.Min, rg.Max) : "";
+        parts.Add(string.Format(inv, "{0}% affinity{1} with x{2:0.00} crits", r.Affinity, range, r.CriticalMultiplier) + (aff.Count > 0 ? $" from {Join(aff)}" : ""));
         parts.Add(string.Format(inv, "raw {0} -> {1:0}", w.TrueRaw, r.TrueRaw) + (raw.Count > 0 ? $" via {Join(raw)}" : " (no raw skills)"));
         if (w.ElementTrue > 0)
             parts.Add(string.Format(inv, "{0} {1:0} -> {2:0} true", w.Element, w.ElementTrue, r.ElementTrue) + (ele.Count > 0 ? $" via {Join(ele)}" : ""));
@@ -82,8 +88,13 @@ public sealed record BuildSummary(
             w.Affinity, r.Affinity, r.CriticalMultiplier, r.CriticalFactor,
             r.Sharpness, w.Element, r.ElementTrue, (int)Math.Round(r.ElementTrue * 10),
             r.EffectiveRaw, r.EffectiveElement, r.ProcDamage, r.Total, allOn.Total,
-            sets, groups, skillList, aff, raw, ele, procs, depends!, description);
+            sets, groups, skillList, aff, raw, ele, procs, depends!, description)
+        {
+            AffinityRange = r.AffinityRange,
+        };
     }
+
+    public (int Min, int Max)? AffinityRange { get; init; }
 
     private static string RankName(GameData data, string skill, int level)
     {
@@ -91,10 +102,10 @@ public sealed record BuildSummary(
         return rank?.Name is { } n ? $" ({n})" : "";
     }
 
-    private static List<string> Sources(IEnumerable<string> mods, string stat)
+    private static List<string> Sources(IEnumerable<(string Line, double Share)> mods, string stat)
     {
         var result = new List<string>();
-        foreach (var m in mods)
+        foreach (var (m, share) in mods)
         {
             var colon = m.IndexOf(':');
             var label = m[..colon];
@@ -103,6 +114,7 @@ public sealed record BuildSummary(
             var value = effect[(stat.Length + 1)..].Replace(" (true)", "");
             if (stat == "proc") value = value[..value.IndexOf(' ')]; // "+12.3 per 100 MV (...)" -> "+12.3"
             if (label.StartsWith("Weakness Exploit (wound)")) label = "wound hits";
+            if (share < 1) label += $", {share.ToString("0.#%", CultureInfo.InvariantCulture)} of the time";
             result.Add($"{label} ({value})");
         }
         return result;
