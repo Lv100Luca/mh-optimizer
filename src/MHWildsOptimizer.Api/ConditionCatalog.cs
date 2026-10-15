@@ -35,7 +35,7 @@ public static class ConditionCatalog
         [nameof(Conditions.FrenzyOvercome)] = new("Frenzy overcome", GroupHunter, "You overcame the Frenzy virus (Gore Magala set bonus): +15% affinity, Antivirus bonus, Black Eclipse II recovery.", ["Gore Magala's Tyranny (Black Eclipse)", "Antivirus"]),
 
         [nameof(Conditions.BurstActive)] = new("Burst active", GroupSkills, "Consecutive hits landed: 1 to 4 give the small first-hit boost (+5 attack at any level), the fifth the full boost of the level. Burst Boost (Ebony Odogaron) rides on either.", ["Burst", "Ebony Odogaron's Power (Burst Boost)"]),
-        [nameof(Conditions.LatentPowerActive)] = new("Latent Power triggered", GroupSkills, "Latent Power lasts 2 minutes, after 2 minutes of fighting or 130 damage taken; the uptime is the share of the hunt it is on.", ["Latent Power", "Rey Dau's Voltage (Thunderous Roar)"]),
+        [nameof(Conditions.LatentPowerActive)] = new("Latent Power triggered", GroupSkills, "Latent Power lasts 2 minutes, after 2 minutes of fighting or 130 damage taken in total; the uptime is the share of the hunt it is on.", ["Latent Power", "Rey Dau's Voltage (Thunderous Roar)"]),
         [nameof(Conditions.AdrenalineRushActive)] = new("Adrenaline Rush active", GroupSkills, "A perfectly timed evade triggered Adrenaline Rush.", ["Adrenaline Rush"]),
         [nameof(Conditions.AdrenalineRushRetriggered)] = new("Adrenaline Rush re-triggered", GroupSkills, "Adrenaline Rush triggered again while active (Razor's Edge II from Seregios's Tenacity: attack x1.05).", ["Seregios's Tenacity (Razor's Edge)"]),
         [nameof(Conditions.CounterstrikeActive)] = new("Counterstrike active", GroupSkills, "You were knocked back and Counterstrike kicked in.", ["Counterstrike"]),

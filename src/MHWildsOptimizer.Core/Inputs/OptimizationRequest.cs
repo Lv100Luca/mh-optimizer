@@ -238,6 +238,7 @@ public static class RequestLoader
         errors.AddRange(request.Conditions.Target.Validate());
         if (request.Conditions.MealAttack is < 0 or > 50) errors.Add("conditions.meal_attack must be between 0 and 50.");
         if (request.Conditions.LatentPowerUptime is < 0 or > 1) errors.Add("conditions.latent_power_uptime must be between 0 and 1.");
+        if (request.Conditions.LatentPowerDamageSeconds is <= 0) errors.Add("conditions.latent_power_damage_seconds must be above 0.");
         if (request.Conditions.AzureBoltUptime is < 0 or > 1) errors.Add("conditions.azure_bolt_uptime must be between 0 and 1.");
         if (request.Conditions.OffensiveGuardUptime is < 0 or > 1) errors.Add("conditions.offensive_guard_uptime must be between 0 and 1.");
         if (request.Conditions.BurstHits is < 1 or > DamageConstants.BurstFullHits) errors.Add($"conditions.burst_hits must be between 1 and {DamageConstants.BurstFullHits}.");

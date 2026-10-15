@@ -305,6 +305,8 @@
             lines.Add("Burst: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {(x.C.BurstFull ? "5 hits" : "first hit")}")));
         if (eff.Select(x => x.C.LatentPowerUptime).Distinct().Count() > 1)
             lines.Add("Latent Power uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.LatentPowerUptime)}")));
+        if (eff.Select(x => x.C.LatentPowerDamageSeconds).Distinct().Count() > 1)
+            lines.Add($"Seconds to take {DamageConstants.LatentPowerDamage} damage: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {(x.C.LatentPowerDamageSeconds is { } s ? $"{s} s" : "never")}")));
         if (eff.Select(x => x.C.AzureBoltUptime).Distinct().Count() > 1)
             lines.Add("Azure Bolt uptime: " + string.Join("; ", eff.Select(x => $"{ColName(x.Col, oneWeapon)} {Uptime(x.C.AzureBoltUptime)}")));
         if (eff.Select(x => x.C.OffensiveGuardUptime ?? 1).Distinct().Count() > 1)

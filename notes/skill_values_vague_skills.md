@@ -332,7 +332,7 @@ Burst damage "is fixed, regardless of weapon type and weapon damage" (game8). Ki
 
 A blog (dtgre.com) states "180 damage or 5 minutes" — those are World/Rise values; low.
 
-Optimizer: scored by its share of the hunt (`latent_power_uptime`, default in `DamageConstants.LatentPowerUptime`). Without taking damage it runs 120 s on, 120 s off: **50 %**; Thunderous Roar I 150 / 270 s ≈ **56 %**, II 210 / 330 s ≈ **64 %**. A short hunt gets less (the first 2 minutes are always without it).
+Optimizer: scored by its share of the hunt (`latent_power_uptime`, default in `DamageConstants.LatentPowerUptime`). Without taking damage it runs 120 s on, 120 s off: **50 %**; Thunderous Roar I 150 / 270 s ≈ **56 %**, II 210 / 330 s ≈ **64 %**. A short hunt gets less (the first 2 minutes are always without it). The 130 damage is a running total and has no cooldown, so taking it faster than the 2 minute timer shortens the off time: `latent_power_damage_seconds` (null: never hit) gives on / (on + min(120, seconds)), e.g. 60 s: 67 % / 71 % / 78 %. Game8's "worst case" table rows (2 / 6 min) are not modelled.
 
 ### 2.8 Agitator
 

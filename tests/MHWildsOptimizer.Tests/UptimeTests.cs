@@ -60,6 +60,18 @@ public class UptimeTests
     }
 
     [Theory]
+    [InlineData(0, 60, 120.0 / 180)]
+    [InlineData(4, 60, 210.0 / 270)]
+    [InlineData(0, 300, 0.5)]
+    public void LatentPowerTriggersSoonerWhenTakingDamage(int roarPieces, int damageSeconds, double share)
+    {
+        var skills = Skills([(SkillNames.LatentPower, 3)], (SkillNames.ReyDausVoltage, roarPieces));
+        var cond = Conditions.Default with { AzureBoltActive = false, LatentPowerActive = true, LatentPowerDamageSeconds = damageSeconds };
+        var expected = Expected(skills, cond with { LatentPowerUptime = 1 }, cond with { LatentPowerActive = false }, share);
+        Assert.Equal(expected, DamageCalculator.Calculate(Sa, skills, cond).Total, Tol);
+    }
+
+    [Theory]
     [InlineData(2, 0.60)]
     [InlineData(4, 0.85)]
     public void AzureBoltDefaultsToItsTiersUptime(int pieces, double share)

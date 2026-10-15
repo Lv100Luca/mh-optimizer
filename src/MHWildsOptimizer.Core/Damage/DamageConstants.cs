@@ -211,16 +211,20 @@ public static class DamageConstants
     // ---------------- uptime of timed skills without taking damage, see notes/skill_values_vague_skills.md (Latent Power) and
     // notes/skill_values_set_group.md (Azure Bolt, Thunderous Roar) ----------------
 
+    public const int LatentPowerTimerSeconds = 120;
+    public const int LatentPowerDamage = 130;
+
     /// <summary>
     /// Latent Power: on for 120 s after 120 s of fighting near a monster, then the 120 s start again (Game8), so half the time;
-    /// Thunderous Roar (Rey Dau's Voltage) makes it last 150 s (I) / 210 s (II). The 130 damage trigger is not counted.
+    /// Thunderous Roar (Rey Dau's Voltage) makes it last 150 s (I) / 210 s (II). Taking 130 damage in total while it is off starts
+    /// it at once (no cooldown), so <paramref name="damageSeconds"/> (how long that takes; null: never hit) shortens the off time.
     /// </summary>
-    public static double LatentPowerUptime(SetBonusTier thunderousRoar) => thunderousRoar switch
+    public static double LatentPowerUptime(SetBonusTier thunderousRoar, double? damageSeconds = null)
     {
-        SetBonusTier.II => 210.0 / 330,
-        SetBonusTier.I => 150.0 / 270,
-        _ => 0.5,
-    };
+        double on = thunderousRoar switch { SetBonusTier.II => 210, SetBonusTier.I => 150, _ => 120 };
+        var off = Math.Min(LatentPowerTimerSeconds, damageSeconds ?? LatentPowerTimerSeconds);
+        return on / (on + off);
+    }
 
     /// <summary>
     /// Azure Bolt (Leviathan's Fury): +15 affinity for 20 s (I) / 30 s (II) on a proc, about 30 s cooldown from the proc and a gauge

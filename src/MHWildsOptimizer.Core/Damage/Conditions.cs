@@ -50,6 +50,11 @@ public sealed record Conditions
     /// taking damage, by its Thunderous Roar tier (<see cref="DamageConstants.LatentPowerUptime"/>). See <see cref="UptimeParts"/>.
     /// </summary>
     public double? LatentPowerUptime { get; init; }
+    /// <summary>
+    /// Seconds it takes to take <see cref="DamageConstants.LatentPowerDamage"/> damage while Latent Power is off, for its default
+    /// uptime; null: never hit. Above <see cref="DamageConstants.LatentPowerTimerSeconds"/> the timer starts it first.
+    /// </summary>
+    public int? LatentPowerDamageSeconds { get; init; }
     /// <summary>A part of the hunt where Latent Power only counts from this Thunderous Roar (Rey Dau's Voltage) tier on; see <see cref="UptimeParts"/>.</summary>
     [JsonIgnore] public int LatentPowerMinRoarTier { get; init; }
     public bool AdrenalineRushActive { get; init; } = false;
@@ -172,7 +177,7 @@ public sealed record Conditions
         var buffs = Buffs.Count > 0 ? BuffCatalog.Splitting(this) : [];
         if (!(LatentPowerActive && hasLatent) && !(AzureBoltActive && fury > 0) && !(OffensiveGuardActive && hasGuard) && buffs.Count == 0) return [(this, 1)];
 
-        var latent = LatentPowerActive ? Slices(LatentPowerUptime, t => DamageConstants.LatentPowerUptime(t), from: 0) : null;
+        var latent = LatentPowerActive ? Slices(LatentPowerUptime, t => DamageConstants.LatentPowerUptime(t, LatentPowerDamageSeconds), from: 0) : null;
         var bolt = AzureBoltActive ? Slices(AzureBoltUptime, t => DamageConstants.AzureBoltUptime(t), from: 1) : null;
         var guard = OffensiveGuardActive ? Slices(OffensiveGuardUptime ?? 1, _ => 1, from: 0) : null; // no default by tier: null is all the time
         if (latent is null && bolt is null && guard is null && buffs.Count == 0) return [(this, 1)];

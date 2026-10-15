@@ -289,6 +289,7 @@
         [nameof(Conditions.SpiritGauge)] = "Spirit Gauge",
         [nameof(Conditions.BurstHits)] = "Burst hits",
         [nameof(Conditions.LatentPowerUptime)] = "Latent Power uptime",
+        [nameof(Conditions.LatentPowerDamageSeconds)] = "Latent Power damage interval",
         [nameof(Conditions.AzureBoltUptime)] = "Azure Bolt uptime",
         [nameof(Conditions.OffensiveGuardUptime)] = "Offensive Guard uptime",
         [nameof(Conditions.AttackProfile)] = "Attack",
@@ -509,7 +510,13 @@
                         <span class="muted small">Uptime</span>
                         <Segmented T="double?" Small="true" Value="uptime.Get(v.Current)" Options="uptime.Options"
                                    ValueChanged="u => App.PatchConditions(c => uptime.Set(c, u))" />
-                        <span class="muted small">@uptime.Auto</span>
+                        <span class="muted small">@uptime.Auto(v.Current)</span>
+                        @if (x.Property == nameof(Conditions.LatentPowerActive) && v.Current.LatentPowerUptime is null)
+                        {
+                            <span class="muted small">Seconds to take @DamageConstants.LatentPowerDamage damage (@DamageConstants.LatentPowerTimerSeconds: never hit, the timer starts it)</span>
+                            <NumberInput T="int" Value="v.Current.LatentPowerDamageSeconds ?? DamageConstants.LatentPowerTimerSeconds" Min="1" Max="DamageConstants.LatentPowerTimerSeconds" Width="90"
+                                         ValueChanged="s => App.PatchConditions(c => c with { LatentPowerDamageSeconds = s >= DamageConstants.LatentPowerTimerSeconds ? null : s })" />
+                        }
                     </span>
                 }
                 @if (on && x.Property == nameof(Conditions.BurstActive))
@@ -532,15 +539,15 @@
         new double?[] { 0.1, 0.25, 0.5, 0.75, 1 }.Select(u => new SegmentOption<double?>(u, Pct(u!.Value))).ToList();
 
     /// <summary>Timed skills scored by their share of the hunt: the uptime of the condition (null: the build's default), the choices and what the default is.</summary>
-    private static readonly Dictionary<string, (Func<Conditions, double?> Get, Func<Conditions, double?, Conditions> Set, IReadOnlyList<SegmentOption<double?>> Options, string Auto)> Uptimes = new()
+    private static readonly Dictionary<string, (Func<Conditions, double?> Get, Func<Conditions, double?, Conditions> Set, IReadOnlyList<SegmentOption<double?>> Options, Func<Conditions, string> Auto)> Uptimes = new()
     {
         [nameof(Conditions.LatentPowerActive)] = (c => c.LatentPowerUptime, (c, u) => c with { LatentPowerUptime = u }, UptimeOptions,
-            $"Auto: {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.None))} without taking damage, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.I))} with Thunderous Roar I, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.II))} with II."),
+            c => $"Auto: {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.None, c.LatentPowerDamageSeconds))} {(c.LatentPowerDamageSeconds is { } s ? $"taking {DamageConstants.LatentPowerDamage} damage every {s} s" : "without taking damage")}, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.I, c.LatentPowerDamageSeconds))} with Thunderous Roar I, {Pct(DamageConstants.LatentPowerUptime(SetBonusTier.II, c.LatentPowerDamageSeconds))} with II."),
         [nameof(Conditions.AzureBoltActive)] = (c => c.AzureBoltUptime, (c, u) => c with { AzureBoltUptime = u }, UptimeOptions,
-            $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
+            _ => $"Auto: {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.I))} with Leviathan's Fury I, {Pct(DamageConstants.AzureBoltUptime(SetBonusTier.II))} with II (estimates)."),
         // no default to fall back on: null (saved before there was a choice) is all the time
         [nameof(Conditions.OffensiveGuardActive)] = (c => c.OffensiveGuardUptime ?? 1, (c, u) => c with { OffensiveGuardUptime = u }, GuardUptimeOptions,
-            "How much of the hunt a perfect guard keeps it going."),
+            _ => "How much of the hunt a perfect guard keeps it going."),
     };
 
     /// <summary>Burst's two stages: the first-hit boost (1 to 4 hits, stored as 1) and the full one (null: five hits).</summary>
