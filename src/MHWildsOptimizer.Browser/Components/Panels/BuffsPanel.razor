@@ -26,6 +26,11 @@
             <ChildContent>
                 <div class="buff-summary">
                     <span class="muted small">Every build gets</span>
+                    <InfoHover Label="How uptimes count">
+                        Flat attack and raw multipliers that only run part of the hunt count at their uptime: a +10 boost for half the hunt counts as +5.
+                        Affinity and element boosts do not average (the caps): with an uptime below 100% the hunt is scored in a part with them and one without.
+                        Boosts with the same uptime are taken to run at the same time. Every such split adds a part to the search, so it gets slower.
+                    </InfoHover>
                     @if (summary.Base.Count == 0)
                     {
                         <span class="muted">nothing yet: pick buffs below</span>
@@ -37,11 +42,6 @@
                         @EffectChips(effects)
                     }
                 </div>
-                <p class="muted small">
-                    Flat attack and raw multipliers that only run part of the hunt count at their uptime: a +10 boost for half the hunt counts as +5.
-                    Affinity and element boosts do not average (the caps): with an uptime below 100% the hunt is scored in a part with them and one without.
-                    Boosts with the same uptime are taken to run at the same time. Every such split adds a part to the search, so it gets slower.
-                </p>
             </ChildContent>
         </Section>
 
@@ -53,9 +53,8 @@
                         <input type="checkbox" checked="@c.Powercharm" @onchange="e => App.PatchConditions(x => x with { Powercharm = e.Value is true })" />
                         <img class="buff-icon" src="@GameIcons.Item("powder", "red")" alt="" />
                         <span class="cond-text">
-                            <b>Powercharm</b>
+                            @BuffHead("Powercharm", $"Attack +{DamageConstants.PowercharmAttack} while it is in the item pouch.")
                             @EffectChips([(GameIcons.Attack, $"attack +{DamageConstants.PowercharmAttack}")])
-                            <span class="muted small">Attack +@DamageConstants.PowercharmAttack while it is in the item pouch.</span>
                         </span>
                     </label>
                     @foreach (var group in Groups(BuffCategory.Item))
@@ -145,7 +144,7 @@
             }
             <img class="buff-icon" src="@IconOf(shown)" alt="" />
             <span class="cond-text">
-                <b>@title</b>
+                @BuffHead(title, picked?.Description ?? about)
                 @EffectChips(EffectsOf([(shown, 1.0)], 0))
                 @if (!single)
                 {
@@ -154,7 +153,6 @@
                                    Options="@(group.Select(b => new SegmentOption<string>(b.Id, ShortNames.GetValueOrDefault(b.Id, b.Name), Hint: b.Description)).Prepend(new SegmentOption<string>("", "None")).ToList())" />
                     </span>
                 }
-                <span class="muted small">@(picked?.Description ?? about)</span>
                 @if (picked is { Requires: { } requires } && !ConditionToggles.Get(c, requires))
                 {
                     <span class="small warn">Not counted: @ConditionCatalog.LabelOf(requires) is off under Conditions.</span>
@@ -193,6 +191,15 @@
             BuffCategory.Meal => MealIcon,
             _ => GameIcons.Weapon("hunting-horn"),
         },
+    };
+
+    /// <summary>The buff's name with its details behind an (i).</summary>
+    private static RenderFragment BuffHead(string title, string details) => __builder =>
+    {
+        <span class="buff-head">
+            <b>@title</b>
+            <InfoHover Label="@($"About {title}")">@details</InfoHover>
+        </span>
     };
 
     private static RenderFragment SectionTitle(string title, string icon) => __builder =>

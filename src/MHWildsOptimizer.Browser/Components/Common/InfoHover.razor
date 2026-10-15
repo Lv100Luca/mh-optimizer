@@ -1,17 +1,17 @@
 @* A small (i) that shows its content while hovered or focused (tapped on a phone), e.g. the hits and MV of an attack.
    The MudTooltip (a popover with components of its own) is only created once the pointer or the focus gets here, with the
-   same markup standing in until then: tables list dozens of these. A click on it does not reach the row it sits in. *@
+   same markup standing in until then: tables list dozens of these. A click on it does not reach the row or label it sits in. *@
 @inherits HoverTip
 @if (Armed)
 {
     <MudTooltip Placement="Placement.Bottom" Delay="120" Class="infotip-pop" RootClass="infohover" RootStyle="display: inline-flex" Visible="Visible" VisibleChanged="OnVisibleChanged">
-        <ChildContent><span @ref="Anchor" class="info-i @Class" tabindex="0" role="img" aria-label="@Label" @onclick:stopPropagation="true">i</span></ChildContent>
+        <ChildContent><span @ref="Anchor" class="info-i @Class" tabindex="0" role="img" aria-label="@Label" @onclick:stopPropagation="true" @onclick:preventDefault="true">i</span></ChildContent>
         <TooltipContent><div class="infotip">@ChildContent</div></TooltipContent>
     </MudTooltip>
 }
 else
 {
-    <span class="mud-tooltip-root mud-tooltip-inline infohover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="ArmFocus" @onclick:stopPropagation="true">
+    <span class="mud-tooltip-root mud-tooltip-inline infohover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="ArmFocus" @onclick:stopPropagation="true" @onclick:preventDefault="true">
         <span class="info-i @Class" tabindex="0" role="img" aria-label="@Label">i</span>
     </span>
 }
