@@ -399,7 +399,11 @@ dl.stats dd { margin: 0; }
 .cond-skills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .cond-skills .chip { white-space: normal; } /* long set bonus lists wrap instead of widening the page */
 .cond.resonance { cursor: default; }
-.cond.buff { align-items: center; }
+.cond.buff { align-items: flex-start; }
+.cond.buff input { margin-top: 12px; }
+.cond.buff .cond-uptime { align-self: stretch; }
+.cond.buff .cond-uptime .segmented { display: flex; flex-wrap: nowrap; max-width: 340px; width: 100%; }
+.cond.buff .cond-uptime .segmented.small button { flex: 1 1 0; min-width: 0; justify-content: center; padding: 3px 2px; font-size: 12px; }
 .cond.buff .cond-text { flex: 1; }
 .buff-icon { width: 36px; height: 36px; flex: none; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45)); }
 .cond.buff:not(.on) .buff-icon { opacity: 0.55; filter: grayscale(0.6); }

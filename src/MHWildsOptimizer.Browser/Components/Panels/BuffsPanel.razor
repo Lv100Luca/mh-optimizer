@@ -130,6 +130,7 @@
 
     private static readonly IReadOnlyList<SegmentOption<double>> UptimeOptions =
         new[] { 0.05, 0.1, 0.25, 0.5, 0.75, 1 }.Select(u => new SegmentOption<double>(u, $"{u * 100:0}%")).ToList();
+    private static readonly IReadOnlyList<SegmentOption<double>> DisabledUptimeOptions = UptimeOptions.Select(o => o with { Disabled = true }).ToList();
 
     private RenderFragment Card(BuffDef[] group, Conditions c) => __builder =>
     {
@@ -153,20 +154,26 @@
                                    Options="@(group.Select(b => new SegmentOption<string>(b.Id, ShortNames.GetValueOrDefault(b.Id, b.Name), Hint: b.Description)).Prepend(new SegmentOption<string>("", "None")).ToList())" />
                     </span>
                 }
-                @if (picked is { Requires: { } requires } && !ConditionToggles.Get(c, requires))
+                @* everything below shows whether the buff is on or off, so toggling it does not resize the card *@
+                @if (shown is { Requires: { } requires } && !ConditionToggles.Get(c, requires))
                 {
-                    <span class="small warn">Not counted: @ConditionCatalog.LabelOf(requires) is off under Conditions.</span>
+                    <span class="small @(picked is not null ? "warn" : "muted")">Counts only with @ConditionCatalog.LabelOf(requires) on under Conditions.</span>
                 }
-                @if (picked is { Timed: true })
+                @if (shown.Timed)
                 {
                     <span class="cond-uptime" @onclick:preventDefault="true">
-                        <span class="muted small">Uptime</span>
-                        <Segmented T="double" Small="true" Value="Snap(c.Buffs[picked.Id])" Options="UptimeOptions"
-                                   ValueChanged="u => App.PatchConditions(x => x with { Buffs = new(x.Buffs) { [picked.Id] = u } })" />
-                        @if (picked.Splits && c.Buffs[picked.Id] < 1)
-                        {
-                            <span class="muted small">Scored as @Pct(c.Buffs[picked.Id]) of the hunt with it and @Pct(1 - c.Buffs[picked.Id]) without.</span>
-                        }
+                        <span class="muted small with-icon">
+                            Uptime
+                            @if (shown.Splits)
+                            {
+                                <InfoHover Label="How the uptime counts">
+                                    Affinity and element do not average over the hunt (the caps): below 100% the hunt is scored in a part with this buff and one without.
+                                </InfoHover>
+                            }
+                        </span>
+                        <Segmented T="double" Small="true" Value="Snap(picked is not null ? c.Buffs[picked.Id] : shown.DefaultUptime)"
+                                   Options="@(picked is not null ? UptimeOptions : DisabledUptimeOptions)"
+                                   ValueChanged="u => App.PatchConditions(x => x with { Buffs = new(x.Buffs) { [picked!.Id] = u } })" />
                     </span>
                 }
             </span>
