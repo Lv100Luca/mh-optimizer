@@ -51,8 +51,9 @@ public static class LoadoutReport
         // ---------------- equipment ----------------
         sb.AppendLine("Equipment");
         var ele = w.Element == Element.None ? "no element" : $"{w.ElementDisplay} {w.Element}";
-        sb.AppendLine($"  Weapon    {w.Type,-26} {w.TrueRaw} attack, {w.Affinity}% affinity, {ele}, {w.TopSharpness?.ToString() ?? "-"} sharpness");
-        sb.AppendLine($"            rolled: {w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}");
+        sb.AppendLine($"  Weapon    {w.TechTree?.Name ?? w.Type.ToString(),-26} {w.TrueRaw} attack, {w.Affinity}% affinity, {ele}, {w.TopSharpness?.ToString() ?? "-"} sharpness");
+        if (w.TechTree is { } tree) sb.AppendLine($"            skills: {(tree.Skills.Count == 0 ? "-" : SkillText(tree.Skills))}");
+        else sb.AppendLine($"            rolled: {w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}");
         sb.AppendLine($"            slots {SlotText(w.Slots.Select(l => new TalismanSlot(l, SkillKind.Weapon)))}  decos: {DecoText(loadout.Weapon.Decos)}");
 
         foreach (var a in loadout.ArmorPieces)
@@ -136,6 +137,7 @@ public static class LoadoutReport
                     sources.GetOrAdd(grant.Skill).Add(g.Count() > 1 ? $"{g.Key} x{g.Count()} {grant.Level * g.Count()}" : $"{g.Key} {grant.Level}");
         }
 
+        if (loadout.Weapon.Stats.TechTree is { } weapon) Add(weapon.Skills, weapon.Name);
         AddDecos(loadout.Weapon.Decos);
         foreach (var a in loadout.ArmorPieces)
         {

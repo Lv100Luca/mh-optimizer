@@ -179,7 +179,9 @@ public static class RequestLoader
         WeaponSpace? space = null;
         if (request.WeaponOptimize.Any)
         {
-            if (request.Weapon.Spec is null)
+            if (request.Weapon.TechTree is not null)
+                errors.Add("Weapon: a tech tree weapon has fixed stats; only Gogma Artian weapons can be optimized.");
+            else if (request.Weapon.Spec is null)
                 errors.Add("Weapon: optimizing the weapon needs it described (focus, element, parts and reinforcements), not entered as stats.");
             else if (weaponErrors.Count == 0 && weapon.Spec is { } spec)
                 space = new WeaponSpace(spec with { SetBonus = weapon.SetBonus, GroupSkill = weapon.GroupSkill }, request.WeaponOptimize, data, weapon.Slots);
@@ -194,6 +196,8 @@ public static class RequestLoader
         }
         else
         {
+            if (request.Weapon.TechTree is not null)
+                errors.Add("Weapon: a tech tree weapon rolls no skill pair; set the skill pair mode to 'fixed'.");
             if (data.GogmaSkillPairs.Count == 0)
                 errors.Add("Skill pair mode is 'optimize' but data/gogma_skill_pool.json was not loaded.");
             candidates.AddRange(data.GogmaSkillPairs);

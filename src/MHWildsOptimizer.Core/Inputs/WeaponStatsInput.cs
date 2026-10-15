@@ -59,10 +59,17 @@ public sealed record GogmaWeaponSpecInput
 /// The Gogma weapon as an input. These stats are never optimized. Either give the in-game stats directly
 /// (type, attack, affinity, element, element_display, sharpness) or give <see cref="Spec"/> and let the resolver compute them.
 /// set_bonus / group_skill are the currently rolled pair (used in "fixed" skill-pair mode).
+/// A <see cref="TechTree"/> weapon takes all its stats from the dataset instead.
 /// </summary>
 public sealed record WeaponStatsInput
 {
     public GogmaWeaponSpecInput? Spec { get; init; }
+
+    /// <summary>
+    /// Name of a crafted weapon from data/tech_tree_weapons.json, e.g. "Rathalos Glinsword". Wins over <see cref="Spec"/>, the
+    /// stats and the rolled pair, which are kept for switching back.
+    /// </summary>
+    public string? TechTree { get; init; }
 
     /// <summary>API weapon kind, e.g. "great-sword" or "long-sword". Required without <see cref="Spec"/>.</summary>
     public string? Type { get; init; }
@@ -84,6 +91,13 @@ public sealed record WeaponStatsInput
     public IReadOnlyList<string> Validate(GameData data)
     {
         var errors = new List<string>();
+
+        if (TechTree is not null)
+        {
+            if (!data.TechTreeWeaponsByName.TryGetValue(TechTree, out var tree)) errors.Add($"Weapon: unknown tech tree weapon '{TechTree}'.");
+            else if (WeaponTypeInfo.FromApiKind(tree.Kind).IsBowgun()) errors.Add("Weapon: bowguns are out of scope for now.");
+            return errors;
+        }
 
         if (Spec is not null)
         {
@@ -121,6 +135,8 @@ public sealed record WeaponStatsInput
     /// <summary>Resolves the stats; call <see cref="Validate"/> first.</summary>
     public GogmaWeaponStats ToStats(GameData data)
     {
+        if (TechTree is not null) return FromTechTree(data.TechTreeWeaponsByName[TechTree]);
+
         if (Spec is not null)
         {
             var (spec, errors) = Spec.ToSpec();
@@ -136,5 +152,20 @@ public sealed record WeaponStatsInput
             type, null, trueRaw, Affinity, Element, Element == Element.None ? 0 : ElementDisplay,
             type.HasSharpness() ? Sharpness : null, null, 0, Slots, SetBonus, GroupSkill,
             type == WeaponType.Bow ? Coating ?? BowCoating.Power : null);
+    }
+
+    public static GogmaWeaponStats FromTechTree(TechTreeWeapon w)
+    {
+        var type = WeaponTypeInfo.FromApiKind(w.Kind);
+        var element = w.Element ?? Element.None;
+        BowCoating? coating = type != WeaponType.Bow ? null : w.Coating switch
+        {
+            "close-range" => BowCoating.CloseRange,
+            "pierce" => BowCoating.Pierce,
+            _ => BowCoating.Power,
+        };
+        return new GogmaWeaponStats(
+            type, null, w.Raw, w.Affinity, element, element == Element.None ? 0 : w.ElementDisplay,
+            type.HasSharpness() ? w.Sharpness?.TopColor : null, type.HasSharpness() ? w.Sharpness : null, 0, w.Slots, null, null, coating, null, w);
     }
 }

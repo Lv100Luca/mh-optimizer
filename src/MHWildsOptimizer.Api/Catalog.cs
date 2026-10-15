@@ -86,7 +86,8 @@ public sealed record Catalog(
     Conditions ConditionsAllOff,
     IReadOnlyList<MonsterHitzones> Monsters,
     IReadOnlyList<Target> DummyTargets,
-    int ProcessorCount)
+    int ProcessorCount,
+    IReadOnlyList<TechTreeWeapon> TechTreeWeapons)
 {
     /// <summary>The game version the dataset is from.</summary>
     public const string CurrentGameVersion = "1.041";
@@ -179,7 +180,8 @@ public sealed record Catalog(
             Core.Damage.Conditions.AllOff,
             data.Monsters,
             Target.DummyParts,
-            OptimizerOptions.ProcessorCount);
+            OptimizerOptions.ProcessorCount,
+            data.TechTreeWeapons);
     }
 
     /// <summary>The same starting point as the CLI editor: a raw attack-focus Great Sword with no rolled pair.</summary>

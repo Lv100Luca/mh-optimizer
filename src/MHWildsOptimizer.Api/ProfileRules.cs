@@ -22,6 +22,7 @@ public static partial class ProfileRules
     {
         var w = r.Weapon;
         var targets = r.TargetSkills.Count == 0 ? "no targets" : string.Join(", ", r.TargetSkills.Select(kv => $"{kv.Key} {kv.Value}"));
+        if (w.TechTree is { } tree) return $"{tree}; {targets}";
         var element = w.Spec is { } spec && spec.Element != Core.Domain.Element.None ? spec.Element.ToString().ToLowerInvariant() + " " : "";
         return $"{element}{WeaponKind(r)}, {(r.SkillPair.Mode == SkillPairMode.Fixed ? $"{w.SetBonus ?? "-"} / {w.GroupSkill ?? "-"}" : "optimize pair")}; {targets}";
     }

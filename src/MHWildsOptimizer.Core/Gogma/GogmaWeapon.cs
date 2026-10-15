@@ -130,6 +130,7 @@ public sealed record GogmaWeaponSpec
 /// Final weapon stats before skills. Focus is null when the stats were entered directly instead of resolved from a spec.
 /// <paramref name="Coating"/> is the bow's damage coating (bows only). <paramref name="Spec"/> is what the stats were resolved from
 /// (null for entered stats); its rolled pair is not kept up to date, <see cref="SetBonus"/> and <see cref="GroupSkill"/> are.
+/// <paramref name="TechTree"/> is the crafted weapon the stats come from, with its skills; null for a Gogma Artian weapon.
 /// </summary>
 public sealed record GogmaWeaponStats(
     WeaponType Type,
@@ -145,8 +146,11 @@ public sealed record GogmaWeaponStats(
     string? SetBonus,
     string? GroupSkill,
     BowCoating? Coating = null,
-    GogmaWeaponSpec? Spec = null)
+    GogmaWeaponSpec? Spec = null,
+    TechTreeWeapon? TechTree = null)
 {
+    /// <summary>The skills the weapon itself grants (tech tree weapons only).</summary>
+    public IReadOnlyList<SkillGrant> Skills => TechTree?.Skills ?? [];
     public double ElementTrue => ElementDisplay / 10.0;
     public int DisplayAttack => (int)Math.Round(TrueRaw * Type.Bloat());
 }

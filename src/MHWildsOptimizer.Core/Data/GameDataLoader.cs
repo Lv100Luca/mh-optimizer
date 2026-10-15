@@ -15,10 +15,10 @@ public static class GameDataLoader
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower), new Damage.ConditionsJsonConverter() },
     };
 
-    /// <summary>The dataset files <see cref="Load(string)"/> reads; the last three are optional.</summary>
+    /// <summary>The dataset files <see cref="Load(string)"/> reads; the last four are optional.</summary>
     public static readonly string[] FileNames =
         ["skills.json", "armor_hr.json", "decorations.json", "charms.json", "gogma_weapons_base.json", "gogma_skill_pool.json", "random_talisman_pool.json",
-         "monster_hitzones.json"];
+         "monster_hitzones.json", "tech_tree_weapons.json"];
 
     /// <summary>Loads the normalized dataset from a directory containing armor_hr.json, skills.json, decorations.json, charms.json and gogma_weapons_base.json.</summary>
     public static GameData Load(string dataDirectory) =>
@@ -56,8 +56,9 @@ public static class GameDataLoader
             : null;
 
         var monsters = TryRead<List<MonsterHitzones>>("monster_hitzones.json");
+        var techTree = TryRead<List<TechTreeWeapon>>("tech_tree_weapons.json");
 
-        return new GameData(skills, armor, decorations, charms, gogma, pairs, pool, monsters);
+        return new GameData(skills, armor, decorations, charms, gogma, pairs, pool, monsters, techTree);
     }
 
     /// <summary>Walks up from <paramref name="start"/> (default: the executable's directory) until a <c>data/armor_hr.json</c> is found.</summary>

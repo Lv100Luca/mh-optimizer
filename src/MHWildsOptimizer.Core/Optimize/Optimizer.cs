@@ -564,10 +564,11 @@ public sealed class Optimizer
         {
             // depth 0: talismans
             var initial = new Dictionary<int[], State>(Keys);
+            var weaponSkills = Candidates.WeaponSkills(_weapon, _rel);
             foreach (var t in _talismans)
             {
                 var key = new int[_keyLength];
-                for (var s = 0; s < _n; s++) key[s] = Math.Min(_rel.Caps[s], t.Skills[s]);
+                for (var s = 0; s < _n; s++) key[s] = Math.Min(_rel.Caps[s], weaponSkills[s] + t.Skills[s]);
                 for (var i = 0; i < 3; i++) { key[_offArmorSlots + i] = t.ArmorSlots[i]; key[_offWeaponSlots + i] = t.WeaponSlots[i]; }
                 if (_weapon.SetBonus is { } ws && _rel.SetIndex.TryGetValue(ws, out var si)) key[_offSets + si] = 1;
                 if (_weapon.GroupSkill is { } wg && _rel.GroupIndex.TryGetValue(wg, out var gi)) key[_offGroups + gi] = 1;

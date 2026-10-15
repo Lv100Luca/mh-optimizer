@@ -19,6 +19,9 @@ public sealed class GameData
     public RandomTalismanPool? TalismanPool { get; }
     /// <summary>Large monsters with their part hitzones (target picker); empty when data/monster_hitzones.json is absent.</summary>
     public IReadOnlyList<MonsterHitzones> Monsters { get; }
+    /// <summary>Crafted weapons from the forge trees; empty when data/tech_tree_weapons.json is absent.</summary>
+    public IReadOnlyList<TechTreeWeapon> TechTreeWeapons { get; }
+    public IReadOnlyDictionary<string, TechTreeWeapon> TechTreeWeaponsByName { get; }
 
     public IReadOnlyDictionary<string, Skill> SkillsByName { get; }
     public IReadOnlyDictionary<int, Skill> SkillsById { get; }
@@ -39,7 +42,8 @@ public sealed class GameData
         IReadOnlyDictionary<WeaponType, IReadOnlyDictionary<GogmaFocus, GogmaWeaponVariant>> gogmaWeapons,
         IReadOnlyList<GogmaSkillPair>? gogmaSkillPairs = null,
         RandomTalismanPool? talismanPool = null,
-        IReadOnlyList<MonsterHitzones>? monsters = null)
+        IReadOnlyList<MonsterHitzones>? monsters = null,
+        IReadOnlyList<TechTreeWeapon>? techTreeWeapons = null)
     {
         Skills = skills;
         Armor = armor;
@@ -49,6 +53,8 @@ public sealed class GameData
         GogmaSkillPairs = gogmaSkillPairs ?? [];
         TalismanPool = talismanPool;
         Monsters = monsters ?? [];
+        TechTreeWeapons = techTreeWeapons ?? [];
+        TechTreeWeaponsByName = FirstByKey(TechTreeWeapons, w => w.Name);
 
         SkillsByName = FirstByKey(skills, s => s.Name);
         SkillsById = FirstByKey(skills, s => s.Id);

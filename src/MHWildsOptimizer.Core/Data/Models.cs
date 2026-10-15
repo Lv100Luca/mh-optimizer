@@ -68,6 +68,30 @@ public sealed record GogmaWeaponVariant(
     SharpnessBar? Sharpness,
     IReadOnlyList<int> Slots);
 
+/// <summary>A crafted (non-Artian) weapon from a forge tree (data/tech_tree_weapons.json). Kind and coating use the API spelling ("great-sword", "close-range").</summary>
+/// <param name="Status">Status the weapon applies (poison, paralysis, sleep, blastblight); not part of the score.</param>
+public sealed record TechTreeWeapon(
+    int Id,
+    string Name,
+    string Kind,
+    int Rarity,
+    string Tree,
+    int Raw,
+    int DisplayAttack,
+    int Affinity,
+    Element? Element,
+    int ElementDisplay,
+    string? Status,
+    int StatusDisplay,
+    SharpnessBar? Sharpness,
+    IReadOnlyList<int>? Handicraft,
+    IReadOnlyList<int> Slots,
+    IReadOnlyList<SkillGrant> Skills,
+    string? Coating)
+{
+    public override string ToString() => Name;
+}
+
 /// <summary>A large monster and the hitzones of its parts (data/monster_hitzones.json, from wilds.mhdb.io), weakest point first.</summary>
 public sealed record MonsterHitzones(string Name, IReadOnlyList<PartHitzones> Parts);
 

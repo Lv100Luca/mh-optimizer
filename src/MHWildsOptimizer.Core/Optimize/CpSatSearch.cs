@@ -102,7 +102,10 @@ internal sealed class CpSatSearch
     {
         _data = data; _rel = rel; _weapon = weapon; _cond = cond; _filler = filler; _armor = armor; _kinds = kinds;
         _talismans = talismans; _topN = topN; _parameters = CpSatParameters.For(threads, timeLimitSeconds); _progress = progress; _ct = ct;
+        _weaponSkills = Candidates.WeaponSkills(weapon, rel);
     }
+
+    private readonly int[] _weaponSkills;
 
     /// <summary>Score models shared with other searches of the same weapon and conditions; null builds one for this search.</summary>
     public ScoreDecompositionCache? Scores { get; init; }
@@ -380,6 +383,7 @@ internal sealed class CpSatSearch
         {
             await Pacer.PauseAsync();
             var terms = new List<LinearExpr>();
+            if (_weaponSkills[s] != 0) terms.Add(LinearExpr.Constant(_weaponSkills[s]));
             foreach (var list in pieces) foreach (var (c, x) in list) if (c.Skills[s] != 0) terms.Add(LinearExpr.Term(x, c.Skills[s]));
             for (var j = 0; j < tals.Count; j++) if (_talismans[j].Skills[s] != 0) terms.Add(LinearExpr.Term(tals[j], _talismans[j].Skills[s]));
             if (rolls is not null)

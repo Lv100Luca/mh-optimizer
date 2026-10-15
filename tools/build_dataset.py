@@ -163,4 +163,25 @@ for w in weapons:
         }
 dump('gogma_weapons_base', gog)
 print('gogma variants per type:', {k: sorted(v) for k, v in gog.items()})
+
+# ---------------------------------------------------------------- tech tree weapons (Artian weapons have no series)
+DAMAGE_COATINGS = ('close-range', 'power', 'pierce')
+out_tree = []
+for w in weapons:
+    if not w.get('series'):
+        continue
+    element = next((s for s in w['specials'] if s['kind'] == 'element'), None)
+    status = next((s for s in w['specials'] if s['kind'] == 'status'), None)
+    out_tree.append({
+        'id': w['id'], 'name': w['name'], 'kind': w['kind'], 'rarity': w['rarity'], 'tree': w['series']['name'],
+        'raw': w['damage']['raw'], 'display_attack': w['damage']['display'], 'affinity': w['affinity'],
+        'element': element['element'] if element else None, 'element_display': element['damage']['display'] if element else 0,
+        'status': status['status'] if status else None, 'status_display': status['damage']['display'] if status else 0,
+        'sharpness': w.get('sharpness'), 'handicraft': w.get('handicraft'), 'slots': w['slots'],
+        'skills': [{'skill': x['skill']['name'], 'skill_id': x['skill']['id'], 'level': x['level']} for x in w['skills']],
+        'coating': next((c for c in w.get('coatings') or [] if c in DAMAGE_COATINGS), None),
+    })
+json.dump(sorted(out_tree, key=lambda w: (w['kind'], -w['rarity'], w['name'])), open('data/tech_tree_weapons.json', 'w', encoding='utf-8'),
+          ensure_ascii=False, separators=(',', ':'))
+print('tech tree weapons', len(out_tree))
 print('armor_hr', len(out_armor), '| sets', len(out_sets), '| skills', len(out_skills), '| decos', len(out_decos), '| charm ranks', len(out_charms))

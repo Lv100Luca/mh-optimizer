@@ -68,6 +68,7 @@ public static class SkillAggregator
                 Bump(groups, g);
         }
 
+        AddGrants(raw, loadout.Weapon.Stats.Skills);
         AddDecorations(raw, loadout.Weapon.Decos);
         if (loadout.Weapon.Stats.SetBonus is { } ws) Bump(sets, ws);
         if (loadout.Weapon.Stats.GroupSkill is { } wg) Bump(groups, wg);

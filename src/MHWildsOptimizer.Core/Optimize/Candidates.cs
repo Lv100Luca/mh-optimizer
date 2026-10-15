@@ -47,6 +47,18 @@ public static class Candidates
         return Prune(all, Dominates, t => t.Talisman.Rarity);
     }
 
+    /// <summary>The relevant skill levels the weapon itself grants, a constant of every build.</summary>
+    public static int[] WeaponSkills(Gogma.GogmaWeaponStats weapon, Relevance rel)
+    {
+        var skills = new int[rel.Skills.Count];
+        foreach (var g in weapon.Skills)
+        {
+            var i = rel.IndexOf(g.Skill);
+            if (i >= 0) skills[i] += g.Level;
+        }
+        return skills;
+    }
+
     private static ArmorCandidate Project(ArmorPiece a, Relevance rel, bool transcend)
     {
         var skills = new int[rel.Skills.Count];

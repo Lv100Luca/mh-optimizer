@@ -15,7 +15,7 @@ public sealed record DecoCountDto(string Name, int Slot, SkillKind Kind, string?
 public sealed record BuildWeaponDto(
     string Type, string Label, int TrueRaw, int DisplayAttack, int Affinity, Element Element, int ElementDisplay, SharpnessColor? Sharpness,
     string? SetBonus, string? GroupSkill, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations,
-    GogmaWeaponSpecInput? Spec = null, string? SpecLabel = null);
+    GogmaWeaponSpecInput? Spec = null, string? SpecLabel = null, string? Name = null, IReadOnlyList<SkillGrant>? Skills = null);
 
 public sealed record BuildArmorDto(
     ArmorPieceKind Kind, int Id, string Name, string? Set, int Rarity, bool Transcended, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations,
@@ -100,7 +100,7 @@ public static class ResultMapper
 
         var weapon = new BuildWeaponDto(w.Type.ApiKind(), Catalog.WeaponLabel(w.Type), w.TrueRaw, w.DisplayAttack, w.Affinity, w.Element, w.ElementDisplay, w.TopSharpness,
             w.SetBonus, w.GroupSkill, w.Slots, loadout.Weapon.Decos.Select(Deco).ToList(),
-            w.Spec is { } spec ? GogmaWeaponSpecInput.From(spec) : null, w.Spec?.Label());
+            w.Spec is { } spec ? GogmaWeaponSpecInput.From(spec) : null, w.Spec?.Label(), w.TechTree?.Name, w.TechTree?.Skills);
 
         var armor = loadout.ArmorPieces.Select(a => new BuildArmorDto(
             a.Piece.Piece, a.Piece.Id, a.Piece.Name, a.Piece.Set, a.Piece.Rarity, a.Transcended, a.EffectiveSlots, a.Decos.Select(Deco).ToList(),
@@ -191,6 +191,7 @@ public static class ResultMapper
                     For(grant.Skill).Add(g.Count() > 1 ? $"{g.Key} x{g.Count()} {grant.Level * g.Count()}" : $"{g.Key} {grant.Level}");
         }
 
+        if (loadout.Weapon.Stats.TechTree is { } weapon) Add(weapon.Skills, weapon.Name);
         AddDecos(loadout.Weapon.Decos);
         foreach (var a in loadout.ArmorPieces)
         {

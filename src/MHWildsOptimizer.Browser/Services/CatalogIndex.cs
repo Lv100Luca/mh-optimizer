@@ -1,4 +1,5 @@
 using MHWildsOptimizer.Api;
+using MHWildsOptimizer.Core.Data;
 using MHWildsOptimizer.Core.Domain;
 
 namespace MHWildsOptimizer.Browser.Services;
@@ -26,6 +27,9 @@ public sealed class CatalogIndex
         ArmorByName = armor;
         DecorationsByName = catalog.Decorations.GroupBy(d => d.Name).ToDictionary(g => g.Key, g => g.First());
         CharmsByName = catalog.Charms.GroupBy(c => c.Name).ToDictionary(g => g.Key, g => g.Last());
+        TechTreeByName = catalog.TechTreeWeapons.ToDictionary(w => w.Name);
+        TechTreeByKind = catalog.TechTreeWeapons.GroupBy(w => w.Kind)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<TechTreeWeapon>)g.OrderBy(w => w.Tree).ThenByDescending(w => w.Rarity).ThenByDescending(w => w.Raw).ToList());
     }
 
     public IReadOnlyDictionary<string, SkillDto> SkillsByName { get; }
@@ -34,6 +38,9 @@ public sealed class CatalogIndex
     public IReadOnlyDictionary<string, ArmorEntry> ArmorByName { get; }
     public IReadOnlyDictionary<string, DecorationDto> DecorationsByName { get; }
     public IReadOnlyDictionary<string, CharmDto> CharmsByName { get; }
+    public IReadOnlyDictionary<string, TechTreeWeapon> TechTreeByName { get; }
+    /// <summary>Per API kind, grouped by tree (alphabetical), best rarity first within a tree.</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<TechTreeWeapon>> TechTreeByKind { get; }
 
     private static readonly Dictionary<string, int> RomanLevels = new() { ["I"] = 1, ["II"] = 2, ["III"] = 3 };
 

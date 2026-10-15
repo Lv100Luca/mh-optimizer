@@ -24,7 +24,12 @@ public sealed record WeaponStatsDto(
     IReadOnlyList<int> Slots,
     string? SetBonus,
     string? GroupSkill,
-    BowCoating? Coating = null);
+    BowCoating? Coating = null,
+    string? Name = null,
+    int Rarity = 8,
+    IReadOnlyList<SkillGrant>? Skills = null,
+    string? Status = null,
+    int StatusDisplay = 0);
 
 /// <summary>
 /// One requirement. Armor / weapon skills carry a minimum level; set bonuses carry the tier (1 or 2) as the level and the
@@ -92,5 +97,6 @@ public static class Resolving
     public static WeaponStatsDto Weapon(GogmaWeaponStats w) => new(
         w.Type.ApiKind(), Catalog.WeaponLabel(w.Type), w.Focus, w.TrueRaw, w.DisplayAttack, w.Affinity, w.Element, w.ElementDisplay, w.ElementTrue,
         w.TopSharpness, w.SharpnessBar is { } sb ? new SharpnessBarDto(sb.Red, sb.Orange, sb.Yellow, sb.Green, sb.Blue, sb.White, sb.Purple) : null,
-        w.SharpnessBonus, w.Slots, w.SetBonus, w.GroupSkill, w.Coating);
+        w.SharpnessBonus, w.Slots, w.SetBonus, w.GroupSkill, w.Coating, w.TechTree?.Name, w.TechTree?.Rarity ?? 8, w.TechTree?.Skills,
+        w.TechTree?.Status, w.TechTree?.StatusDisplay ?? 0);
 }
