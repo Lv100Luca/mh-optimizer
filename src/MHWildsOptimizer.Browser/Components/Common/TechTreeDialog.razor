@@ -1,0 +1,99 @@
+@inject WikiService WikiSvc
+@inject AppState App
+@* Picks a tech tree weapon from the forge's tree: the grid scrolls on the left, the selected weapon's stats show on the right,
+   and the footer confirms with "Use <weapon>". Nothing changes until then; the wiki page has the crafting cost. *@
+<MudDialog Class="tree-dialog" ContentClass="tree-dialog-content">
+    <TitleContent>
+        <span class="tree-dialog-title"><img src="@GameIcons.Weapon(Kind)" alt="" />@Label tree
+            @if (_wiki is { } wiki)
+            {
+                <span class="muted small">@Fmt.Plural(Weapons(wiki).Count, "weapon") · @Weapons(wiki).Select(w => w.Tree).Distinct().Count() trees</span>
+            }
+        </span>
+    </TitleContent>
+    <DialogContent>
+        @if (_error is not null)
+        {
+            <Alert Kind="error">The weapon data could not be loaded: @_error</Alert>
+        }
+        else if (_wiki is not { } wiki)
+        {
+            <div class="progress"><span class="spinner"></span>Loading the trees…</div>
+        }
+        else
+        {
+            <div class="tree-dialog-body">
+                <div class="tree-dialog-tree">
+                    <div class="tree-dialog-tools muted small">Click a weapon to see it; the gold path is what you forge and upgrade to get there, a green edge means you can forge it directly.</div>
+                    <TechTree Weapons="Weapons(wiki)" Wiki="wiki" Selected="@_selected" SelectedChanged="s => _selected = s" OnOpen="_ => Use()" />
+                </div>
+                <div class="tree-dialog-detail">
+                    @if (_selected is { } sel && wiki.Weapons.GetValueOrDefault(sel) is { } w)
+                    {
+                        <div class="tree-dialog-detail-head">
+                            <img src="@GameIcons.Weapon(w.Kind)" alt="" />
+                            <div>
+                                <b>@w.Name</b> <RarityBadge Rarity="w.Rarity" />
+                                <div class="muted small">@WikiIndex.TreeLabel(w.Tree) tree@(w.IsFinal ? " · final form" : w.Previous is { } p ? " · from " + p : "")</div>
+                            </div>
+                        </div>
+                        <div class="tree-dialog-detail-body">
+                            <WeaponStats Weapon="w" Compact="true" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="muted small" style="padding:20px 16px;text-align:center">Pick a weapon in the tree to see its stats.</div>
+                    }
+                </div>
+            </div>
+        }
+    </DialogContent>
+    <DialogActions>
+        <span class="muted small tree-dialog-chosen">Selected: <b>@(_selected ?? "-")</b></span>
+        <MudButton OnClick="() => Dialog.Cancel()">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@(_selected is null)" OnClick="Use">Use @(_selected ?? "")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+    /// <summary>The weapon type's API kind.</summary>
+    [Parameter] public string Kind { get; set; } = "great-sword";
+    [Parameter] public string? Selected { get; set; }
+
+    private WikiIndex? _wiki;
+    private string? _error;
+    private string? _selected;
+
+    private string Label => App.Index.WeaponTypes.GetValueOrDefault(Kind)?.Label ?? Fmt.TitleCase(Kind);
+
+    private IReadOnlyList<WikiWeapon> Weapons(WikiIndex wiki) => wiki.WeaponsByKind.GetValueOrDefault(Kind) ?? [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _selected = Selected;
+        try
+        {
+            _wiki = await WikiSvc.LoadAsync();
+        }
+        catch (Exception e)
+        {
+            _error = e.Message;
+        }
+    }
+
+    private void Use()
+    {
+        if (_selected is not null) Dialog.Close(DialogResult.Ok(_selected));
+    }
+
+    /// <summary>Shows the picker; the chosen weapon's name, or null when cancelled.</summary>
+    public static async Task<string?> ShowAsync(IDialogService dialogs, string kind, string? selected)
+    {
+        var parameters = new DialogParameters<TechTreeDialog> { { d => d.Kind, kind }, { d => d.Selected, selected } };
+        var dialog = await dialogs.ShowAsync<TechTreeDialog>(null, parameters, new DialogOptions { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseButton = true });
+        var result = await dialog.Result;
+        return result is { Canceled: false, Data: string name } ? name : null;
+    }
+}

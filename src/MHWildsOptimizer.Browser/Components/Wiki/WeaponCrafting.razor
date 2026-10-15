@@ -1,0 +1,81 @@
+@inject AppState App
+@* What a weapon costs: this step's materials and zenny (forging it, or upgrading it from the previous weapon), and the whole path
+   from the forge summed up, opened into its steps on request. *@
+@{
+    var w = Weapon;
+    var step = w.Step;
+    var (zenny, mats) = Wiki.PathCost(w.Name);
+    var path = Wiki.PathTo(w.Name);
+}
+@if (step is null)
+{
+    <p class="muted small">No crafting data for this weapon.</p>
+}
+else
+{
+    <div class="mats">
+        @foreach (var m in step.Materials)
+        {
+            <div class="mat">
+                <MaterialIcon Material="m" />
+                <span>@m.Name <RarityBadge Rarity="m.Rarity" /></span>
+                <span class="qty">x@(m.Quantity)</span>
+                @if (!Compact)
+                {
+                    <span class="val" title="sell value each">@Fmt.Zenny(m.Value) each</span>
+                }
+            </div>
+        }
+    </div>
+    <div class="cost-sum">
+        <span>@(w.Previous is null ? "Forge" : "This step")</span><b class="zenny">@Fmt.Zenny(step.Zenny)</b>
+        <span class="muted small">+ @Fmt.Plural(step.Materials.Count, "material")</span>
+    </div>
+    @if (path.Count > 1)
+    {
+        <div class="cost-sum plain">
+            <span>From scratch</span><b class="zenny">@Fmt.Zenny(zenny)</b>
+            <span class="muted small">@Fmt.Plural(path.Count, "step") from @path[0].Name · @Fmt.Plural(mats.Count, "material")</span>
+            @if (!Compact)
+            {
+                <button type="button" class="linklike small right" @onclick="() => _open = !_open">@(_open ? "hide the steps" : "show the steps")</button>
+            }
+        </div>
+        @if (_open && !Compact)
+        {
+            <div class="steps">
+                @for (var i = 0; i < path.Count; i++)
+                {
+                    var s = path[i];
+                    <div class="step">
+                        <span class="no @(i == 0 ? "have" : "")" title="@(i == 0 ? "forged directly" : "upgrade")">@(i + 1)</span>
+                        <span class="who">
+                            <img src="@GameIcons.Weapon(s.Kind)" alt="" />
+                            <span style="min-width:0">
+                                <button type="button" class="linklike" @onclick="() => App.OpenWiki(Tab.WikiWeapons, s.Name)"><b>@s.Name</b></button> <RarityBadge Rarity="s.Rarity" />
+                                <div class="muted tiny">@(i == 0 ? "forge" : "upgrade from " + path[i - 1].Name)</div>
+                            </span>
+                        </span>
+                        <span class="mats-inline">
+                            @foreach (var m in s.Step?.Materials ?? [])
+                            {
+                                <span class="chip tiny" title="@($"{m.Name}: sells for {Fmt.Zenny(m.Value)}")"><MaterialIcon Material="m" Small="true" />@m.Name <b>x@(m.Quantity)</b></span>
+                            }
+                        </span>
+                        <span class="num zenny">@Fmt.Zenny(s.Step?.Zenny ?? 0)</span>
+                    </div>
+                }
+            </div>
+            <div class="cost-sum"><span>Total</span><b class="zenny">@Fmt.Zenny(zenny)</b><span class="muted small">@string.Join(", ", mats.Select(m => $"{m.Name} x{m.Quantity}"))</span></div>
+        }
+    }
+}
+
+@code {
+    [Parameter, EditorRequired] public WikiWeapon Weapon { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+    /// <summary>No sell values and no step list, for the tree picker's side pane.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private bool _open;
+}

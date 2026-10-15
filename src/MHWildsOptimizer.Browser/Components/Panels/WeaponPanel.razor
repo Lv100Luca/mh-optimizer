@@ -1,4 +1,5 @@
 @inherits AppComponent
+@inject IDialogService Dialogs
 
 @if (App.Request is { } request)
 {
@@ -136,23 +137,30 @@
 
                     @if (mode == TreeMode)
                     {
-                        <div class="form-grid">
-                            <Field Label="Weapon" Hint="Grouped by tree, best rarity first. Search by name, tree, element, status or skill.">
-                                <Picker T="string" Class="piecepick" AnchorClass="block" Options="TreeOptions(kind)" OnPick="name => App.PatchWeapon(x => x with { TechTree = name })"
-                                        Placeholder="Search weapons, trees, elements, skills…">
-                                    <Trigger>
+                        <Field Label="Weapon" Hint="Pick it from the forge's tree, or search by name, tree, element, status or skill.">
+                            <div class="trigger-row">
+                                <div class="trigger-card">
+                                    <img src="@GameIcons.Weapon(kind)" alt="" />
+                                    <div class="tc-main">
                                         @if (tree is not null)
                                         {
-                                            <b>@tree.Name</b> <RarityBadge Rarity="tree.Rarity" /> <span class="muted small">@TreeLabel(tree.Tree)</span>
+                                            <b>@tree.Name <RarityBadge Rarity="tree.Rarity" /></b>
+                                            <span>@TreeLabel(tree.Tree) tree · @tree.DisplayAttack@(tree.Element is { } e ? $" · {tree.ElementDisplay} {Fmt.TitleCase(e)}" : "")@(tree.Skills.Count > 0 ? " · " + string.Join(", ", tree.Skills.Select(g => $"{g.Skill} {g.Level}")) : "")</span>
                                         }
                                         else
                                         {
                                             <span class="err">@w.TechTree (unknown)</span>
                                         }
-                                    </Trigger>
+                                    </div>
+                                    <button type="button" class="linklike small" @onclick="() => App.OpenWiki(Tab.WikiWeapons, w.TechTree)">wiki</button>
+                                </div>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => ChooseFromTreeAsync(kind, w.TechTree)">Choose from the tree…</MudButton>
+                                <Picker T="string" Class="btn sm" Options="TreeOptions(kind)" OnPick="name => App.PatchWeapon(x => x with { TechTree = name })"
+                                        Placeholder="Search weapons, trees, elements, skills…">
+                                    <Trigger>Search by name</Trigger>
                                 </Picker>
-                            </Field>
-                        </div>
+                            </div>
+                        </Field>
                         @if (tree?.Status is { } status)
                         {
                             <p class="muted small">Its @Fmt.TitleCase(status) (@tree.StatusDisplay) is not scored.</p>
@@ -678,6 +686,12 @@
 
     private void PatchSpec(Func<GogmaWeaponSpecInput, GogmaWeaponSpecInput> fn) =>
         App.PatchWeapon(w => w.Spec is { } spec ? w with { Spec = fn(spec) } : w);
+
+    private async Task ChooseFromTreeAsync(string kind, string? current)
+    {
+        var name = await TechTreeDialog.ShowAsync(Dialogs, kind, current);
+        if (name is not null) App.UseTechTreeWeapon(name, kind);
+    }
 
     private void SetType(string kind)
     {

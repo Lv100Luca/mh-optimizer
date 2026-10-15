@@ -59,6 +59,17 @@ public static class GameIcons
         [Core.Domain.Element.Thunder] = "#f2d23c", [Core.Domain.Element.Ice] = "#8fd8f5", [Core.Domain.Element.Dragon] = "#9b6df0",
     };
 
+    /// <summary>wilds.mhdb.io item icon colours as CSS, for the material dots (no part icons in the site yet).</summary>
+    public static string MaterialCss(string? color) => MaterialColors.GetValueOrDefault(color ?? "", "#9aa1ad");
+
+    private static readonly Dictionary<string, string> MaterialColors = new()
+    {
+        ["white"] = "#e8e6e1", ["gray"] = "#9aa1ad", ["yellow"] = "#f2d44f", ["sky"] = "#8fe3f5", ["blue"] = "#4fa3e6", ["red"] = "#e05a4f",
+        ["pink"] = "#f39ac4", ["green"] = "#5fbf7a", ["ivory"] = "#f3ecd2", ["lemon"] = "#f6f08a", ["purple"] = "#b07be8", ["brown"] = "#b5804f",
+        ["dark-purple"] = "#6d3fa0", ["rose"] = "#e07aa0", ["blue-purple"] = "#7f7ff0", ["vermilion"] = "#ff6a3d", ["orange"] = "#ff9b45",
+        ["ultramarine"] = "#3f5bd6",
+    };
+
     public static readonly IReadOnlyDictionary<int, string> RarityCss = new Dictionary<int, string>
     {
         [1] = "#c8c8c8", [2] = "#c8c8c8", [3] = "#cde0a8", [4] = "#8dd36a", [5] = "#5fbf7a", [6] = "#4fa3e6", [7] = "#b07be8", [8] = "#ff8c42",

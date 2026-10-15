@@ -1,0 +1,126 @@
+@* One crafted weapon: stats, skills, what this step costs, the whole path from the forge, and its lineage. *@
+@{
+    var w = Weapon;
+    var label = Text.WeaponLabel[w.Kind];
+    var path = Site.PathTo(w);
+    var next = w.Branches.Select(b => Site.WeaponsByName.GetValueOrDefault(b)).OfType<WikiWeapon>().ToList();
+    var step = w.Step;
+    var total = path.Sum(x => x.Step?.Zenny ?? 0);
+    var allMats = path.SelectMany(x => x.Step?.Materials ?? []).GroupBy(m => m.Name).Select(g => (g.Key, g.Sum(m => m.Quantity))).ToList();
+}
+<Layout Path="@Urls.WeaponPage(w)" Title="@($"{w.Name} · {label} · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+        Crumbs="@([("Wiki", "/wiki/"), ("Weapons", "/wiki/weapons/"), (label, Urls.WeaponType(w.Kind))])">
+    <article>
+        <div class="head">
+            @Parts.Icon(Urls.Weapon(w.Kind), 40)
+            <div>
+                <h1>@w.Name</h1>
+                <p class="sub"><span class="rarity">R@(w.Rarity)</span> <a href="@Urls.WeaponType(w.Kind)">@label</a> · <a href="@(Urls.WeaponType(w.Kind) + "#" + Urls.Slug(w.Tree))">@SiteIndex.TreeLabel(w.Tree) tree</a>@(w.IsFinal ? " · final form" : "") · @SiteIndex.Game</p>
+            </div>
+        </div>
+        @if (w.Description is { } d)
+        {
+            <blockquote class="game-text">@d<cite>In-game description</cite></blockquote>
+        }
+
+        <h2>Stats</h2>
+        <table class="facts">
+            <tr><th>Attack</th><td>@w.DisplayAttack <span class="muted">(@w.Raw true raw)</span></td></tr>
+            <tr><th>Affinity</th><td class="@(w.Affinity < 0 ? "neg" : w.Affinity > 0 ? "pos" : "")">@(w.Affinity > 0 ? "+" : "")@w.Affinity%</td></tr>
+            <tr><th>Element</th><td>@WeaponParts.Element(w)</td></tr>
+            @if (w.DefenseBonus > 0)
+            {
+                <tr><th>Defense bonus</th><td>+@w.DefenseBonus</td></tr>
+            }
+            @if (w.Sharpness is { } bar)
+            {
+                var extra = w.Handicraft is { Count: > 0 } h ? h.Sum() * 10 : 0;
+                <tr><th>Sharpness</th><td>@WeaponParts.Gauge(w) <span class="muted">@WeaponParts.GaugeText(bar)@(extra > 0 ? $"; Handicraft 5 adds {extra} to the top colour (hatched)" : "")</span></td></tr>
+            }
+            <tr><th>Slots</th><td class="slots">@WeaponParts.Slots(w)</td></tr>
+            @foreach (var line in w.Extras)
+            {
+                <tr><th>@line[0]</th><td>@line[1]</td></tr>
+            }
+            <tr><th>Skills</th><td>@WeaponParts.Skills(w, Site)@(w.Skills.Count == 0 ? "none" : "")</td></tr>
+        </table>
+
+        <h2>Crafting</h2>
+        @if (step is null)
+        {
+            <p class="muted">No crafting data.</p>
+        }
+        else
+        {
+            <p>@(w.Previous is { } p ? (MarkupString)$"Upgrade from <a href=\"{Urls.WeaponPage(Site.WeaponsByName[p])}\">{System.Net.WebUtility.HtmlEncode(p)}</a>" : (MarkupString)"Forged directly") for <b>@step.Zenny.ToString("N0", CultureInfo.InvariantCulture)z</b> and:</p>
+            <ul class="chips">
+                @foreach (var m in step.Materials)
+                {
+                    <li><b>x@(m.Quantity)</b> @m.Name <span class="muted">R@(m.Rarity) · sells for @m.Value.ToString("N0", CultureInfo.InvariantCulture)z</span></li>
+                }
+            </ul>
+            @if (path.Count > 1)
+            {
+                <h3>From scratch: @path.Count steps, @total.ToString("N0", CultureInfo.InvariantCulture)z</h3>
+                <div class="scroll">
+                    <table class="steps">
+                        <thead><tr><th></th><th>Weapon</th><th>Materials</th><th class="num">Zenny</th></tr></thead>
+                        <tbody>
+                            @for (var i = 0; i < path.Count; i++)
+                            {
+                                var s = path[i];
+                                <tr>
+                                    <td class="num">@(i + 1)</td>
+                                    <td><a href="@Urls.WeaponPage(s)">@s.Name</a> <span class="rarity">R@(s.Rarity)</span><div class="muted">@(i == 0 ? "forge" : "upgrade from " + path[i - 1].Name)</div></td>
+                                    <td>@string.Join(", ", (s.Step?.Materials ?? []).Select(m => $"{m.Name} x{m.Quantity}"))</td>
+                                    <td class="num">@((s.Step?.Zenny ?? 0).ToString("N0", CultureInfo.InvariantCulture))z</td>
+                                </tr>
+                            }
+                            <tr class="total"><td></td><td><b>Total</b></td><td>@string.Join(", ", allMats.Select(m => $"{m.Key} x{m.Item2}"))</td><td class="num"><b>@total.ToString("N0", CultureInfo.InvariantCulture)z</b></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+
+        <h2>Tree</h2>
+        <p>
+            @for (var i = 0; i < path.Count - 1; i++)
+            {
+                <a href="@Urls.WeaponPage(path[i])">@path[i].Name</a><span class="muted"> → </span>
+            }
+            <b>@w.Name</b>
+            @if (next.Count > 0)
+            {
+                <span class="muted"> → </span>
+                @for (var i = 0; i < next.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        <span class="muted"> or </span>
+                    }
+                    <a href="@Urls.WeaponPage(next[i])">@next[i].Name</a>
+                }
+            }
+            else
+            {
+                <span class="muted"> (final form)</span>
+            }
+        </p>
+        <p class="related">See the whole <a href="@(Urls.WeaponType(w.Kind) + "#trees")">@label tree</a>.</p>
+        @Parts.OptimizerBox($"Pick {w.Name} in the optimizer and it finds the armor, decorations and talismans that deal the most damage with it; its own skills count.")
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public WikiWeapon Weapon { get; set; } = default!;
+
+    private string Meta()
+    {
+        var w = Weapon;
+        var text = $"{w.Name}, a rarity {w.Rarity} {Text.WeaponLabel[w.Kind]} of the {SiteIndex.TreeLabel(w.Tree)} tree in {SiteIndex.Game}: {SiteIndex.WeaponStats(w)}, {(w.Affinity > 0 ? "+" : "")}{w.Affinity}% affinity"
+                   + (w.Skills.Count > 0 ? ", " + string.Join(", ", w.Skills.Select(s => $"{s.Skill} {s.Level}")) : "") + ". "
+                   + (w.Step is { } s2 ? $"{(w.Previous is { } p ? "Upgraded from " + p : "Forged")} for {s2.Zenny:N0}z and {string.Join(", ", s2.Materials.Select(m => $"{m.Name} x{m.Quantity}"))}." : "");
+        return Text.Cut(text);
+    }
+}

@@ -16,6 +16,9 @@ public static partial class Fmt
     /// <summary>"+5" / "-3" / "0".</summary>
     public static string Signed(int n) => n > 0 ? "+" + n : n.ToString(En);
 
+    /// <summary>"35,000z"</summary>
+    public static string Zenny(int n) => n.ToString("N0", En) + "z";
+
     /// <summary>"great-sword" -> "Great Sword"; also enum names ("HittingWeakPoint" stays as is).</summary>
     public static string TitleCase(string s) => WordStart().Replace(s.Replace('-', ' ').Replace('_', ' '), m => m.Value.ToUpperInvariant());
 

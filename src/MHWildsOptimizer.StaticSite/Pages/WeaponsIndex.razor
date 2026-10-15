@@ -1,0 +1,18 @@
+@* Every weapon type with how many weapons and trees it has. *@
+<Layout Path="/wiki/weapons/" Title="@($"All weapons · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@($"Every crafted {SiteIndex.Game} weapon by type: attack, affinity, element, sharpness, slots and skills, what forging and upgrading costs, and the tech tree of each type.")"
+        Crumbs="@([("Wiki", "/wiki/")])">
+    <h1>@SiteIndex.Game weapons</h1>
+    <p class="lead">All @Site.Weapons.Count crafted weapons in @SiteIndex.Game, by type: stats, sharpness, skills, what each one costs to forge or upgrade, and the forge's tree. Artian weapons are not crafted from a tree and are not here.</p>
+    <div class="cards">
+        @foreach (var kind in Site.WeaponKinds)
+        {
+            var ws = Site.WeaponsOf(kind);
+            <a class="card" href="@Urls.WeaponType(kind)">
+                <h2>@Parts.Icon(Urls.Weapon(kind), 28) @Text.WeaponLabel[kind]</h2>
+                <p>@ws.Count weapons in @ws.Select(w => w.Tree).Distinct().Count() trees · @ws.Count(w => w.IsFinal) final forms</p>
+            </a>
+        }
+    </div>
+    @Parts.OptimizerBox($"{SiteIndex.Name} scores builds for any of these weapons: pick one from the tree and it finds the armor, decorations and talismans that deal the most damage with it.")
+</Layout>

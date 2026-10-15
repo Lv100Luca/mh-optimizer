@@ -1,0 +1,84 @@
+@inherits AppComponent
+@* A weapon type's overview: the final form of every tree with its stats, and the forge's tree. *@
+@{
+    var weapons = Wiki.WeaponsByKind.GetValueOrDefault(Kind) ?? [];
+    var label = Cat.WeaponTypes.GetValueOrDefault(Kind)?.Label ?? Fmt.TitleCase(Kind);
+    var trees = weapons.Select(w => w.Tree).Distinct().Count();
+    var finals = weapons.Where(w => w.IsFinal).OrderByDescending(w => w.Rarity).ThenByDescending(w => w.Raw).ThenBy(w => w.Name).ToList();
+    var gunner = Kind is "bow" or "light-bowgun" or "heavy-bowgun";
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head weapon">
+        <div class="wiki-title">
+            <img class="icon" width="36" height="36" src="@GameIcons.Weapon(Kind)" alt="" />
+            <div>
+                <h1>@label</h1>
+                <div class="muted small">@Fmt.Plural(weapons.Count, "weapon") in @Fmt.Plural(trees, "tree") · @weapons.Count(w => w.Craftable && w.Previous is null) you can forge directly, the rest are upgrades · @Fmt.Plural(finals.Count, "final form")</div>
+            </div>
+        </div>
+    </section>
+
+    <Section Title="Final forms" Key="wiki-weapon-finals" Collapsible="false" Hint="The last weapon of every tree. Open a weapon for its sharpness, crafting cost and tree.">
+        <div class="dmg-scroll">
+            <table class="table wiki-final-table">
+                <thead>
+                    <tr><th></th><th>Weapon</th><th class="num">Attack</th><th class="num">Affinity</th><th>Element</th>@if (!gunner) { <th>Sharpness</th> }<th>Slots</th><th>Skills</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var w in finals)
+                    {
+                        <tr class="clickable" @onclick="() => App.OpenWiki(Tab.WikiWeapons, w.Name)">
+                            <td class="icon-cell"><img class="icon" width="24" height="24" src="@GameIcons.Weapon(w.Kind)" alt="" /></td>
+                            <td><div>@w.Name <RarityBadge Rarity="w.Rarity" /></div><div class="muted tiny">@WikiIndex.TreeLabel(w.Tree)</div></td>
+                            <td class="num"><b>@w.DisplayAttack</b> <span class="muted tiny">@w.Raw</span></td>
+                            <td class="num @(w.Affinity < 0 ? "err" : w.Affinity > 0 ? "ok" : "muted")">@Fmt.Signed(w.Affinity)%</td>
+                            <td><WeaponElement Weapon="w" Icon="true" /></td>
+                            @if (!gunner)
+                            {
+                                <td>@if (w.Sharpness is { } bar) { <SharpnessBar Bar="bar" Handicraft="w.Handicraft" Class="compact" /> }</td>
+                            }
+                            <td><Slots Numbers="w.Slots" Kind="weapon" /></td>
+                            <td>
+                                <div class="chip-row">
+                                    @foreach (var s in w.Skills)
+                                    {
+                                        <span class="chip skill tiny"><SkillIcon Name="@s.Skill" Kind="SkillKind.Weapon" Size="14" />@s.Skill <b>@s.Level</b></span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </Section>
+
+    <Section Title="Tree" Key="wiki-weapon-type-tree" Collapsible="false"
+             Hint="The forge screen's tree: lanes are the trees, columns the tiers. Click a weapon to light its path from the forge, click it again to open it. A green edge marks weapons you can forge directly.">
+        @if (_selected is { } sel && Wiki.Weapons.GetValueOrDefault(sel) is { } w)
+        {
+            var (zenny, mats) = Wiki.PathCost(sel);
+            var path = Wiki.PathTo(sel);
+            <div class="focusbar">
+                <b>@w.Name</b> <RarityBadge Rarity="w.Rarity" /> <span class="muted">·</span> @Fmt.Plural(path.Count, "step") from <b>@path[0].Name</b>
+                <span class="muted">·</span> <span class="zenny">@Fmt.Zenny(zenny)</span> <span class="muted">· @Fmt.Plural(mats.Count, "material")</span>
+                <MudButton Variant="Variant.Outlined" Size="Size.Small" Class="right" OnClick="() => App.OpenWiki(Tab.WikiWeapons, sel)">Open @w.Name</MudButton>
+                <button type="button" class="linklike small" @onclick="() => _selected = null">clear</button>
+            </div>
+        }
+        <TechTree Weapons="weapons" Wiki="Wiki" Selected="@_selected" SelectedChanged="s => _selected = s" OnOpen="n => App.OpenWiki(Tab.WikiWeapons, n)" />
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Kind { get; set; } = "";
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+
+    private string? _selected;
+    private string? _kind;
+
+    protected override void OnParametersSet()
+    {
+        if (_kind != Kind) { _kind = Kind; _selected = null; }
+    }
+}

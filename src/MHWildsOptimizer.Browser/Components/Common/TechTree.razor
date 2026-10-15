@@ -1,0 +1,101 @@
+@inject IJSRuntime JS
+@* The forge's tree of one weapon type: lanes (the trees) by tiers, each weapon at the row and column the game shows it at, a line
+   from each to the weapon it upgrades from. A click selects; the path from the forgeable root lights up and the rest dims. A green
+   edge marks weapons forged directly. Compact: icons only, names on hover (phones). *@
+@{
+    var cols = Weapons.Count == 0 ? 1 : Weapons.Max(w => w.Col) + 1;
+    var rows = Weapons.Count == 0 ? 1 : Weapons.Max(w => w.Row) + 1;
+    var cw = Compact ? 46 : 168;
+    var rh = Compact ? 30 : 58;
+    var lab = Compact ? 110 : 150;
+    var lit = Selected is { } sel ? Wiki.PathTo(sel).Select(w => w.Name).ToHashSet() : [];
+    var root = Selected is { } s2 ? Wiki.PathTo(s2).FirstOrDefault()?.Name : null;
+}
+<div class="tree-wrap @(Compact ? "compact" : "")" @ref="_host">
+    <div class="tree" style="--cols:@cols;--cw:@(cw)px;--rh:@(rh)px;--lab:@(lab)px">
+        <div class="tree-cols">
+            <div>Tree</div>
+            @for (var c = 0; c < cols; c++)
+            {
+                <div>@(Compact ? ColumnLabel(c) : $"Tier {c + 1} · {ColumnLabel(c)}")</div>
+            }
+        </div>
+        <div class="tree-body" style="height:@(rows * rh)px;width:@(lab + cols * cw)px">
+            <div class="tree-lanes">
+                @for (var r = 0; r < rows; r++)
+                {
+                    var name = LaneName(r);
+                    <div title="@name"><b>@name</b></div>
+                }
+            </div>
+            <svg class="tree-svg" width="@(cols * cw)" height="@(rows * rh)">
+                @foreach (var w in Weapons)
+                {
+                    if (w.Previous is null || Wiki.Weapons.GetValueOrDefault(w.Previous) is not { } p) continue;
+                    var x1 = p.Col * cw + cw - 7; var y1 = p.Row * rh + rh / 2.0;
+                    var x2 = w.Col * cw + 7; var y2 = w.Row * rh + rh / 2.0;
+                    var xm = x1 + (x2 - x1) / 2.0;
+                    <path class="@(lit.Contains(w.Name) && w.Name != root ? "lit" : Selected is not null ? "dim" : "")"
+                          d="@FormattableString.Invariant($"M{x1},{y1} H{xm} V{y2} H{x2}")"></path>
+                }
+            </svg>
+            @foreach (var w in Weapons)
+            {
+                var isSel = w.Name == Selected;
+                <a class="tnode @(w.Craftable && w.Previous is null ? "craft" : "") @(isSel ? "sel" : lit.Contains(w.Name) ? "lit" : Selected is not null ? "dim" : "")"
+                   href="#" style="--x:@w.Col;--y:@w.Row" title="@(Compact ? Summary(w) : null)" @onclick="() => ClickAsync(w)" @onclick:preventDefault>
+                    <img src="@GameIcons.Weapon(w.Kind)" alt="" />
+                    <span class="t"><b>@w.Name</b><small>@Stats(w)</small></span>
+                    <RarityBadge Rarity="w.Rarity" />
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<WikiWeapon> Weapons { get; set; } = [];
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+    [Parameter] public string? Selected { get; set; }
+    [Parameter] public EventCallback<string?> SelectedChanged { get; set; }
+    /// <summary>A click on the selected weapon.</summary>
+    [Parameter] public EventCallback<string> OnOpen { get; set; }
+    [Parameter] public bool Compact { get; set; }
+
+    private ElementReference _host;
+    private string? _scrolledTo;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // the selected weapon in the middle of the grid, once per selection (not after every re-render)
+        if (Selected is null || Selected == _scrolledTo) return;
+        _scrolledTo = Selected;
+        await JS.InvokeVoidAsync("mhwo.centerIn", _host, ".tnode.sel");
+    }
+
+    private async Task ClickAsync(WikiWeapon w)
+    {
+        if (w.Name == Selected) { await OnOpen.InvokeAsync(w.Name); return; }
+        // a click keeps the grid where it is
+        _scrolledTo = w.Name;
+        await SelectedChanged.InvokeAsync(w.Name);
+    }
+
+    /// <summary>The rarity most weapons of the column have.</summary>
+    private string ColumnLabel(int col)
+    {
+        var top = Weapons.Where(w => w.Col == col).GroupBy(w => w.Rarity).OrderByDescending(g => g.Count()).FirstOrDefault();
+        return top is null ? "" : $"R{top.Key}";
+    }
+
+    private string LaneName(int row) =>
+        Weapons.Where(w => w.Row == row).OrderBy(w => w.Col).Select(w => WikiIndex.TreeLabel(w.Tree)).FirstOrDefault() ?? "";
+
+    /// <summary>"960 · 500 Fire"</summary>
+    public static string Stats(WikiWeapon w) =>
+        w.DisplayAttack + (w.Element is { } e ? $" · {w.ElementDisplay} {Fmt.TitleCase(e)}" : w.Status is { } st ? $" · {w.StatusDisplay} {StatusLabel(st)}" : "");
+
+    private static string Summary(WikiWeapon w) => $"{w.Name} (R{w.Rarity}) · {Stats(w)}" + (w.Skills.Count > 0 ? " · " + string.Join(", ", w.Skills.Select(s => $"{s.Skill} {s.Level}")) : "");
+
+    public static string StatusLabel(string status) => status == "blastblight" ? "Blast" : Fmt.TitleCase(status);
+}

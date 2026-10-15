@@ -5,12 +5,13 @@
     [
         ("/wiki/skills/", "Skills", $"{Site.Skills.Count} skills: exact numbers per level, and every decoration, charm and armor piece with them."),
         ("/wiki/armor/", "Armor", $"{Site.Families.Count} armor families, low and high rank: skills, slots, defense and set bonuses."),
+        ("/wiki/weapons/", "Weapons", $"{Site.Weapons.Count} crafted weapons in {Site.WeaponKinds.Count} types: stats, sharpness, skills, what forging and upgrading costs, and every tree."),
         ("/wiki/items/", "Items", $"{Site.Items.Count - materials} consumables: boosts, durations, recipes and what stacks, and where to get their {materials} materials."),
         ("/wiki/meals/", "Meals", $"How meals work and all {Site.Meals?.Skills.Count ?? 0} meal skills."),
     ];
 }
 <Layout Path="/wiki/" Title="@($"{SiteIndex.Game} wiki: skills, armor, items · {SiteIndex.Name}")"
-        Description="@($"{SiteIndex.Game} wiki with exact numbers: every skill and level, every armor piece in low and high rank, items and meal skills.")">
+        Description="@($"{SiteIndex.Game} wiki with exact numbers: every skill and level, every armor piece in low and high rank, every crafted weapon with its tree and cost, items and meal skills.")">
     <h1>@SiteIndex.Game wiki</h1>
     <p class="lead">The game reference behind the @SiteIndex.Name optimizer: skills, armor, items and meals in @SiteIndex.Game, with the exact numbers from the game data.</p>
     <div class="cards">

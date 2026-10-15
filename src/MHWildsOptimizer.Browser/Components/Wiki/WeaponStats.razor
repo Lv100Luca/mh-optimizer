@@ -1,0 +1,69 @@
+@inject AppState App
+@* A crafted weapon's stats as tiles (attack, affinity, element, defense bonus, slots, the gauge with Handicraft hatched in), the
+   type's own lines and its skills; shared by the weapon page and the tree picker. *@
+@{
+    var w = Weapon;
+    var top = TopColor(w);
+    var extra = w.Handicraft is { Count: > 0 } h ? h.Sum() * 10 : 0;
+}
+<div class="wstats">
+    <div class="wstat"><span class="k"><img src="@GameIcons.Attack" alt="" />Attack</span><span class="v">@w.DisplayAttack <small>@w.Raw true</small></span></div>
+    <div class="wstat"><span class="k"><img src="@GameIcons.Affinity" alt="" />Affinity</span><span class="v @(w.Affinity < 0 ? "err" : w.Affinity > 0 ? "ok" : "")">@Fmt.Signed(w.Affinity)%</span></div>
+    <div class="wstat">
+        <span class="k">@if (w.Element is { } el && GameIcons.Element(Enum.Parse<Element>(el, true)) is { } icon) { <img src="@icon" alt="" /> }Element</span>
+        <span class="v ele"><WeaponElement Weapon="w" /></span>
+    </div>
+    @if (!Compact)
+    {
+        <div class="wstat"><span class="k"><img src="@GameIcons.Defense" alt="" />Defense bonus</span><span class="v">@(w.DefenseBonus > 0 ? "+" + w.DefenseBonus : "none")</span></div>
+    }
+    <div class="wstat"><span class="k"><img src="@GameIcons.DecorationGeneric" alt="" />Slots</span><span class="v"><Slots Numbers="w.Slots" Kind="weapon" /></span></div>
+    @if (w.Sharpness is { } bar)
+    {
+        <div class="wstat wide">
+            <span class="k"><img src="@GameIcons.Sharpness" alt="" />Sharpness <span class="k-note">· @Fmt.TitleCase(top) @BarValue(bar, top) hits@(extra > 0 ? $", hatched: Handicraft 5 adds {extra}" : "")</span></span>
+            <SharpnessBar Bar="bar" Handicraft="w.Handicraft" Class="big" />
+        </div>
+    }
+    @foreach (var line in w.Extras)
+    {
+        <div class="wstat @(line[1].Length > 24 ? "wide" : "")"><span class="k">@line[0]</span><span class="v text">@line[1]</span></div>
+    }
+</div>
+<div>
+    <div class="wiki-subhead">Skills</div>
+    @if (w.Skills.Count == 0)
+    {
+        <span class="muted small">No skills of its own.</span>
+    }
+    else
+    {
+        <div class="chip-row">
+            @foreach (var s in w.Skills)
+            {
+                <button type="button" class="chip skill" @onclick="() => App.OpenWiki(Tab.WikiSkills, s.Skill)"><SkillIcon Name="@s.Skill" Kind="SkillKind.Weapon" Size="18" />@s.Skill <b>@s.Level</b></button>
+            }
+        </div>
+        @if (!Compact)
+        {
+            <p class="muted small" style="margin:6px 0 0">The weapon's own skills count toward the build; decorations and armor can add levels on top.</p>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiWeapon Weapon { get; set; } = default!;
+    /// <summary>Fewer tiles, for the tree picker's side pane.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    public static SharpnessColor TopColor(WikiWeapon w) => w.Sharpness is { } b
+        ? b.Purple > 0 ? SharpnessColor.Purple : b.White > 0 ? SharpnessColor.White : b.Blue > 0 ? SharpnessColor.Blue : b.Green > 0 ? SharpnessColor.Green
+            : b.Yellow > 0 ? SharpnessColor.Yellow : b.Orange > 0 ? SharpnessColor.Orange : SharpnessColor.Red
+        : SharpnessColor.Red;
+
+    private static int BarValue(SharpnessBarDto b, SharpnessColor c) => c switch
+    {
+        SharpnessColor.Purple => b.Purple, SharpnessColor.White => b.White, SharpnessColor.Blue => b.Blue, SharpnessColor.Green => b.Green,
+        SharpnessColor.Yellow => b.Yellow, SharpnessColor.Orange => b.Orange, _ => b.Red,
+    };
+}

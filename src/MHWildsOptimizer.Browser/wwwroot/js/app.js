@@ -38,6 +38,14 @@ window.mhwo = {
   /** Scrolls the first element matching the selector into view (smoothly). */
   scrollIntoView: (selector) => { document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
 
+  /** Scrolls a scrolling host so the child matching the selector sits in its middle (the host only, not the page). */
+  centerIn: (host, selector) => {
+    const child = host?.querySelector(selector);
+    if (!child) return;
+    host.scrollLeft = Math.max(0, child.offsetLeft - host.clientWidth / 2 + child.offsetWidth / 2);
+    host.scrollTop = Math.max(0, child.offsetTop - host.clientHeight / 2 + child.offsetHeight / 2);
+  },
+
   copyText: async (text) => { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } },
 
   /** Resolves once the browser has painted the page's latest changes (after 100 ms at most); a hidden tab paints nothing, so at once. */

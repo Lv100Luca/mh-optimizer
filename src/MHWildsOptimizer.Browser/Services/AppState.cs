@@ -398,6 +398,25 @@ public sealed partial class AppState : IDisposable
         Notify();
     }
 
+    /// <summary>
+    /// Makes the open weapon a tech tree weapon (the wiki's "Use in optimizer", the tree picker): the type follows the
+    /// weapon, there is no rolled pair and nothing to optimize on a crafted weapon; the Artian setup under it is kept.
+    /// </summary>
+    public void UseTechTreeWeapon(string name, string kind, bool openWeaponTab = false)
+    {
+        PatchRequest(r =>
+        {
+            var w = r.Weapon.Spec is { } spec ? r.Weapon with { Spec = spec with { Type = kind } } : r.Weapon with { Type = kind };
+            return r with
+            {
+                Weapon = w with { TechTree = name, Coating = kind == "bow" ? w.Coating : null },
+                SkillPair = r.SkillPair with { Mode = SkillPairMode.Fixed },
+                WeaponOptimize = r.WeaponOptimize with { Focus = false, Element = false, AttackParts = false, Reinforcements = false },
+            };
+        });
+        if (openWeaponTab) SetTab(Tab.Weapon);
+    }
+
     /// <summary>Leaves the inventory for a weapon tab; any other tab stays (switching weapons keeps the view).</summary>
     private Tab WeaponTab(Tab? tab = null) => tab ?? (Tab.IsProfileTab() ? Tab.Weapon : Tab);
 

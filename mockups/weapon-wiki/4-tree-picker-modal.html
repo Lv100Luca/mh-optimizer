@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapon tab · pick from the tree in a modal · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .doc { max-width: 1400px; display: flex; flex-direction: column; gap: 10px; }
+  .ctx { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 12px; align-items: start; }
+  @media (max-width: 1000px) { .ctx { grid-template-columns: 1fr; } }
+  .prev { font-size: 12.5px; color: var(--muted); margin-top: -8px; }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><a href="index.html">Overview</a><span class="muted">·</span><a href="1-weapons-list.html">1 · Weapons list</a><span class="muted">·</span><a href="2-weapon-details.html">2 · Weapon page</a><span class="muted">·</span><a href="3-tech-tree.html">3 · Tech tree</a><span class="muted">·</span><b>4 · Tree picker modal</b><span class="right muted">Round 2 after feedback on 3: the tree as the picker of the Weapon tab, not only a wiki page.</span></div>
+
+<main class="content" style="padding-top:16px">
+  <p class="prev">Follows <a href="3-tech-tree.html">3 · Tech tree</a>. The grid, path lighting and cost sum are the same; what changes is where it lives and that a pick is confirmed.</p>
+  <div class="notes">
+    <h3>Idea 4 · Pick the weapon from the tree, in a modal</h3>
+    <ol>
+      <li><span class="n">1</span><span>On the Weapon tab in Tech tree mode the dropdown becomes a <b>card with the chosen weapon</b> and a <b>Choose from the tree</b> button. The search dropdown stays next to it for people who know the name.</span></li>
+      <li><span class="n">2</span><span>The button opens a <b>modal</b> with the type's tree. The grid <b>scrolls both ways</b> inside it, lane names and tier headers stay put. Search and a rarity filter dim what does not match.</span></li>
+      <li><span class="n">3</span><span><b>Clicking a weapon selects it</b> and shows its details on the right: stats, gauge, skills, this step's cost and the path from scratch. Nothing is applied yet. The lit path and the lineage give context.</span></li>
+      <li><span class="n">4</span><span>The footer <b>confirms explicitly</b>: Use Rathalos Firesword. Cancel or Escape closes without a change. The weapon in the footer is the selected one, so the button always says what will happen.</span></li>
+      <li><span class="n">5</span><span>Variant B puts the details in a <b>sheet under the tree</b> instead of beside it, so the grid gets the full width (nine tiers fit at 1440 without scrolling). Same confirm.</span></li>
+      <li><span class="n">6</span><span>Phone: the modal is full screen, the compact icon grid on top, details as a sheet, the confirm button full width at the bottom.</span></li>
+    </ol>
+  </div>
+
+  <div class="variant"><h2>The trigger on the Weapon tab</h2><span class="cap">Stats section in Tech tree mode, replacing the plain dropdown of the current build.</span></div>
+  <section class="card" style="max-width:760px">
+    <header class="card-head"><div class="card-title"><h2>Stats</h2><p class="hint">A crafted weapon from the forge trees. Its stats, sharpness, slots and skills come from the game data; the skills count toward the build.</p></div><div class="card-actions"><div class="segmented small"><button>Describe</button><button class="active">Tech tree</button><button>Enter stats</button></div></div></header>
+    <div class="card-body">
+      <div class="trigger-row">
+        <div class="trigger-card"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" alt=""><div class="tc-main"><b>Rathalos Firesword <span class="rarity r8">R8</span></b><span>Rathalos tree · 960 · 500 Fire · Critical Boost 3</span></div></div>
+        <button class="btn primary">Choose from the tree… <span class="n">1</span></button>
+        <button class="btn">Search by name</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="variant"><h2>A · Tree left, details right</h2><span class="verdict current">chosen 2026-10-15</span><span class="cap">Desktop modal, 24 px from the window edges. The grid scrolls inside; the details column is fixed at 360 px. Click any weapon in the grid: the details and the footer button follow.</span></div>
+  <div class="modal-stage" id="stageA"></div>
+
+  <div class="variant"><h2>B · Details as a sheet under the tree</h2><span class="verdict bad">rejected: less room for the tree</span><span class="cap">Full-width grid, the selected weapon's details in a three-column strip below it. Less height for the tree, no sideways scroll at 1440.</span></div>
+  <div class="modal-stage" id="stageB"></div>
+
+  <div class="variant"><h2>Phone</h2><span class="cap">375 px: full-screen modal, compact grid, details sheet, one full-width confirm.</span></div>
+  <div class="phone-modal" id="phone"></div>
+</main>
+
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  const ICO = ICONS;
+  const detail = (name) => {
+    if (!name) return '<div class="empty">Pick a weapon in the tree to see its stats.</div>';
+    const w = BY[name], top = topSharp(w.sharp), c = pathCost(name);
+    return `<h3><img src="${weaponIcon()}" alt="">${w.name} ${rarity(w.rarity)} <span class="muted small" style="font-weight:400">${treeLabel(w.tree)}${w.next.length === 0 ? ' · final form' : ''}</span></h3>
+      <div class="wstats">
+        <div class="wstat"><span class="k"><img src="${ICO}ui/attack-up.png" alt="">Attack</span><span class="v">${w.display} <small>${w.raw}</small></span></div>
+        <div class="wstat"><span class="k"><img src="${ICO}ui/affinity-up.png" alt="">Affinity</span><span class="v ${w.aff < 0 ? 'err' : w.aff > 0 ? 'ok' : ''}">${w.aff > 0 ? '+' : ''}${w.aff}%</span></div>
+        <div class="wstat"><span class="k">Element</span><span class="v" style="font-size:15px">${elementText(w)}</span></div>
+        <div class="wstat"><span class="k"><img src="${ICO}ui/decoration.png" alt="">Slots</span><span class="v">${slots(w.slots)}</span></div>
+        <div class="wstat wide"><span class="k"><img src="${ICO}ui/sharpness.png" alt="">Sharpness · ${cap(top)} ${w.sharp[top]}</span>${sharpBar(w.sharp, '', w.handicraft)}</div>
+      </div>
+      <div><div class="wiki-subhead">Skills</div><div class="chip-row">${skillChips(w.skills, true)}</div></div>
+      <div><div class="wiki-subhead">${w.prev ? 'Upgrade from ' + w.prev : 'Forge'} · <span class="zenny">${fmt(stepCost(w))}</span></div><div class="mats">${stepMats(w).map(matRow).join('') || '<span class="muted small">no materials</span>'}</div></div>
+      <div class="cost-sum" style="padding:6px 10px"><span class="small">From scratch</span><b class="zenny" style="font-size:15px">${fmt(c.zenny)}</b><span class="muted tiny">${c.steps.length} step${c.steps.length > 1 ? 's' : ''} from ${c.steps[0].name} · ${c.mats.length} materials</span></div>`;
+  };
+  const tools = `<div class="modal-tools"><div class="searchbox">🔍 <span>Search weapons, trees, skills…</span></div><div class="segmented small"><button class="active">All</button><button>R8</button><button>R7+</button></div><span class="muted tiny">green edge: forgeable directly · gold: path from the forge</span><span class="n">2</span></div>`;
+  const foot = (n) => `<div class="modal-foot"><span class="chosen">Selected: <b id="${n}-chosen">Rathalos Firesword</b> <span class="n">4</span></span><span class="spacer"></span><button class="btn">Cancel</button><button class="btn primary" id="${n}-use">Use Rathalos Firesword</button></div>`;
+  const head = `<div class="modal-head"><h2><img src="${weaponIcon()}" alt="">Great Sword tree <span class="muted small" style="font-weight:400">84 weapons · 28 trees</span></h2><button class="close" title="Close">✕</button></div>`;
+
+  function stage(host, sheet, compact) {
+    const n = host.id;
+    host.innerHTML = `<div class="backdrop"></div><div class="modal">${head}<div class="modal-body ${sheet ? 'sheet' : ''}"><div class="modal-tree">${tools}<div class="tree-wrap" id="${n}-tree"></div></div><div class="modal-detail" id="${n}-detail"></div></div>${foot(n)}</div>`;
+    renderTree($(`#${n}-tree`), { compact, selected: 'Rathalos Firesword', onSelect: (name) => {
+      $(`#${n}-detail`).innerHTML = detail(name) + (name && !sheet ? '<span class="n" style="position:absolute;right:12px;top:14px">3</span>' : '');
+      $(`#${n}-chosen`).textContent = name ?? '-';
+      $(`#${n}-use`).textContent = name ? 'Use ' + name : 'Use';
+      $(`#${n}-use`).disabled = !name;
+    } });
+  }
+  stage($('#stageA'), false, false);
+  stage($('#stageB'), true, false);
+  const ph = $('#phone');
+  ph.innerHTML = `<div class="modal-head"><h2><img src="${weaponIcon()}" alt="">Great Sword tree</h2><button class="close">✕</button></div><div class="modal-tools"><div class="searchbox">🔍 <span>Search…</span></div></div><div class="tree-wrap" id="phone-tree"></div><div class="modal-detail" id="phone-detail"></div><div class="modal-foot"><button class="btn">Cancel</button><button class="btn primary" id="phone-use">Use Rathalos Firesword</button></div>`;
+  renderTree($('#phone-tree'), { compact: true, selected: 'Rathalos Firesword', onSelect: (name) => { $('#phone-detail').innerHTML = detail(name); $('#phone-use').textContent = name ? 'Use ' + name : 'Use'; } });
+</script>
+</body>
+</html>

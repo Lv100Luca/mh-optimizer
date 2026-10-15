@@ -16,7 +16,7 @@ public sealed partial class SiteIndex
     /// The sections listed in sitemap.xml. Armor is left out at first so Google spends its attention on the skill pages; the
     /// pages exist and are linked either way, the sitemap only says which ones to look at first.
     /// </summary>
-    public static readonly IReadOnlySet<string> SitemapSections = new HashSet<string> { "wiki", "skills", "items", "meals" };
+    public static readonly IReadOnlySet<string> SitemapSections = new HashSet<string> { "wiki", "skills", "items", "meals", "weapons" };
 
     /// <summary>Items people search for by name get a page of their own; the rest are shown in full on their category's page.</summary>
     private static readonly string[] OwnPageItemNames =
@@ -41,7 +41,35 @@ public sealed partial class SiteIndex
         OwnPageItems = OwnPageItemNames.Where(ItemsByName.ContainsKey).Select(n => ItemsByName[n]).ToList();
         _ownPage = OwnPageItems.Select(i => i.Name).ToHashSet();
         Meals = data.Meals;
+        Weapons = data.Weapons ?? [];
+        WeaponsByName = Weapons.ToDictionary(w => w.Name);
+        WeaponKinds = Text.WeaponLabel.Keys.Where(k => Weapons.Any(w => w.Kind == k)).ToList();
     }
+
+    public IReadOnlyList<WikiWeapon> Weapons { get; }
+    public IReadOnlyDictionary<string, WikiWeapon> WeaponsByName { get; }
+    /// <summary>The weapon types with crafted weapons, in the game's order.</summary>
+    public IReadOnlyList<string> WeaponKinds { get; }
+
+    /// <summary>A type's weapons in the forge's order (lane, then tier).</summary>
+    public IReadOnlyList<WikiWeapon> WeaponsOf(string kind) => Weapons.Where(w => w.Kind == kind).ToList();
+
+    /// <summary>The forge path down to a weapon: the weapon forged directly first, the weapon itself last.</summary>
+    public IReadOnlyList<WikiWeapon> PathTo(WikiWeapon weapon)
+    {
+        var path = new List<WikiWeapon>();
+        for (var w = weapon; w is not null; w = w.Previous is { } p ? WeaponsByName.GetValueOrDefault(p) : null) path.Insert(0, w);
+        return path;
+    }
+
+    /// <summary>"Rathalos Tree" as "Rathalos".</summary>
+    public static string TreeLabel(string tree) => tree.EndsWith(" Tree", StringComparison.Ordinal) ? tree[..^5] : tree;
+
+    /// <summary>"960 · 500 Fire", "1104 · 500 Poison"</summary>
+    public static string WeaponStats(WikiWeapon w) =>
+        w.DisplayAttack + (w.Element is { } e ? $" · {w.ElementDisplay} {Cap(e)}" : w.Status is { } st ? $" · {w.StatusDisplay} {(st == "blastblight" ? "Blast" : Cap(st))}" : "");
+
+    private static string Cap(string s) => s.Length == 0 ? s : char.ToUpperInvariant(s[0]) + s[1..];
 
     private readonly HashSet<string> _ownPage;
 
@@ -117,6 +145,8 @@ public static partial class Urls
     public static string Set(string setName) => Family(SiteIndex.FamilyOf(setName)) + "#" + Slug(setName);
     public static string Category(string key) => $"/wiki/items/{key}/";
     public static string Item(string name) => $"/wiki/items/{Slug(name)}/";
+    public static string WeaponType(string kind) => $"/wiki/weapons/{kind}/";
+    public static string WeaponPage(WikiWeapon w) => $"/wiki/weapons/{w.Kind}/{Slug(w.Name)}/";
 
     /// <summary>"Rey Dau's Voltage" -> "rey-daus-voltage", "Rey Dau γ" -> "rey-dau-gamma".</summary>
     public static string Slug(string name)

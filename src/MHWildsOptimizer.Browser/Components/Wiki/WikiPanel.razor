@@ -1,7 +1,7 @@
 @inherits AppComponent
 @inject WikiService Wiki
 @* The game reference: a searchable list of the section's entries next to the open entry (on phones one or the other).
-   Sections: skills (set and group bonuses among them), armor sets, items, meal skills; the URL names the open entry, so pages can be linked. *@
+   Sections: skills (set and group bonuses among them), armor sets, weapons (by type, the entry a weapon or a type), items, meal skills; the URL names the open entry, so pages can be linked. *@
 
 @if (_error is not null)
 {
@@ -29,6 +29,17 @@ else
                 else if (section == Tab.WikiSkills)
                 {
                     <Segmented T="string" Small="true" Value="_filter" ValueChanged="v => _filter = v" Options="SkillFilters" />
+                }
+                else if (section == Tab.WikiWeapons)
+                {
+                    var kind = WeaponKind(wiki, entry);
+                    <div class="type-row">
+                        @foreach (var t in Catalog.WeaponTypes)
+                        {
+                            <button type="button" class="@(t.Kind == kind ? "active" : "")" title="@($"{t.Label} · {Fmt.Plural(wiki.WeaponsByKind.GetValueOrDefault(t.Kind)?.Count ?? 0, "weapon")}")"
+                                    @onclick="() => PickKind(t.Kind)"><img src="@GameIcons.Weapon(t.Kind)" alt="@t.Label" /></button>
+                        }
+                    </div>
                 }
             </div>
             <div class="wiki-list" role="list">
@@ -62,6 +73,24 @@ else
                             <img class="icon" width="22" height="22" src="@GameIcons.SkillGeneric(m.Icon)" alt="" />
                             <span class="wiki-row-name">@m.Name</span>
                         </button>
+                    }
+                }
+                else if (section == Tab.WikiWeapons)
+                {
+                    var kind = WeaponKind(wiki, entry);
+                    var weapons = Weapons(wiki, kind).ToList();
+                    <div class="wiki-count muted tiny">@Fmt.Plural(weapons.Count, "weapon") · @Fmt.Plural(weapons.Select(w => w.Tree).Distinct().Count(), "tree")</div>
+                    @foreach (var group in weapons.GroupBy(w => w.Tree))
+                    {
+                        <div class="wiki-list-head muted tiny">@WikiIndex.TreeLabel(group.Key)</div>
+                        @foreach (var w in group.OrderByDescending(w => w.Rarity).ThenByDescending(w => w.Col))
+                        {
+                            <button @key="w.Name" role="listitem" class="wiki-row @(w.Name == entry ? "active" : "")" @onclick="() => App.OpenWiki(section, w.Name)">
+                                <img class="icon" width="22" height="22" src="@GameIcons.Weapon(w.Kind)" alt="" />
+                                <span class="wiki-row-name @(w.IsFinal ? "final" : "")">@w.Name</span>
+                                <RarityBadge Rarity="w.Rarity" />
+                            </button>
+                        }
                     }
                 }
                 else if (section == Tab.WikiArmor)
@@ -130,6 +159,17 @@ else
                     <WikiIntro Section="section" Wiki="wiki" Missing="@entry" />
                 }
             }
+            else if (section == Tab.WikiWeapons)
+            {
+                if (entry is not null && wiki.Weapons.TryGetValue(entry, out var weapon))
+                {
+                    <WikiWeaponPage Weapon="weapon" Wiki="wiki" />
+                }
+                else
+                {
+                    <WikiWeaponTypePage Kind="@WeaponKind(wiki, entry)" Wiki="wiki" />
+                }
+            }
             else if (section == Tab.WikiArmor)
             {
                 if (entry is not null && wiki.Sets.TryGetValue(entry, out var set))
@@ -159,6 +199,8 @@ else
     private readonly Dictionary<Tab, string> _queries = [];
     private string _filter = "all";
     private string _rank = "high";
+    /// <summary>The weapon type the Weapons section shows; null = the open weapon's type.</summary>
+    private string? _weaponKind;
 
     private static readonly IReadOnlyList<SegmentOption<string>> SkillFilters =
     [
@@ -194,6 +236,7 @@ else
         Tab.WikiArmor => "Set, piece or skill…",
         Tab.WikiItems => "Item, effect or ingredient…",
         Tab.WikiMeals => "Meal skill or effect…",
+        Tab.WikiWeapons => "Weapon, tree, element or skill…",
         _ => "Skill, set bonus or effect…",
     };
 
@@ -202,8 +245,26 @@ else
         Tab.WikiArmor => "armor sets",
         Tab.WikiItems => "items",
         Tab.WikiMeals => "meal skills",
+        Tab.WikiWeapons => "weapons",
         _ => "skills",
     };
+
+    /// <summary>The type the Weapons section shows: the open entry's (a weapon, or a type picked by its kind), else the last pick, else the open weapon's.</summary>
+    private string WeaponKind(WikiIndex wiki, string? entry)
+    {
+        if (entry is not null && wiki.Weapons.TryGetValue(entry, out var w)) _weaponKind = w.Kind;
+        else if (entry is not null && wiki.WeaponsByKind.ContainsKey(entry)) _weaponKind = entry;
+        return _weaponKind ?? App.WeaponKind;
+    }
+
+    private void PickKind(string kind)
+    {
+        _weaponKind = kind;
+        App.OpenWiki(Tab.WikiWeapons, kind);
+    }
+
+    private IEnumerable<WikiWeapon> Weapons(WikiIndex wiki, string kind) =>
+        LooseSearch.Filter((wiki.WeaponsByKind.GetValueOrDefault(kind) ?? []).OrderBy(w => WikiIndex.TreeLabel(w.Tree)), w => wiki.WeaponText[w.Name], Query(Tab.WikiWeapons));
 
     private static string CategoryTitle(WikiIndex wiki, string key) =>
         wiki.Data.ItemCategories?.FirstOrDefault(c => c.Key == key)?.Title ?? key;

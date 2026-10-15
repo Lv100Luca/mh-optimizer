@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapons wiki · weapon page · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+  @media (max-width: 1000px) { .two { grid-template-columns: 1fr; } }
+  .crumbs { font-size: 12.5px; color: var(--muted); }
+  .crumbs a { color: var(--muted); }
+  .doc { max-width: 1400px; display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><a href="index.html">Overview</a><span class="muted">·</span><a href="1-weapons-list.html">1 · Weapons list</a><span class="muted">·</span><b>2 · Weapon page</b><span class="muted">·</span><a href="3-tech-tree.html">3 · Tech tree</a><span class="right muted">Rathalos Firesword, numbers from the API dump of 1.041</span></div>
+
+<main class="content" style="padding-top:16px">
+  <div class="notes">
+    <h3>Idea 2 · The weapon page</h3>
+    <ol>
+      <li><span class="n">1</span><span><b>Head</b> like the armor page: icon, name, rarity, tree, the game's flavour text, and a <b>Use in optimizer</b> button that opens the Weapon tab in Tech tree mode with this weapon picked.</span></li>
+      <li><span class="n">2</span><span><b>Stats</b> as tiles: display attack with the true raw under it, affinity, element, defense bonus, slots, and the gauge with a hatched tail for what Handicraft 5 adds (the API's handicraft breakpoints).</span></li>
+      <li><span class="n">3</span><span><b>Skills</b> link to their wiki pages.</span></li>
+      <li><span class="n">4</span><span><b>Crafting</b>: what this step costs (upgrade from Red Wing I: materials with sell value, zenny) and, under it, the <b>whole path from scratch</b> with the summed zenny and materials. Variant A keeps the path collapsed, B shows every step.</span></li>
+      <li><span class="n">5</span><span><b>Lineage strip</b>: previous, this, next branches, with the per-step upgrade cost on the arrows. Click a node to go there, or open the full tree (Idea 3).</span></li>
+      <li><span class="n">6</span><span>Phone: tiles two per row, the gauge full width, steps stacked.</span></li>
+    </ol>
+  </div>
+
+  <div class="variant"><h2>A · Two columns, path collapsed</h2><span class="verdict current">chosen 2026-10-15</span><span class="cap">Stats left, crafting right. The full path is a line with a "show the steps" link. Lineage strip under both.</span></div>
+  <div class="side-by-side">
+    <div class="doc" id="varA"></div>
+    <div class="phone"><div class="ph-top"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" width="24" height="24" alt="">Rathalos Firesword</div><div class="ph-body" id="phone"></div></div>
+  </div>
+
+  <div class="variant"><h2>B · One column, every step open</h2><span class="verdict bad">rejected: longer page</span><span class="cap">Same head and stats; the crafting card lists the path step by step, one row per weapon with its materials and zenny, total at the bottom. Longer page, no clicks.</span></div>
+  <div class="doc" id="varB"></div>
+</main>
+
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  const W = BY['Rathalos Firesword'];
+  const prev = W.prev ? BY[W.prev] : null;
+  const cost = pathCost(W.name);
+  const ICO = ICONS;
+
+  function head(n = true) {
+    return `<div class="crumbs"><a href="1-weapons-list.html">Wiki</a> › <a href="1-weapons-list.html">Weapons</a> › <a href="1-weapons-list.html">Great Sword</a> › ${treeLabel(W.tree)}</div>
+    <section class="card wiki-head">
+      <div class="wiki-title">
+        <img src="${weaponIcon()}" alt="">
+        <div style="flex:1;min-width:0">
+          <h1>${W.name} ${n ? '<span class="n">1</span>' : ''}</h1>
+          <div class="chip-row">${rarity(W.rarity)}<span class="muted small">Great Sword · ${treeLabel(W.tree)} tree · final form</span></div>
+        </div>
+        <a class="btn primary sm" href="#" title="Opens the Weapon tab with this weapon picked in Tech tree mode">Use in optimizer</a>
+      </div>
+      <p class="wiki-desc">"${W.desc}"</p>
+    </section>`;
+  }
+
+  function stats(n = true, big = false) {
+    const top = topSharp(W.sharp);
+    return `<section class="card">
+      <header class="card-head"><div class="card-title"><h2>Stats ${n ? '<span class="n">2</span>' : ''}</h2></div></header>
+      <div class="card-body">
+        <div class="wstats">
+          <div class="wstat"><span class="k"><img src="${ICO}ui/attack-up.png" alt="">Attack</span><span class="v">${W.display} <small>${W.raw} true</small></span></div>
+          <div class="wstat"><span class="k"><img src="${ICO}ui/affinity-up.png" alt="">Affinity</span><span class="v ${W.aff < 0 ? 'err' : W.aff > 0 ? 'ok' : ''}">${W.aff > 0 ? '+' : ''}${W.aff}%</span></div>
+          <div class="wstat"><span class="k"><img src="${ICO}elements/fire.png" alt="">Element</span><span class="v">${elementText(W, false)}</span></div>
+          <div class="wstat"><span class="k"><img src="${ICO}ui/defense-up.png" alt="">Defense bonus</span><span class="v">${W.def ? '+' + W.def : '<span class="muted">none</span>'}</span></div>
+          <div class="wstat"><span class="k"><img src="${ICO}ui/decoration.png" alt="">Slots</span><span class="v">${slots(W.slots)}</span></div>
+          <div class="wstat wide"><span class="k"><img src="${ICO}ui/sharpness.png" alt="">Sharpness <span class="muted" style="text-transform:none;letter-spacing:0">· ${cap(top)} ${W.sharp[top]} hits, hatched: Handicraft 5 adds ${W.handicraft.reduce((a, b) => a + b, 0) * 10}</span></span>${sharpBar(W.sharp, 'big', W.handicraft)}</div>
+        </div>
+        <div><div class="wiki-subhead">Skills ${n ? '<span class="n">3</span>' : ''}</div><div class="chip-row">${skillChips(W.skills)}</div>
+          <ul class="wiki-notes" style="margin-top:6px"><li>Critical Boost 3: critical hits deal 134% instead of 125%. The weapon's own skills count toward the build, you can still add levels with decorations and armor.</li></ul></div>
+      </div>
+    </section>`;
+  }
+
+  function crafting(open, n = true) {
+    const mats = stepMats(W);
+    return `<section class="card">
+      <header class="card-head"><div class="card-title"><h2>Crafting ${n ? '<span class="n">4</span>' : ''}</h2><p class="hint">${prev ? `Upgrade from <a href="#">${prev.name}</a>.` : 'Forged directly.'} Materials show how much each sells for.</p></div></header>
+      <div class="card-body">
+        <div class="mats">${mats.map(matRow).join('')}</div>
+        <div class="cost-sum"><span>This step</span><b class="zenny">${fmt(stepCost(W))}</b><span class="muted small">+ ${mats.length} materials</span></div>
+        ${open ? steps() : `<div class="cost-sum" style="background:transparent"><span>From scratch</span><b class="zenny">${fmt(cost.zenny)}</b><span class="muted small">${cost.steps.length} steps from ${cost.steps[0].name} · ${cost.mats.length} materials</span><button class="linklike small right">show the steps</button></div>`}
+      </div>
+    </section>`;
+  }
+
+  function steps() {
+    return `<div class="wiki-subhead" style="margin-top:6px">From scratch: ${cost.steps.length} steps</div>
+    <div class="steps">${cost.steps.map((w, i) => `<div class="step">
+      <span class="no ${i === 0 ? 'have' : ''}" title="${i === 0 ? 'forged directly' : 'upgrade'}">${i + 1}</span>
+      <span class="who"><img src="${weaponIcon()}" alt=""><span style="min-width:0"><b>${w.name}</b> ${rarity(w.rarity)}<div class="muted tiny">${i === 0 ? 'forge' : 'upgrade from ' + cost.steps[i - 1].name}</div></span></span>
+      <span class="mats-inline">${stepMats(w).map(matChip).join('')}</span>
+      <span class="num zenny">${fmt(stepCost(w))}</span>
+    </div>`).join('')}</div>
+    <div class="cost-sum"><span>Total</span><b class="zenny">${fmt(cost.zenny)}</b><span class="muted small">${cost.mats.map(([m, q]) => `${m} x${q}`).join(', ')}</span></div>`;
+  }
+
+  function lineage(n = true) {
+    const arrow = (w) => `<span class="larrow">${w.prev ? `<span class="zenny">${fmt(w.upgradeZenny)}</span><span>${w.upgradeMats.length} mats</span>` : ''}</span>`;
+    const node = (w, cls = '') => `<a class="lnode ${cls}" href="#"><span class="nm"><img src="${weaponIcon()}" alt="">${w.name}</span><span class="st">${rarity(w.rarity)} ${w.display} · ${w.element ? w.elementDisplay + ' ' + cap(w.element) : w.status ? w.statusDisplay + ' ' + cap(w.status) : 'no element'}</span></a>`;
+    const before = pathTo(W.name).slice(0, -1);
+    return `<section class="card">
+      <header class="card-head"><div class="card-title"><h2>Tree ${n ? '<span class="n">5</span>' : ''}</h2><p class="hint">${treeLabel(W.tree)} lane of the Great Sword forge; the arrows carry the upgrade cost.</p></div><div class="card-actions"><a class="btn sm" href="3-tech-tree.html">Open the full tree</a></div></header>
+      <div class="card-body"><div class="lineage">${before.map((w, i) => node(w) + arrow(before[i + 1] ?? W)).join('')}${node(W, 'this')}${W.next.length ? arrow(BY[W.next[0]]) + `<span class="lfan">${W.next.map((x) => node(BY[x])).join('')}</span>` : '<span class="larrow"><span>final form</span></span>'}</div></div>
+    </section>`;
+  }
+
+  $('#varA').innerHTML = head() + `<div class="two"><div class="doc">${stats()}</div><div class="doc">${crafting(false)}</div></div>` + lineage();
+  $('#varB').innerHTML = head(false) + stats(false) + crafting(true, false) + lineage(false);
+  // phone: the same pieces, stacked
+  $('#phone').innerHTML = (head(false) + stats(false) + crafting(false, false)).replaceAll('<span class="n">', '<span style="display:none">');
+</script>
+</body>
+</html>

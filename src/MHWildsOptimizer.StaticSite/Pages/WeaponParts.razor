@@ -1,0 +1,79 @@
+@* Pieces of the weapon pages: element text, the sharpness gauge, slots, skill links. *@
+@code {
+    public static RenderFragment Element(WikiWeapon w) =>
+        @<text>@if (w.Element is { } e)
+        {
+            <span class="ele @e">@Parts.Icon(Urls.Element(e), 16) @w.ElementDisplay @Cap(e)</span>
+        }
+        else if (w.Status is { } st)
+        {
+            <span class="ele @st">@w.StatusDisplay @(st == "blastblight" ? "Blast" : Cap(st))</span>
+        }
+        else
+        {
+            <span class="muted">none</span>
+        }</text>;
+
+    private static readonly (string Name, string Css)[] Colors =
+    [
+        ("red", "#d9342b"), ("orange", "#e8862a"), ("yellow", "#e6d22d"), ("green", "#55c43a"), ("blue", "#3c8df0"), ("white", "#f2f2f2"), ("purple", "#b56bf5"),
+    ];
+
+    private static int Hits(SharpnessBarDto b, string c) => c switch
+    {
+        "red" => b.Red, "orange" => b.Orange, "yellow" => b.Yellow, "green" => b.Green, "blue" => b.Blue, "white" => b.White, _ => b.Purple,
+    };
+
+    /// <summary>The gauge, with a hatched tail for what Handicraft 5 adds to the top colour.</summary>
+    public static RenderFragment Gauge(WikiWeapon w) =>
+        @<text>@if (w.Sharpness is { } bar)
+        {
+            var extra = w.Handicraft is { Count: > 0 } h ? h.Sum() * 10 : 0;
+            var top = Colors.LastOrDefault(c => Hits(bar, c.Name) > 0);
+            var total = Math.Max(1, Colors.Sum(c => Hits(bar, c.Name)) + extra);
+            <span class="gauge" title="@GaugeText(bar)">
+                @foreach (var c in Colors.Where(c => Hits(bar, c.Name) > 0))
+                {
+                    <span style="width:@((100.0 * Hits(bar, c.Name) / total).ToString("0.##", CultureInfo.InvariantCulture))%;background:@c.Css"></span>
+                }
+                @if (extra > 0)
+                {
+                    <span class="hc" style="width:@((100.0 * extra / total).ToString("0.##", CultureInfo.InvariantCulture))%;background:@top.Css"></span>
+                }
+            </span>
+        }</text>;
+
+    /// <summary>"red 100, orange 70, …"</summary>
+    public static string GaugeText(SharpnessBarDto bar) => string.Join(", ", Colors.Where(c => Hits(bar, c.Name) > 0).Select(c => $"{c.Name} {Hits(bar, c.Name)}"));
+
+    public static RenderFragment Slots(WikiWeapon w) =>
+        @<text>@if (w.Slots.Count == 0)
+        {
+            <span class="muted">none</span>
+        }
+        @foreach (var slot in w.Slots)
+        {
+            <span class="slot">@slot</span>
+        }</text>;
+
+    public static RenderFragment Skills(WikiWeapon w, SiteIndex site) =>
+        @<text>@for (var i = 0; i < w.Skills.Count; i++)
+        {
+            var s = w.Skills[i];
+            if (i > 0)
+            {
+                @(", ")
+            }
+            if (site.SkillsByName.ContainsKey(s.Skill))
+            {
+                <a href="@Urls.Skill(s.Skill)">@s.Skill</a>
+            }
+            else
+            {
+                @s.Skill
+            }
+            @(" " + s.Level)
+        }</text>;
+
+    private static string Cap(string s) => s.Length == 0 ? s : char.ToUpperInvariant(s[0]) + s[1..];
+}

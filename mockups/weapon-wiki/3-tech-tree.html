@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapons wiki · tech tree · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .doc { max-width: 1400px; display: flex; flex-direction: column; gap: 10px; }
+  .tree-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .tree-head h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+  .tree-head img { width: 32px; height: 32px; }
+  .focusbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+  .focusbar b { color: var(--accent); }
+  .compact .tree { --cw: 46px; --rh: 30px; --lab: 130px; }
+  .compact .tnode { padding: 0; justify-content: center; gap: 0; border-radius: 4px; }
+  .compact .tnode .t, .compact .tnode .rarity { display: none; }
+  .compact .tnode img { width: 20px; height: 20px; }
+  .compact .tree-cols div { padding: 4px 0; text-align: center; font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><a href="index.html">Overview</a><span class="muted">·</span><a href="1-weapons-list.html">1 · Weapons list</a><span class="muted">·</span><a href="2-weapon-details.html">2 · Weapon page</a><span class="muted">·</span><b>3 · Tech tree</b><span class="right muted">Positions are the API's row and column of every Great Sword; the lines follow "previous".</span></div>
+
+<main class="content" style="padding-top:16px">
+  <div class="notes">
+    <h3>Idea 3 · The forge's tree, rebuilt</h3>
+    <ol>
+      <li><span class="n">1</span><span>The API gives every weapon a <b>row</b> (lane) and <b>column</b> (tier) in the forge screen. Laid out as a grid, with a line from each weapon to the one it upgrades from, it is the game's tree: 28 lanes, 10 tiers for Great Sword.</span></li>
+      <li><span class="n">2</span><span>Lane labels on the left name the tree. Columns are the tiers; the label is the rarity most weapons in that column have. Both stay put when you scroll.</span></li>
+      <li><span class="n">3</span><span><b>Hover</b> shows the stats, <b>click</b> selects: the path from the forgeable root lights up in gold, everything else dims, and the bar above sums the path's zenny. A second click opens the weapon page.</span></li>
+      <li><span class="n">4</span><span>A green edge marks weapons you can <b>forge directly</b> (no previous weapon needed).</span></li>
+      <li><span class="n">5</span><span>Variant B is the <b>compact</b> grid: icon only, fits 1080p without scrolling sideways, names in the tooltip. Same data and interactions.</span></li>
+      <li><span class="n">6</span><span>On a phone the grid scrolls both ways inside its card; the lane labels stay. Variant B is the better fit there.</span></li>
+    </ol>
+  </div>
+
+  <div class="variant"><h2>A · Full grid with names</h2><span class="verdict current">chosen 2026-10-15, as the modal of 4</span><span class="cap">1,680 px wide at 10 tiers, scrolls sideways at 1080p (1,100 px of content width). Click Rathalos Firesword to see the lit path.</span></div>
+  <div class="doc">
+    <section class="card wiki-head">
+      <div class="tree-head"><h1><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" alt="">Great Sword tree <span class="n">1</span></h1><span class="muted small">84 weapons · 28 lanes · 10 tiers</span>
+        <div class="card-actions"><div class="segmented small"><button class="active">Great Sword</button><button>Long Sword</button><button>…</button></div></div></div>
+    </section>
+    <section class="card">
+      <div class="card-body">
+        <div class="focusbar" id="focusA"><span class="n">3</span><span class="muted">Click a weapon to light its path from the forge.</span></div>
+        <div class="tree-legend"><span><span class="sw" style="background:var(--ok)"></span>forgeable directly <span class="n">4</span></span><span><span class="sw" style="background:var(--accent)"></span>selected path</span><span><span class="sw" style="border:2px solid var(--border-2)"></span>upgrade line</span></div>
+        <div class="tree-wrap" id="treeA"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="variant"><h2>B · Compact grid</h2><span class="verdict alt">kept for phones</span><span class="cap">Icons only, 590 px wide; the name shows on hover and in the bar above. Better on phones and for a quick look at where a tree branches.</span></div>
+  <div class="doc compact">
+    <section class="card">
+      <div class="card-body">
+        <div class="focusbar" id="focusB"><span class="muted">Click a weapon to light its path from the forge.</span></div>
+        <div class="tree-wrap" id="treeB" style="max-height:none"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  const COLS = Math.max(...GS.map((w) => w.col)) + 1;
+  const ROWS = Math.max(...GS.map((w) => w.row)) + 1;
+  // column label: the rarity most weapons of the column have
+  const colLabel = (c) => { const rs = GS.filter((w) => w.col === c).map((w) => w.rarity); if (!rs.length) return ''; const m = {}; rs.forEach((r) => m[r] = (m[r] ?? 0) + 1); return 'R' + Object.entries(m).sort((a, b) => b[1] - a[1])[0][0]; };
+  const laneName = (r) => { const w = GS.filter((x) => x.row === r).sort((a, b) => a.col - b.col)[0]; return w ? treeLabel(w.tree) : ''; };
+
+  function render(host, focus, compact) {
+    const cw = compact ? 46 : 168, rh = compact ? 30 : 58;
+    const nodes = GS.map((w) => `<a class="tnode ${w.craftable && !w.prev ? 'craft' : ''}" data-name="${w.name}" style="--x:${w.col};--y:${w.row}" title="${compact ? w.name : ''}">
+      <img src="${weaponIcon()}" alt=""><span class="t"><b>${w.name}</b><small>${w.display}${w.element ? ' · ' + w.elementDisplay + ' ' + cap(w.element) : w.status ? ' · ' + w.statusDisplay + ' ' + cap(w.status) : ''}</small></span>${rarity(w.rarity)}</a>`).join('');
+    // elbow from the previous weapon's right edge to this one's left edge
+    const paths = GS.filter((w) => w.prev).map((w) => {
+      const p = BY[w.prev];
+      const x1 = p.col * cw + cw - 7, y1 = p.row * rh + rh / 2, x2 = w.col * cw + 7, y2 = w.row * rh + rh / 2, xm = x1 + (x2 - x1) / 2;
+      return `<path data-to="${w.name}" d="M${x1},${y1} H${xm} V${y2} H${x2}"></path>`;
+    }).join('');
+    host.innerHTML = `<div class="tree" style="--cols:${COLS}">
+      <div class="tree-cols"><div>Tree</div>${Array.from({ length: COLS }, (_, c) => `<div>${compact ? colLabel(c) : 'Tier ' + (c + 1) + ' · ' + colLabel(c)}</div>`).join('')}</div>
+      <div class="tree-body" style="height:${ROWS * rh}px;width:${(compact ? 130 : 150) + COLS * cw}px">
+        <div class="tree-lanes">${Array.from({ length: ROWS }, (_, r) => `<div title="${laneName(r)}"><b>${laneName(r)}</b></div>`).join('')}</div>
+        <svg class="tree-svg" width="${COLS * cw}" height="${ROWS * rh}">${paths}</svg>${nodes}
+      </div></div>`;
+    const tip = document.createElement('div'); tip.className = 'tip'; tip.style.display = 'none'; host.appendChild(tip);
+    let selected = null;
+    const select = (name) => {
+      selected = name;
+      const lit = new Set(name ? pathTo(name).map((w) => w.name) : []);
+      $$('.tnode', host).forEach((n) => { n.classList.toggle('lit', lit.has(n.dataset.name)); n.classList.toggle('sel', n.dataset.name === name); n.classList.toggle('dim', !!name && !lit.has(n.dataset.name)); });
+      $$('path', host).forEach((p) => { p.classList.toggle('lit', lit.has(p.dataset.to) && p.dataset.to !== pathTo(name)[0]?.name); p.classList.toggle('dim', !!name && !lit.has(p.dataset.to)); });
+      if (!name) { focus.innerHTML = '<span class="muted">Click a weapon to light its path from the forge.</span>'; return; }
+      // keep the selected weapon in view (scrolls the grid only, not the page)
+      const sel = $('.tnode.sel', host);
+      if (sel) { host.scrollLeft = Math.max(0, sel.offsetLeft - host.clientWidth / 2); host.scrollTop = Math.max(0, sel.offsetTop - host.clientHeight / 2); }
+      const c = pathCost(name);
+      focus.innerHTML = `<b>${name}</b> ${rarity(BY[name].rarity)} <span class="muted">·</span> ${c.steps.length} step${c.steps.length > 1 ? 's' : ''} from <b>${c.steps[0].name}</b> <span class="muted">·</span> <span class="zenny">${fmt(c.zenny)}</span> <span class="muted">· ${c.mats.length} materials</span> <a class="btn sm right" href="2-weapon-details.html">Open ${name}</a> <button class="linklike small" onclick="this.closest('.card').querySelector('.tree-wrap')._select(null)">clear</button>`;
+    };
+    host._select = select;
+    $$('.tnode', host).forEach((n) => {
+      n.onclick = (e) => { e.preventDefault(); if (selected === n.dataset.name) location.href = '2-weapon-details.html'; else select(n.dataset.name); };
+      n.onmouseenter = () => {
+        const w = BY[n.dataset.name];
+        tip.innerHTML = `<h4><img src="${weaponIcon()}" width="20" height="20" alt="">${w.name} ${rarity(w.rarity)}</h4><dl class="kv"><dt>Attack</dt><dd><b>${w.display}</b> <span class="muted">(${w.raw})</span></dd><dt>Affinity</dt><dd>${w.aff > 0 ? '+' : ''}${w.aff}%</dd><dt>Element</dt><dd>${elementText(w)}</dd><dt>Sharpness</dt><dd>${sharpBar(w.sharp, 'compact', w.handicraft)}</dd><dt>Slots</dt><dd>${slots(w.slots)}</dd><dt>Skills</dt><dd>${skillChips(w.skills, true)}</dd><dt>${w.prev ? 'Upgrade' : 'Forge'}</dt><dd><span class="zenny">${fmt(stepCost(w))}</span> <span class="muted">· ${stepMats(w).map((m) => m[0] + ' x' + m[1]).join(', ') || 'no materials'}</span></dd></dl>`;
+        tip.style.display = '';
+        const r = n.getBoundingClientRect(), h = host.getBoundingClientRect();
+        tip.style.left = Math.min(r.left - h.left + host.scrollLeft + r.width + 8, host.scrollLeft + host.clientWidth - 310) + 'px';
+        tip.style.top = Math.min(r.top - h.top + host.scrollTop, host.scrollTop + host.clientHeight - 240) + 'px';
+      };
+      n.onmouseleave = () => tip.style.display = 'none';
+    });
+    select('Rathalos Firesword');
+  }
+  render($('#treeA'), $('#focusA'), false);
+  render($('#treeB'), $('#focusB'), true);
+</script>
+</body>
+</html>

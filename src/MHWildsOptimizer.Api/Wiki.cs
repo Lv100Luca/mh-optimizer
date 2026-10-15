@@ -8,9 +8,40 @@ namespace MHWildsOptimizer.Api;
 /// first time a wiki page opens.
 /// </summary>
 /// <param name="ItemCategories">The item sections in list order (attack, defense, healing, …).</param>
+/// <param name="Weapons">Every crafted weapon of the forge trees, in the forge's order (type, lane, tier).</param>
 public sealed record WikiData(
     IReadOnlyList<WikiSkill> Skills, IReadOnlyList<WikiArmorSet> ArmorSets,
-    IReadOnlyList<WikiItem>? Items = null, IReadOnlyList<WikiItemCategory>? ItemCategories = null, WikiMeals? Meals = null);
+    IReadOnlyList<WikiItem>? Items = null, IReadOnlyList<WikiItemCategory>? ItemCategories = null, WikiMeals? Meals = null,
+    IReadOnlyList<WikiWeapon>? Weapons = null);
+
+/// <summary>A crafted weapon of a forge tree (Artian weapons have none).</summary>
+/// <param name="Kind">The type's API kind ("great-sword").</param>
+/// <param name="Tree">"Rathalos Tree".</param>
+/// <param name="Row">The forge screen's lane; <paramref name="Col"/> its tier (0 = the first column).</param>
+/// <param name="Previous">The weapon it is upgraded from; null for a tree's first weapon.</param>
+/// <param name="Branches">The weapons it upgrades into.</param>
+/// <param name="Craftable">Can be forged directly, without a previous weapon.</param>
+/// <param name="Raw">True raw; <paramref name="DisplayAttack"/> is the number the game shows.</param>
+/// <param name="Element">"fire" … "dragon"; null without an element. <paramref name="Status"/>: "poison", "paralysis", "sleep", "blastblight".</param>
+/// <param name="Handicraft">The Handicraft breakpoints of the gauge: levels that extend the top colour (every Gogma weapon: [5]).</param>
+/// <param name="Craft">What forging it costs (craftable weapons); <paramref name="Upgrade"/> what upgrading from <paramref name="Previous"/> costs.</param>
+/// <param name="Extras">The type's own lines as label / value pairs: phial, shelling, kinsect level, songs, coatings, ammo.</param>
+public sealed record WikiWeapon(
+    int Id, string Name, string Kind, int Rarity, string Tree, int Row, int Col, string? Previous, IReadOnlyList<string> Branches, bool Craftable,
+    int Raw, int DisplayAttack, int Affinity, int DefenseBonus, string? Element, int ElementDisplay, string? Status, int StatusDisplay,
+    SharpnessBarDto? Sharpness, IReadOnlyList<int>? Handicraft, IReadOnlyList<int> Slots, IReadOnlyList<SkillGrantDto> Skills, string? Description,
+    WikiCraftCost? Craft, WikiCraftCost? Upgrade, IReadOnlyList<IReadOnlyList<string>> Extras)
+{
+    public bool IsFinal => Branches.Count == 0;
+    /// <summary>What getting it from its previous weapon (or the forge) costs.</summary>
+    public WikiCraftCost? Step => Previous is null ? Craft : Upgrade;
+}
+
+public sealed record WikiCraftCost(int Zenny, IReadOnlyList<WikiMaterial> Materials);
+
+/// <param name="Icon">The material's mhdb icon kind ("scale") and <paramref name="IconColor"/>; the site has no part icons yet.</param>
+/// <param name="Value">What one sells for.</param>
+public sealed record WikiMaterial(string Name, int Quantity, int Rarity, string? Icon, string? IconColor, int Value);
 
 /// <param name="Icon">The skill icon's file name in icons/skills.</param>
 /// <param name="WeaponOnly">Only weapons carry it as an innate skill: no decoration, armor piece or charm has it.</param>

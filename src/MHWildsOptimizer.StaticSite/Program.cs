@@ -28,7 +28,7 @@ await using (var stream = File.OpenRead(Path.Combine(repo, "data", "wiki.json"))
            ?? throw new InvalidDataException("data/wiki.json is empty.");
 var site = new SiteIndex(data);
 
-var clashes = site.Skills.Select(s => Urls.Skill(s.Name)).Concat(site.Families.Keys.Select(Urls.Family))
+var clashes = site.Skills.Select(s => Urls.Skill(s.Name)).Concat(site.Families.Keys.Select(Urls.Family)).Concat(site.Weapons.Select(Urls.WeaponPage))
     .GroupBy(u => u).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
 if (clashes.Count > 0)
 {
@@ -50,6 +50,10 @@ pages.Add(("/wiki/items/", "items", typeof(ItemsIndex), []));
 pages.AddRange(site.Categories.Select(c => (Urls.Category(c.Key), "items", typeof(ItemCategoryPage), new Dictionary<string, object?> { ["Category"] = c })));
 pages.AddRange(site.OwnPageItems.Select(i => (Urls.Item(i.Name), "items", typeof(ItemPage), new Dictionary<string, object?> { ["Item"] = i })));
 pages.Add(("/wiki/meals/", "meals", typeof(MealsPage), []));
+pages.Add(("/wiki/weapons/", "weapons", typeof(WeaponsIndex), []));
+pages.AddRange(site.WeaponKinds.Select(k => (Urls.WeaponType(k), "weapons", typeof(WeaponTypePage), new Dictionary<string, object?> { ["Kind"] = k })));
+// every weapon has a page, linked from its type's page; only the type pages are in the sitemap
+pages.AddRange(site.Weapons.Select(w => (Urls.WeaponPage(w), "weapon-pages", typeof(WeaponPage), new Dictionary<string, object?> { ["Weapon"] = w })));
 pages.Add(("/404.html", "404", typeof(NotFound), []));
 
 var wikiDir = Path.Combine(output, "wiki");

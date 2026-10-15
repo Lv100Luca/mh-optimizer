@@ -63,7 +63,7 @@ else
                 case Tab.Review: <ReviewPanel /> break;
                 case Tab.Results: <ResultsPanel /> break;
                 case Tab.Builds: <BuildsPanel /> break;
-                case Tab.WikiSkills or Tab.WikiArmor or Tab.WikiItems or Tab.WikiMeals: <WikiPanel /> break;
+                case Tab.WikiSkills or Tab.WikiArmor or Tab.WikiWeapons or Tab.WikiItems or Tab.WikiMeals: <WikiPanel /> break;
             }
         </main>
         <TrayBar />
@@ -162,6 +162,7 @@ else
         yield return new(GroupBuilds, Tab.Builds, "My builds", GameIcons.Armor(ArmorPieceKind.Chest, 8), Count(App.Builds.Count));
         yield return new(GroupWiki, Tab.WikiSkills, "Skills", GameIcons.SkillGeneric("attack"));
         yield return new(GroupWiki, Tab.WikiArmor, "Armor", GameIcons.Armor(ArmorPieceKind.Head, 8));
+        yield return new(GroupWiki, Tab.WikiWeapons, "Weapons", GameIcons.Weapon(kind));
         yield return new(GroupWiki, Tab.WikiItems, "Items", GameIcons.Item("drug", "red"));
         yield return new(GroupWiki, Tab.WikiMeals, "Meals", GameIcons.Item("meat", "orange"));
     }

@@ -58,6 +58,41 @@ public sealed class WikiIndex
         MealText = MealSkills.Values.ToDictionary(m => m.Name, m => string.Join('\n', [
             m.Name, m.Description, .. m.Effects, .. m.Notes ?? [],
         ]).ToLowerInvariant());
+        Weapons = (data.Weapons ?? []).ToDictionary(w => w.Name);
+        WeaponsByKind = (data.Weapons ?? []).GroupBy(w => w.Kind).ToDictionary(g => g.Key, g => (IReadOnlyList<WikiWeapon>)g.ToList());
+        WeaponText = Weapons.Values.ToDictionary(w => w.Name, w => string.Join('\n', [
+            w.Name, TreeLabel(w.Tree), w.Element, w.Status, .. w.Skills.Select(s => s.Skill), w.IsFinal ? "final" : null,
+        ]).ToLowerInvariant());
+    }
+
+    public IReadOnlyDictionary<string, WikiWeapon> Weapons { get; }
+
+    /// <summary>A type's weapons in the forge's order (lane, then tier).</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<WikiWeapon>> WeaponsByKind { get; }
+
+    /// <summary>Lower-case text a search matches: name, tree, element or status, skills.</summary>
+    public IReadOnlyDictionary<string, string> WeaponText { get; }
+
+    /// <summary>"Rathalos Tree" as "Rathalos".</summary>
+    public static string TreeLabel(string tree) => tree.EndsWith(" Tree", StringComparison.Ordinal) ? tree[..^5] : tree;
+
+    /// <summary>The forge path down to a weapon: the weapon forged directly first, the weapon itself last.</summary>
+    public IReadOnlyList<WikiWeapon> PathTo(string name)
+    {
+        var path = new List<WikiWeapon>();
+        for (var w = Weapons.GetValueOrDefault(name); w is not null; w = w.Previous is { } p ? Weapons.GetValueOrDefault(p) : null)
+            path.Insert(0, w);
+        return path;
+    }
+
+    /// <summary>The zenny and materials of the whole path from the forge (materials summed by name).</summary>
+    public (int Zenny, IReadOnlyList<(string Name, int Quantity)> Materials) PathCost(string name)
+    {
+        var path = PathTo(name);
+        var mats = new Dictionary<string, int>();
+        foreach (var m in path.Select(w => w.Step).OfType<WikiCraftCost>().SelectMany(c => c.Materials))
+            mats[m.Name] = mats.GetValueOrDefault(m.Name) + m.Quantity;
+        return (path.Sum(w => w.Step?.Zenny ?? 0), mats.Select(kv => (kv.Key, kv.Value)).ToList());
     }
 
     public WikiData Data { get; }

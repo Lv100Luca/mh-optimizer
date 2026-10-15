@@ -1,0 +1,120 @@
+@inherits AppComponent
+@* A crafted weapon's wiki page: stats and skills, what it costs (this step and the whole path from the forge), its lineage and the
+   type's tree with it selected. "Use in optimizer" makes it the open weapon's tech tree weapon. *@
+@{
+    var w = Weapon;
+    var kindLabel = Cat.WeaponTypes.GetValueOrDefault(w.Kind)?.Label ?? Fmt.TitleCase(w.Kind);
+    var path = Wiki.PathTo(w.Name);
+    var before = path.Take(path.Count - 1).ToList();
+    var next = w.Branches.Select(b => Wiki.Weapons.GetValueOrDefault(b)).OfType<WikiWeapon>().ToList();
+    var kindWeapons = Wiki.WeaponsByKind.GetValueOrDefault(w.Kind) ?? [];
+}
+<div class="panel wiki-page">
+    <section class="card wiki-head weapon">
+        <div class="wiki-title">
+            <img class="icon" width="36" height="36" src="@GameIcons.Weapon(w.Kind)" alt="" />
+            <div style="flex:1;min-width:0">
+                <h1>@w.Name</h1>
+                <div class="chip-row">
+                    <RarityBadge Rarity="w.Rarity" />
+                    <button type="button" class="linklike small" @onclick="() => App.OpenWiki(Tab.WikiWeapons, w.Kind)">@kindLabel</button>
+                    <span class="muted small">· @WikiIndex.TreeLabel(w.Tree) tree@(w.IsFinal ? " · final form" : "")</span>
+                </div>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="() => App.UseTechTreeWeapon(w.Name, w.Kind, openWeaponTab: true)"
+                       title="Makes this the open weapon on the Weapon tab, in Tech tree mode">Use in optimizer</MudButton>
+        </div>
+        @if (w.Description is { } d)
+        {
+            <p class="wiki-desc">@d</p>
+        }
+    </section>
+
+    <div class="wiki-two">
+        <Section Title="Stats" Key="wiki-weapon-stats" Collapsible="false">
+            <WeaponStats Weapon="w" />
+        </Section>
+        <Section Title="Crafting" Key="wiki-weapon-craft" Collapsible="false">
+            <HintContent>
+                @if (w.Previous is { } p)
+                {
+                    <text>Upgrade from <button type="button" class="linklike" @onclick="() => App.OpenWiki(Tab.WikiWeapons, p)">@p</button>. Materials show what each sells for.</text>
+                }
+                else
+                {
+                    <text>Forged directly. Materials show what each sells for.</text>
+                }
+            </HintContent>
+            <ChildContent>
+                <WeaponCrafting Weapon="w" Wiki="Wiki" />
+            </ChildContent>
+        </Section>
+    </div>
+
+    <Section Title="Tree" Key="wiki-weapon-tree" Collapsible="false" Hint="@($"{WikiIndex.TreeLabel(w.Tree)} lane of the {kindLabel} forge; the arrows carry the upgrade cost. The whole tree is below.")">
+        <div class="lineage">
+            @for (var i = 0; i < before.Count; i++)
+            {
+                @Node(before[i])
+                @Arrow(before.ElementAtOrDefault(i + 1) ?? w)
+            }
+            @Node(w, "this")
+            @if (next.Count > 0)
+            {
+                @Arrow(next[0])
+                <span class="lfan">
+                    @foreach (var n in next)
+                    {
+                        @Node(n)
+                    }
+                </span>
+            }
+            else
+            {
+                <span class="larrow"><span>final form</span></span>
+            }
+        </div>
+        @if (_showTree)
+        {
+            <TechTree Weapons="kindWeapons" Wiki="Wiki" Selected="@_selected" SelectedChanged="s => _selected = s" OnOpen="n => App.OpenWiki(Tab.WikiWeapons, n)" />
+            <p class="muted small">Click a weapon to light its path from the forge, click it again to open it.</p>
+        }
+        else
+        {
+            <div><button type="button" class="linklike" @onclick="() => _showTree = true">Show the whole @kindLabel tree</button></div>
+        }
+    </Section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public WikiWeapon Weapon { get; set; } = default!;
+    [Parameter, EditorRequired] public WikiIndex Wiki { get; set; } = default!;
+
+    private string? _selected;
+    private string? _selectedFor;
+    private bool _showTree;
+
+    protected override void OnParametersSet()
+    {
+        if (_selectedFor != Weapon.Name) { _selected = Weapon.Name; _selectedFor = Weapon.Name; }
+    }
+
+    private RenderFragment Node(WikiWeapon n, string cls = "") => __builder =>
+    {
+        <button type="button" class="lnode @cls" @onclick="() => App.OpenWiki(Tab.WikiWeapons, n.Name)">
+            <span class="nm"><img src="@GameIcons.Weapon(n.Kind)" alt="" />@n.Name</span>
+            <span class="st"><RarityBadge Rarity="n.Rarity" /> @TechTree.Stats(n)</span>
+        </button>
+    };
+
+    /// <summary>The arrow into a weapon, with what the upgrade costs.</summary>
+    private static RenderFragment Arrow(WikiWeapon into) => __builder =>
+    {
+        <span class="larrow">
+            @if (into.Upgrade is { } u)
+            {
+                <span class="zenny">@Fmt.Zenny(u.Zenny)</span><span>@Fmt.Plural(u.Materials.Count, "material")</span>
+            }
+        </span>
+    };
+}

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapons wiki · list · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .typehead { display: flex; align-items: center; gap: 14px; }
+  .typehead img { width: 44px; height: 44px; }
+  .typehead h1 { font-size: 20px; }
+  .final-table td:nth-child(2) { min-width: 200px; }
+  .final-table .tree { color: var(--muted); font-size: 11.5px; }
+  .bytree { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 10px 18px; }
+  .treecard { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 6px; }
+  .treecard h3 { font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+  .treecard .line { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
+  .treecard .line a { color: var(--text); text-decoration: none; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .treecard .line a:hover { color: var(--accent-2); }
+  .treecard .line.final a { font-weight: 600; }
+  .treecard .line .muted { font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><a href="index.html">Overview</a><span class="muted">·</span><b>1 · Weapons list</b><span class="muted">·</span><a href="2-weapon-details.html">2 · Weapon page</a><span class="muted">·</span><a href="3-tech-tree.html">3 · Tech tree</a><span class="right muted">Great Sword data is real (84 weapons); the other 13 types are counts only.</span></div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" alt=""><div><div class="brand-title">Wilds Builds</div><div class="brand-sub">MH Wilds build optimizer · Ver 1.041</div></div></div>
+  </header>
+  <nav class="sidenav">
+    <div class="navgroup">Profile</div>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/long-sword-r8.png" alt=""><span class="navlabel">Weapons</span></a>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/talisman/r8.png" alt=""><span class="navlabel">Talismans</span></a>
+    <div class="navgroup">Wiki</div>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/skills/offense.png" alt=""><span class="navlabel">Skills</span></a>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/armor/chest-r8.png" alt=""><span class="navlabel">Armor</span></a>
+    <a class="navitem active new"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" alt=""><span class="navlabel">Weapons</span><span class="n">1</span></a>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/items/drug-red.png" alt=""><span class="navlabel">Items</span></a>
+    <a class="navitem"><img src="../../src/MHWildsOptimizer.Web/client/public/icons/items/meat-orange.png" alt=""><span class="navlabel">Meals</span></a>
+  </nav>
+  <main class="content">
+    <div class="notes">
+      <h3>Idea 1 · A Weapons section in the wiki, like Armor</h3>
+      <ol>
+        <li><span class="n">1</span><span>New <b>Weapons</b> entry in the Wiki group, between Armor and Items.</span></li>
+        <li><span class="n">2</span><span>The sidebar picks the <b>weapon type</b> with the icon row (same icons as the Weapon tab), then lists that type <b>grouped by tree</b>, the same order as the Tech tree picker on the Weapon tab. Final forms in bold.</span></li>
+        <li><span class="n">3</span><span>With no weapon open, the main area is the <b>type overview</b>: variant A lists the final form of every tree with its stats, variant B shows every tree as a small lineage card. Toggle with the switch in the card header.</span></li>
+        <li><span class="n">4</span><span>The URL names the type and the weapon (<code>/wiki/weapons/great-sword/rathalos-firesword</code>), so pages can be linked, like the other sections.</span></li>
+      </ol>
+    </div>
+
+    <div class="wiki" style="margin-top:16px">
+      <aside class="wiki-side card">
+        <div class="wiki-tools">
+          <div class="searchbox">🔍 <span>Search weapons, trees, skills…</span></div>
+          <div class="type-row" id="types"></div>
+          <div class="segmented small"><button class="active">By tree</button><button>By rarity</button></div>
+        </div>
+        <div class="wiki-list" id="list"></div>
+      </aside>
+
+      <div class="wiki-main">
+        <section class="card wiki-head">
+          <div class="typehead">
+            <img src="../../src/MHWildsOptimizer.Web/client/public/icons/weapons/great-sword-r8.png" alt="">
+            <div>
+              <h1>Great Sword</h1>
+              <div class="muted small">84 weapons in 28 trees · 13 you can forge directly, the rest are upgrades · 28 final forms</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <header class="card-head">
+            <div class="card-title"><h2>Final forms <span class="n">3</span></h2><p class="hint">The last weapon of every tree. Open a weapon for its sharpness, crafting cost and tree.</p></div>
+            <div class="card-actions"><div class="segmented small"><button class="active" data-view="table">A · Table (chosen)</button><button data-view="trees">B · Trees</button></div></div>
+          </header>
+          <div class="card-body">
+            <div id="view-table">
+              <table class="table final-table">
+                <thead><tr><th></th><th>Weapon</th><th class="num">Attack</th><th class="num">Affinity</th><th>Element</th><th>Sharpness</th><th>Slots</th><th>Skills</th></tr></thead>
+                <tbody id="finals"></tbody>
+              </table>
+            </div>
+            <div id="view-trees" class="bytree" style="display:none"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  $('#types').innerHTML = KINDS.map(([k, label]) => `<button class="${k === 'great-sword' ? 'active' : ''}" title="${label} · ${TYPE_COUNTS[k]} weapons"><img src="${weaponIcon(k)}" alt="${label}"></button>`).join('');
+
+  // sidebar: by tree, lane order of the forge (same as data), final form in bold
+  const lanes = new Map();
+  for (const w of GS) { if (!lanes.has(w.tree)) lanes.set(w.tree, []); lanes.get(w.tree).push(w); }
+  const treesSorted = [...lanes.keys()].sort((a, b) => treeLabel(a).localeCompare(treeLabel(b)));
+  $('#list').innerHTML = `<div class="wiki-count muted tiny">84 weapons · 28 trees</div>` + treesSorted.map((t) => `<div class="wiki-list-head">${treeLabel(t)}</div>` +
+    lanes.get(t).slice().sort((a, b) => b.rarity - a.rarity).map((w) => `<button class="wiki-row ${w.name === 'Rathalos Firesword' ? 'active' : ''}" onclick="location.href='2-weapon-details.html'"><img class="icon" width="20" height="20" src="${weaponIcon()}" alt=""><span class="wiki-row-name" style="${w.next.length === 0 ? 'font-weight:600' : ''}">${w.name}</span>${rarity(w.rarity)}</button>`).join('')).join('');
+
+  // A: table of final forms, sorted by attack
+  const finals = finalForms().sort((a, b) => b.raw - a.raw || a.name.localeCompare(b.name));
+  $('#finals').innerHTML = finals.map((w) => `<tr class="clickable" onclick="location.href='2-weapon-details.html'">
+    <td><img class="icon" width="24" height="24" src="${weaponIcon()}" alt=""></td>
+    <td><div>${w.name} ${rarity(w.rarity)}</div><div class="tree">${treeLabel(w.tree)}</div></td>
+    <td class="num"><b>${w.display}</b> <span class="muted tiny">${w.raw}</span></td>
+    <td class="num ${w.aff < 0 ? 'err' : w.aff > 0 ? 'ok' : 'muted'}">${w.aff > 0 ? '+' : ''}${w.aff}%</td>
+    <td>${elementText(w)}</td>
+    <td>${sharpBar(w.sharp, 'compact', w.handicraft)}</td>
+    <td>${slots(w.slots)}</td>
+    <td>${skillChips(w.skills, true)}</td></tr>`).join('');
+
+  // B: every tree as a lineage card (final form first, then what it is upgraded from)
+  $('#view-trees').innerHTML = treesSorted.map((t) => {
+    const ws = lanes.get(t).slice().sort((a, b) => b.rarity - a.rarity || b.col - a.col);
+    return `<div class="treecard"><h3><img class="icon" width="20" height="20" src="${weaponIcon()}" alt="">${treeLabel(t)} <span class="muted tiny">${ws.length} weapon${ws.length > 1 ? 's' : ''}</span></h3>` +
+      ws.map((w) => `<div class="line ${w.next.length === 0 ? 'final' : ''}">${rarity(w.rarity)}<a href="2-weapon-details.html">${w.name}</a><span class="muted">${w.display}${w.element ? ' · ' + w.elementDisplay + ' ' + cap(w.element) : w.status ? ' · ' + w.statusDisplay + ' ' + cap(w.status) : ''}</span></div>`).join('') + '</div>';
+  }).join('');
+
+  $$('[data-view]').forEach((b) => b.onclick = () => {
+    $$('[data-view]').forEach((x) => x.classList.toggle('active', x === b));
+    $('#view-table').style.display = b.dataset.view === 'table' ? '' : 'none';
+    $('#view-trees').style.display = b.dataset.view === 'trees' ? '' : 'none';
+  });
+</script>
+</body>
+</html>

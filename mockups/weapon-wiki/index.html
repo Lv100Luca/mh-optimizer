@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weapons wiki ideas</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  .doc { max-width: 1000px; margin: 0 auto; padding: 28px 22px 80px; display: flex; flex-direction: column; gap: 22px; }
+  .doc h1 { font-size: 24px; }
+  .lead { color: var(--muted); font-size: 14.5px; max-width: 820px; }
+  .ideas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .idea { display: flex; flex-direction: column; gap: 8px; padding: 16px; text-decoration: none; color: var(--text); }
+  .idea:hover { border-color: var(--accent); }
+  .idea h3 { font-size: 15px; display: flex; gap: 8px; align-items: center; }
+  .idea p { margin: 0; color: var(--muted); font-size: 13px; }
+  .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 13px; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; }
+  @media (max-width: 860px) { .ideas { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><b>Overview</b><span class="muted">·</span><a href="1-weapons-list.html">1 · Weapons list</a><span class="muted">·</span><a href="2-weapon-details.html">2 · Weapon page</a><span class="muted">·</span><a href="3-tech-tree.html">3 · Tech tree</a><span class="muted">·</span><a href="4-tree-picker-modal.html">4 · Tree picker modal</a></div>
+<div class="doc">
+  <div>
+    <h1>A Weapons section in the wiki</h1>
+    <p class="lead">Three pages, in the order you would meet them: the list of a weapon type, one weapon's page with its crafting cost, and the forge's tech tree rebuilt from the API's row and column. The mockups use the real Great Sword data (84 weapons, 1.041) and the site's icons; the pink numbers are notes, not UI.</p>
+  </div>
+
+  <div class="ideas">
+    <a class="card idea" href="1-weapons-list.html"><h3><span class="n">1</span>Weapons list</h3><p>A Weapons entry next to Armor. Sidebar: type icons, then the weapons grouped by tree like the Tech tree picker. Main: the type's final forms as a table (A) or one small card per tree (B).</p></a>
+    <a class="card idea" href="2-weapon-details.html"><h3><span class="n">2</span>Weapon page</h3><p>Stats tiles, the gauge with Handicraft hatched in, skills, this step's materials and zenny, the whole path from scratch summed up, and a lineage strip. A: two columns, path collapsed. B: one column, every step open. Plus a 375 px frame.</p></a>
+    <a class="card idea" href="3-tech-tree.html"><h3><span class="n">3</span>Tech tree</h3><p>Lanes and tiers from the API, lines along "previous". Click lights the path from the forge and sums its cost. A: full grid with names. B: compact icon grid that fits 1080p.</p></a>
+    <a class="card idea" href="4-tree-picker-modal.html"><h3><span class="n">4</span>Tree picker modal</h3><p>Round 2: the tree as the Weapon tab's picker. A button opens a modal, the grid scrolls inside, a click shows the weapon's details and the footer confirms with "Use &lt;weapon&gt;". A: details beside the tree. B: details as a sheet under it. Plus the phone layout.</p></a>
+  </div>
+
+  <section class="card">
+    <header class="card-head"><div class="card-title"><h2>What the data gives</h2><p class="hint">data/raw/weapons.json, every weapon with a series; Artian weapons have none and stay out.</p></div></header>
+    <div class="card-body">
+      <dl class="facts">
+        <dt>Weapons</dt><dd>1,104 in 14 types; Great Sword 84 in 28 trees. Every weapon has stats, sharpness with Handicraft breakpoints, slots, skills and the game's flavour text.</dd>
+        <dt>Tree</dt><dd><code>crafting.row</code> / <code>column</code> (the forge screen's grid), <code>previous</code>, <code>branches</code>, <code>craftable</code> (forgeable without a previous weapon).</dd>
+        <dt>Cost</dt><dd>Forge: materials and zenny. Upgrade: materials and zenny. Each material has a sell value, rarity and an icon kind + colour (scale, claw, gem, certificate, …).</dd>
+        <dt>Missing</dt><dd>Material icons: the site has the consumable item icons only. The mockups draw a coloured dot with the kind's initials; <code>tools/fetch_icons.py</code> could fetch the part icons the same way. Bowgun ammo tables, horn melodies, phial and shelling types are in the data but not mocked.</dd>
+        <dt>Links</dt><dd>Skills link to their wiki pages. "Use in optimizer" opens the Weapon tab in Tech tree mode with the weapon picked. The static site (tools/build_pages.py) can render the same pages for search engines.</dd>
+      </dl>
+    </div>
+  </section>
+</div>
+</body>
+</html>

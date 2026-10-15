@@ -1,0 +1,7 @@
+@* A material's icon: the site has no part icons yet, so a dot in the icon's colour with the kind's initials (scale, claw, gem, …). *@
+<span class="mat-icon @(Small ? "small" : "")" style="background: @GameIcons.MaterialCss(Material.IconColor)" title="@(Material.Icon ?? "material")">@((Material.Icon ?? "?")[..Math.Min(2, (Material.Icon ?? "?").Length)].ToUpperInvariant())</span>
+
+@code {
+    [Parameter, EditorRequired] public WikiMaterial Material { get; set; } = default!;
+    [Parameter] public bool Small { get; set; }
+}

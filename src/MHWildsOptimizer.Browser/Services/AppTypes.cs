@@ -5,7 +5,7 @@ using MHWildsOptimizer.Core.Inputs;
 namespace MHWildsOptimizer.Browser.Services;
 
 /// <summary>The sections of the app; the URL carries them in lower case.</summary>
-public enum Tab { Inventory, Compare, Weapon, Attack, Targets, Conditions, Buffs, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals }
+public enum Tab { Inventory, Compare, Weapon, Attack, Targets, Conditions, Buffs, Talismans, Options, Review, Results, Builds, WikiSkills, WikiArmor, WikiItems, WikiMeals, WikiWeapons }
 
 public static class Tabs
 {
@@ -20,13 +20,14 @@ public static class Tabs
     /// <summary>Tabs of the whole profile rather than of the open weapon (the wiki belongs to neither, but behaves the same).</summary>
     public static bool IsProfileTab(this Tab tab) => tab is Tab.Inventory or Tab.Compare || tab.IsWikiTab();
 
-    /// <summary>The game reference: skills (set and group bonuses among them), armor, items, meals; the URL carries them as wiki/&lt;section&gt;.</summary>
-    public static bool IsWikiTab(this Tab tab) => tab is Tab.WikiSkills or Tab.WikiArmor or Tab.WikiItems or Tab.WikiMeals;
+    /// <summary>The game reference: skills (set and group bonuses among them), armor, weapons, items, meals; the URL carries them as wiki/&lt;section&gt;.</summary>
+    public static bool IsWikiTab(this Tab tab) => tab is Tab.WikiSkills or Tab.WikiArmor or Tab.WikiItems or Tab.WikiMeals or Tab.WikiWeapons;
 
     public static readonly IReadOnlyDictionary<string, Tab> WikiSections = new Dictionary<string, Tab>
     {
         // "bonuses": the old set & group section, kept so its links still open
-        ["skills"] = Tab.WikiSkills, ["armor"] = Tab.WikiArmor, ["items"] = Tab.WikiItems, ["meals"] = Tab.WikiMeals, ["bonuses"] = Tab.WikiSkills,
+        ["skills"] = Tab.WikiSkills, ["armor"] = Tab.WikiArmor, ["weapons"] = Tab.WikiWeapons, ["items"] = Tab.WikiItems, ["meals"] = Tab.WikiMeals,
+        ["bonuses"] = Tab.WikiSkills,
     };
 
     public static string WikiSection(this Tab tab) => WikiSections.First(kv => kv.Value == tab).Key;

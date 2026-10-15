@@ -1,0 +1,18 @@
+@* "500 Fire" in the element's colour, "300 Poison" for a status, "none" without either. *@
+@if (Weapon.Element is { } e)
+{
+    <span class="ele @e" style="color: @GameIcons.ElementCss[Enum.Parse<Element>(e, true)]">@if (Icon && GameIcons.Element(Enum.Parse<Element>(e, true)) is { } icon) { <img src="@icon" alt="" /> }@Weapon.ElementDisplay @Fmt.TitleCase(e)</span>
+}
+else if (Weapon.Status is { } st)
+{
+    <span class="ele @st">@Weapon.StatusDisplay @TechTree.StatusLabel(st)</span>
+}
+else
+{
+    <span class="muted">none</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public WikiWeapon Weapon { get; set; } = default!;
+    [Parameter] public bool Icon { get; set; }
+}

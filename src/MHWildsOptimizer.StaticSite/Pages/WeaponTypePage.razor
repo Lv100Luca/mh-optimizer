@@ -1,0 +1,74 @@
+@* One weapon type: its final forms with stats, then every tree with its weapons in upgrade order. *@
+@{
+    var label = Text.WeaponLabel[Kind];
+    var weapons = Site.WeaponsOf(Kind);
+    var trees = weapons.GroupBy(w => w.Tree).OrderBy(g => SiteIndex.TreeLabel(g.Key), StringComparer.OrdinalIgnoreCase).ToList();
+    var finals = weapons.Where(w => w.IsFinal).OrderByDescending(w => w.Rarity).ThenByDescending(w => w.Raw).ThenBy(w => w.Name).ToList();
+    var gunner = Kind is "bow" or "light-bowgun" or "heavy-bowgun";
+}
+<Layout Path="@Urls.WeaponType(Kind)" Title="@($"{label} tree and weapons · {SiteIndex.Game} · {SiteIndex.Name}")"
+        Description="@Text.Cut($"Every {label} in {SiteIndex.Game}: {weapons.Count} weapons in {trees.Count} trees with attack, affinity, element, sharpness, slots and skills, and what forging and upgrading each one costs. Final forms: {string.Join(", ", finals.Take(5).Select(w => w.Name))} and more.")"
+        Crumbs="@([("Wiki", "/wiki/"), ("Weapons", "/wiki/weapons/")])">
+    <article>
+        <div class="head">
+            @Parts.Icon(Urls.Weapon(Kind), 40)
+            <div>
+                <h1>@label</h1>
+                <p class="sub">@weapons.Count weapons in @trees.Count trees · @weapons.Count(w => w.Craftable && w.Previous is null) you can forge directly · @finals.Count final forms · @SiteIndex.Game</p>
+            </div>
+        </div>
+        <p class="lead">Every crafted @label in @SiteIndex.Game: the final form of each tree first, then every tree with its upgrades in order. Open a weapon for its sharpness gauge, crafting cost and the path from the forge.</p>
+
+        <h2 id="final-forms">Final forms</h2>
+        <div class="scroll">
+            <table class="weapons">
+                <thead><tr><th></th><th>Weapon</th><th>Tree</th><th class="num">Attack</th><th class="num">Affinity</th><th>Element</th>@if (!gunner) { <th>Sharpness</th> }<th>Slots</th><th>Skills</th></tr></thead>
+                <tbody>
+                    @foreach (var w in finals)
+                    {
+                        <tr>
+                            <td>@Parts.Icon(Urls.Weapon(w.Kind), 22)</td>
+                            <td><a href="@Urls.WeaponPage(w)">@w.Name</a> <span class="rarity">R@(w.Rarity)</span></td>
+                            <td class="muted">@SiteIndex.TreeLabel(w.Tree)</td>
+                            <td class="num">@w.DisplayAttack <span class="muted">(@w.Raw)</span></td>
+                            <td class="num @(w.Affinity < 0 ? "neg" : w.Affinity > 0 ? "pos" : "")">@(w.Affinity > 0 ? "+" : "")@w.Affinity%</td>
+                            <td>@WeaponParts.Element(w)</td>
+                            @if (!gunner)
+                            {
+                                <td>@WeaponParts.Gauge(w)</td>
+                            }
+                            <td class="slots">@WeaponParts.Slots(w)</td>
+                            <td>@WeaponParts.Skills(w, Site)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h2 id="trees">Trees</h2>
+        <p class="muted">Each tree from its first weapon to its final form; a weapon marked "forge" can be made without the one before it.</p>
+        <div class="trees">
+            @foreach (var tree in trees)
+            {
+                <section class="tree-card" id="@Urls.Slug(tree.Key)">
+                    <h3>@SiteIndex.TreeLabel(tree.Key)</h3>
+                    <ol class="tree-list">
+                        @foreach (var w in tree.OrderBy(w => w.Col).ThenBy(w => w.Row))
+                        {
+                            <li>
+                                <span class="rarity">R@(w.Rarity)</span>
+                                <a href="@Urls.WeaponPage(w)">@w.Name</a>
+                                <span class="muted">@SiteIndex.WeaponStats(w)@(w.Craftable && w.Previous is null ? " · forge" : w.Previous is { } p && !tree.Any(t => t.Name == p) ? " · from " + p : "")</span>
+                            </li>
+                        }
+                    </ol>
+                </section>
+            }
+        </div>
+        @Parts.OptimizerBox($"Pick any {label} from this tree in the optimizer and it finds the armor, decorations and talismans that deal the most damage with it.")
+    </article>
+</Layout>
+
+@code {
+    [Parameter, EditorRequired] public string Kind { get; set; } = "";
+}
