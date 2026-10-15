@@ -24,9 +24,19 @@
                 </div>
             </Actions>
             <ChildContent>
-                <p class="small">
-                    Every build gets: <b>@summary</b>
-                </p>
+                <div class="buff-summary">
+                    <span class="muted small">Every build gets</span>
+                    @if (summary.Base.Count == 0)
+                    {
+                        <span class="muted">nothing yet: pick buffs below</span>
+                    }
+                    @EffectChips(summary.Base)
+                    @foreach (var (uptime, effects) in summary.Parts)
+                    {
+                        <span class="muted small">and for @Pct(uptime) of the hunt</span>
+                        @EffectChips(effects)
+                    }
+                </div>
                 <p class="muted small">
                     Flat attack and raw multipliers that only run part of the hunt count at their uptime: a +10 boost for half the hunt counts as +5.
                     Affinity and element boosts do not average (the caps): with an uptime below 100% the hunt is scored in a part with them and one without.
@@ -35,7 +45,29 @@
             </ChildContent>
         </Section>
 
-        <Section Title="Meal" Hint="Pick a meal to set its attack and the damage skills it always brings, or set them one by one. Only meal skills that change damage are listed.">
+        <Section Title="Items" Hint="Consumables and charms. Drinks replace each other, and so do the Might Seed and Pill; the slots stack with each other.">
+            <TitleContent>@SectionTitle("Items", GameIcons.Item("drug", "red"))</TitleContent>
+            <ChildContent>
+                <div class="cond-grid">
+                    <label class="cond buff @(c.Powercharm ? "on" : "")">
+                        <input type="checkbox" checked="@c.Powercharm" @onchange="e => App.PatchConditions(x => x with { Powercharm = e.Value is true })" />
+                        <img class="buff-icon" src="@GameIcons.Item("powder", "red")" alt="" />
+                        <span class="cond-text">
+                            <b>Powercharm</b>
+                            @EffectChips([(GameIcons.Attack, $"attack +{DamageConstants.PowercharmAttack}")])
+                            <span class="muted small">Attack +@DamageConstants.PowercharmAttack while it is in the item pouch.</span>
+                        </span>
+                    </label>
+                    @foreach (var group in Groups(BuffCategory.Item))
+                    {
+                        @Card(group, c)
+                    }
+                </div>
+            </ChildContent>
+        </Section>
+
+        <Section Title="Meals" Hint="Pick a meal to set its attack and the damage skills it always brings, or set them one by one. Only meal skills that change damage are listed.">
+            <TitleContent>@SectionTitle("Meals", MealIcon)</TitleContent>
             <ChildContent>
                 <div class="buff-meal">
                     <Field Label="Meal">
@@ -58,25 +90,8 @@
             </ChildContent>
         </Section>
 
-        <Section Title="Items" Hint="Consumables and charms. Drinks replace each other, and so do the Might Seed and Pill; the slots stack with each other.">
-            <ChildContent>
-                <div class="cond-grid">
-                    <label class="cond @(c.Powercharm ? "on" : "")">
-                        <input type="checkbox" checked="@c.Powercharm" @onchange="e => App.PatchConditions(x => x with { Powercharm = e.Value is true })" />
-                        <span class="cond-text">
-                            <b>Powercharm</b>
-                            <span class="muted small">Attack +@DamageConstants.PowercharmAttack while it is in the item pouch.</span>
-                        </span>
-                    </label>
-                    @foreach (var group in Groups(BuffCategory.Item))
-                    {
-                        @Card(group, c)
-                    }
-                </div>
-            </ChildContent>
-        </Section>
-
         <Section Title="Teammates" Hint="Hunting Horn melodies and the Echo Bubble, the Palico's horn and a teammate's Demon Ammo. A horn melody does not stack with itself; playing it twice (or an encore) reaches its stronger second tier.">
+            <TitleContent>@SectionTitle("Teammates", GameIcons.Weapon("hunting-horn"))</TitleContent>
             <ChildContent>
                 <div class="cond-grid">
                     @foreach (var group in Groups(BuffCategory.Support))
@@ -123,13 +138,15 @@
         var single = group.Length == 1;
         var shown = picked ?? group[0];
         var (title, about) = single ? (shown.Name, shown.Description) : Slots.GetValueOrDefault(shown.Slot!, (shown.Name, shown.Description));
-        <label @key="shown.Slot ?? shown.Id" class="cond @(picked is not null ? "on" : "") @(single ? "" : "resonance")" title="@shown.Source">
+        <label @key="shown.Slot ?? shown.Id" class="cond buff @(picked is not null ? "on" : "") @(single ? "" : "resonance")" title="@shown.Source">
             @if (single)
             {
                 <input type="checkbox" checked="@(picked is not null)" @onchange="e => Set(group, e.Value is true ? shown : null)" />
             }
+            <img class="buff-icon" src="@IconOf(shown)" alt="" />
             <span class="cond-text">
                 <b>@title</b>
+                @EffectChips(EffectsOf([(shown, 1.0)], 0))
                 @if (!single)
                 {
                     <span @onclick:preventDefault="true">
@@ -159,6 +176,42 @@
     };
 
     private static string Pct(double share) => $"{share * 100:0}%";
+
+    private static readonly string MealIcon = GameIcons.Item("meat", "orange");
+
+    /// <summary>The icon of a buff: the game's item icon, a steak for meal skills, the weapon a teammate's buff comes from.</summary>
+    private static string IconOf(BuffDef buff) => buff.Id switch
+    {
+        BuffCatalog.MightSeed => GameIcons.Item("seed", "red"),
+        BuffCatalog.MightPill => GameIcons.Item("pill", "red"),
+        "demon-powder" => GameIcons.Item("powder", "red"),
+        "demon-ammo" => GameIcons.Weapon("light-bowgun"),
+        _ when buff.Slot == BuffCatalog.SlotPalicoHorn => GameIcons.WeaponBase("hunting-horn"),
+        _ => buff.Category switch
+        {
+            BuffCategory.Item => GameIcons.Item("drug", "red"),
+            BuffCategory.Meal => MealIcon,
+            _ => GameIcons.Weapon("hunting-horn"),
+        },
+    };
+
+    private static RenderFragment SectionTitle(string title, string icon) => __builder =>
+    {
+        <span class="with-icon buff-title"><img class="icon" width="24" height="24" src="@icon" alt="" />@title</span>
+    };
+
+    private static RenderFragment EffectChips(IReadOnlyList<(string Icon, string Text)> effects) => __builder =>
+    {
+        @if (effects.Count > 0)
+        {
+            <span class="chip-row buff-effects">
+                @foreach (var (icon, text) in effects)
+                {
+                    <span class="chip tiny"><img class="icon" width="14" height="14" src="@icon" alt="" />@text</span>
+                }
+            </span>
+        }
+    };
 
     private static double Snap(double uptime) => UptimeOptions.Select(o => o.Value).OrderBy(u => Math.Abs(u - uptime)).First();
 
@@ -199,19 +252,19 @@
         && a.Buffs.Count == b.Buffs.Count && a.Buffs.All(kv => b.Buffs.TryGetValue(kv.Key, out var v) && v == kv.Value);
 
     /// <summary>
-    /// "attack +23.5, raw x1.1; 25% of the hunt also raw x1.1, affinity +25%": what the buffs add to every build, at their uptime
-    /// (Protein Fiend aside), and what the buffs that split the hunt add in their part.
+    /// What the buffs add to every build, at their uptime (Protein Fiend aside), and what the buffs that split the hunt add in their part.
     /// </summary>
-    private static string Summary(Conditions c)
+    private static (IReadOnlyList<(string Icon, string Text)> Base, IReadOnlyList<(double Uptime, IReadOnlyList<(string Icon, string Text)> Effects)> Parts) Summary(Conditions c)
     {
         var splits = BuffCatalog.Splitting(c);
         var split = splits.SelectMany(x => x.Ids).ToHashSet();
-        var text = Effects(BuffCatalog.Active(c).Where(x => !split.Contains(x.Buff.Id)), (c.Powercharm ? DamageConstants.PowercharmAttack : 0) + c.MealAttack);
-        var parts = splits.Select(x => $"{Pct(x.Uptime)} of the hunt also {Effects(BuffCatalog.Active(c).Where(b => x.Ids.Contains(b.Buff.Id)), 0)}");
-        return string.Join("; ", parts.Prepend(text));
+        var baseEffects = EffectsOf(BuffCatalog.Active(c).Where(x => !split.Contains(x.Buff.Id)), (c.Powercharm ? DamageConstants.PowercharmAttack : 0) + c.MealAttack);
+        var parts = splits.Select(x => (x.Uptime, EffectsOf(BuffCatalog.Active(c).Where(b => x.Ids.Contains(b.Buff.Id)), 0))).ToList();
+        return (baseEffects, parts);
     }
 
-    private static string Effects(IEnumerable<(BuffDef Buff, double Share)> buffs, double flat)
+    /// <summary>"+23.5" attack, "x1.1" raw, "+25%" affinity, "x1.08" element: the effects of buffs at their share of the hunt.</summary>
+    private static IReadOnlyList<(string Icon, string Text)> EffectsOf(IEnumerable<(BuffDef Buff, double Share)> buffs, double flat)
     {
         double raw = 1, ele = 1;
         var aff = 0;
@@ -224,11 +277,11 @@
                     case BuffEffect.Affinity: aff += (int)p.Value; break;
                     case BuffEffect.ElementMultiplier: ele *= p.Value; break;
                 }
-        var parts = new List<string>();
-        if (raw != 1) parts.Add($"raw x{raw.ToString("0.###", CultureInfo.InvariantCulture)}");
-        if (flat != 0) parts.Add($"attack +{flat.ToString("0.##", CultureInfo.InvariantCulture)}");
-        if (aff != 0) parts.Add($"affinity +{aff}%");
-        if (ele != 1) parts.Add($"element x{ele.ToString("0.##", CultureInfo.InvariantCulture)}");
-        return parts.Count == 0 ? "nothing" : string.Join(", ", parts);
+        var parts = new List<(string Icon, string Text)>();
+        if (flat != 0) parts.Add((GameIcons.Attack, $"attack +{flat.ToString("0.##", CultureInfo.InvariantCulture)}"));
+        if (raw != 1) parts.Add((GameIcons.Attack, $"raw x{raw.ToString("0.###", CultureInfo.InvariantCulture)}"));
+        if (aff != 0) parts.Add((GameIcons.Affinity, $"affinity +{aff}%"));
+        if (ele != 1) parts.Add((GameIcons.SkillGeneric("element"), $"element x{ele.ToString("0.##", CultureInfo.InvariantCulture)}"));
+        return parts;
     }
 }
