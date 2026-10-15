@@ -819,6 +819,11 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 /* the skill card as a tooltip */
 .mud-tooltip.skilltip-pop { background: transparent; padding: 0; box-shadow: none; max-width: none; }
 .skilltip-pop .skilltip { position: static; pointer-events: auto; }
+/* near a viewport edge MudBlazor can clamp a tooltip over its anchor; one that takes the pointer there ends the hover,
+   closes, reopens under the pointer and flickers. On touch it keeps the pointer, so a tap on it does not reach the page below. */
+@media (hover: hover) {
+  .mud-tooltip.skilltip-pop, .mud-tooltip.infotip-pop, .skilltip-pop .skilltip { pointer-events: none; }
+}
 .skillhover { display: inline-flex; }
 .decohover { display: inline-flex; }
 .decotip { display: flex; flex-direction: column; gap: 6px; width: 320px; }
