@@ -171,6 +171,43 @@ public static class DamageConstants
         _ => 1.0,
     };
 
+    /// <summary>Shelling level of the Gogma Artian gunlances (all three shelling types, wilds.mhdb.io); weapons entered as plain stats use it too.</summary>
+    public const int ArtianShellLevel = 3;
+
+    // MV sheet 1.040, "GL Shelling" tab: per shelling type and shot, Lv1..4 of (raw MV that ignores the hitzone, fixed fire damage)
+    private static readonly Dictionary<(GunlanceShelling, GunlanceShot), (double Mv, double Fire)[]> ShellTable = new()
+    {
+        [(GunlanceShelling.Normal, GunlanceShot.Shell)] = [(7, 6), (8, 7), (9, 8), (10, 9)],
+        [(GunlanceShelling.Normal, GunlanceShot.FullburstShell)] = [(9.8, 6), (11.2, 7), (12.6, 8), (14, 9)],
+        [(GunlanceShelling.Normal, GunlanceShot.WyrmstakeFullburstShell)] = [(8.75, 6), (10, 7), (11.25, 8), (12.5, 9)],
+        [(GunlanceShelling.Normal, GunlanceShot.ChargedShell)] = [(12.6, 6), (14.4, 7), (16.2, 8), (18, 9)],
+        [(GunlanceShelling.Normal, GunlanceShot.Wyvernfire)] = [(39, 22), (43, 24), (47, 26), (52, 29)],
+        [(GunlanceShelling.Normal, GunlanceShot.WyrmstakeExplosion)] = [(23, 19), (25, 21), (28, 23), (31, 25)],
+        [(GunlanceShelling.Long, GunlanceShot.Shell)] = [(10, 14), (11, 15), (12, 16), (13, 17)],
+        [(GunlanceShelling.Long, GunlanceShot.FullburstShell)] = [(14, 14), (15.4, 15), (16.8, 16), (18.2, 17)],
+        [(GunlanceShelling.Long, GunlanceShot.WyrmstakeFullburstShell)] = [(11, 14), (12.1, 15), (13.2, 16), (14.3, 17)],
+        [(GunlanceShelling.Long, GunlanceShot.ChargedShell)] = [(18, 14), (19.8, 15), (21.6, 16), (23.4, 17)],
+        [(GunlanceShelling.Long, GunlanceShot.Wyvernfire)] = [(39, 22), (43, 24), (47, 26), (52, 29)],
+        [(GunlanceShelling.Long, GunlanceShot.WyrmstakeExplosion)] = [(32, 19), (37, 21), (42, 23), (49, 25)],
+        [(GunlanceShelling.Wide, GunlanceShot.Shell)] = [(17, 9), (19, 10), (21, 11), (23, 12)],
+        [(GunlanceShelling.Wide, GunlanceShot.FullburstShell)] = [(22.95, 9), (25.65, 10), (28.35, 11), (31.05, 12)],
+        [(GunlanceShelling.Wide, GunlanceShot.WyrmstakeFullburstShell)] = [(17.85, 9), (19.95, 10), (22.05, 11), (24.15, 12)],
+        [(GunlanceShelling.Wide, GunlanceShot.ChargedShell)] = [(30.6, 9), (34.2, 10), (37.8, 11), (41.4, 12)],
+        [(GunlanceShelling.Wide, GunlanceShot.Wyvernfire)] = [(46, 24), (50, 26), (55, 29), (60, 32)],
+        [(GunlanceShelling.Wide, GunlanceShot.WyrmstakeExplosion)] = [(23, 19), (25, 21), (27, 23), (30, 25)],
+    };
+
+    /// <summary>
+    /// A shelling hit of a gunlance: raw MV that ignores the hitzone and sharpness and never crits, plus fixed fire damage (assumed to
+    /// ignore the hitzone too). A Wyrmstake tick is an ordinary hit (MV sheet "GL" tab): 4 + level MV (Long 5 + level), no fire.
+    /// </summary>
+    public static (double Mv, double Fire) Shell(GunlanceShelling type, GunlanceShot shot, int level)
+    {
+        var lv = Math.Clamp(level, 1, 4);
+        if (shot == GunlanceShot.WyrmstakeTick) return ((type == GunlanceShelling.Long ? 5 : 4) + lv, 0);
+        return ShellTable[(type, shot)][lv - 1];
+    }
+
     // ---------------- uptime of timed skills without taking damage, see notes/skill_values_vague_skills.md (Latent Power) and
     // notes/skill_values_set_group.md (Azure Bolt, Thunderous Roar) ----------------
 

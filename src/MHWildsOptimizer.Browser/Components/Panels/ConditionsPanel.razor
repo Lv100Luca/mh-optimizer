@@ -251,6 +251,14 @@
                             Per 100 MV: raw × @rp.RawFactor.ToString("0.###", CultureInfo.InvariantCulture) (@(type == WeaponType.Bow ? "coating and critical distance, before shot skills" : type == WeaponType.SwitchAxe ? "sharpness, phial" : type == WeaponType.LongSword ? "sharpness, Spirit Gauge" : "sharpness")),
                             element × @rp.ElementFactor.ToString("0.###", CultureInfo.InvariantCulture) per true element point
                             (@((rp.ElementHitzoneRatio > 0 ? rp.ElementFactor / rp.ElementHitzoneRatio : 0).ToString("0.##", CultureInfo.InvariantCulture)) element hits per 100 MV, sharpness included, before the hitzone).
+                            @if (rp.NoCritRawFactor > 0 || rp.NoCritElementFactor > 0)
+                            {
+                                @($" Hits that cannot crit add raw × {rp.NoCritRawFactor.ToString("0.###", CultureInfo.InvariantCulture)} and element × {rp.NoCritElementFactor.ToString("0.###", CultureInfo.InvariantCulture)} without the crit factors.")
+                            }
+                            @if (rp.FixedDamage > 0)
+                            {
+                                @($" Fixed damage (shell fire, Echo Wave element): {(rp.FixedDamage * rp.RawHitzone / 100).ToString("0.#", CultureInfo.InvariantCulture)} per attack.")
+                            }
                         </p>
                     }
                     @if (procToggles.Count > 0)
@@ -388,13 +396,32 @@
     {
         var phial = weapon?.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : (SwitchAxePhial?)null;
         var coating = weapon?.Type == WeaponType.Bow ? weapon.Coating : null;
+        var cbPhial = weapon?.Type == WeaponType.ChargeBlade ? Attacks.ChargeBladePhialOf(weapon.Focus, weapon.Element) : (ChargeBladePhial?)null;
+        var shelling = weapon?.Type == WeaponType.Gunlance ? Attacks.ShellingOf(weapon.Focus) : (GunlanceShelling?)null;
         <table class="table hits">
             <thead><tr><th>Hit</th><th class="num">MV</th><th class="num">Element</th><th>Notes</th></tr></thead>
             <tbody>
                 @foreach (var h in attack.Hits)
                 {
                     var ele = phial == SwitchAxePhial.Element && h.ElementPhialElement is { } ep ? ep : h.Element;
+                    var mv = h.Mv;
                     var notes = new List<string>();
+                    if (h.Shell is { } shellShot && shelling is { } st)
+                    {
+                        var (shellMv, fire) = DamageConstants.Shell(st, shellShot, DamageConstants.ArtianShellLevel);
+                        mv = shellMv;
+                        notes.Add(shellShot == GunlanceShot.WyrmstakeTick ? $"{st} shelling Lv{DamageConstants.ArtianShellLevel}"
+                            : $"{st} shelling Lv{DamageConstants.ArtianShellLevel}: no sharpness, ignores the hitzone, +{Num(fire)} fixed fire");
+                    }
+                    if (h.PhialBurstElement is { } pbe)
+                    {
+                        if (cbPhial == ChargeBladePhial.Element) { mv = 0; ele = pbe; }
+                        notes.Add(cbPhial is { } cp ? $"{cp} phial" : $"Impact phial: {Num(h.Mv)} MV; Element phial: element ×{Num(pbe)}, no raw");
+                    }
+                    if (h.NoCrit) notes.Add("cannot crit");
+                    if (h.IgnoresHitzone) notes.Add("raw ignores the hitzone");
+                    if (h.IgnoresSharpness) notes.Add("ignores sharpness");
+                    if (h.FixedElement is { } fe) notes.Add($"+{Num(fe.Value)} fixed {Fmt.Slug(fe.Element)} element");
                     if (h.PowerMv is { } pmv) notes.Add($"{Num(pmv)} MV on a weak spot");
                     if (h.FixedSharpness is { } fs) notes.Add($"{Fmt.Slug(fs)} sharpness");
                     if (h.SwordMode && phial is { } ph) notes.Add(ph == SwitchAxePhial.Power ? $"raw ×{Num(DamageConstants.PowerPhialRaw)} (Power phial)" : $"element ×{Num(DamageConstants.ElementPhialElement)} (Element phial)");
@@ -411,7 +438,7 @@
                     if (h.Spirit is { } sg) notes.Add(sg == SpiritGauge.None ? "no Spirit Gauge multiplier" : $"always the {Fmt.Slug(sg)} gauge: raw ×{Num(DamageConstants.SpiritGaugeRaw(sg))}");
                     <tr>
                         <td>@h.Name@(h.Count > 1 ? $" ×{h.Count}" : "")</td>
-                        <td class="num">@Num(h.Mv)</td>
+                        <td class="num">@Num(mv)</td>
                         <td class="num">×@Num(ele)</td>
                         <td class="muted small">@string.Join("; ", notes)</td>
                     </tr>

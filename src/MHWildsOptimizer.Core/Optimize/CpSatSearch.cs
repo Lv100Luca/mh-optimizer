@@ -452,7 +452,7 @@ internal sealed class CpSatSearch
 
     private static Bounded NewVar(CpModel m, long lb, long ub, string name) => new(m.NewIntVar(lb, ub, name), lb, ub);
 
-    /// <summary>Score of one health side in micro points: EFR + EFE + procs (+ the Dark Arts shockwave).</summary>
+    /// <summary>Score of one health side in micro points: EFR + EFE (crits and hits that cannot crit) + procs (+ the Dark Arts shockwave, fixed damage).</summary>
     /// <param name="keys">Collects the side's factors worth capping (<see cref="TightenAsync"/>).</param>
     private Bounded SideScore(CpModel m, ScoreDecomposition score, int side, List<IntVar> unitIndex, List<(IntVar Var, long Ub, string Sig)> keys)
     {
@@ -542,6 +542,21 @@ internal sealed class CpSatSearch
         var terms = new List<LinearExpr> { efr.Var };
         long lb = efr.Lb, ub = efr.Ub;
 
+        // raw of the hits that cannot crit in micro points = TR(1e-4) * factor(1e-6) / 1e4
+        var rawNoCrit = (long)Math.Round(sc.RawNoCrit * Micro);
+        if (rawNoCrit > 0)
+        {
+            var nc = NewVar(m, Math.Min(tr.Lb * rawNoCrit / S, 0), tr.Ub * rawNoCrit / S + 1, $"rawNoCrit{side}");
+            m.AddDivisionEquality(nc.Var, LinearExpr.Term(tr.Var, rawNoCrit), S);
+            terms.Add(nc.Var); lb += nc.Lb; ub += nc.Ub;
+        }
+
+        var fixedDamage = (long)Math.Round(sc.Fixed * Micro);
+        if (fixedDamage != 0)
+        {
+            terms.Add(LinearExpr.Constant(fixedDamage)); lb += fixedDamage; ub += fixedDamage;
+        }
+
         if (score.HasElement)
         {
             // element in 1e-5 true = display * prod(pct)(1e-4) + sum(flat * 1e5), capped
@@ -571,6 +586,15 @@ internal sealed class CpSatSearch
             m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
             keys.Add((efe.Var, efe.Ub, Sig($"efe{sc.ElementScale}|{sc.BaseCritEleMult}", sc.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
             terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
+
+            // element of the hits that cannot crit in micro points = ele(1e-5) * factor(1e-6) / 1e5
+            var eleNoCrit = (long)Math.Round(sc.ElementNoCrit * Micro);
+            if (eleNoCrit > 0)
+            {
+                var enc = NewVar(m, ele.Lb * eleNoCrit / 100_000, ele.Ub * eleNoCrit / 100_000 + 1, $"eleNoCrit{side}");
+                m.AddDivisionEquality(enc.Var, LinearExpr.Term(ele.Var, eleNoCrit), 100_000);
+                terms.Add(enc.Var); lb += enc.Lb; ub += enc.Ub;
+            }
         }
 
         foreach (var p in All(c => (long)Math.Round(c.Procs * Micro), "proc"))

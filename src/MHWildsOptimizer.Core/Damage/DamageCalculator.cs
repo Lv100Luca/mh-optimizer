@@ -140,9 +140,10 @@ public sealed record AttackDamage(string Name, int Repeat, int Affinity, IReadOn
 
 /// <summary>
 /// Effective Raw / Effective Element calculator for a Gogma weapon loadout, per 100 MV of the chosen attack:
-/// raw = (baseRaw * prod(percent) + sum(flat)) * critFactor * rawFactor (the hits' MV-weighted sharpness and phial);
-/// element = min(ele, cap) * critElementFactor * elementFactor (sum of the hits' element modifiers x sharpness x phial,
-/// x element hitzone / raw hitzone, x 100 / total MV). Damage is divided by the target's raw hitzone / 100, so EFR keeps its
+/// raw = (baseRaw * prod(percent) + sum(flat)) * (critFactor * rawFactor + noCritRawFactor) (the hits' MV-weighted sharpness and
+/// phial, split by whether the hit can crit); element = min(ele, cap) * (critElementFactor * elementFactor + noCritElementFactor)
+/// (sum of the hits' element modifiers x sharpness x phial, x element hitzone / raw hitzone, x 100 / total MV); fixed damage
+/// (shell fire) is a proc. Damage is divided by the target's raw hitzone / 100, so EFR keeps its
 /// usual raw-hitzone-100 scale and element counts at the target's element hitzone share of it. Proc damage (extra damage
 /// instances) is converted to per 100 MV of the attack the same way.
 /// </summary>
@@ -150,6 +151,8 @@ public static class DamageCalculator
 {
     /// <summary>The trace label of the Dark Arts shockwave proc.</summary>
     public const string ShockwaveLabel = "Dark Arts shockwave";
+    /// <summary>The trace label of the attack's fixed damage (Gunlance shell fire, Hunting Horn Echo Wave element).</summary>
+    public const string FixedDamageLabel = "Fixed damage";
 
     public static DamageResult Calculate(Loadout loadout, GameData data, Conditions? conditions = null)
     {
@@ -455,7 +458,7 @@ public static class DamageCalculator
         var shots = profile.Shots.Any ? ShotBoostsOf(L) : ShotBoosts.None;
         var shotMult = profile.Shots.Multiplier(shots);
         if (trace && shotMult != 1.0) notes.Add(Inv($"Shot skills: raw x{shotMult:0.####} over the attack (normal arrows x{shots.Normal:0.##}, power shots x{shots.Power:0.##}, Dragon Piercer / Thousand Dragons x{shots.Dragon:0.###}, Tracer x{shots.Tracer:0.##})"));
-        var efr = trueRaw * critFactor * profile.RawFactor * shotMult;
+        var efr = trueRaw * (critFactor * profile.RawFactor * shotMult + profile.NoCritRawFactor);
 
         var baseEle = weapon.ElementTrue;
         double ele = 0, cap = 0, critEleMult = 1.0, critEleFactor = 1.0;
@@ -468,7 +471,7 @@ public static class DamageCalculator
             critEleFactor = aff > 0 ? 1.0 + aff / 100.0 * (critEleMult - 1.0) : 1.0;
         }
         // element lands per hit with the hit's element modifier at the element hitzone: put it on the per-100-MV, raw-hitzone-100 scale of EFR
-        var efe = ele * critEleFactor * profile.ElementFactor;
+        var efe = ele * (critEleFactor * profile.ElementFactor + profile.NoCritElementFactor);
 
         // ---------------- proc damage: extra damage instances per 100 MV of landed attacks ----------------
         double procs = 0;
@@ -487,15 +490,16 @@ public static class DamageCalculator
         if (CountsShockwave(type, skills, cond))
             Proc(ShockwaveLabel, Shockwave(trueRaw * sharpRaw * critFactor, sharpEle, profile),
                 profile.Shockwaves, Inv($"on {profile.Shockwaves:0.##} Lv3 charged slashes per attack"));
+        Proc(FixedDamageLabel, profile.FixedDamage, 1, "per attack, the same for every build");
         var badBlood = cond.SetTier(skills, SkillNames.NuUdrasMutiny);
         if (cond.BadBlood && badBlood != SetBonusTier.None && cond.RedHealth && L(SkillNames.Resentment) > 0)
             Proc($"Bad Blood {badBlood}", DamageConstants.BadBlood(badBlood),
                 profile.ProcsPerHit(DamageConstants.BadBloodCooldownSeconds) * profile.Hits, Inv($"every {DamageConstants.BadBloodCooldownSeconds:0} s at most"));
 
         if (trace) notes.Add(Inv($"Attack: {profile.Name}, {profile.Hits:0.##} hits, {profile.TotalMv:0.#} MV; target {cond.Target.Name}, raw hitzone {cond.Target.RawHitzone:0.#}, element hitzone {cond.Target.ElementHitzoneFor(weapon.Element):0.#}"));
-        if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}, over the attack x{profile.RawFactor:0.###}; EFR {efr:0.#}"));
+        if (trace) notes.Add(Inv($"Raw {weapon.TrueRaw} x{rawPct:0.###} +{rawFlat:0.#} = {trueRaw:0.#}; affinity {aff}% (crit x{critMult:0.##}) -> factor {critFactor:0.####}; sharpness x{sharpRaw:0.###}, over the attack x{profile.RawFactor:0.###}{(profile.NoCritRawFactor > 0 ? Inv($" + x{profile.NoCritRawFactor:0.###} without crits") : "")}; EFR {efr:0.#}"));
         if (trace && baseEle > 0)
-            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; per 100 MV of the attack at element hitzone x{profile.ElementHitzoneRatio:0.##} of raw x{profile.ElementFactor:0.###}; EFE {efe:0.#}"));
+            notes.Add(Inv($"Element {baseEle:0.#} x{elePct:0.###} +{eleFlat:0.#} = {ele:0.#} (cap {cap:0.#}); crit element x{critEleMult:0.##} -> factor {critEleFactor:0.####}; per 100 MV of the attack at element hitzone x{profile.ElementHitzoneRatio:0.##} of raw x{profile.ElementFactor:0.###}{(profile.NoCritElementFactor > 0 ? Inv($" + x{profile.NoCritElementFactor:0.###} without crits") : "")}; EFE {efe:0.#}"));
 
         return new DamageResult(
             weapon.TrueRaw, trueRaw, aff, critMult, weapon.TopSharpness, sharpRaw, efr,
@@ -562,6 +566,7 @@ public static class DamageCalculator
         {
             var raw = r.TrueRaw * h.Mv / 100.0 * h.RawModifier * r.Shots.For(h.Shot) * rawHitzone;
             var ele = r.ElementTrue * h.ElementModifier * elementHitzone;
+            if (h.NoCrit) return new HitDamage(h.Name, h.Count, h.Mv, raw + ele, raw + ele, raw + ele);
             return new HitDamage(h.Name, h.Count, h.Mv, raw + ele, raw * critRaw + ele * critEle, raw * r.CriticalFactor + ele * critEleFactor);
         }).ToList();
         return new AttackDamage(name, repeat, r.Affinity, changes, list, r.ProcParts.Select(p => p with { Value = r.Attack.DamagePerExecution(p.Value) }).ToList());

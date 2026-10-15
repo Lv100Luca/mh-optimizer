@@ -24,9 +24,12 @@ public sealed record GogmaVariantDto(string Name, int Raw, int DisplayAttack, in
 /// <summary>One hit of an attack; <paramref name="PowerMv"/> is the power True Charged Slash finisher that replaces it on a weak spot.</summary>
 /// <param name="Shot">Bow arrows: the kind, which decides the shot skill that boosts it.</param>
 /// <param name="Coated">Bow arrows that take the coating; <paramref name="PierceMv"/> / <paramref name="PierceElement"/> are the pierce arrow's.</param>
+/// <param name="Shell">Gunlance shelling hit: MV and fire come from the weapon's shelling.</param>
+/// <param name="PhialBurstElement">Charge Blade phial burst: the element modifier with Element phials (no raw then); <paramref name="Mv"/> is the Impact one.</param>
 public sealed record AttackHitDto(string Name, double Mv, double Element, int Count, double? ElementPhialElement, bool SwordMode, SharpnessColor? FixedSharpness, double? PowerMv,
     BowShot? Shot = null, bool Coated = false, double? PierceMv = null, double? PierceElement = null, bool CriticalDistance = false,
-    SpiritGauge? Spirit = null);
+    SpiritGauge? Spirit = null, bool NoCrit = false, bool IgnoresHitzone = false, GunlanceShot? Shell = null, double? PhialBurstElement = null,
+    bool IgnoresSharpness = false, FixedElementDamage? FixedElement = null);
 
 /// <param name="Combo">A combo of several inputs; the others are single moves (the sequence editor lists both).</param>
 public sealed record AttackDto(string Id, string Name, string Description, double Seconds, bool Combo, IReadOnlyList<AttackHitDto> Hits);
@@ -195,7 +198,7 @@ public sealed record Catalog(
         var attacks = Attacks.For(type)
             .Select(a => new AttackDto(a.Id, a.Name, a.Description, a.Seconds, a.Combo,
                 a.Hits.Select(h => new AttackHitDto(h.Name, h.Mv, h.Element, h.Count, h.ElementPhialElement, h.SwordMode, h.FixedSharpness, h.Power?.Mv,
-                    h.Shot, h.Coated, h.Pierce?.Mv, h.Pierce?.Element, h.CriticalDistance, h.Spirit)).ToList()))
+                    h.Shot, h.Coated, h.Pierce?.Mv, h.Pierce?.Element, h.CriticalDistance, h.Spirit, h.NoCrit, h.IgnoresHitzone, h.Shell, h.PhialBurstElement, h.IgnoresSharpness, h.FixedElement)).ToList()))
             .ToList();
         return new AttackProfileDto(p.HitsPerMinute, p.AverageMv, p.ChargedLv3Share, Attacks.DefaultFor(type), attacks, Attacks.SequencePresetsFor(type));
     }

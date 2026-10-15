@@ -126,10 +126,10 @@ public class AttackTargetTests
     [Fact]
     public void WeaponTypesWithoutAttackDataKeepTheAverageHitModel()
     {
-        var hammer = Weapon(WeaponType.Hammer, GogmaFocus.Element, Element.Ice);
-        var p = new AttackProfile().Resolve(hammer, new Target { RawHitzone = 50, ElementHitzone = 20 });
+        var bowgun = Weapon(WeaponType.LightBowgun, GogmaFocus.Element, Element.Ice);
+        var p = new AttackProfile().Resolve(bowgun, new Target { RawHitzone = 50, ElementHitzone = 20 });
         Assert.Equal("Average hit", p.Name);
         Assert.Equal(50, p.TotalMv, Tol);
-        Assert.Equal(DamageConstants.SharpnessElement(hammer.TopSharpness!.Value) * 0.4 * 100 / 50, p.ElementFactor, Tol);
+        Assert.Equal(0.4 * 100 / 50, p.ElementFactor, Tol);
     }
 }

@@ -46,12 +46,19 @@ public sealed record ScoreSide(Conditions Conditions, int Health, double Weight,
 {
     /// <summary>Element per true element point per 100 MV of the segment's attack, sharpness included: <see cref="ResolvedAttackProfile.ElementFactor"/>.</summary>
     public double ElementScale => Attack.ElementFactor;
+    /// <summary>Raw of the hits that cannot crit, per true raw: <see cref="ResolvedAttackProfile.NoCritRawFactor"/>.</summary>
+    public double RawNoCrit => Attack.NoCritRawFactor;
+    /// <summary>Element of the hits that cannot crit, per true element point: <see cref="ResolvedAttackProfile.NoCritElementFactor"/>.</summary>
+    public double ElementNoCrit => Attack.NoCritElementFactor;
+    /// <summary>The attack's fixed damage per 100 MV, the same for every build (shell fire); not part of any unit's procs.</summary>
+    public double Fixed => Attack.FixedDamage * Attack.PerHundredMv;
 }
 
 /// <summary>
 /// The damage formula as seen by an exact solver:
-/// raw = (B * prod rawPct + base flat + sum rawFlat) * prod rawMult * rawFactor * critFactor(clamp(affinity), critMult),
-/// element = min(E * prod elePct + sum eleFlat, cap) * critElementFactor * <see cref="ScoreSide.ElementScale"/>, plus procs;
+/// raw = TR * (prod rawMult * rawFactor * critFactor(clamp(affinity), critMult) + noCritRawFactor) with TR = B * prod rawPct + base flat
+/// + sum rawFlat, element = min(E * prod elePct + sum eleFlat, cap) * (critElementFactor * <see cref="ScoreSide.ElementScale"/>
+/// + <see cref="ScoreSide.ElementNoCrit"/>), plus procs and the attack's fixed damage;
 /// per health side the segments of a sequence add up weighted by their share of the motion value, and the best health side wins.
 /// The per-feature contributions are not re-implemented: they are probed from <see cref="DamageCalculator"/> with two
 /// synthetic weapons (so multipliers and flat bonuses can be told apart), and features whose contributions do not compose
@@ -191,10 +198,11 @@ public sealed class ScoreDecomposition
         {
             var ele = Math.Min(_weapon.ElementTrue * ch.ElePct + ch.EleFlat, side.ElementCap);
             var critEle = aff > 0 ? 1.0 + aff / 100.0 * (ch.CritEleMult - 1.0) : 1.0;
-            efe = ele * critEle * side.ElementScale;
+            efe = ele * (critEle * side.ElementScale + side.ElementNoCrit);
         }
-        var procs = ch.Procs + (ch.Shockwave ? side.ShockwaveRawShare * efr + side.ShockwaveConstant : 0);
-        return efr + efe + procs;
+        // the shockwave follows the raw of the hits that crit
+        var procs = ch.Procs + side.Fixed + (ch.Shockwave ? side.ShockwaveRawShare * efr + side.ShockwaveConstant : 0);
+        return efr + trueRaw * side.RawNoCrit + efe + procs;
     }
 
     /// <summary>Compares the composed score with <see cref="DamageCalculator"/> on random feature values; returns the largest difference.</summary>
@@ -332,9 +340,9 @@ public sealed class ScoreDecomposition
             var shockwave = cond.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
-            // the conditions' own flat raw is the side's base, not part of any unit
+            // the conditions' own flat raw and the attack's fixed damage are the side's base, not part of any unit
             var ch = new Channels(rawPct, r1.TrueRaw - B1 * rawPct - sides[side].BaseRawFlat, r1.Affinity - ProbeAffinity, elePct,
-                _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock, shockwave,
+                _hasElement ? r1.ElementTrue - E1 / 10.0 * elePct : 0, r1.CriticalMultiplier, r1.CriticalElementMultiplier, r1.ProcDamage - shock - sides[side].Fixed, shockwave,
                 r1.ShotMultiplier);
             _cache[key] = ch;
             return ch;

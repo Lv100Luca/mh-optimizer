@@ -157,8 +157,11 @@ public static class BuildEvaluation
             {
                 var raw = d.TrueRaw * h.Mv / 100.0 * h.RawModifier * d.Shots.For(h.Shot) * target.RawHitzone / 100.0;
                 var ele = d.ElementTrue * h.ElementModifier * eleHitzone / 100.0;
-                hits.Add(new HitDetailDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
-                    raw * critFactor + ele * critEleFactor, h.Notes, RawAverage: raw * critFactor, ElementAverage: ele * critEleFactor));
+                if (h.NoCrit)
+                    hits.Add(new HitDetailDto(h.Name, h.Count, h.Mv, raw, raw, ele, ele, raw + ele, h.Notes, RawAverage: raw, ElementAverage: ele));
+                else
+                    hits.Add(new HitDetailDto(h.Name, h.Count, h.Mv, raw, raw * d.CriticalMultiplier, ele, ele * d.CriticalElementMultiplier,
+                        raw * critFactor + ele * critEleFactor, h.Notes, RawAverage: raw * critFactor, ElementAverage: ele * critEleFactor));
                 if (shockwave && h.ChargedLv3)
                     hits.Add(new HitDetailDto(DamageCalculator.ShockwaveLabel, h.Count, DamageConstants.DarkArtsShockwaveMv, waveRaw, waveRaw * d.CriticalMultiplier,
                         waveEle, waveEle, waveRaw * critFactor + waveEle,

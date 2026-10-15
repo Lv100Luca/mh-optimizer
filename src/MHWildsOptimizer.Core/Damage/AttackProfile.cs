@@ -67,23 +67,42 @@ public sealed record AttackProfile
                 ChargedLv3Share ?? p.ChargedLv3Share, ratio, target.RawHitzone, Execution: "hit");
         }
 
-        SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
-        double hits = 0, totalMv = 0, raw = 0, ele = 0, shockwaves = 0;
+        double hits = 0, totalMv = 0, raw = 0, ele = 0, rawNoCrit = 0, eleNoCrit = 0, fixedDamage = 0, shockwaves = 0;
         var resolved = ResolveHits(weapon, target, attack.Hits, PierceHits, gauge);
         foreach (var h in resolved)
         {
             hits += h.Count;
             totalMv += h.Mv * h.Count;
-            raw += h.Mv * h.Count * h.RawModifier;
-            ele += h.Count * h.ElementModifier;
+            if (h.NoCrit)
+            {
+                rawNoCrit += h.Mv * h.Count * h.RawModifier;
+                eleNoCrit += h.Count * h.ElementModifier;
+            }
+            else
+            {
+                raw += h.Mv * h.Count * h.RawModifier;
+                ele += h.Count * h.ElementModifier;
+            }
+            fixedDamage += h.Fixed * h.Count;
             if (h.ChargedLv3) shockwaves += h.Count;
         }
 
-        var name = phial is { } ph ? $"{attack.Name} ({ph} phial)"
-            : weapon.Type == WeaponType.Bow && weapon.Coating is { } coating ? $"{attack.Name} ({CoatingName(coating)} coating)"
-            : attack.Name;
+        var name = weapon.Type switch
+        {
+            WeaponType.SwitchAxe => $"{attack.Name} ({Attacks.PhialOf(weapon.Focus, weapon.Element)} phial)",
+            WeaponType.ChargeBlade => $"{attack.Name} ({Attacks.ChargeBladePhialOf(weapon.Focus, weapon.Element)} phial)",
+            WeaponType.Gunlance => $"{attack.Name} ({Attacks.ShellingOf(weapon.Focus)} shelling Lv{DamageConstants.ArtianShellLevel})",
+            WeaponType.Bow when weapon.Coating is { } coating => $"{attack.Name} ({CoatingName(coating)} coating)",
+            _ => attack.Name,
+        };
+        // fixed damage ignores the hitzone: on the raw-hitzone-100 scale of the score it counts as more on a softer target
         return new ResolvedAttackProfile(name, HitsPerMinute ?? hits * 60.0 / attack.Seconds, hits, totalMv, raw / totalMv, ele * ratio * 100.0 / totalMv,
-            shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack", ShotShares.Of(resolved));
+            shockwaves, ratio, target.RawHitzone, IsSequence ? "sequence" : "attack", ShotShares.Of(resolved.Where(h => !h.NoCrit)))
+        {
+            NoCritRawFactor = rawNoCrit / totalMv,
+            NoCritElementFactor = eleNoCrit * ratio * 100.0 / totalMv,
+            FixedDamage = fixedDamage * 100.0 / target.RawHitzone,
+        };
     }
 
     /// <summary>"Close-range" / "Power" / "Pierce", as the game names the coatings.</summary>
@@ -97,8 +116,9 @@ public sealed record AttackProfile
     /// <summary>
     /// The hits as they land on <paramref name="target"/> with <paramref name="weapon"/>: the power True Charged Slash finisher on a
     /// weak spot (raw hitzone x sharpness of 45 or more), fixed sharpness (the tackle), the Switch Axe phial and the bow's coating
-    /// (with the Pierce coating every arrow lands <paramref name="pierceHits"/> times, each hit weaker than the one before) and the Long Sword's
-    /// Spirit Gauge (the hit's own or <paramref name="gauge"/>). Raw
+    /// (with the Pierce coating every arrow lands <paramref name="pierceHits"/> times, each hit weaker than the one before), the Long Sword's
+    /// Spirit Gauge (the hit's own or <paramref name="gauge"/>), the Gunlance shelling and the Charge Blade phial. A hit that ignores the
+    /// hitzone gets 100 / raw hitzone on its raw modifier. Raw
     /// damage of a hit is true raw x MV / 100 x <see cref="ResolvedHit.RawModifier"/>, element damage true element x
     /// <see cref="ResolvedHit.ElementModifier"/>, both before hitzones, crits and shot skills.
     /// </summary>
@@ -108,6 +128,8 @@ public sealed record AttackProfile
         var sharpEle = weapon.TopSharpness is { } s2 ? DamageConstants.SharpnessElement(s2) : 1.0;
         SwitchAxePhial? phial = weapon.Type == WeaponType.SwitchAxe ? Attacks.PhialOf(weapon.Focus, weapon.Element) : null;
         BowCoating? coating = weapon.Type == WeaponType.Bow ? weapon.Coating : null;
+        ChargeBladePhial? cbPhial = weapon.Type == WeaponType.ChargeBlade ? Attacks.ChargeBladePhialOf(weapon.Focus, weapon.Element) : null;
+        GunlanceShelling? shelling = weapon.Type == WeaponType.Gunlance ? Attacks.ShellingOf(weapon.Focus) : null;
         var weakSpot = target.RawHitzone * sharpRaw >= DamageConstants.WeakPointHitzone;
         var result = new List<ResolvedHit>();
         foreach (var hit in hits)
@@ -117,6 +139,36 @@ public sealed record AttackProfile
             if (weakSpot && hit.Power is { } power) { h = power; notes.Add("power version on a weak spot"); }
             var sr = sharpRaw;
             var se = sharpEle;
+            double fixedDamage = 0;
+            if (h.Shell is { } shot && shelling is { } shellType)
+            {
+                var (mv, fire) = DamageConstants.Shell(shellType, shot, DamageConstants.ArtianShellLevel);
+                if (shot == GunlanceShot.WyrmstakeTick)
+                    h = h with { Mv = mv };
+                else
+                {
+                    h = h with { Mv = mv, Element = 0, NoCrit = true, IgnoresHitzone = true };
+                    sr = 1.0;
+                    fixedDamage = fire;
+                    notes.Add(FormattableString.Invariant($"{shellType} shelling Lv{DamageConstants.ArtianShellLevel}: {mv} MV without sharpness, + {fire} fixed fire"));
+                }
+            }
+            if (h.PhialBurstElement is { } burstElement && cbPhial is { } cb)
+            {
+                h = cb == ChargeBladePhial.Element ? h with { Mv = 0, Element = burstElement } : h with { Element = 0 };
+                notes.Add(cb == ChargeBladePhial.Element ? FormattableString.Invariant($"Element phial: element x{burstElement}, no raw") : "Impact phial: raw, no element");
+            }
+            if (h.IgnoresSharpness)
+            {
+                sr = se = 1.0;
+                notes.Add("ignores sharpness");
+            }
+            if (h.FixedElement is { } fe)
+            {
+                var hz = target.ElementHitzoneFor(fe.Element);
+                fixedDamage += fe.Value * hz / 100.0;
+                notes.Add(FormattableString.Invariant($"fixed {fe.Value} {fe.Element.ToString().ToLowerInvariant()} element at hitzone {hz:0.#}"));
+            }
             if (h.FixedSharpness is { } fixedSharpness)
             {
                 sr = DamageConstants.SharpnessRaw(fixedSharpness);
@@ -141,8 +193,14 @@ public sealed record AttackProfile
                 rawMult *= spirit;
                 notes.Add(FormattableString.Invariant($"{(h.Spirit ?? gauge).ToString().ToLowerInvariant()} Spirit Gauge raw x{spirit}"));
             }
+            if (h.IgnoresHitzone)
+            {
+                rawMult *= 100.0 / target.RawHitzone;
+                notes.Add("raw ignores the hitzone");
+            }
+            if (h.NoCrit) notes.Add("cannot crit");
             if (h.ChargedLv3) notes.Add("Lv3 charged slash");
-            result.Add(new ResolvedHit(h.Name, count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes, h.Shot));
+            result.Add(new ResolvedHit(h.Name, count, h.Mv, sr * rawMult, eleMod * se * eleMult, h.ChargedLv3, notes, h.Shot, h.NoCrit, fixedDamage));
         }
         return result;
     }
@@ -326,8 +384,10 @@ public readonly record struct ShotShares(double Normal, double Power, double Dra
 /// <param name="ElementModifier">Element modifier x element sharpness x phial (multiplies true element).</param>
 /// <param name="Notes">What changed the hit: power version, fixed sharpness, phial, coating, Lv3 charged slash.</param>
 /// <param name="Shot">Bow arrows: the kind, which decides the shot skill that boosts its raw (<see cref="ShotBoosts"/>).</param>
+/// <param name="NoCrit">The hit never crits (nor is feeble).</param>
+/// <param name="Fixed">Fixed damage of one hit, the same for every build (Gunlance shell fire, Hunting Horn Echo Wave element).</param>
 public sealed record ResolvedHit(string Name, int Count, double Mv, double RawModifier, double ElementModifier, bool ChargedLv3, IReadOnlyList<string> Notes,
-    BowShot? Shot = null);
+    BowShot? Shot = null, bool NoCrit = false, double Fixed = 0);
 
 /// <summary>
 /// The attack as the calculator uses it, per execution of the attack:
@@ -346,6 +406,13 @@ public readonly record struct ResolvedAttackProfile(
     string Name, double HitsPerMinute, double Hits, double TotalMv, double RawFactor, double ElementFactor, double Shockwaves, double ElementHitzoneRatio,
     double RawHitzone = 100, string Execution = "attack", ShotShares Shots = default)
 {
+    /// <summary>Like <see cref="RawFactor"/> for the hits that cannot crit: their raw per 100 MV is true raw x this.</summary>
+    public double NoCritRawFactor { get; init; }
+    /// <summary>Like <see cref="ElementFactor"/> for the hits that cannot crit.</summary>
+    public double NoCritElementFactor { get; init; }
+    /// <summary>Fixed damage of one execution (shell fire, Echo Wave element), on the raw-hitzone-100 scale; a proc of <see cref="DamageCalculator"/>.</summary>
+    public double FixedDamage { get; init; }
+
     public double SecondsPerHit => 60.0 / HitsPerMinute;
 
     public double AverageMv => TotalMv / Hits;
