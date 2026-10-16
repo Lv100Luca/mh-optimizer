@@ -529,6 +529,7 @@ dl.stats dd { margin: 0; }
 .statchip.atk b { color: #f26b5c; }
 .statchip.aff b { color: var(--accent); }
 .statchip.crit b { color: #ffa14f; }
+.statchip.def b { color: #6fa8dc; }
 .statchip.sharp, .statchip.ele { border-color: var(--tint); color: var(--tint); }
 .stathover .statchip { cursor: help; }
 .stattip table { border-collapse: collapse; }
