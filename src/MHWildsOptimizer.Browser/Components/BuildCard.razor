@@ -167,7 +167,14 @@
                     {
                         <tr @key="a.Kind">
                             <td class="icon-cell"><img class="icon" src="@GameIcons.Armor(a.Kind, a.Rarity)" alt="" width="32" height="32" /></td>
-                            <td class="piece">@BuildHelpers.PieceLabel(a.Kind)</td>
+                            <td class="piece">
+                                @BuildHelpers.PieceLabel(a.Kind)
+                                @if (OnToggleLock.HasDelegate)
+                                {
+                                    var locked = Locked?.Contains(a.Name) == true;
+                                    <LockButton Piece="a" Locked="locked" OnClick="() => OnToggleLock.InvokeAsync(a)">@(locked ? "Locked" : "Lock")</LockButton>
+                                }
+                            </td>
                             <td class="name">
                                 <b>@a.Name</b> <RarityBadge Rarity="a.Rarity" Transcended="a.Transcended" />
                                 <div class="muted small">
@@ -316,6 +323,9 @@
     [Parameter] public bool Compact { get; set; }
     /// <summary>With weapon tuning: "Use this weapon" puts the build's weapon on the Weapon tab.</summary>
     [Parameter] public EventCallback<GogmaWeaponSpecInput> OnUseWeapon { get; set; }
+    /// <summary>With a handler, each armor row gets a lock button; <see cref="Locked"/> names the pieces shown as locked.</summary>
+    [Parameter] public EventCallback<BuildArmorDto> OnToggleLock { get; set; }
+    [Parameter] public IReadOnlySet<string>? Locked { get; set; }
 
     private bool _open;
     private bool _breakdown;

@@ -304,6 +304,7 @@
     {
         var baseBuild = baseline?.Build;
         var cols = baseBuild is not null ? 7 : 4;
+        var locked = LockedPieces();
         <div class="table-scroll">
             <table class="table results-table">
                 <thead>
@@ -375,8 +376,15 @@
                                         }
                                     </div>
                                 }
-                                <div class="muted tiny result-armor" title="Head · chest · arms · waist · legs · talisman">
-                                    @string.Join(" · ", b.Armor.Select(a => a.Name).Concat(b.Talisman is { } t ? [t.Name] : []))
+                                <div class="muted tiny result-armor">
+                                    @foreach (var a in b.Armor)
+                                    {
+                                        <LockButton @key="a.Kind" Piece="a" Locked="locked.Contains(a.Name)" Class="inline" OnClick="() => ToggleLock(a)">@a.Name</LockButton>
+                                    }
+                                    @if (b.Talisman is { } t)
+                                    {
+                                        <span class="result-talisman">@t.Name</span>
+                                    }
                                 </div>
                                 @if (b.WeaponOptions is { Count: > 0 })
                                 {
@@ -431,6 +439,7 @@
         var label = Label(result, row);
         var open = _open.Contains(row.Key) && row.Diff is not null;
         <BuildCard @key="row.Key" Build="b" Best="@(row.Pair.Rank == 1 && b.Rank == 1)" OnUseWeapon="UseWeapon"
+                   Locked="LockedPieces()" OnToggleLock="ToggleLock"
                    Delta="@(baseline?.Build is { } bb ? DeltaTo(b, bb, baseName) : null)">
             <Summary>
                 @if (row.Diff is { } diff)
@@ -571,6 +580,23 @@
     /// <summary>The Weapon tab's weapon described like a tuned build's (the rolled pair and slots stay).</summary>
     private void UseWeapon(GogmaWeaponSpecInput spec) =>
         App.PatchWeapon(w => w with { Spec = spec, Type = null, Attack = null });
+
+    private ArmorPieceKind? KindOf(string name) => Cat.ArmorByName.TryGetValue(name, out var e) ? e.Kind : null;
+
+    /// <summary>Allowed armor pieces that are the only one allowed for their kind: every run has to use them.</summary>
+    private HashSet<string> LockedPieces()
+    {
+        var included = App.Request?.Options.IncludeArmor ?? [];
+        return included.GroupBy(KindOf).Where(g => g.Key is not null && g.Count() == 1).Select(g => g.First()).ToHashSet();
+    }
+
+    /// <summary>Locking makes the piece the only allowed one of its kind; unlocking opens the kind again.</summary>
+    private void ToggleLock(BuildArmorDto a) => App.PatchOptions(o => o with
+    {
+        IncludeArmor = LockedPieces().Contains(a.Name)
+            ? o.IncludeArmor.Where(n => n != a.Name).ToList()
+            : [.. o.IncludeArmor.Where(n => KindOf(n) != a.Kind), a.Name],
+    });
 
     private void EditCopy(BuildDto b, string label, BuildRef r) =>
         App.AddBuild(BuildHelpers.FromBuild(b, BuildHelpers.UniqueName($"{label} (copy)", BuildNames)), $"opt:{r.Pair}:{r.Rank}");
