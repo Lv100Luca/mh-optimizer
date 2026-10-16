@@ -542,6 +542,9 @@ dl.stats dd { margin: 0; }
 .table.equip .icon-cell { width: 40px; }
 .table.equip .piece { width: 70px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 .table.equip .name { min-width: 180px; }
+.lock-btn { display: flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 11px; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.lock-btn:hover { color: var(--text); border-color: var(--border-2); }
+.lock-btn.on { color: var(--accent); border-color: var(--accent); background: rgba(227, 182, 78, 0.1); }
 .table.equip .name .small { display: flex; gap: 10px; flex-wrap: wrap; }
 .table.equip .decos { width: 270px; }
 .slotdecos { display: inline-flex; flex-direction: column; gap: 4px; align-items: flex-start; }
@@ -913,7 +916,12 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .table.results-table td { vertical-align: middle; }
 .results-table td.result-build { min-width: 240px; max-width: 420px; vertical-align: top; }
 .results-table .result-sets { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-.results-table .result-armor { margin-top: 4px; white-space: normal; line-height: 1.4; }
+.results-table .result-armor { margin-top: 4px; white-space: normal; line-height: 1.4; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+.lock-btn.inline { margin: 0; padding: 0 5px 0 3px; border-color: transparent; color: inherit; font-size: inherit; }
+.lock-btn.inline svg { opacity: 0.4; }
+.lock-btn.inline:hover svg, .lock-btn.inline.on svg { opacity: 1; }
+.lock-btn.inline.on { color: var(--accent); border-color: var(--accent); }
+.result-talisman { padding: 0 5px; }
 .results-table td.result-skills { vertical-align: top; }
 .results-table td.result-skills .chip-row { gap: 4px; }
 .results-table .dmg { font-size: 15px; color: var(--ok); }
