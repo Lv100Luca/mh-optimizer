@@ -179,7 +179,8 @@ public sealed class Optimizer
     {
         var started = DateTime.UtcNow;
         var threads = _request.Options.EffectiveThreads;
-        var workers = CpSatParameters.For(threads, _request.Options.CpSatTimeLimitSeconds).Workers;
+        // every thread in a lane: 4 workers each, the rest in one more (14 threads: 4, 4, 4, 2)
+        var laneWorkers = CpSatParameters.LaneWorkers(threads);
         var topN = _request.Options.TopN;
 
         var scores = new ScoreDecompositionCache();
@@ -187,24 +188,23 @@ public sealed class Optimizer
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
             var cls = FixedClass();
-            // one search: a solve that takes long is split into parts proved side by side on the spare threads
-            var split = Math.Max(1, threads / workers);
-            progress?.Report($"Searching builds for {PairText(cls)} on {workers} of the {Plural(threads, "thread")}" +
-                             (split > 1 ? $"; a build not proved within {CpSatSearch.DefaultSplitAfterSeconds:0} s is split into parts proved {split} at a time" : ""));
+            // one search: one that takes long is split into parts searched side by side on every lane
+            progress?.Report($"Searching builds for {PairText(cls)} on {Plural(threads, "thread")}" +
+                             (laneWorkers.Count > 1 ? $": a search not proved within {CpSatSearch.DefaultSplitAfterSeconds:0} s is split into parts searched {laneWorkers.Count} at a time ({LaneText(laneWorkers)})" : ""));
             if (_starts.Count > 0)
-                return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct, Stages, split)).Result, _starts, progress, Stages)],
+                return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct, Stages, laneWorkers, split: true)).Result, _starts, progress, Stages)],
                     DateTime.UtcNow - started);
             Stages?.Set(0, "Searching the armor");
-            var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct, Stages, split);
+            var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct, Stages, laneWorkers, split: true);
             return new OptimizationResult([fixedSearch.Result], DateTime.UtcNow - started);
         }
 
         // classes with a named set bonus and group skill tend to score highest: solving them first makes the cutoff bite sooner
         var classes = Classes().OrderByDescending(c => c.Specific).ToList();
         var shown = _request.SkillPair.TopN;
-        var lanes = Math.Max(1, threads / workers);
+        var lanes = laneWorkers.Count;
         progress?.Report($"{classes.Count} skill pair classes that score differently, {Plural(Math.Min(lanes, classes.Count), "class", "classes")} at a time " +
-                         $"on {workers} threads each: the best build of every class, then the top {topN} of the best {shown}");
+                         $"({LaneText(laneWorkers)}): the best build of every class, then the top {topN} of the best {shown}");
         Stages?.Set(0, $"Skill pair classes: 0 of {classes.Count} searched");
 
         if (_starts.Count > 0) return await RunTunedCpSatAsync(classes, lanes, topN, shown, scores, progress, ct, started);
@@ -356,6 +356,11 @@ public sealed class Optimizer
             .Concat(l.ArmorPieces.Select(a => $"{a.Piece.Name}{(a.Transcended ? "*" : "")}:{Decos(a.Decos)}")));
     }
 
+    /// <summary>The threads of each lane: "4 threads each", or "4, 4, 4 and 2 threads".</summary>
+    private static string LaneText(IReadOnlyList<int> laneWorkers) =>
+        laneWorkers.Distinct().Count() == 1 ? $"{Plural(laneWorkers[0], "thread")} each"
+            : $"{string.Join(", ", laneWorkers.SkipLast(1))} and {laneWorkers[^1]} threads";
+
     /// <summary>Runs <paramref name="body"/> for every item, at most <paramref name="lanes"/> at a time, each run knowing its lane.</summary>
     private static async Task ForEachOnLanesAsync<T>(IReadOnlyList<T> items, int lanes, Func<T, int, Task> body, CancellationToken ct)
     {
@@ -412,7 +417,7 @@ public sealed class Optimizer
     }
 
     private async Task<ClassSearch> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, ScoreDecompositionCache scores,
-        IProgress<string>? progress, CancellationToken ct, RunStage? stage = null, int splitLanes = 1)
+        IProgress<string>? progress, CancellationToken ct, RunStage? stage = null, IReadOnlyList<int>? laneWorkers = null, bool split = false)
     {
         // the candidates and the model are long synchronous work: a single-threaded host (the browser, where this shares the
         // page's thread) gets to update the page before and every few tens of ms during a class's setup (the pacer);
@@ -429,7 +434,7 @@ public sealed class Optimizer
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
         {
             Backend = _cpSat, Pacer = pacer, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds,
-            Rolls = c.Rolls, Stage = stage, SplitLanes = splitLanes,
+            Rolls = c.Rolls, Stage = stage, LaneWorkers = laneWorkers ?? CpSatParameters.LaneWorkers(_request.Options.EffectiveThreads), Split = split,
         };
         var search = new ClassSearch(cls, c, cp, candidatesTime);
         search.Finish(await cp.RunAsync());
