@@ -187,13 +187,15 @@ public sealed class Optimizer
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
             var cls = FixedClass();
-            progress?.Report($"Searching builds for {PairText(cls)}: one solve at a time, on {workers} of the {Plural(threads, "thread")} " +
-                             "(a single solve gets no faster with more; spare threads only help when the skill pair is optimized)");
+            // one search: a solve that takes long is split into parts proved side by side on the spare threads
+            var split = Math.Max(1, threads / workers);
+            progress?.Report($"Searching builds for {PairText(cls)} on {workers} of the {Plural(threads, "thread")}" +
+                             (split > 1 ? $"; a build not proved within {CpSatSearch.DefaultSplitAfterSeconds:0} s is split into parts proved {split} at a time" : ""));
             if (_starts.Count > 0)
-                return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct, Stages)).Result, _starts, progress, Stages)],
+                return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct, Stages, split)).Result, _starts, progress, Stages)],
                     DateTime.UtcNow - started);
             Stages?.Set(0, "Searching the armor");
-            var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct, Stages);
+            var fixedSearch = await CpSatSearchAsync(cls, topN, null, 0, scores, progress, ct, Stages, split);
             return new OptimizationResult([fixedSearch.Result], DateTime.UtcNow - started);
         }
 
@@ -410,7 +412,7 @@ public sealed class Optimizer
     }
 
     private async Task<ClassSearch> CpSatSearchAsync(SkillPairClass cls, int topN, long? cutoff, int lane, ScoreDecompositionCache scores,
-        IProgress<string>? progress, CancellationToken ct, RunStage? stage = null)
+        IProgress<string>? progress, CancellationToken ct, RunStage? stage = null, int splitLanes = 1)
     {
         // the candidates and the model are long synchronous work: a single-threaded host (the browser, where this shares the
         // page's thread) gets to update the page before and every few tens of ms during a class's setup (the pacer);
@@ -427,7 +429,7 @@ public sealed class Optimizer
             _request.Options.EffectiveThreads, _request.Options.CpSatTimeLimitSeconds, progress, ct)
         {
             Backend = _cpSat, Pacer = pacer, Lane = lane, Cutoff = cutoff, Scores = scores, RankTimeLimitSeconds = _request.Options.CpSatRankTimeLimitSeconds,
-            Rolls = c.Rolls, Stage = stage,
+            Rolls = c.Rolls, Stage = stage, SplitLanes = splitLanes,
         };
         var search = new ClassSearch(cls, c, cp, candidatesTime);
         search.Finish(await cp.RunAsync());

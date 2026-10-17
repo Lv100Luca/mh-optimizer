@@ -41,14 +41,17 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
 
     /// <summary>
     /// The plain case, and a Great Sword attack sequence whose Strong Charged Slash step runs without Maximum Might (after a
-    /// tackle): the CP model adds the sequence's segments up weighted by their motion value.
+    /// tackle): the CP model adds the sequence's segments up weighted by their motion value. <paramref name="split"/> solves
+    /// every build after the first as parts on four lanes at once (<see cref="CpSatSearch.SplitLanes"/>).
     /// </summary>
     [Theory]
-    [InlineData("long sword")]
-    [InlineData("great sword sequence")]
-    [InlineData("bow dash dance")]
-    [InlineData("long sword buffed")]
-    public void CpSatMatchesAnExhaustiveEnumeration(string name)
+    [InlineData("long sword", false)]
+    [InlineData("great sword sequence", false)]
+    [InlineData("bow dash dance", false)]
+    [InlineData("long sword buffed", false)]
+    [InlineData("long sword", true)]
+    [InlineData("bow dash dance", true)]
+    public void CpSatMatchesAnExhaustiveEnumeration(string name, bool split)
     {
         var data = TestData.Data;
         var conditions = Conditions.AllOff with
@@ -102,7 +105,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         output.WriteLine($"exhaustive: {brute.Combinations} armor + talisman combinations, {brute.Feasible} meet the targets, {brute.DistinctScores} distinct best scores, {brute.TiedAtTop} tied at the top, {sw.ElapsedMilliseconds} ms");
         output.WriteLine($"pruned before the solve: {string.Join(", ", data.Armor.Where(a => a.Rarity >= 7 && KeptSets.Contains(a.Set ?? "") && !candidates.Contains(a.Name)).Select(a => a.Name))}");
         sw.Restart();
-        var cp = new Optimizer(data, resolved).Run().PairResults.Single();
+        var cp = split ? SplitSearch(data, resolved, rel) : new Optimizer(data, resolved).Run().PairResults.Single();
         output.WriteLine($"cp-sat: {cp.CandidateSummary}, {sw.ElapsedMilliseconds} ms");
         for (var i = 0; i < TopN; i++)
             output.WriteLine($"#{i + 1}  exhaustive {brute.BestOfCandidates[i].Score:0.000} {brute.BestOfCandidates[i].Key}   cp-sat {(i < cp.Builds.Count ? $"{cp.Builds[i].Score:0.000} {Key(cp.Builds[i].Loadout)}" : "-")}");
@@ -126,6 +129,21 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         // a clear winner must be the same armor + talisman
         if (brute.BestOfCandidates[0].Score - brute.BestOfCandidates[1].Score > RoundingBand)
             Assert.Equal(brute.BestOfCandidates[0].Key, Key(cp.Builds[0].Loadout));
+    }
+
+    /// <summary>The fixed pair's search with every solve after the first split into parts on four lanes, no short solve first.</summary>
+    private static SkillPairResult SplitSearch(GameData data, ResolvedRequest resolved, Relevance rel)
+    {
+        var armor = Candidates.Armor(data, rel, resolved.Options);
+        var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
+        var search = new CpSatSearch(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
+            Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, null, CancellationToken.None)
+        {
+            SplitLanes = 4, SplitAfterSeconds = 0,
+        };
+        var builds = search.Run();
+        Assert.Contains("parts on 4 lanes", search.LastSplit ?? "");
+        return new SkillPairResult("split", null, builds.ToList(), search.Solves, search.Summary, OptimizerEngine.CpSat);
     }
 
     private static string Key(Loadout l) => string.Join(" | ", l.ArmorPieces.OrderBy(a => a.Piece.Piece).Select(a => a.Piece.Name)) + " | " + l.Talisman?.Talisman.Name;
