@@ -22,40 +22,38 @@
             var target = Targets.GetValueOrDefault(s.Name);
             int? limit = Limits.TryGetValue(s.Name, out var l) ? l : null;
             var excluded = limit == 0;
-            var rank = s.Ranks.FirstOrDefault(r => r.Level == (target > 0 ? target : 1));
             var bonus = IsBonus(s);
+            var hoverLevel = target > 0 ? target : (int?)null;
+            var fromPreset = PresetLimits?.TryGetValue(s.Name, out var presetCap) == true && presetCap == limit;
+            var fromStart = StartingTargets?.TryGetValue(s.Name, out var start) == true && start == target;
+            var notes = excluded
+                ? ["Excluded: never slotted or chased, and not valued when a build has it anyway."]
+                : new List<string?>
+                {
+                    target > 0 && bonus ? $"every build must carry {PiecesRequired(s, target)} pieces; the weapon counts when it rolled this bonus" : null,
+                    limit is { } cap ? $"{(s.Kind == SkillKind.Set ? $"tiers above {Fmt.Roman(cap)}" : $"levels above {cap}")} are shown but not valued" : null,
+                }.OfType<string>().ToList();
             <div @key="s.Name" class="skillrow @Kind(s) @(excluded ? "excluded" : "")">
-                <SkillIcon Name="@s.Name" Size="28" />
+                @* the description and every rank sit in the hover card of the icon and name *@
+                <SkillHover Name="@s.Name" Level="hoverLevel"><SkillIcon Name="@s.Name" Size="28" /></SkillHover>
                 <div class="skillrow-main">
                     <div class="skillrow-title">
-                        <b>@s.Name</b> <KindTag Kind="s.Kind" /> <span class="muted">@(bonus ? PiecesText(s) : $"max {s.MaxLevel}")</span>
+                        <SkillHover Name="@s.Name" Level="hoverLevel"><b>@s.Name</b></SkillHover> <KindTag Kind="s.Kind" /> <span class="muted">@(bonus ? PiecesText(s) : $"max {s.MaxLevel}")</span>
                     </div>
-                    <div class="muted small">
-                        @if (excluded)
-                        {
-                            <text>Excluded: never slotted or chased, and not valued when a build has it anyway.</text>
-                        }
-                        else
-                        {
-                            @(bonus && rank?.Name is not null ? $"{rank.Name}: {rank.Description ?? ""}" : rank?.Description ?? s.Description)
-                            @if (target > 0 && bonus)
+                    @if (notes.Count > 0 || (!excluded && (fromPreset || fromStart)))
+                    {
+                        <div class="muted small">
+                            @string.Join(" · ", notes)
+                            @if (!excluded && fromPreset)
                             {
-                                <text> · every build must carry @PiecesRequired(s, target) pieces; the weapon counts when it rolled this bonus</text>
+                                <span class="preset-source" title="@($"Skill limits come with the {PresetLabel} preset (Conditions tab); every {PresetLabel} of the profile starts from it")">@(notes.Count > 0 ? " · " : "")from the @PresetLabel preset</span>
                             }
-                            @if (limit is { } cap)
+                            @if (!excluded && fromStart)
                             {
-                                <text> · @(s.Kind == SkillKind.Set ? $"tiers above {Fmt.Roman(cap)}" : $"levels above {cap}") are shown but not valued</text>
+                                <span class="preset-source" title="@($"Every new {PresetLabel} starts with this target; change or remove it like any other")">@(notes.Count > 0 || fromPreset ? " · " : "")@PresetLabel default</span>
                             }
-                            @if (PresetLimits?.TryGetValue(s.Name, out var presetCap) == true && presetCap == limit)
-                            {
-                                <span class="preset-source" title="@($"Skill limits come with the {PresetLabel} preset (Conditions tab); every {PresetLabel} of the profile starts from it")"> · from the @PresetLabel preset</span>
-                            }
-                            @if (StartingTargets?.TryGetValue(s.Name, out var start) == true && start == target)
-                            {
-                                <span class="preset-source" title="@($"Every new {PresetLabel} starts with this target; change or remove it like any other")"> · @PresetLabel default</span>
-                            }
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
                 <div class="skillrow-actions">
                     @if (!excluded)
