@@ -30,7 +30,13 @@ public sealed class CatalogIndex
         TechTreeByName = catalog.TechTreeWeapons.ToDictionary(w => w.Name);
         TechTreeByKind = catalog.TechTreeWeapons.GroupBy(w => w.Kind)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<TechTreeWeapon>)g.OrderBy(w => w.Tree).ThenByDescending(w => w.Rarity).ThenByDescending(w => w.Raw).ToList());
+        _charmLines = catalog.Charms.GroupBy(c => c.Line).ToDictionary(g => g.Key, g => (IReadOnlyList<CharmDto>)g.OrderBy(c => c.Level).ToList());
     }
+
+    private readonly Dictionary<int, IReadOnlyList<CharmDto>> _charmLines;
+
+    /// <summary>Every rank of the charm's line, rank I first.</summary>
+    public IReadOnlyList<CharmDto> CharmRanks(CharmDto charm) => _charmLines.GetValueOrDefault(charm.Line) ?? [charm];
 
     public IReadOnlyDictionary<string, SkillDto> SkillsByName { get; }
     public IReadOnlyDictionary<string, ArmorSetDto> SetsByName { get; }

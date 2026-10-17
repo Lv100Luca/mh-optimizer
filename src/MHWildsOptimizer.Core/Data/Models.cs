@@ -39,7 +39,12 @@ public sealed record Decoration(int Id, string Name, SkillKind Kind, int Slot, i
     public override string ToString() => Name;
 }
 
-public sealed record Charm(int CharmId, string Name, int Level, int Rarity, bool IsMaxRank, IReadOnlyList<SkillGrant> Skills)
+/// <summary>What a charm rank costs at the smithy: rank I is crafted, every later rank is an upgrade of the rank before it.</summary>
+public sealed record CharmCrafting(int Zenny, IReadOnlyList<CraftMaterial> Materials);
+
+public sealed record CraftMaterial(string Item, int Quantity);
+
+public sealed record Charm(int CharmId, string Name, int Level, int Rarity, bool IsMaxRank, IReadOnlyList<SkillGrant> Skills, CharmCrafting? Crafting = null)
 {
     public override string ToString() => Name;
 }
