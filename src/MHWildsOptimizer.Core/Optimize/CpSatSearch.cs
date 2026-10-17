@@ -70,10 +70,10 @@ internal sealed class CpSatSearch
     public IReadOnlyList<int>? LaneWorkers { get; init; }
 
     /// <summary>
-    /// Spread this search over all <see cref="LaneWorkers"/> (one fixed skill pair: nothing else runs side by side). When the
-    /// first solve is not proved within <see cref="SplitAfterSeconds"/>, the search is split by the states of its largest skill
-    /// groups, and the parts look for their own top N side by side above a shared cutoff (<see cref="SplitTopAsync"/>). CP-SAT
-    /// itself gets no faster with more workers, and its proof time varies a lot from run to run; the parts have far tighter bounds.
+    /// Spread this search over all <see cref="LaneWorkers"/> (one fixed skill pair: nothing else runs side by side): after a
+    /// first solve of <see cref="SplitAfterSeconds"/>, the top N is searched by regions of the skill groups' states, best bound
+    /// first, every lane at once (<see cref="SplitTopAsync"/>). CP-SAT itself gets no faster with more workers, and its proof
+    /// time varies a lot from run to run; a region with its largest skill groups fixed is proved or ruled out in seconds.
     /// </summary>
     public bool Split { get; init; }
     private int SplitLanes => Split && LaneWorkers is { Count: > 1 } lanes ? lanes.Count : 1;
@@ -84,17 +84,15 @@ internal sealed class CpSatSearch
             ? CpSatParameters.For(lanes[lane], timeLimitSeconds)
             : _defaultParameters with { TimeLimitSeconds = timeLimitSeconds };
 
-    /// <summary>A split search first looks this long (at most a quarter of its time limit) for a build the parts must beat; 0 splits at once.</summary>
+    /// <summary>A split search first looks this long (at most a quarter of its time limit) for a build the regions must beat; 0 splits at once.</summary>
     public double SplitAfterSeconds { get; init; } = DefaultSplitAfterSeconds;
     public const double DefaultSplitAfterSeconds = 3;
-    /// <summary>Split into at least this many parts per lane, so a slow part does not hold up the others for long.</summary>
+    /// <summary>One solve of a region gets the search's time over this many solves per lane (at least <see cref="SplitAfterSeconds"/>).</summary>
     public const int SplitPartsPerLane = 8;
-    private CpSolverResponse? _incumbent;
-    private string? _split;
-    /// <summary>How the last split solve went ("48 parts on 4 lanes"); null if none was split.</summary>
+    /// <summary>How many 1 % steps the bar the regions must beat takes down from the seed build before it is dropped (<see cref="SplitTopAsync"/>).</summary>
+    public const int ProvisionalSteps = 5;
+    /// <summary>How the last split search went ("58 part solves on 4 lanes, 2 regions not finished"); null if none was split.</summary>
     public string? LastSplit { get; private set; }
-    /// <summary>Builds a split solve found besides its best: the next build's split starts from the best one not excluded yet.</summary>
-    private readonly List<CpSolverResponse> _pool = [];
     /// <summary>The armor + talisman combinations of the builds found, which the next solves exclude.</summary>
     private readonly List<List<ILiteral>> _excluded = [];
     public string Summary { get; private set; } = "";
@@ -156,6 +154,9 @@ internal sealed class CpSatSearch
     private CpModel? _model;
     private Vars? _vars;
     private Constraint? _cutoff;
+    /// <summary>MHW_CPSAT_TRACE=1: every part solve in the progress log.</summary>
+    private static readonly bool Trace = Environment.GetEnvironmentVariable("MHW_CPSAT_TRACE") == "1";
+    private void TraceLine(string line) { if (_progress is not null) _progress.Report(line); else Console.Error.WriteLine(line); }
     private readonly List<RankedBuild> _builds = [];
     private readonly HashSet<string> _seen = [];
     private readonly List<string> _statuses = [];
@@ -202,10 +203,7 @@ internal sealed class CpSatSearch
             // building the model and handing it to the solver (serialized, through the page) are separate stretches of the host's thread
             await Pacer.PauseAsync();
             var solveSw = Stopwatch.StartNew();
-            _split = null;
-            if (!trying && _incumbent is null && SplitLanes > 1) _incumbent = FromPool();
-            var response = trying ? await Backend.SolveAsync(model, parameters, Lane, _ct) : await SolveSplitAsync(model, vars, parameters, _incumbent, number);
-            _incumbent = null;
+            var response = await Backend.SolveAsync(model, parameters, Lane, _ct);
             SolveTime += solveSw.Elapsed;
             var status = response.Status;
             _ct.ThrowIfCancellationRequested();
@@ -216,8 +214,6 @@ internal sealed class CpSatSearch
                                   ": narrowing the search");
                 Stage?.Set(2, "build 1: narrowing the search");
                 await TightenAsync();
-                // narrowing keeps every build, so the build found stays the one to beat
-                if (status == CpSolverStatus.Feasible) _incumbent = response;
                 continue;
             }
             Solves++;
@@ -235,7 +231,7 @@ internal sealed class CpSatSearch
             var bound = response.BestObjectiveBound / ObjectiveScale / Micro;
             var proof = status == CpSolverStatus.Optimal ? new SolveProof(ProofKind.Proved, 0, parameters.TimeLimitSeconds)
                 : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
-            Record(response, proof, number, bound, $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
+            Record(response, proof, number, bound, $" in {solveSw.Elapsed.TotalSeconds:0.0} s");
         }
         return Finish(topN);
     }
@@ -293,12 +289,14 @@ internal sealed class CpSatSearch
 
     /// <summary>
     /// The search spread over every lane (<see cref="Split"/>). The first lane looks for a build for <see cref="SplitAfterSeconds"/>
-    /// while the others narrow the damage factors; a first build proved by then is kept, and the search goes on one solve at a
-    /// time (false). Otherwise the parts look for their top N side by side: a part is solved again and again with the builds it
-    /// found excluded, every solve must beat the Nth best build found anywhere so far, and a part is done once it is infeasible
-    /// or has N builds of its own. All parts done proves the top N; when the time runs out, a build is still proved if no
-    /// unfinished part can beat it. The time is what the solves one at a time would get: the time limit for the first build,
-    /// the rank time limit for each further one.
+    /// while the others narrow the damage factors. Then the top N is searched by regions: a region is the model with its first
+    /// few skill groups (largest first) fixed to one state each, the open regions are solved best bound first on every lane,
+    /// each solve excludes every build found so far and must beat the Nth best of them (until N better ones are known, the
+    /// seed build: regions ruled out under that come back if the top N reaches below it). A proved solve adds its build and
+    /// bounds the region by it; an infeasible one rules the region out; one not done within its time slice splits the region
+    /// by its next skill group. No region left proves the top N; when the time runs out, a build is still proved if no open
+    /// region can beat it. The time is what the solves one at a time would get: the time limit for the first build, the rank
+    /// time limit for each further one. Always true: the search is complete (the builds are recorded).
     /// </summary>
     private async Task<bool> SplitTopAsync(int topN)
     {
@@ -315,11 +313,12 @@ internal sealed class CpSatSearch
         Stage?.Set(2, $"build 1 of {topN}: looking for it while narrowing the search");
         var seedTask = seedFor > 0 ? Backend.SolveAsync(model, ParametersOn(Lane, seedFor), Lane, _ct) : null;
         using var narrowing = CancellationTokenSource.CreateLinkedTokenSource(_ct);
-        var caps = seedTask is null ? CapsAsync(0, SplitLanes, narrowing.Token) : CapsAsync(1, SplitLanes - 1, narrowing.Token);
+        // the other lanes narrow the damage factors while the seed solves: what is done by then is used, the rest skipped
+        var caps = seedTask is null ? CapsAsync(0, SplitLanes, narrowing.Token) : CapsAsync(1, SplitLanes - 1, narrowing.Token, () => seedTask.IsCompleted);
         var seed = seedTask is null ? new CpSolverResponse { Status = CpSolverStatus.Unknown } : await seedTask;
         _ct.ThrowIfCancellationRequested();
         if (seedTask is not null) Solves++;
-        if (seed.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown))
+        if (seed.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible or CpSolverStatus.Unknown) || seed.Status == CpSolverStatus.Optimal && topN == 1)
         {
             narrowing.Cancel();
             try { await caps; } catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { }
@@ -328,75 +327,145 @@ internal sealed class CpSatSearch
             {
                 _statuses.Add("optimal");
                 Record(seed, new SolveProof(ProofKind.Proved, 0, limit), 1, 0, $" in {sw.Elapsed.TotalSeconds:0.0} s");
-                return false;
+                return true;
             }
             _statuses.Add(seed.Status.ToString().ToLowerInvariant());
             if (seed.Status == CpSolverStatus.Infeasible) _progress?.Report("  no build reaches the targets");
             return true;
         }
-        _progress?.Report((seedTask is null ? "  " : $"  build 1 not proved within {seedFor:0.#} s" +
-                              (seed.Status == CpSolverStatus.Feasible ? $" (best so far {Points(seed.ObjectiveValue)}, at most {Points(seed.BestObjectiveBound)} possible)" : "") + ": ") +
-                          $"narrowing the search and looking for the top {topN} in parts on {SplitLanes} lanes");
+        _progress?.Report((seedTask is null ? "  " : seed.Status == CpSolverStatus.Optimal
+                              ? $"  build 1 proved the best within {seedFor:0.#} s ({Points(seed.ObjectiveValue)}): "
+                              : $"  build 1 not proved within {seedFor:0.#} s" +
+                                (seed.Status == CpSolverStatus.Feasible ? $" (best so far {Points(seed.ObjectiveValue)}, at most {Points(seed.BestObjectiveBound)} possible)" : "") + ": ") +
+                          $"narrowing the search and looking for the top {topN} by regions on {SplitLanes} lanes");
         ApplyCaps(await caps);
 
-        var (split, parts) = Parts(vars);
-        // the best build of each armor + talisman combination found anywhere
+        // ---- branch and bound over the skill groups' states, best bound first, every lane at once ----
+        var units = vars.Units.Select(u => (Index: u.Var.GetIndex(), u.States)).Where(u => u.States > 1).OrderByDescending(u => u.States).ToList();
+        var names = vars.Units.Select((u, k) => (u.Var.GetIndex(), Name: string.Join("+", _score!.Units[k].Features.Select(f => _score.Features[f].Name)))).ToDictionary(x => x.Item1, x => x.Name);
+        if (Trace) TraceLine($"    regions by {string.Join(", ", units.Select(x => $"{x.States} states of {names[x.Index]}"))}");
+        // the best build of each armor + talisman combination found anywhere. A region's solves exclude the combinations it was
+        // proved to hold at their best (its children inherit them): a combination's decorations put it in a region, so the same
+        // combination can turn up in several regions, and only the region that holds its best fill may rule it out
         var found = new Dictionary<string, CpSolverResponse>();
         var gate = new object();
-        void Add(CpSolverResponse r, List<ILiteral> used)
+        // until N better builds are known, every solve must beat the seed build: regions proved unable to are kept at that bound
+        // and come back as the bar steps down (1 % of the seed at a time, then no bar) when the top N reaches below it
+        var provisional = seed.Status == CpSolverStatus.Feasible ? seed.ObjectiveValue : (double?)null;
+        var step = provisional / 100 ?? 0;
+        var floor = provisional - ProvisionalSteps * step;
+        var seedBuild = seed.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible;
+        List<ILiteral> Add(CpSolverResponse r)
         {
+            var used = Used(r).Used;
             var key = string.Join(",", used.Select(l => l.GetIndex()));
             lock (gate)
                 if (!found.TryGetValue(key, out var had) || r.ObjectiveValue > had.ObjectiveValue) found[key] = r;
+            return used;
         }
-        // what a solve must beat: the Nth best build so far
-        double? Cut()
-        {
-            lock (gate) return found.Count < topN ? null : found.Values.Select(r => r.ObjectiveValue).OrderByDescending(x => x).ElementAt(topN - 1);
-        }
-        if (seed.Status == CpSolverStatus.Feasible) Add(seed, Used(seed).Used);
+        // what a solve must beat: the Nth best build so far, else the seed while the provisional cut holds (callers hold the gate)
+        double? CutLocked() => found.Count >= topN ? found.Values.Select(r => r.ObjectiveValue).OrderByDescending(x => x).ElementAt(topN - 1) : provisional;
+        // a seed proved the best is at its best everywhere
+        var rootExcluded = seedBuild ? (seed.Status == CpSolverStatus.Optimal ? [NotAll(Add(seed))] : (Add(seed), new List<ConstraintProto>()).Item2) : [];
 
-        // the most a part not done yet could still hold (the whole model's bound until it has one of its own); null once done
-        var wholeBound = seed.Status == CpSolverStatus.Feasible ? seed.BestObjectiveBound : double.PositiveInfinity;
-        var open = Enumerable.Repeat<double?>(wholeBound, parts.Count).ToArray();
-        var solves = 0;
-        var done = 0;
-        Stage?.Set(2, $"top {topN}: {parts.Count} parts on {SplitLanes} lanes");
-        await OnLanesAsync(parts.Count, 0, SplitLanes, async (i, lane) =>
+        // one solve per region gets this long; a region not done by then is split by its next skill group
+        var slice = Math.Max(Math.Max(seedFor, 1), budget / (SplitPartsPerLane * SplitLanes));
+        // a seed solve that found nothing says nothing about the bound (a response made here has 0 in it)
+        var rootBound = seed.Status == CpSolverStatus.Optimal ? seed.ObjectiveValue : seed.Status == CpSolverStatus.Feasible && double.IsFinite(seed.BestObjectiveBound) ? seed.BestObjectiveBound : double.PositiveInfinity;
+        // open regions, best bound first; the seed's region first among equals
+        var queue = new List<SplitNode>();
+        var order = 0;
+        void Enqueue(SplitNode node) { queue.Add(node with { Order = order++ }); }
+        List<SplitNode> Children(SplitNode node, double bound, CpSolverResponse? inside)
         {
-            var excluded = new List<ConstraintProto>();
-            while (excluded.Count < topN)
+            var (index, states) = units[node.States.Length];
+            var first = inside is not null ? (int)inside.Solution[index] : -1;
+            return Enumerable.Range(0, states).OrderBy(k => k == first ? 0 : 1).ThenBy(k => k)
+                .Select(k => new SplitNode(node.States.Append(k).ToArray(), bound, slice, node.Excluded)).ToList();
+        }
+        var root = new SplitNode([], rootBound, slice, rootExcluded);
+        if (units.Count == 0) Enqueue(root);
+        else foreach (var child in Children(root, rootBound, seedBuild ? seed : null)) Enqueue(child);
+
+        var inFlight = 0;
+        var solves = 0;
+        var wake = new TaskCompletionSource();
+        void Status() => Stage?.Set(2, $"top {topN}: {Plural(solves, "part solve")}, {Plural(queue.Count + inFlight, "region")} open, {Plural(found.Count, "build")} found");
+        Status();
+        async Task LaneAsync(int lane)
+        {
+            while (true)
             {
+                _ct.ThrowIfCancellationRequested();
                 if (Left() < 0.05) return;
-                var extra = new List<ConstraintProto>(excluded);
-                if (Cut() is { } cut) extra.Add(ObjectiveAtLeast(model.Model.Objective, cut + 1));
-                var part = PartModel(model, split, parts[i], extra);
-                await Pacer.PauseAsync();
-                var r = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, _ct);
-                Interlocked.Increment(ref solves);
-                if (r.Status == CpSolverStatus.Infeasible) break;
-                if (r.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) return;
-                var used = Used(r).Used;
-                Add(r, used);
-                if (r.Status != CpSolverStatus.Optimal)
+                SplitNode? node = null;
+                Task? waitFor = null;
+                double? cut;
+                lock (gate)
                 {
-                    open[i] = Math.Min(wholeBound, r.BestObjectiveBound);
-                    return;
+                    cut = CutLocked();
+                    // a final cut only rises: regions that cannot beat it are done for good
+                    if (found.Count >= topN) queue.RemoveAll(n => n.Bound < cut!.Value + 1);
+                    node = queue.Where(n => cut is not { } c || n.Bound >= c + 1).OrderByDescending(n => n.Bound).ThenByDescending(n => n.States.Length).ThenBy(n => n.Order).FirstOrDefault();
+                    if (node is null && inFlight == 0 && provisional is not null && found.Count < topN)
+                    {
+                        // nothing beats the bar any more and the top N is not full: the bar steps down and the regions held at it go on
+                        provisional = provisional - step >= floor ? provisional - step : null;
+                        continue;
+                    }
+                    if (node is null && inFlight == 0) return;
+                    if (node is null) waitFor = wake.Task;
+                    else { queue.Remove(node); inFlight++; }
                 }
-                excluded.Add(NotAll(used));
+                if (node is null) { await waitFor!; continue; }
+
+                var extra = new List<ConstraintProto>(node.Excluded);
+                if (cut is { } c0) extra.Add(ObjectiveAtLeast(model.Model.Objective, c0 + 1));
+                var part = PartModel(model, units.Take(node.States.Length).ToList(), node.States, extra);
+                await Pacer.PauseAsync();
+                var partSw = Stopwatch.StartNew();
+                var r = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Math.Min(node.Slice, Left()))), lane, _ct);
+                Interlocked.Increment(ref solves);
+                var solved = r.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible;
+                if (Trace) TraceLine($"    region [{string.Join(",", node.States)}] (bound {Points(node.Bound)}, cut {(cut is { } cc ? Points(cc) : "-")}) on lane {lane}: {r.Status} {(solved ? Points(r.ObjectiveValue) : "-")} (bound {(solved || r.Status == CpSolverStatus.Unknown ? Points(r.BestObjectiveBound) : "-")}) in {partSw.Elapsed.TotalSeconds:0.0} s at {sw.Elapsed.TotalSeconds:0.0} s");
+                var used = solved ? Add(r) : null;
+                lock (gate)
+                {
+                    inFlight--;
+                    switch (r.Status)
+                    {
+                        case CpSolverStatus.Optimal:
+                            // the combination is at its best here and ruled out from now on; nothing else in the region scores more
+                            Enqueue(node with { Bound = r.ObjectiveValue, Excluded = [.. node.Excluded, NotAll(used!)] });
+                            break;
+                        case CpSolverStatus.Infeasible:
+                            // nothing beats the cut here; under the provisional cut the region waits at that score
+                            if (cut is { } c1 && found.Count < topN) Enqueue(node with { Bound = c1 });
+                            break;
+                        default:
+                            var bound = Math.Min(node.Bound, solved && double.IsFinite(r.BestObjectiveBound) ? r.BestObjectiveBound : double.PositiveInfinity);
+                            if (node.States.Length < units.Count) foreach (var child in Children(node, bound, solved ? r : null)) Enqueue(child);
+                            else Enqueue(node with { Bound = bound, Slice = node.Slice * 2 });
+                            break;
+                    }
+                    Status();
+                    var w = wake;
+                    wake = new TaskCompletionSource();
+                    w.TrySetResult();
+                }
             }
-            // infeasible, or N builds of its own: nothing else in this part makes the top N
-            open[i] = null;
-            Stage?.Set(2, $"top {topN}: {parts.Count} parts on {SplitLanes} lanes, {Interlocked.Increment(ref done)} done");
-        });
+        }
+        await Task.WhenAll(Enumerable.Range(0, SplitLanes).Select(l => LaneAsync(Lane + l)));
         _ct.ThrowIfCancellationRequested();
         Solves += solves;
         SolveTime += sw.Elapsed;
 
-        var notDone = open.Count(b => b is not null);
-        var openBound = open.Where(b => b is not null).Select(b => b!.Value).DefaultIfEmpty(double.NegativeInfinity).Max();
-        LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (notDone > 0 ? $", {notDone} not finished" : "");
-        _progress?.Report($"  top {topN} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s");
+        var finalCut = found.Count >= topN ? found.Values.Select(r => r.ObjectiveValue).OrderByDescending(x => x).ElementAt(topN - 1) : (double?)null;
+        var open = queue.Where(n => finalCut is not { } fc || n.Bound >= fc + 1).ToList();
+        var notDone = open.Count;
+        var openBound = open.Select(n => n.Bound).DefaultIfEmpty(double.NegativeInfinity).Max();
+        LastSplit = $"{Plural(solves, "part solve")} on {SplitLanes} lanes" + (notDone > 0 ? $", {Plural(notDone, "region")} not finished" : "");
+        _progress?.Report($"  top {topN} searched in {LastSplit}, {Plural(found.Count, "build")} found in {sw.Elapsed.TotalSeconds:0.0} s");
         var top = found.Values.OrderByDescending(r => r.ObjectiveValue).Take(topN).ToList();
         if (top.Count == 0)
         {
@@ -418,73 +487,6 @@ internal sealed class CpSatSearch
         }
         if (notDone == 0 && top.Count < topN) _progress?.Report($"  no further build reaches the targets ({Plural(top.Count, "build")} in all)");
         return true;
-    }
-
-    /// <summary>
-    /// One solve, split over <see cref="SplitLanes"/> lanes when it is not proved quickly: a short solve finds a build (or
-    /// <paramref name="incumbent"/> is one already), then every combination of states of the largest skill groups is a part that
-    /// must beat it (any build, without one). All parts infeasible or optimal is a proof; the best build of any part is the best build.
-    /// </summary>
-    private async Task<CpSolverResponse> SolveSplitAsync(CpModel model, Vars vars, CpSatParameters parameters, CpSolverResponse? incumbent, int number)
-    {
-        if (SplitLanes <= 1) return await Backend.SolveAsync(model, parameters, Lane, _ct);
-        var sw = Stopwatch.StartNew();
-        double Left() => parameters.TimeLimitSeconds - sw.Elapsed.TotalSeconds;
-        CpSolverResponse? quick = null;
-        if (incumbent is null && SplitAfterSeconds > 0)
-        {
-            quick = await Backend.SolveAsync(model, parameters with { TimeLimitSeconds = Math.Min(SplitAfterSeconds, parameters.TimeLimitSeconds / 4) }, Lane, _ct);
-            _ct.ThrowIfCancellationRequested();
-            if (quick.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown)) return quick;
-            if (quick.Status == CpSolverStatus.Feasible) incumbent = quick;
-        }
-
-        var (split, parts) = Parts(vars);
-        var beat = incumbent is null ? null : ObjectiveAtLeast(model.Model.Objective, incumbent.ObjectiveValue + 1);
-
-        Stage?.Set(2, $"build {number}: proving it in {parts.Count} parts on {SplitLanes} lanes");
-        var results = new CpSolverResponse?[parts.Count];
-        var done = 0;
-        await OnLanesAsync(parts.Count, 0, SplitLanes, async (i, lane) =>
-        {
-            if (Left() < 0.05) return;
-            var part = PartModel(model, split, parts[i], beat is null ? [] : [beat]);
-            await Pacer.PauseAsync();
-            results[i] = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, _ct);
-            Stage?.Set(2, $"build {number}: proving it in {parts.Count} parts on {SplitLanes} lanes ({Interlocked.Increment(ref done)} done)");
-        });
-        _ct.ThrowIfCancellationRequested();
-
-        var best = incumbent;
-        var open = 0;
-        var bound = double.NegativeInfinity;
-        foreach (var r in results)
-        {
-            if (r?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible && (best is null || r.ObjectiveValue > best.ObjectiveValue)) best = r;
-            if (r?.Status is CpSolverStatus.Optimal) bound = Math.Max(bound, r.ObjectiveValue);
-            else if (r?.Status is not CpSolverStatus.Infeasible)
-            {
-                open++;
-                // a part with no answer is bounded only by the whole model's bound
-                bound = Math.Max(bound, r?.Status is CpSolverStatus.Feasible ? r.BestObjectiveBound : (quick ?? incumbent)?.BestObjectiveBound ?? double.PositiveInfinity);
-            }
-        }
-        if (incumbent is not null) _pool.Add(incumbent);
-        _pool.AddRange(results.Where(r => r?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible).Select(r => r!));
-        LastSplit = _split = open == 0 ? $"{parts.Count} parts on {SplitLanes} lanes" : $"{parts.Count} parts on {SplitLanes} lanes, {open} not finished";
-        // no build anywhere: every part infeasible is a proof that there is none
-        if (best is null) return new CpSolverResponse { Status = open == 0 ? CpSolverStatus.Infeasible : CpSolverStatus.Unknown };
-        var response = best.Clone();
-        response.Status = open == 0 ? CpSolverStatus.Optimal : CpSolverStatus.Feasible;
-        response.BestObjectiveBound = open == 0 ? best.ObjectiveValue : Math.Max(bound, best.ObjectiveValue);
-        return response;
-    }
-
-    /// <summary>The best build of <see cref="_pool"/> that none of the builds found so far rules out; null if there is none.</summary>
-    private CpSolverResponse? FromPool()
-    {
-        _pool.RemoveAll(r => _excluded.Any(used => used.All(r.BooleanValue)));
-        return _pool.MaxBy(r => r.ObjectiveValue);
     }
 
     /// <summary>The model's objective at least <paramref name="value"/> (as the response reports it), as a constraint.</summary>
@@ -520,26 +522,7 @@ internal sealed class CpSatSearch
         }));
     }
 
-    /// <summary>
-    /// The skill groups a split fixes, largest first until there are <see cref="SplitPartsPerLane"/> parts per lane, and every
-    /// combination of their states.
-    /// </summary>
-    private (List<(int Index, int States)> Split, List<int[]> Parts) Parts(Vars vars)
-    {
-        var split = new List<(int Index, int States)>();
-        long count = 1;
-        foreach (var (v, states) in vars.Units.Where(u => u.States > 1).OrderByDescending(u => u.States))
-        {
-            if (count >= (long)SplitLanes * SplitPartsPerLane) break;
-            split.Add((v.GetIndex(), states));
-            count *= states;
-        }
-        var parts = new List<int[]> { Array.Empty<int>() };
-        foreach (var (_, states) in split) parts = parts.SelectMany(p => Enumerable.Range(0, states).Select(x => p.Append(x).ToArray())).ToList();
-        return (split, parts);
-    }
-
-    /// <summary>The model with the split groups fixed to one part's states, plus <paramref name="extra"/> constraints.</summary>
+    /// <summary>The model with the split groups fixed to one region's states, plus <paramref name="extra"/> constraints.</summary>
     private static CpModel PartModel(CpModel model, List<(int Index, int States)> split, int[] part, IEnumerable<ConstraintProto> extra)
     {
         var proto = model.Model.Clone();
@@ -611,9 +594,13 @@ internal sealed class CpSatSearch
     private async Task TightenAsync() => ApplyCaps(await CapsAsync(0, SplitLanes, _ct));
 
     /// <summary>The real maximum of each damage factor: one short solve per signature, side by side on these lanes.</summary>
-    private async Task<(Dictionary<string, long?> Bounds, TimeSpan Time)> CapsAsync(int firstLane, int lanes, CancellationToken ct)
+    private static readonly double CapSolveSeconds = double.TryParse(Environment.GetEnvironmentVariable("MHW_CPSAT_CAP_LIMIT"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var cl) ? cl : TightenSolveSeconds;
+
+    /// <param name="until">Once true, no further factor is solved for (the ones left keep the model's bound).</param>
+    private async Task<(Dictionary<string, long?> Bounds, TimeSpan Time)> CapsAsync(int firstLane, int lanes, CancellationToken ct, Func<bool>? until = null)
     {
         var sw = Stopwatch.StartNew();
+        if (CapSolveSeconds <= 0) return (_vars!.Keys.Select(k => k.Sig).Distinct().ToDictionary(x => x, _ => (long?)null), sw.Elapsed);
         var aux = new CpModel();
         var auxVars = await BuildModelAsync(aux, _score!);
         var keys = _vars!.Keys;
@@ -621,11 +608,12 @@ internal sealed class CpSatSearch
         var found = new long?[firsts.Count];
         await OnLanesAsync(firsts.Count, firstLane, Math.Max(1, lanes), async (i, lane) =>
         {
+            if (until?.Invoke() == true) return;
             var m = new CpModel();
             m.Model.MergeFrom(aux.Model);
             m.Model.Objective = null;
             m.Maximize(auxVars.Keys[firsts[i].k].Var);
-            var response = await Backend.SolveAsync(m, ParametersOn(lane, TightenSolveSeconds), lane, ct);
+            var response = await Backend.SolveAsync(m, ParametersOn(lane, CapSolveSeconds), lane, ct);
             ct.ThrowIfCancellationRequested();
             found[i] = response.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible ? (long)Math.Floor(response.BestObjectiveBound) : null;
         }, ct);
@@ -659,7 +647,7 @@ internal sealed class CpSatSearch
     }
 
     /// <param name="Keys">The factors of the score <see cref="TightenAsync"/> caps, with the upper bound the model gave them, in the order the model builds them.</param>
-    /// <param name="Units">Each skill group's state index and its number of states, which <see cref="SolveSplitAsync"/> splits on.</param>
+    /// <param name="Units">Each skill group's state index and its number of states, which <see cref="SplitTopAsync"/> splits on.</param>
     private sealed record Vars(List<List<(ArmorCandidate Candidate, BoolVar Var)>> Pieces, List<BoolVar> Talismans, RollVars? Rolls, List<IntVar> Decos, IntVar Score,
         List<(IntVar Var, long Ub, string Sig)> Keys, List<(IntVar Var, int States)> Units);
 
@@ -807,6 +795,13 @@ internal sealed class CpSatSearch
         }
         m.Maximize(LinearExpr.Term(total, ObjectiveScale) - LinearExpr.Term(LinearExpr.Sum(decos), DecoPenalty));
         return new Vars(pieces, tals, rolls, decos, total, keys, unitIndex.Select((v, ui) => (v, score.Units[ui].States)).ToList());
+    }
+
+    /// <summary>An open region of a split top-N search: the states its first skill groups are fixed to, the most it can still hold, and how long one solve of it gets.</summary>
+    /// <param name="Excluded">The combinations proved at their best in this region (or one around it), left out of its solves.</param>
+    private sealed record SplitNode(int[] States, double Bound, double Slice, List<ConstraintProto> Excluded)
+    {
+        public int Order { get; init; }
     }
 
     private sealed record Bounded(IntVar Var, long Lb, long Ub)

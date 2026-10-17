@@ -188,9 +188,9 @@ public sealed class Optimizer
         if (_request.SkillPair.Mode == SkillPairMode.Fixed)
         {
             var cls = FixedClass();
-            // one search: one that takes long is split into parts searched side by side on every lane
+            // one search: after a first solve it goes on by regions of the skill groups, on every lane at once
             progress?.Report($"Searching builds for {PairText(cls)} on {Plural(threads, "thread")}" +
-                             (laneWorkers.Count > 1 ? $": a search not proved within {CpSatSearch.DefaultSplitAfterSeconds:0} s is split into parts searched {laneWorkers.Count} at a time ({LaneText(laneWorkers)})" : ""));
+                             (laneWorkers.Count > 1 ? $": after {CpSatSearch.DefaultSplitAfterSeconds:0} s the search goes on by regions of the skill groups on {laneWorkers.Count} lanes ({LaneText(laneWorkers)})" : ""));
             if (_starts.Count > 0)
                 return new OptimizationResult([await TuneAsync(cls, topN, async (c, n) => (await CpSatSearchAsync(c, n, null, 0, scores, progress, ct, Stages, laneWorkers, split: true)).Result, _starts, progress, Stages)],
                     DateTime.UtcNow - started);
