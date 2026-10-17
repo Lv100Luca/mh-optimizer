@@ -1,11 +1,12 @@
-// Times the browser app in headless Edge (Chromium) over the DevTools protocol: imports a profile folder of the server
+// Times the browser app in headless Chrome or Edge over the DevTools protocol: imports a profile folder of the server
 // version, runs one weapon and prints the run log. The Claude desktop browser pane cannot run the solver (it cannot start
 // workers from a worker), so this stands in for it.
 //   python spikes/WasmSpeedTest/serve.py 5241 publish/browser/wwwroot      (after dotnet publish ... -o publish/browser)
 //   node spikes/WasmSpeedTest/edge-bench.mjs http://localhost:5241 inputs/profiles/Luca "the best" 2
-// Edge runs with a throwaway profile under the system temp directory (EDGE_PATH overrides the executable).
-import { spawn } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync } from 'node:fs';
+// Uses Chrome when installed, else Edge (EDGE_PATH overrides). Managed Edge drops the DevTools connection partway through
+// long runs, so prefer Chrome. The browser runs with a throwaway profile under the system temp directory.
+import { execSync, spawn } from 'node:child_process';
+import { existsSync, mkdtempSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -17,17 +18,26 @@ const files = Object.fromEntries([
 ].map((f) => [basename(f), readFileSync(f, 'utf8')]));
 const runs = Number(runsArg ?? 1);
 const port = 9333;
+// a straggler from an earlier run would still hold the port and answer with its own page
+const killTree = (pid) => { try { execSync(process.platform === 'win32' ? `taskkill /PID ${pid} /T /F` : `kill -9 ${pid}`, { stdio: 'ignore' }); } catch { } };
+if (process.platform === 'win32') {
+  try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='msedge.exe' OR Name='chrome.exe'\\" | Where-Object { $_.CommandLine -like '*edge-bench-*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"`, { stdio: 'ignore' }); } catch { }
+}
 const profileDir = mkdtempSync(join(tmpdir(), 'edge-bench-'));
-const edge = spawn(process.env.EDGE_PATH ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+const chrome = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const browserPath = process.env.EDGE_PATH ?? (existsSync(chrome) ? chrome : 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
+const edge = spawn(browserPath,
   ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, '--no-first-run', '--window-size=1400,900', '--window-position=-32000,-32000', 'about:blank'],
   { stdio: 'ignore' });
+process.on('exit', () => killTree(edge.pid));
+for (const sig of ['SIGINT', 'SIGTERM', 'SIGBREAK']) process.on(sig, () => process.exit(130));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-let targets;
 for (let i = 0; i < 50; i++) {
-  try { targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); break; } catch { await sleep(200); }
+  try { await (await fetch(`http://127.0.0.1:${port}/json/version`)).json(); break; } catch { await sleep(200); }
 }
-const page = targets.find((t) => t.type === 'page');
+// a tab of our own: managed Edge opens no about:blank tab, and other pages (sign-in, extensions) come first in the list
+const page = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
 const ws = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r, { once: true }));
 let nextId = 1;
@@ -71,21 +81,23 @@ try {
   for (let run = 0; run < runs; run++) {
     const log = await evaluate(`
       const sleep = ms => new Promise(r => setTimeout(r, ms));
-      for (let i = 0; i < 200 && ![...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Run optimizer' && !b.disabled); i++) await sleep(250);
-      const lines = new Set();
+      const label = b => b.innerText.trim() || b.getAttribute('aria-label') || '';
+      const runButton = () => [...document.querySelectorAll('button')].find(b => label(b).endsWith('Run optimizer') && !b.disabled);
+      for (let i = 0; i < 200 && !runButton(); i++) await sleep(250);
       const t0 = performance.now();
-      [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Run optimizer').click();
+      runButton().click();
       await sleep(500);
-      while ([...document.querySelectorAll('button')].some(b => b.innerText.trim() === 'Cancel run') && performance.now() - t0 < 300000) {
-        for (const m of document.body.innerText.matchAll(/^\\[ *\\d+\\.\\ds\\].*$/gm)) lines.add(m[0].replace(/^\\[ +/, '['));
-        await sleep(100);
-      }
-      for (const m of document.body.innerText.matchAll(/^\\[ *\\d+\\.\\ds\\].*$/gm)) lines.add(m[0].replace(/^\\[ +/, '['));
+      while ([...document.querySelectorAll('button')].some(b => label(b) === 'Cancel run') && performance.now() - t0 < 300000) await sleep(100);
+      const wall = (performance.now() - t0) / 1000;
+      // the log is folded away behind a button
+      [...document.querySelectorAll('button')].find(b => b.innerText.trim().startsWith('Show search log'))?.click();
+      for (let i = 0; i < 40 && !document.getElementById('results-runlog'); i++) await sleep(100);
+      const log = document.getElementById('results-runlog')?.innerText ?? '(no search log)';
       const scores = [...document.body.innerText.matchAll(/\\b(\\d{3}\\.\\d{2})\\b/g)].map(m => m[1]).slice(0, 12);
-      return [...lines].sort((a, b) => parseFloat(a.slice(1)) - parseFloat(b.slice(1))).join('\\n') + '\\nwall ' + ((performance.now() - t0) / 1000).toFixed(1) + ' s; scores on page: ' + scores.join(' ');`);
+      return log + '\\nwall ' + wall.toFixed(1) + ' s; scores on page: ' + scores.join(' ');`);
     console.log(`--- run ${run + 1}\n${log}`);
   }
 } finally {
   ws.close();
-  edge.kill();
+  killTree(edge.pid);
 }

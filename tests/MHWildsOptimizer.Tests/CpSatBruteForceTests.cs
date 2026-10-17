@@ -131,7 +131,10 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
             Assert.Equal(brute.BestOfCandidates[0].Key, Key(cp.Builds[0].Loadout));
     }
 
-    /// <summary>The fixed pair's search split into parts on lanes of 4, 4, 4 and 2 workers at once, no short solve first.</summary>
+    /// <summary>
+    /// The fixed pair's search split into parts on lanes of 4, 4, 4 and 2 workers at once, no short solve first, and an idle lane
+    /// splits a running part again at once.
+    /// </summary>
     private static SkillPairResult SplitSearch(GameData data, ResolvedRequest resolved, Relevance rel)
     {
         var armor = Candidates.Armor(data, rel, resolved.Options);
@@ -139,7 +142,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         var search = new CpSatSearch(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
             Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, null, CancellationToken.None)
         {
-            LaneWorkers = [4, 4, 4, 2], Split = true, SplitAfterSeconds = 0,
+            LaneWorkers = [4, 4, 4, 2], Split = true, SplitAfterSeconds = 0, ResplitAfterSeconds = 0,
         };
         var builds = search.Run();
         Assert.Contains("parts on 4 lanes", search.LastSplit ?? "");

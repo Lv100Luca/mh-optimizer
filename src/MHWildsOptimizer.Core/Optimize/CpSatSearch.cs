@@ -84,11 +84,22 @@ internal sealed class CpSatSearch
             ? CpSatParameters.For(lanes[lane], timeLimitSeconds)
             : _defaultParameters with { TimeLimitSeconds = timeLimitSeconds };
 
-    /// <summary>A split search first looks this long (at most a quarter of its time limit) for a build the parts must beat; 0 splits at once.</summary>
+    /// <summary>
+    /// A split search first looks this long (at most a quarter of its time limit) for a build the parts must beat; 0 splits at
+    /// once. A strong one matters: on a tech tree bow 3 s found 943 to 951 and the parts took up to minutes, 8 s found the best
+    /// (955) every time.
+    /// </summary>
     public double SplitAfterSeconds { get; init; } = DefaultSplitAfterSeconds;
-    public const double DefaultSplitAfterSeconds = 3;
+    public const double DefaultSplitAfterSeconds = 8;
     /// <summary>Split into at least this many parts per lane, so a slow part does not hold up the others for long.</summary>
     public const int SplitPartsPerLane = 8;
+    /// <summary>A lane with no part left stops a part solved at least this long and splits it again; sooner would throw away short solves.</summary>
+    public double ResplitAfterSeconds { get; init; } = 2;
+    /// <summary>
+    /// How far below the best build (a share of it) the search for the top N looks first, then lower while fewer than N builds
+    /// are above the floor, and at last with none. On a tech tree bow, builds 2 to 5 were within 0.5% of the best.
+    /// </summary>
+    private static readonly double[] FloorSteps = [0.005, 0.02, 0.08];
     private CpSolverResponse? _incumbent;
     private string? _split;
     /// <summary>How the last split solve went ("48 parts on 4 lanes"); null if none was split.</summary>
@@ -252,10 +263,11 @@ internal sealed class CpSatSearch
     /// (hints and an objective cap from this solve made them slower).
     /// </summary>
     /// <param name="bound">The most a build could still score (points), for an unproved one.</param>
-    private void Record(CpSolverResponse response, SolveProof proof, int number, double bound, string tail)
+    /// <param name="report">False for a build already reported as it was proved.</param>
+    private void Record(CpSolverResponse response, SolveProof proof, int number, double bound, string tail, bool report = true)
     {
         var objective = response.ObjectiveValue / ObjectiveScale / Micro;
-        _progress?.Report($"  build {number}: {Damage(objective)}, " + proof.Kind switch
+        if (report) _progress?.Report($"  build {number}: {Damage(objective)}, " + proof.Kind switch
         {
             ProofKind.Proved => number == 1 ? "proved the best" : "proved the next best",
             ProofKind.Ranked => $"ranked, not proved within the {OptimizerText.Seconds(proof.TimeLimitSeconds)} limit for builds 2 and on",
@@ -294,11 +306,14 @@ internal sealed class CpSatSearch
     /// <summary>
     /// The search spread over every lane (<see cref="Split"/>). The first lane looks for a build for <see cref="SplitAfterSeconds"/>
     /// while the others narrow the damage factors; a first build proved by then is kept, and the search goes on one solve at a
-    /// time (false). Otherwise the parts look for their top N side by side: a part is solved again and again with the builds it
-    /// found excluded, every solve must beat the Nth best build found anywhere so far, and a part is done once it is infeasible
-    /// or has N builds of its own. All parts done proves the top N; when the time runs out, a build is still proved if no
-    /// unfinished part can beat it. The time is what the solves one at a time would get: the time limit for the first build,
-    /// the rank time limit for each further one.
+    /// time (false). Otherwise the parts look for the best build side by side, each solve beating the best found so far (a
+    /// strong cutoff, as a solve one at a time has). Then the parts look for the top N: each solve finds the best build of its
+    /// part above a cutoff with the builds the part found excluded. The cutoff is the Nth best build found so far, or a floor a
+    /// little below the best while there are fewer (<see cref="FloorSteps"/>). A part is finished once nothing in it beats the
+    /// cutoff or it has N builds of its own. A lane with no part left stops the part solved longest and splits
+    /// it again by more skill groups, so a few slow parts do not leave lanes idle. A build is proved, and reported, once no part
+    /// that is not finished can beat it. The time is what the solves one at a time would get: the time limit for the first
+    /// build, the rank time limit for each further one.
     /// </summary>
     private async Task<bool> SplitTopAsync(int topN)
     {
@@ -349,55 +364,251 @@ internal sealed class CpSatSearch
             lock (gate)
                 if (!found.TryGetValue(key, out var had) || r.ObjectiveValue > had.ObjectiveValue) found[key] = r;
         }
-        // what a solve must beat: the Nth best build so far
-        double? Cut()
+        // what a solve must beat when looking for the top n: the nth best build so far
+        double? Cut(int n)
         {
-            lock (gate) return found.Count < topN ? null : found.Values.Select(r => r.ObjectiveValue).OrderByDescending(x => x).ElementAt(topN - 1);
+            lock (gate) return found.Count < n ? null : found.Values.Select(r => r.ObjectiveValue).OrderByDescending(x => x).ElementAt(n - 1);
         }
+        // while looking for the top N: solves first only look above this, a little below the best (see FloorSteps)
+        double? floor = null;
+        double? Cutoff(int n) => Cut(n) is { } c ? Math.Max(c, floor ?? c) : floor;
+        // nothing in the part can make the top n: no build at all, n builds of its own, or none above the nth best
+        bool Settled(SplitPart p, int n) => p.Empty || p.Excluded.Count >= n || Cut(n) is { } c && p.Bound <= c;
+        // nothing in the part above the cutoff either: no solve for it in this round
+        bool Finished(SplitPart p, int n) => Settled(p, n) || Cutoff(n) is { } c && p.Bound <= c;
         if (seed.Status == CpSolverStatus.Feasible) Add(seed, Used(seed).Used);
 
-        // the most a part not done yet could still hold (the whole model's bound until it has one of its own); null once done
+        // a part's bound is the most a build it has not found yet could score: the whole model's bound until it has one of its own
         var wholeBound = seed.Status == CpSolverStatus.Feasible ? seed.BestObjectiveBound : double.PositiveInfinity;
-        var open = Enumerable.Repeat<double?>(wholeBound, parts.Count).ToArray();
-        var solves = 0;
-        var done = 0;
-        Stage?.Set(2, $"top {topN}: {parts.Count} parts on {SplitLanes} lanes");
-        await OnLanesAsync(parts.Count, 0, SplitLanes, async (i, lane) =>
+        var all = parts.Select(p => NewPart(vars, split.Select((s, k) => (s.Index, p[k])).ToList(), [], wholeBound)).ToList();
+        // parts waiting for a lane, and every part not finished yet (waiting or being solved)
+        var queue = new Queue<SplitPart>();
+        var alive = new List<SplitPart>();
+        var changed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void Changed()
         {
-            var excluded = new List<ConstraintProto>();
-            while (excluded.Count < topN)
+            var was = changed;
+            changed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            was.TrySetResult();
+        }
+        // builds proved, in order: no part that is not finished can beat them
+        var proved = new List<string>();
+        void ReportProved(int n)
+        {
+            var open = all.Where(p => !Settled(p, n)).Select(p => p.Bound).DefaultIfEmpty(double.NegativeInfinity).Max();
+            foreach (var (key, r) in found.Where(kv => !proved.Contains(kv.Key)).OrderByDescending(kv => kv.Value.ObjectiveValue).ToList())
             {
-                if (Left() < 0.05) return;
-                var extra = new List<ConstraintProto>(excluded);
-                if (Cut() is { } cut) extra.Add(ObjectiveAtLeast(model.Model.Objective, cut + 1));
-                var part = PartModel(model, split, parts[i], extra);
-                await Pacer.PauseAsync();
-                var r = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, _ct);
-                Interlocked.Increment(ref solves);
-                if (r.Status == CpSolverStatus.Infeasible) break;
-                if (r.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) return;
-                var used = Used(r).Used;
-                Add(r, used);
-                if (r.Status != CpSolverStatus.Optimal)
-                {
-                    open[i] = Math.Min(wholeBound, r.BestObjectiveBound);
-                    return;
-                }
-                excluded.Add(NotAll(used));
+                if (proved.Count >= n || r.ObjectiveValue < open) break;
+                proved.Add(key);
+                _progress?.Report($"  build {proved.Count}: {Points(r.ObjectiveValue)}, {(proved.Count == 1 ? "proved the best" : "proved the next best")} at {sw.Elapsed.TotalSeconds:0.0} s");
             }
-            // infeasible, or N builds of its own: nothing else in this part makes the top N
-            open[i] = null;
-            Stage?.Set(2, $"top {topN}: {parts.Count} parts on {SplitLanes} lanes, {Interlocked.Increment(ref done)} done");
-        });
-        _ct.ThrowIfCancellationRequested();
+        }
+        // the best build rose: solves still beating a lower one stop and start again above it, as proving their own best
+        // takes far longer than proving that nothing beats the best (the search for the top N gains little from this)
+        void RestartStale(int n)
+        {
+            if (Cut(n) is not { } c) return;
+            foreach (var x in alive.Where(x => x is { SolvingCut: { } at, Resplit: false, Restart: false } && at < c))
+            {
+                x.Restart = true;
+                x.Solving!.Cancel();
+            }
+        }
+        var solves = 0;
+        var resplits = 0;
+        var restarts = 0;
+        var stage = "";
+        void ShowStage() => Stage?.Set(2, $"{stage}: {alive.Count} of {all.Count} parts to go on {SplitLanes} lanes");
+
+        // the parts not finished for the top n, the most promising first, until all are finished or the time is up
+        async Task PhaseAsync(int n, Func<double> left)
+        {
+            lock (gate)
+            {
+                alive.Clear();
+                foreach (var p in all)
+                {
+                    p.Solving?.Dispose();
+                    (p.Solving, p.Since, p.Resplit, p.Restart) = (null, null, false, false);
+                }
+                foreach (var p in all.Where(p => !Finished(p, n)).OrderByDescending(p => p.Bound))
+                {
+                    queue.Enqueue(p);
+                    alive.Add(p);
+                }
+                ShowStage();
+            }
+            await Task.WhenAll(Enumerable.Range(0, SplitLanes).Select(async l =>
+            {
+                var lane = Lane + l;
+                while (true)
+                {
+                    _ct.ThrowIfCancellationRequested();
+                    if (left() < 0.05) return;
+                    SplitPart? p = null;
+                    Task wake;
+                    var wait = 0.0;
+                    lock (gate)
+                    {
+                        // a waiting part may have fallen below the cutoff meanwhile
+                        while (queue.Count > 0 && p is null)
+                        {
+                            p = queue.Dequeue();
+                            if (!Finished(p, n)) continue;
+                            alive.Remove(p);
+                            p = null;
+                        }
+                        if (p is not null)
+                        {
+                            p.Solving = CancellationTokenSource.CreateLinkedTokenSource(_ct);
+                            p.Since = Stopwatch.StartNew();
+                        }
+                        else if (alive.Count == 0) return;
+                        else
+                        {
+                            // nothing waiting: the part solved longest stops and is split again for the idle lanes
+                            var running = alive.Where(x => x is { Solving: not null, Resplit: false, CanSplit: true }).ToList();
+                            var slow = running.Where(x => x.Since!.Elapsed.TotalSeconds >= ResplitAfterSeconds).MaxBy(x => x.Since!.Elapsed);
+                            if (slow is not null)
+                            {
+                                slow.Resplit = true;
+                                slow.Solving!.Cancel();
+                            }
+                            else if (running.Count > 0) wait = ResplitAfterSeconds - running.Max(x => x.Since!.Elapsed.TotalSeconds);
+                        }
+                        wake = changed.Task;
+                    }
+                    if (p is null)
+                    {
+                        var nap = Math.Max(0.05, wait > 0 ? Math.Min(wait, left()) : left());
+                        await Task.WhenAny(wake, Task.Delay(TimeSpan.FromSeconds(nap), _ct));
+                        continue;
+                    }
+
+                    var handedOver = false;
+                    while (!Finished(p, n))
+                    {
+                        if (left() < 0.05) return;
+                        var extra = new List<ConstraintProto>(p.Excluded);
+                        var cut = Cutoff(n);
+                        if (cut is { } c) extra.Add(ObjectiveAtLeast(model.Model.Objective, c + 1));
+                        var part = PartModel(model, p.Fixes, extra);
+                        await Pacer.PauseAsync();
+                        CpSolverResponse? r = null;
+                        lock (gate) p.SolvingCut = cut ?? double.NegativeInfinity;
+                        try { r = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, left())), lane, p.Solving!.Token); }
+                        catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { }
+                        lock (gate) p.SolvingCut = null;
+                        _ct.ThrowIfCancellationRequested();
+                        if (r is not null) Interlocked.Increment(ref solves);
+                        if (p.Restart && !p.Resplit && r?.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Infeasible))
+                        {
+                            lock (gate)
+                            {
+                                p.Restart = false;
+                                p.Solving!.Dispose();
+                                p.Solving = CancellationTokenSource.CreateLinkedTokenSource(_ct);
+                                restarts++;
+                            }
+                            continue;
+                        }
+                        // a solve that was done anyway is kept; the split comes with the next one
+                        if (p.Resplit && r?.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Infeasible))
+                        {
+                            // its builds stay excluded in its parts and count towards their n
+                            lock (gate)
+                            {
+                                alive.Remove(p);
+                                all.Remove(p);
+                                foreach (var fixes in SubParts(vars, p.Fixes, 2 * SplitLanes))
+                                {
+                                    var sub = NewPart(vars, fixes, [.. p.Excluded], p.Bound);
+                                    all.Add(sub);
+                                    queue.Enqueue(sub);
+                                    alive.Add(sub);
+                                }
+                                resplits++;
+                            }
+                            handedOver = true;
+                            break;
+                        }
+                        if (r!.Status == CpSolverStatus.Infeasible)
+                        {
+                            // nothing above the cutoff; without one, nothing but the builds it found
+                            lock (gate)
+                            {
+                                if (cut is { } at) p.Bound = Math.Min(p.Bound, at);
+                                else (p.Empty, p.Bound) = (true, double.NegativeInfinity);
+                            }
+                            continue;
+                        }
+                        // out of time: the part stays open with the bound it has
+                        if (r.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) return;
+                        var used = Used(r).Used;
+                        Add(r, used);
+                        if (r.Status != CpSolverStatus.Optimal)
+                        {
+                            lock (gate) p.Bound = Math.Min(p.Bound, r.BestObjectiveBound);
+                            return;
+                        }
+                        lock (gate)
+                        {
+                            p.Bound = r.ObjectiveValue;
+                            p.Excluded.Add(NotAll(used));
+                            ReportProved(n);
+                            if (n == 1) RestartStale(n);
+                        }
+                    }
+                    lock (gate)
+                    {
+                        if (!handedOver)
+                        {
+                            alive.Remove(p);
+                            ReportProved(n);
+                        }
+                        p.Solving?.Dispose();
+                        p.Solving = null;
+                        ShowStage();
+                        Changed();
+                    }
+                }
+            }));
+            _ct.ThrowIfCancellationRequested();
+            lock (gate) queue.Clear();
+        }
+
+        // first the best build, as a solve one at a time would prove it (each part must beat the best so far), within the
+        // time limit; then the top N from the builds the parts found, within what is left
+        stage = $"build 1 of {topN}";
+        await PhaseAsync(1, () => limit - sw.Elapsed.TotalSeconds);
+        var firstAt = sw.Elapsed.TotalSeconds;
+        var floors = 0;
+        if (topN > 1)
+        {
+            stage = $"top {topN}";
+            // the first build often leaves no other build found, and every part proving its own best before there are N builds
+            // to beat took minutes: the parts look above a floor a little below the best first, lowered while fewer than N clear it
+            foreach (var step in FloorSteps.Append(double.NaN))
+            {
+                floor = Cut(1) is { } best && !double.IsNaN(step) ? best - Math.Abs(best) * step : null;
+                floors++;
+                await PhaseAsync(topN, Left);
+                if (floor is null || Left() < 0.05 || all.All(p => Settled(p, topN))) break;
+            }
+        }
         Solves += solves;
         SolveTime += sw.Elapsed;
 
-        var notDone = open.Count(b => b is not null);
-        var openBound = open.Where(b => b is not null).Select(b => b!.Value).DefaultIfEmpty(double.NegativeInfinity).Max();
-        LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (notDone > 0 ? $", {notDone} not finished" : "");
-        _progress?.Report($"  top {topN} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s");
-        var top = found.Values.OrderByDescending(r => r.ObjectiveValue).Take(topN).ToList();
+        var open = all.Where(p => !Settled(p, topN)).ToList();
+        var notDone = open.Count;
+        var openBound = open.Select(p => p.Bound).DefaultIfEmpty(double.NegativeInfinity).Max();
+        LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (resplits > 0 ? $", {Plural(resplits, "part")} split again" : "") +
+                    (restarts > 0 ? $", {Plural(restarts, "solve")} restarted above a better build" : "") +
+                    (floors > 1 ? $", {floors} floors" : "") + (notDone > 0 ? $", {notDone} not finished" : "");
+        _progress?.Report($"  top {topN} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s (build 1 after {firstAt:0.0} s)");
+        var top = proved.Select(k => found[k])
+            .Concat(found.Where(kv => !proved.Contains(kv.Key)).Select(kv => kv.Value).OrderByDescending(r => r.ObjectiveValue))
+            .Take(topN).ToList();
         if (top.Count == 0)
         {
             _statuses.Add(notDone == 0 ? "infeasible" : "unknown");
@@ -407,17 +618,53 @@ internal sealed class CpSatSearch
         for (var k = 0; k < top.Count; k++)
         {
             var r = top[k];
-            var proved = r.ObjectiveValue >= openBound;
-            if (!proved && k == 0) ProvedOptimal = false;
+            var isProved = k < proved.Count || r.ObjectiveValue >= openBound;
+            if (!isProved && k == 0) ProvedOptimal = false;
             var objective = r.ObjectiveValue / ObjectiveScale / Micro;
             var bound = Math.Max(openBound, r.ObjectiveValue) / ObjectiveScale / Micro;
-            _statuses.Add(proved ? "optimal" : k == 0 ? "time limit" : "ranked");
-            var proof = proved ? new SolveProof(ProofKind.Proved, 0, limit)
+            _statuses.Add(isProved ? "optimal" : k == 0 ? "time limit" : "ranked");
+            var proof = isProved ? new SolveProof(ProofKind.Proved, 0, limit)
                 : new SolveProof(k == 0 ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, k == 0 ? limit : rank);
-            Record(r, proof, k + 1, bound, "");
+            Record(r, proof, k + 1, bound, "", report: k >= proved.Count);
         }
         if (notDone == 0 && top.Count < topN) _progress?.Report($"  no further build reaches the targets ({Plural(top.Count, "build")} in all)");
         return true;
+    }
+
+    /// <summary>A part of a split search: the skill group states it fixes and the builds it found, which its next solves exclude.</summary>
+    private sealed class SplitPart(List<(int Index, int Value)> fixes, List<ConstraintProto> excluded, double bound, bool canSplit)
+    {
+        public List<(int Index, int Value)> Fixes { get; } = fixes;
+        public List<ConstraintProto> Excluded { get; } = excluded;
+        /// <summary>The most a build this part has not found yet could score.</summary>
+        public double Bound { get; set; } = bound;
+        /// <summary>Infeasible without a cutoff: no build but the ones it found.</summary>
+        public bool Empty { get; set; }
+        /// <summary>Some skill group with more than one state is still free.</summary>
+        public bool CanSplit { get; } = canSplit;
+        public CancellationTokenSource? Solving { get; set; }
+        public Stopwatch? Since { get; set; }
+        /// <summary>Its solve was stopped to split it again.</summary>
+        public bool Resplit { get; set; }
+        /// <summary>The cutoff of the solve running now; null between solves.</summary>
+        public double? SolvingCut { get; set; }
+        /// <summary>Its solve was stopped to start again above a higher cutoff.</summary>
+        public bool Restart { get; set; }
+    }
+
+    private static SplitPart NewPart(Vars vars, List<(int Index, int Value)> fixes, List<ConstraintProto> excluded, double bound) =>
+        new(fixes, excluded, bound, vars.Units.Any(u => u.States > 1 && fixes.All(f => f.Index != u.Var.GetIndex())));
+
+    /// <summary>A part split by its largest free skill groups into at least <paramref name="target"/> parts (fewer if none is left).</summary>
+    private static List<List<(int Index, int Value)>> SubParts(Vars vars, List<(int Index, int Value)> fixes, int target)
+    {
+        var parts = new List<List<(int Index, int Value)>> { fixes };
+        foreach (var (v, states) in vars.Units.Where(u => u.States > 1 && fixes.All(f => f.Index != u.Var.GetIndex())).OrderByDescending(u => u.States))
+        {
+            if (parts.Count >= target) break;
+            parts = parts.SelectMany(p => Enumerable.Range(0, states).Select(x => p.Append((v.GetIndex(), x)).ToList())).ToList();
+        }
+        return parts;
     }
 
     /// <summary>
@@ -448,7 +695,7 @@ internal sealed class CpSatSearch
         await OnLanesAsync(parts.Count, 0, SplitLanes, async (i, lane) =>
         {
             if (Left() < 0.05) return;
-            var part = PartModel(model, split, parts[i], beat is null ? [] : [beat]);
+            var part = PartModel(model, split.Select((s, k) => (s.Index, parts[i][k])), beat is null ? [] : [beat]);
             await Pacer.PauseAsync();
             results[i] = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, _ct);
             Stage?.Set(2, $"build {number}: proving it in {parts.Count} parts on {SplitLanes} lanes ({Interlocked.Increment(ref done)} done)");
@@ -540,15 +787,15 @@ internal sealed class CpSatSearch
     }
 
     /// <summary>The model with the split groups fixed to one part's states, plus <paramref name="extra"/> constraints.</summary>
-    private static CpModel PartModel(CpModel model, List<(int Index, int States)> split, int[] part, IEnumerable<ConstraintProto> extra)
+    private static CpModel PartModel(CpModel model, IEnumerable<(int Index, int Value)> fixes, IEnumerable<ConstraintProto> extra)
     {
         var proto = model.Model.Clone();
-        for (var k = 0; k < split.Count; k++)
+        foreach (var (index, value) in fixes)
         {
-            var domain = proto.Variables[split[k].Index].Domain;
+            var domain = proto.Variables[index].Domain;
             domain.Clear();
-            domain.Add(part[k]);
-            domain.Add(part[k]);
+            domain.Add(value);
+            domain.Add(value);
         }
         foreach (var c in extra) proto.Constraints.Add(c.Clone());
         var m = new CpModel();
