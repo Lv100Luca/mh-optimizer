@@ -309,7 +309,9 @@ button.chip:hover { border-color: var(--accent); }
 .rf-potency b { font-variant-numeric: tabular-nums; }
 .rf-row .segmented { justify-self: start; }
 .rf-clear { margin-top: 6px; }
-/* a row needs about 450px on one line; the field's own width decides (three form columns leave it 316px at 1232px) */
+/* a row needs about 450px on one line; the field's own width decides. It spans the whole form row, so on a wide screen the
+   lines fit on one row instead of wrapping in half the width */
+.form-grid > .wide { grid-column: 1 / -1; }
 .rf-wrap { container-type: inline-size; }
 @container (max-width: 460px) {
     .rf-table { grid-template-columns: minmax(0, 1fr) auto; }
