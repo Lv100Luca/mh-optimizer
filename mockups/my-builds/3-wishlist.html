@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · Skills first · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .wishrow { grid-template-columns: 22px minmax(0, 1fr) 128px 112px 64px 28px; }
+  .wishrow .nm { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+  .wishrow .nm b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wishrow .nm small { color: var(--muted); font-size: 11px; }
+  .wishrow .cover { flex-wrap: wrap; }
+  .wishrow .cov small { color: var(--muted); font-weight: 400; }
+  .wishrow .cov.met { color: var(--ok); }
+  .wishrow .cov.deco { color: var(--accent-2); }
+  .wishrow .cov.short { color: var(--warn); }
+  .wishrow .x:hover { color: var(--err); }
+  .wishhead { display: grid; grid-template-columns: 22px minmax(0, 1fr) 128px 112px 64px 28px; gap: 10px; padding: 0 9px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .addrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .addrow .search { min-width: 240px; flex: 0 1 300px; }
+  .quick { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 5px; border-radius: 12px; border: 1px dashed var(--border-2); background: transparent; color: var(--text); font-size: 12px; cursor: pointer; }
+  .quick:hover { border-color: var(--accent-2); }
+  .quick img { width: 16px; height: 16px; }
+  .legend2 { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); align-items: center; }
+  .legend2 .cover span { width: 10px; height: 10px; }
+  .legend2 i { display: inline-flex; align-items: center; gap: 5px; font-style: normal; }
+
+  .sofar { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 10px 24px; padding: 10px 16px 12px; border-radius: var(--radius); background: var(--panel-2); border: 1px solid var(--border-2); }
+  .sofar h4 { grid-column: 1 / -1; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .sofar h4 .muted { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .sofar .col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .sofar .pieces { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .pchip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 4px; border-radius: 6px; background: var(--bg-2); border: 1px solid rgba(95, 191, 122, 0.5); font-size: 12.5px; }
+  .pchip img { width: 22px; height: 22px; }
+  .pchip .ps { color: var(--muted); font-size: 11.5px; }
+  .pchip.empty { border-style: dashed; border-color: var(--border-2); color: var(--muted); }
+  .sofar .sum { font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+  .sofar .sum b.lv { font-size: 18px; font-weight: 800; }
+  .sofar .sum .sep { color: var(--border-2); }
+  .gaplist { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; }
+  .gaplist .g { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .gaplist .g img { width: 18px; height: 18px; }
+  .gaplist .g .st { font-size: 11px; margin-left: 2px; }
+
+  .cand .opt .pk { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .cand .opt .pk .tag { font-size: 10.5px; color: var(--ok); font-weight: 700; white-space: nowrap; }
+  .cand .opt .gain.none { color: var(--muted); font-weight: 400; }
+  .cand .opt .meta .slots .slot { line-height: 16px; font-size: 10.5px; }
+  .cand .opt .meta .set { color: var(--set); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .cand .more { font-size: 11.5px; color: var(--accent-2); padding: 2px 9px; cursor: pointer; }
+  .cand.done h5 { color: var(--ok); }
+
+  .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid var(--border); }
+  .actions .note { font-size: 11.5px; color: var(--muted); }
+  @media (max-width: 1100px) {
+    .sofar { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 3 · Start from the skills you want</h3>
+      <ol>
+        <li><span class="n">1</span><span>"+ New" opens a draft with <b>no pieces</b>. The tab shows no damage yet; nothing is scored until the draft is complete. The first thing you see is a <b>wishlist</b>, not an empty equipment list.</span></li>
+        <li><span class="n">2</span><span>One row per wanted skill: a stepper for the level and a <b>coverage strip</b>. Green squares come from picked pieces, blue from jewels the free slots could hold, dashed amber is still missing. The count on the right is have/want.</span></li>
+        <li><span class="n">3</span><span>Add skills by search or from <b>quick chips</b>: skills the hunter's other builds carry. A skill never has to be typed twice.</span></li>
+        <li><span class="n">4</span><span>"So far" is the running total: picked pieces, wanted levels covered, slots left, and the <b>jewels that would close the gap</b> with the slot level each needs. Computed from the real pieces and jewels.</span></li>
+        <li><span class="n">5</span><span>Step 2 ranks every real piece per kind by <b>how many wanted levels it adds</b> to what is already picked, plus a little for slots. Click one to pick it; the list below re-ranks around it. Picked pieces stay on top of their column.</span></li>
+        <li><span class="n">6</span><span>From here: open the draft in the editor to place jewels and pick a talisman, or hand the wishlist to the optimizer as targets (idea 2).</span></li>
+        <li><span class="n">7</span><span>Not solved: <b>set bonuses and group skills</b> are not in the wishlist, and a wishlist that no armor can satisfy needs a clear message instead of an amber strip that never fills. Levels and slots are computed from the real data; any damage number here is illustrative.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <section class="card newpart">
+      <header class="card-head">
+        <div class="card-title"><h2>Step 1 · What do you want <span class="n">1</span></h2><p class="hint">Pick the skills and levels. Everything below follows from this list.</p></div>
+        <div class="card-actions">
+          <span class="legend2"><i><span class="cover"><span class="on"></span></span> from a piece</i><i><span class="cover"><span class="deco"></span></span> a jewel could add it</i><i><span class="cover"><span class="miss"></span></span> missing</i></span>
+          <span class="muted small">name</span><span class="fakeselect" style="min-width:200px">Crit draft</span>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="wishhead"><span></span><span>skill</span><span>want</span><span>coverage <span class="n" style="width:16px;height:16px;font-size:10px">2</span></span><span style="text-align:right">have</span><span></span></div>
+        <div class="wish" id="wish"></div>
+        <div class="addrow">
+          <span class="search">🔍 Add a skill…</span>
+          <span class="muted small">from your other builds:</span>
+          <span id="quick"></span>
+          <span class="n">3</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="sofar newpart" id="sofar"></div>
+
+    <section class="card newpart">
+      <header class="card-head">
+        <div class="card-title"><h2>Step 2 · Pieces that get you there <span class="n">5</span></h2><p class="hint">Per kind, the three pieces that add the most wanted levels on top of what is picked. Click to pick, click again to drop.</p></div>
+        <div class="card-actions"><span class="segmented small"><button class="active">by wanted levels</button><button>by slots</button><button>by defense</button></span></div>
+      </header>
+      <div class="card-body">
+        <div class="candidates" id="cands"></div>
+      </div>
+      <div class="actions">
+        <span class="n">6</span>
+        <button class="btn primary">Open in the editor</button>
+        <button class="btn">Let the optimizer finish it</button>
+        <span class="note">keeps the picked pieces, uses the wishlist as targets · see idea 2</span>
+        <span class="right muted small" id="actnote"></span>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  const ABBR = { 'Critical Boost': 'CB', 'Weakness Exploit': 'WEX', 'Agitator': 'AGI', 'Maximum Might': 'MM', 'Counterstrike': 'CS', 'Stun Resistance': 'StunR', 'Speed Eating': 'SpdE', 'Divine Blessing': 'DB' };
+  const abbr = (s) => ABBR[s] ?? s.split(' ').map((w) => w[0]).join('');
+  const QUICK = [['Stun Resistance', 3], ['Speed Eating', 1], ['Divine Blessing', 1]];
+
+  const state = {
+    targets: DRAFT.targets.map(([s, l]) => [s, l]),
+    picks: { head: 'Arkvulcan Helm γ', chest: 'Udra Miremail γ', arms: null, waist: null, legs: null },
+  };
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>Crit draft</span><b class="muted" title="no damage until the draft is complete">…</b></button>`,
+  ].join('');
+
+  // a DRAFT-shaped object from the picks, no jewels placed
+  function draftFrom(exclude = null) {
+    const armor = {};
+    for (const k of KINDS) armor[k] = state.picks[k] && k !== exclude ? { name: state.picks[k], decos: [] } : null;
+    return { name: 'Crit draft', targets: state.targets, weapon: { decos: [null, null, null] }, armor, talisman: null };
+  }
+
+  // which jewels the free slots could hold, greedy per wanted skill in list order
+  function planJewels(t) {
+    const free = t.free.map(([kind, l]) => ({ kind, l, used: false }));
+    const cov = {}, needs = [];
+    for (const [s, w] of state.targets) {
+      let missing = w - (t.skills[s] ?? 0);
+      const jewels = decosWith(s).map((d) => ({ ...d, level: d.skills.find(([x]) => x === s)[1] }));
+      if (missing <= 0 || !jewels.length) continue;
+      const best = jewels.find((j) => j.level <= missing) ?? jewels[jewels.length - 1];
+      const count = Math.ceil(missing / best.level);
+      let placed = 0;
+      while (missing > 0) {
+        const order = [...jewels.filter((j) => j.level <= missing), ...jewels.filter((j) => j.level > missing).reverse()];
+        let slot = null, jewel = null;
+        for (const j of order) {
+          slot = free.filter((f) => !f.used && f.kind === j.kind && f.l >= j.slot).sort((a, b) => a.l - b.l)[0];
+          if (slot) { jewel = j; break; }
+        }
+        if (!slot) break;
+        slot.used = true;
+        cov[s] = (cov[s] ?? 0) + Math.min(jewel.level, missing);
+        missing -= jewel.level;
+        placed++;
+      }
+      needs.push({ skill: s, jewel: best, count, placed });
+    }
+    return { cov, needs, freeLeft: free.filter((f) => !f.used) };
+  }
+
+  const coverHtml = (have, deco, want) => `<span class="cover">${Array.from({ length: want }, (_, i) => `<span class="${i < have ? 'on' : i < have + deco ? 'deco' : 'miss'}"></span>`).join('')}</span>`;
+
+  function renderWish() {
+    const t = totals(draftFrom());
+    const plan = planJewels(t);
+    document.getElementById('wish').innerHTML = state.targets.map(([s, w], i) => {
+      const info = skillInfo(s), have = Math.min(t.skills[s] ?? 0, w), deco = plan.cov[s] ?? 0;
+      const cls = have >= w ? 'met' : have + deco >= w ? 'deco' : 'short';
+      return `<div class="wishrow">
+        <img src="${skillIcon(s)}" alt="">
+        <span class="nm"><b>${s}</b><small>${info.kind} skill · max ${info.max}</small></span>
+        <span class="stepper"><button data-i="${i}" data-d="-1">−</button><span>${w}</span><button data-i="${i}" data-d="1">+</button></span>
+        ${coverHtml(have, deco, w)}
+        <span class="cov ${cls}">${have}<small>/${w}</small></span>
+        <span class="x" data-i="${i}" title="remove">✕</span>
+      </div>`;
+    }).join('') || '<p class="muted small">Nothing wanted yet. Add a skill below.</p>';
+    const wanted = new Set(state.targets.map(([s]) => s));
+    document.getElementById('quick').innerHTML = QUICK.filter(([s]) => !wanted.has(s)).map(([s, l]) => `<button class="quick" data-s="${s}" data-l="${l}"><img src="${skillIcon(s)}" alt="">${s}${l > 1 ? ` <b>${l}</b>` : ''}</button>`).join(' ');
+    renderSoFar(t, plan);
+  }
+
+  function renderSoFar(t, plan) {
+    const wantTotal = state.targets.reduce((a, [, w]) => a + w, 0);
+    const fromPieces = state.targets.reduce((a, [s, w]) => a + Math.min(t.skills[s] ?? 0, w), 0);
+    const fromJewels = Object.values(plan.cov).reduce((a, b) => a + b, 0);
+    const missing = wantTotal - fromPieces - fromJewels;
+    const freeArmor = t.free.filter(([k]) => k === 'armor'), freeWeapon = t.free.filter(([k]) => k === 'weapon');
+    const picked = KINDS.filter((k) => state.picks[k]);
+    const pieces = KINDS.map((k) => {
+      const p = state.picks[k] && ARMOR.get(state.picks[k]);
+      return p
+        ? `<span class="pchip"><img src="${armorIcon(k, p.rarity)}" alt=""><span>${p.name}</span><span class="ps">${skillsText(p.skills)} · ${slotsOf(p.slots)}</span></span>`
+        : `<span class="pchip empty"><img src="${armorBase(k)}" alt="" style="opacity:.5">${KIND_LABEL[k]}: open</span>`;
+    }).join('');
+    const gaps = plan.needs.map((n) => {
+      const st = n.placed >= n.count ? '<span class="st ok">fits the free slots</span>' : n.placed ? `<span class="st warn">only ${n.placed} of ${n.count} fit</span>` : '<span class="st err">no free slot that size</span>';
+      return `<div class="g">${decoImg(n.jewel.name, 18)}<span>${n.jewel.name} <b>×${n.count}</b></span><span class="muted">needs level ${n.jewel.slot} ${n.jewel.kind} slot${n.count > 1 ? 's' : ''}</span>${st}</div>`;
+    }).join('');
+    document.getElementById('sofar').innerHTML = `
+      <h4>So far <span class="n">4</span><span class="muted">· ${picked.length} of 5 pieces picked, no jewels placed yet</span></h4>
+      <div class="col">
+        <div class="pieces">${pieces}</div>
+        <div class="sum">
+          <span><b class="lv ok">${fromPieces}</b> of ${wantTotal} wanted levels from pieces</span><span class="sep">|</span>
+          <span><b class="lv" style="color:var(--accent-2)">+${fromJewels}</b> from jewels the free slots could hold</span><span class="sep">|</span>
+          <span><b class="lv ${missing ? 'warn' : 'ok'}">${missing}</b> still missing</span>
+        </div>
+        <div class="muted small">free slots now: ${freeArmor.length} armor ${slotsOf(freeArmor.map(([, l]) => l))}, ${freeWeapon.length} weapon ${slotsOf(freeWeapon.map(([, l]) => l), 'weapon')} · after the jewels above: ${plan.freeLeft.length ? plan.freeLeft.map((f) => slotBox(f.l, f.kind)).join(' ') : 'none'}</div>
+      </div>
+      <div class="col">
+        <div class="muted small" style="text-transform:uppercase;letter-spacing:.06em;font-size:10.5px">Jewels that would close the gap</div>
+        <div class="gaplist">${gaps || '<span class="muted small">nothing missing</span>'}</div>
+      </div>`;
+    document.getElementById('actnote').textContent = missing ? `${5 - picked.length} kinds open, ${missing} wanted levels not covered by pieces or free slots` : 'every wanted level is reachable';
+  }
+
+  // gain of a piece over the current picks, that piece's own kind excluded
+  function rankKind(k) {
+    const t = totals(draftFrom(k));
+    const want = Object.fromEntries(state.targets);
+    return GAME.armor.filter((p) => p.piece === k).map((p) => {
+      let gain = 0;
+      const parts = [];
+      for (const [s, l] of p.skills) {
+        const add = Math.min(l, Math.max(0, (want[s] ?? 0) - (t.skills[s] ?? 0)));
+        if (add > 0) { gain += add; parts.push(`+${abbr(s)} ${add}`); }
+      }
+      const score = gain + 0.3 * p.slots.reduce((a, b) => a + b, 0);
+      return { p, gain, parts, score };
+    }).sort((a, b) => b.score - a.score || b.p.rarity - a.p.rarity);
+  }
+
+  function renderCands() {
+    document.getElementById('cands').innerHTML = KINDS.map((k) => {
+      const ranked = rankKind(k);
+      const pickedName = state.picks[k];
+      const list = pickedName ? [ranked.find((r) => r.p.name === pickedName), ...ranked.filter((r) => r.p.name !== pickedName).slice(0, 2)] : ranked.slice(0, 3);
+      const pk = pickedName && ARMOR.get(pickedName);
+      return `<div class="cand ${pickedName ? 'done' : ''}">
+        <h5><img src="${pk ? armorIcon(k, pk.rarity) : armorBase(k)}" alt="">${KIND_LABEL[k]}${pickedName ? '' : ' <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">· open</span>'}</h5>
+        ${list.map(({ p, gain, parts }) => `<div class="opt ${p.name === pickedName ? 'picked' : ''}" data-k="${k}" data-n="${p.name}">
+          <span class="pk"><b>${p.name}</b>${p.name === pickedName ? '<span class="tag">✓ picked</span>' : ''}</span>
+          <span class="gain ${gain ? '' : 'none'}">${parts.length ? parts.join(', ') : 'adds no wanted level'}</span>
+          <span class="meta">${rarityBadge(p.rarity)}${p.slots.length ? slotsOf(p.slots) : '<span>no slots</span>'}<span class="set" title="set bonus">${p.setBonus[0] ?? ''}</span></span>
+        </div>`).join('')}
+        <span class="more">all ${ranked.length} ${KIND_LABEL[k].toLowerCase()} pieces…</span>
+      </div>`;
+    }).join('');
+  }
+
+  function render() { renderWish(); renderCands(); }
+
+  document.getElementById('wish').addEventListener('click', (e) => {
+    const b = e.target.closest('.stepper button');
+    if (b) {
+      const i = +b.dataset.i, max = skillInfo(state.targets[i][0]).max;
+      state.targets[i][1] = Math.min(max, Math.max(1, state.targets[i][1] + +b.dataset.d));
+      return render();
+    }
+    const x = e.target.closest('.x');
+    if (x) { state.targets.splice(+x.dataset.i, 1); render(); }
+  });
+  document.getElementById('quick').addEventListener('click', (e) => {
+    const q = e.target.closest('.quick');
+    if (q) { state.targets.push([q.dataset.s, +q.dataset.l]); render(); }
+  });
+  document.getElementById('cands').addEventListener('click', (e) => {
+    const o = e.target.closest('.opt');
+    if (!o) return;
+    state.picks[o.dataset.k] = state.picks[o.dataset.k] === o.dataset.n ? null : o.dataset.n;
+    render();
+  });
+  render();
+</script>
+</body>
+</html>

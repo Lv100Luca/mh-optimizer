@@ -1,0 +1,181 @@
+@inject AppState App
+
+@* What the build adds up to, always in view while editing: the targets (the weapon's from Targets & limits, and this build's own
+   on top), every other skill it has, the empty slots and the set / group piece counts. Clicking a skill filters the palette. *@
+@{
+    var b = Evaluated?.Build;
+    var targets = Evaluated?.Targets ?? [];
+    var jewel = BoardSlots.JewelLevels(App, Build);
+    var targeted = targets.Select(t => t.Skill).ToHashSet();
+    var others = (b?.Skills ?? []).Where(s => !targeted.Contains(s.Skill) && s.Level > 0).OrderByDescending(s => s.Level).ThenBy(s => s.Skill).ToList();
+    var ownCount = targets.Count(t => t.Own);
+    var free = BoardSlots.FreeSlots(App, Build);
+}
+<div class="sheet">
+    <h4>Targets <span class="cnt">· @(targets.Count - ownCount) weapon's, @ownCount own@(Filter is null ? " · click one to filter the palette" : "")</span></h4>
+    @if (targets.Count == 0)
+    {
+        <p class="muted small sheet-empty">No targets yet. The weapon's come from <button class="linklike" @onclick="() => App.SetTab(Tab.Targets)">Targets &amp; limits</button>; add this build's own below.</p>
+    }
+    @foreach (var t in targets)
+    {
+        var bonus = t.Kind is SkillKind.Set or SkillKind.Group;
+        var max = bonus ? (t.Kind == SkillKind.Set ? 4 : 3) : (Cat.SkillsByName.GetValueOrDefault(t.Skill)?.MaxLevel ?? t.Required);
+        var state = t.Actual > max && !bonus ? "over" : t.Met ? "met" : "short";
+        var own = t.Own ? Build.Targets.GetValueOrDefault(t.Skill) : 0;
+        var skillMax = Cat.SkillsByName.GetValueOrDefault(t.Skill)?.MaxLevel ?? 1;
+        <div @key="t.Skill" class="skillrow target @state @(Filter == t.Skill ? "sel" : "")" @onclick="() => Toggle(t.Skill)" title="@(bonus ? t.Label : $"{t.Skill}: has {t.Actual}, wants {t.Required}")">
+            <SkillIcon Name="@t.Skill" Kind="t.Kind" Size="18" />
+            <span class="skillrow-main">
+                <span class="nm">
+                    <span class="skillname">@t.Skill</span>
+                    @if (t.Own)
+                    {
+                        <span class="src own" title="@(t.WeaponLevel is { } wl ? $"This build's own target; the weapon's is {wl}" : "This build's own target, saved with it")">own@(t.WeaponLevel is { } w ? $" · weapon {w}" : "")</span>
+                        <span class="own-edit" @onclick:stopPropagation="true">
+                            <button type="button" title="Lower" disabled="@(own <= 1)" @onclick="() => SetOwn(t.Skill, own - 1)">−</button>
+                            <button type="button" title="Raise" disabled="@(own >= skillMax)" @onclick="() => SetOwn(t.Skill, own + 1)">+</button>
+                            <button type="button" class="x" title="@(t.WeaponLevel is not null ? "Drop the override: back to the weapon's level" : "Drop this target")" @onclick="() => RemoveOwn(t.Skill)">✕</button>
+                        </span>
+                    }
+                    else if (!t.FromCore)
+                    {
+                        <span class="src weapon" title="From Targets & limits: what the optimizer searches for">weapon</span>
+                    }
+                    else
+                    {
+                        <span class="src weapon" title="A core skill of the weapon type, added by the options">core</span>
+                    }
+                </span>
+                @Pips(t.Actual, bonus ? 0 : jewel.GetValueOrDefault(t.Skill), max, t.Required)
+            </span>
+            <span class="lv">@t.Actual<small>/@t.Required</small></span>
+        </div>
+    }
+    <div class="addrow">
+        <Picker T="string" Class="addtarget" AnchorClass="block" Options="SkillOptions()" OnPick="AddOwn" Placeholder="Search skills, set bonuses, group skills…">
+            <Trigger><span class="muted">+ add a target…</span></Trigger>
+        </Picker>
+    </div>
+    <p class="srcnote"><b>weapon</b> targets come from <button class="linklike" @onclick="() => App.SetTab(Tab.Targets)">Targets &amp; limits</button> and steer the optimizer. <b>own</b> ones are saved with this build and steer fill the rest.</p>
+
+    @if (others.Count > 0)
+    {
+        <h4>Other skills</h4>
+        @foreach (var s in others)
+        {
+            var max = Cat.SkillsByName.GetValueOrDefault(s.Skill)?.MaxLevel ?? s.Level;
+            <div @key="s.Skill" class="skillrow @(s.Level > max ? "over" : "") @(Filter == s.Skill ? "sel" : "")" @onclick="() => Toggle(s.Skill)"
+                 title="@(s.Wasted > 0 ? $"{s.Skill} {s.Level}: {s.Wasted} over the cap" : $"{s.Skill} {s.Level}")">
+                <SkillIcon Name="@s.Skill" Kind="s.Kind" Size="18" />
+                <span class="skillrow-main">
+                    <span class="nm"><span class="skillname">@s.Skill</span></span>
+                    @Pips(s.Level, jewel.GetValueOrDefault(s.Skill), max, null)
+                </span>
+                <span class="lv">@s.Level<small>/@max</small></span>
+            </div>
+        }
+    }
+
+    <h4>Free slots</h4>
+    <div class="freeslots">
+        @if (free.Count == 0)
+        {
+            <span class="muted small">none</span>
+        }
+        @foreach (var (slot, n) in free)
+        {
+            <span class="free"><Slots Numbers="@(new[] { slot.Level })" Kind="@(slot.Kind == SkillKind.Weapon ? "weapon" : "armor")" /><span class="muted">×@n</span></span>
+        }
+    </div>
+
+    @if (b is not null && (b.SetBonuses.Count > 0 || b.GroupSkills.Count > 0))
+    {
+        <h4>Set and group pieces</h4>
+        @foreach (var x in b.SetBonuses.OrderByDescending(x => x.Pieces))
+        {
+            <div @key="x.Name" class="setrow @(Filter == x.Name ? "sel" : "")" @onclick="() => Toggle(x.Name)" title="@($"{x.Name}: {x.Pieces} piece{(x.Pieces == 1 ? "" : "s")}{(x.Active ? $", {x.TierName ?? $"tier {x.Tier}"} active" : "")}")">
+                <SkillIcon Name="@x.Name" Kind="SkillKind.Set" Size="16" />
+                <span class="setname">@x.Name</span>
+                <span class="steps">@foreach (var step in new[] { 2, 4 }) { <span class="@(x.Pieces >= step ? "on" : "")"></span> }</span>
+                <span class="cnt">@x.Pieces pc</span>
+                <span class="tier @(x.Active ? "ok" : "muted")">@(x.Active ? x.TierName ?? $"tier {x.Tier}" : $"{(x.Pieces < 2 ? 2 - x.Pieces : 4 - x.Pieces)} more")</span>
+            </div>
+        }
+        @foreach (var x in b.GroupSkills.OrderByDescending(x => x.Pieces))
+        {
+            <div @key="x.Name" class="setrow @(Filter == x.Name ? "sel" : "")" @onclick="() => Toggle(x.Name)" title="@($"{x.Name}: {x.Pieces} piece{(x.Pieces == 1 ? "" : "s")}{(x.Active ? ", active" : "")}")">
+                <SkillIcon Name="@x.Name" Kind="SkillKind.Group" Size="16" />
+                <span class="setname">@x.Name</span>
+                <span class="steps">@foreach (var step in new[] { 3 }) { <span class="@(x.Pieces >= step ? "on" : "")"></span> }</span>
+                <span class="cnt">@x.Pieces pc</span>
+                <span class="tier @(x.Active ? "ok" : "muted")">@(x.Active ? x.RankName ?? "active" : $"{3 - x.Pieces} more")</span>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public BuildInput Build { get; set; } = default!;
+    [Parameter] public EvaluatedBuildDto? Evaluated { get; set; }
+    [Parameter, EditorRequired] public Action<Func<BuildInput, BuildInput>> Update { get; set; } = default!;
+    /// <summary>The skill the palette is filtered by.</summary>
+    [Parameter] public string? Filter { get; set; }
+    [Parameter] public EventCallback<string?> FilterChanged { get; set; }
+
+    private CatalogIndex Cat => App.Index;
+
+    private Task Toggle(string skill) => FilterChanged.InvokeAsync(Filter == skill ? null : skill);
+
+    private void SetOwn(string skill, int level) => Update.Invoke(b =>
+    {
+        var next = new Dictionary<string, int>(b.Targets) { [skill] = level };
+        return b with { Targets = next };
+    });
+
+    private void RemoveOwn(string skill) => Update.Invoke(b =>
+    {
+        var next = new Dictionary<string, int>(b.Targets);
+        next.Remove(skill);
+        return b with { Targets = next };
+    });
+
+    /// <summary>A new own target starts at the skill's top level (a set bonus at tier I, a group skill at its one rank).</summary>
+    private void AddOwn(string skill)
+    {
+        var s = Cat.SkillsByName.GetValueOrDefault(skill);
+        var level = s is null ? 1 : s.Kind is SkillKind.Set or SkillKind.Group ? 1 : s.MaxLevel;
+        SetOwn(skill, level);
+    }
+
+    private static List<PickerOption<string>>? _skillOptions;
+
+    private List<PickerOption<string>> SkillOptions()
+    {
+        _skillOptions ??= App.Catalog.Skills
+            .OrderBy(s => s.Kind is SkillKind.Set or SkillKind.Group ? 1 : 0).ThenBy(s => s.Name)
+            .Select(s => new PickerOption<string>(s.Name, s.Name, $"{s.Name} {s.Kind}",
+                @<text>
+                    <SkillIcon Name="@s.Name" Kind="s.Kind" Size="22" />
+                    <span class="opt-main"><span class="opt-name">@s.Name</span><span class="muted small">@(s.Kind is SkillKind.Set ? "set bonus" : s.Kind is SkillKind.Group ? "group skill" : $"{s.Kind.ToString().ToLowerInvariant()} skill, max {s.MaxLevel}")</span></span>
+                </text>,
+                s.Kind is SkillKind.Set ? "Set bonuses" : s.Kind is SkillKind.Group ? "Group skills" : "Skills")).ToList();
+        return _skillOptions;
+    }
+
+    /// <summary>Level squares: filled for what the build has (blue where a jewel gives it), dashed for what is still wanted, red over the cap.</summary>
+    private static RenderFragment Pips(int have, int fromJewels, int max, int? want) => __builder =>
+    {
+        var n = Math.Max(max, have);
+        <span class="pips">
+            @for (var i = 0; i < n; i++)
+            {
+                var on = i < have;
+                var isJewel = on && i >= have - fromJewels;
+                var isWant = want is { } w && i < w && !on;
+                var over = on && i >= max;
+                <span class="@(on ? "on" : "") @(isJewel ? "deco" : "") @(isWant ? "want" : "") @(over ? "over" : "")"></span>
+            }
+        </span>
+    };
+}

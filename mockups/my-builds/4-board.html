@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 · Loadout board · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .board-card .card-body { padding-top: 12px; }
+  .tile { position: relative; }
+  .tile .n { position: absolute; top: -9px; right: -9px; }
+  .tile.empty .tile-head { align-self: flex-start; }
+  .tile.empty .tile-msg { margin: auto 0; font-size: 12px; line-height: 1.35; }
+  .tile.empty .tile-msg b { display: block; color: var(--text); font-weight: 500; }
+  .tile.drop { align-items: stretch; justify-content: flex-start; border-style: solid; }
+  .tile .ghost-piece { display: flex; flex-direction: column; gap: 6px; flex: 1; opacity: 0.5; }
+  .tile .ghost-piece .tile-name { color: var(--text); }
+  .tile.drop .drop-msg { font-size: 11px; color: var(--accent-2); text-align: center; }
+  .tile-chips { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tile-chips .chip.tiny { max-width: 100%; }
+  .tile-chips .chip.tiny span { overflow: hidden; text-overflow: ellipsis; }
+  .tile .tile-stat { font-size: 11.5px; color: var(--muted); }
+  .tile .tile-stat b { color: var(--text); font-weight: 600; }
+  .tile .tile-src { font-size: 11px; color: var(--muted); }
+  .tile .dslot.filled { border-color: rgba(79, 163, 230, 0.45); }
+  .tile .dslot.weapon { background: #2b3a4d; }
+  .strip { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); }
+  .strip .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 2px; }
+  .strip .sep { width: 1px; height: 18px; background: var(--border-2); margin: 0 4px; }
+  .strip .chip.skill b small { color: var(--muted); font-weight: 400; }
+  .strip .chip.gain b { color: var(--ok); }
+  .strip .free { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; }
+  .strip .free .muted { font-size: 11px; }
+  .palette-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .palette-toolbar .search { flex: 1 1 260px; }
+  .palette-toolbar .search::before { content: "⌕"; font-size: 15px; }
+  .palette-toolbar .filters { flex-basis: 100%; }
+  .filters .flabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 2px; }
+  .filters .fsep { width: 1px; height: 16px; background: var(--border-2); margin: 0 4px; }
+  .pcard .pn span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pcard .pr { flex-wrap: wrap; }
+  .pcard .pr .set { color: var(--set); flex: 1 1 90px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pcard .fit { white-space: nowrap; }
+  .pcard.dim .fit { color: var(--muted); font-weight: 500; }
+  .pcard.dragging { border-color: var(--accent-2); border-style: dashed; }
+  .pcard .drag-tag { font-size: 10px; color: var(--accent-2); margin-left: auto; }
+  .hintline { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .hintline .n { position: static; }
+  .card-head .n { margin-left: 6px; }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 4 · A loadout board you fill from a palette</h3>
+      <ol>
+        <li><span class="n">1</span><span>The build is a <b>row of seven tiles</b>, like the game's equipment screen. A tile shows the piece, its skills, set and group, and one square per slot. Empty tiles are drop targets.</span></li>
+        <li><span class="n">2</span><span>You <b>drag a piece</b> from the palette onto its tile. The tile lights up and shows a ghost of what you are about to equip, so you see the swap before you let go.</span></li>
+        <li><span class="n">3</span><span>The <b>skill strip</b> replaces the sheet: targets first as have/want, green when met, red when short, then the other skills, free slots and set piece counts. One glance, no scrolling.</span></li>
+        <li><span class="n">4</span><span>The <b>palette</b> below holds everything you can equip. Tabs switch between armor, jewels, talismans and whole sets; pills narrow by kind and rarity. The kind pill follows what you drag or click. Cards are sorted by how many target levels they add; cards that add none are dimmed.</span></li>
+        <li><span class="n">5</span><span>No drag needed: a <b>click</b> puts the piece into its kind. If that tile is taken, you are asked; <b>Shift-click</b> swaps without asking.</span></li>
+        <li><span class="n">6</span><span>Not solved here: jewels need a <b>second pass per tile</b> (switch the palette to Jewels, then drop into the small squares). The full sheet is reduced to a strip, so the pips and "where to get it" of idea 1 are gone. Drag and drop is a lot of code in Blazor. Any damage number on this page is illustrative.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <section class="card board-card newpart">
+      <header class="card-head">
+        <div class="card-title"><h2>Loadout <span class="n">1</span></h2><p class="hint">Seven tiles, one per piece. Fill them from the palette below.</p></div>
+        <div class="card-actions">
+          <span class="muted small">name</span><span class="fakeselect" style="min-width:200px">Crit draft</span>
+          <span class="muted small" style="margin-left:8px"><b id="dmg" style="color:var(--ok);font-size:15px"></b> damage per attack <span class="muted">(illustrative)</span></span>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="board" id="board"></div>
+      </div>
+    </section>
+
+    <div class="strip" id="strip"></div>
+
+    <section class="card newpart">
+      <header class="card-head" style="padding-bottom:10px">
+        <div class="card-title"><h2>Palette <span class="n">4</span></h2><p class="hint">Everything you can equip. Drag a card onto the board, or click it.</p></div>
+      </header>
+      <div class="card-body palette">
+        <div class="palette-toolbar">
+          <div class="search">Search pieces, sets, skills, jewels…</div>
+          <div class="segmented small"><button class="active">Armor</button><button>Jewels</button><button>Talismans</button><button>Sets</button></div>
+          <div class="filters">
+            <span class="flabel">kind</span>
+            <button class="filter">Head</button>
+            <button class="filter">Chest</button>
+            <button class="filter on">Arms</button>
+            <button class="filter">Waist</button>
+            <button class="filter">Legs</button>
+            <span class="fsep"></span>
+            <button class="filter">Rarity 8</button>
+            <button class="filter on" title="dims pieces that add nothing to a target">Helps a target</button>
+            <button class="filter">Hide what I wear</button>
+            <span class="muted small right" id="pcount"></span>
+          </div>
+        </div>
+        <div class="palette-grid" id="palette"></div>
+        <div class="hintline"><span class="n">5</span>Drag onto a tile, or click: it goes into its kind. Shift-click swaps without asking.</div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  const draft = DRAFT;
+  const T = totals(draft);
+  const WANT = Object.fromEntries(draft.targets);
+  const GHOST = 'Bale Gauntlets α';
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>${draft.name}</span><b>${fmt(draft.dmg)}</b></button>`,
+  ].join('');
+  document.getElementById('dmg').textContent = fmt(draft.dmg);
+
+  const dslot = (level, deco, kind = 'armor') => `<span class="dslot ${kind} ${deco ? 'filled' : ''}" title="${deco ? deco : `level ${level} ${kind} slot, empty`}">${deco ? `<img src="${decoIcon(deco)}" alt="">` : level}</span>`;
+  const dslots = (levels, decos, kind = 'armor') => `<div class="tile-slots">${levels.map((l, i) => dslot(l, decos[i], kind)).join('')}</div>`;
+  const bonusChips = (sets, group) => `<div class="tile-chips">${sets.map((b) => `<span class="chip skill set tiny"><img src="${ICO}skills/set.png" alt=""><span>${b}</span></span>`).join('')}${group ? `<span class="chip skill group tiny"><img src="${ICO}skills/group.png" alt=""><span>${group}</span></span>` : ''}</div>`;
+  const skillLines = (skills) => `<div class="tile-skills">${skills.map(([s, l]) => `<span>${s} ${l}</span>`).join('')}</div>`;
+  const head = (icon, label) => `<div class="tile-head"><img src="${icon}" alt="">${label}</div>`;
+
+  function pieceTile(kind, a, note = '') {
+    const p = ARMOR.get(a.name);
+    return `<div class="tile" draggable="true">${note}${head(armorIcon(kind, p.rarity), KIND_LABEL[kind])}
+      <div class="tile-name">${p.name} ${rarityBadge(p.rarity)}</div>
+      ${skillLines(p.skills)}
+      ${bonusChips(p.setBonus, p.group)}
+      ${dslots(p.slots, a.decos)}</div>`;
+  }
+  function emptyTile(kind, icon) {
+    return `<div class="tile empty">${head(icon, KIND_LABEL[kind])}
+      <div class="tile-msg"><b>drop a piece here</b>or click to pick</div></div>`;
+  }
+  function dropTile(kind, name) {
+    const p = ARMOR.get(name);
+    return `<div class="tile drop"><span class="n">2</span>${head(armorBase(kind), KIND_LABEL[kind])}
+      <div class="ghost-piece">
+        <div class="tile-name">${p.name} ${rarityBadge(p.rarity)}</div>
+        ${skillLines(p.skills)}
+        ${bonusChips(p.setBonus, p.group)}
+        ${dslots(p.slots, [])}
+      </div>
+      <div class="drop-msg">release to equip</div></div>`;
+  }
+  function weaponTile() {
+    return `<div class="tile">${head(weaponIcon, 'Weapon')}
+      <div class="tile-name">Great Sword <span class="muted small" style="font-weight:400">· ${WEAPON.name}</span></div>
+      <div class="tile-stat"><b>${WEAPON.attack}</b> attack · <b>${WEAPON.affinity}%</b> affinity</div>
+      <div class="tile-src">${WEAPON.sharpness} sharpness · from the <a href="#">Weapon tab</a></div>
+      ${bonusChips([WEAPON.setBonus], WEAPON.group)}
+      ${dslots(WEAPON.slots, draft.weapon.decos, 'weapon')}</div>`;
+  }
+
+  document.getElementById('board').innerHTML = [
+    weaponTile(),
+    ...KINDS.map((k) => {
+      if (k === 'arms') return dropTile(k, GHOST);
+      const a = draft.armor[k];
+      return a ? pieceTile(k, a) : emptyTile(k, armorBase(k));
+    }),
+    emptyTile('talisman', talismanIcon(8)),
+  ].join('');
+
+  // skill strip: targets, then the rest, free slots, set and group piece counts
+  function renderStrip() {
+    const rows = sheetRows(draft);
+    const targets = rows.filter((r) => r.want);
+    const others = rows.filter((r) => !r.want && r.have);
+    const freeByLevel = {};
+    for (const [k, l] of T.free) { const key = `${k}${l}`; freeByLevel[key] = (freeByLevel[key] ?? 0) + 1; }
+    const free = Object.entries(freeByLevel).sort().map(([key, n]) => `<span class="free">${slotBox(key.slice(-1), key.slice(0, -1))}<span class="muted">×${n}</span></span>`).join('');
+    const sets = Object.entries(T.sets).map(([name, n]) => `<span class="chip skill set tiny"><img src="${ICO}skills/set.png" alt="">${name} <b>${n} pc</b></span>`).join('');
+    const groups = Object.entries(T.groups).map(([name, n]) => `<span class="chip skill group tiny"><img src="${ICO}skills/group.png" alt="">${name} <b>${n} pc</b></span>`).join('');
+    const met = targets.filter((r) => r.state === 'met').length;
+    document.getElementById('strip').innerHTML = `
+      <span class="n">3</span>
+      <span class="lbl">targets <span class="${met === targets.length ? 'ok' : 'warn'}">${met}/${targets.length}</span></span>
+      ${targets.map((r) => `<span class="chip skill ${r.state === 'met' ? 'gain' : 'loss'}"><img src="${skillIcon(r.skill)}" alt="">${r.skill} <b>${r.have}<small>/${r.want}</small></b></span>`).join('')}
+      <span class="sep"></span>
+      ${others.map((r) => chip(r.skill, r.have)).join('')}
+      <span class="sep"></span><span class="lbl">free</span>${free || '<span class="muted small">none</span>'}
+      <span class="sep"></span>${sets}${groups}`;
+  }
+  renderStrip();
+
+  // palette: arms pieces, sorted by how many target levels they add
+  const fitOf = (p) => p.skills.reduce((sum, [s, l]) => sum + (WANT[s] ? Math.max(0, Math.min(l, WANT[s] - (T.skills[s] ?? 0))) : 0), 0);
+  const worn = new Set(KINDS.map((k) => draft.armor[k]?.name).filter(Boolean));
+  const arms = GAME.armor.filter((p) => p.piece === 'arms').map((p) => ({ ...p, fit: fitOf(p) }))
+    .sort((a, b) => b.fit - a.fit || b.rarity - a.rarity || b.slots.length - a.slots.length);
+  const cards = [...arms.filter((p) => p.fit > 0).slice(0, 10), ...arms.filter((p) => p.fit === 0).slice(0, 2)];
+  document.getElementById('pcount').textContent = `${arms.filter((p) => p.fit > 0).length} of ${arms.length} arms help a target`;
+  document.getElementById('palette').innerHTML = cards.map((p) => `
+    <div class="pcard ${p.fit ? '' : 'dim'} ${p.name === GHOST ? 'dragging' : ''}" draggable="true" title="drag onto the Arms tile, or click">
+      <img src="${armorIcon(p.piece, p.rarity)}" alt="">
+      <div class="pn"><span>${p.name}</span>${rarityBadge(p.rarity)}${p.name === GHOST ? '<span class="drag-tag">dragging</span>' : ''}</div>
+      <div class="ps">${skillsText(p.skills)}</div>
+      <div class="pr">${slotsOf(p.slots)}${p.setBonus.length ? `<span class="set" title="set bonus">${p.setBonus.join(', ')}</span>` : ''}<span class="fit">${p.fit ? `+${p.fit} target lvl${p.fit === 1 ? '' : 's'}` : 'no target'}</span></div>
+    </div>`).join('');
+</script>
+</body>
+</html>
