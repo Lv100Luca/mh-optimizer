@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 · Fill the rest · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .tcount { font-size: 12.5px; font-weight: 600; }
+  .tcount.ok { color: var(--ok); }
+  .tcount.warn { color: var(--warn); }
+  .fillbox { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .fillbox .cap { font-size: 11px; color: var(--muted); }
+  .equip .piece-label { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .equip .ghost .piecepick.vacant { color: var(--muted); font-style: italic; }
+  .keptmark { font-size: 10px; color: var(--accent); margin-left: auto; white-space: nowrap; }
+  .slotpick.fills { border-style: dashed; }
+  .slotpick.fills .slotpick-name { color: var(--muted); font-style: italic; }
+  .options { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 10px 8px 2px; font-size: 12.5px; color: var(--muted); }
+  .options label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text); }
+  .options .lbl { color: var(--muted); }
+  .ranline { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); }
+  .ranline s { opacity: 0.6; }
+  .rcard { flex: 1 1 300px; min-width: 300px; }
+  .rcard .rhead .total.mid { color: var(--text); }
+  .rcard .rline .pn { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .rcard .rline .decos { display: inline-flex; gap: 2px; align-items: center; }
+  .rcard .rline .decos .free { font-size: 10px; color: var(--muted); }
+  .rcard .rtargets { display: flex; align-items: center; gap: 6px; font-size: 12px; padding-top: 4px; border-top: 1px solid var(--border); margin-top: 2px; }
+  .rcard .rtargets .short { color: var(--warn); }
+  .rcard .ractions { display: flex; gap: 6px; margin-top: 4px; }
+  .rcard .ractions .btn { padding: 3px 10px; font-size: 12px; }
+  .rcard .rhead .pct { margin-left: auto; }
+  .variant .rcard { flex: 0 1 300px; }
+  .variant .oneline { font-size: 12.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 2 · Lock what you want, the optimizer fills the rest</h3>
+      <ol>
+        <li><span class="n">1</span><span><b>Fill the rest</b> runs the optimizer with the kept pieces as the only Allowed armor of their kind. That is what Results already does when you lock a piece (IncludeArmor holds one piece per kind), so the solver needs no new mode.</span></li>
+        <li><span class="n">2</span><span>Each armor row and the talisman get a <b>keep</b> toggle. Kept rows are tinted. The weapon is always kept; it comes from the Weapon tab.</span></li>
+        <li><span class="n">3</span><span>Rows you did not fill are drawn <b>ghosted</b> and say what will happen to them. Same for empty jewel slots: the two Critical jewels are kept, the third weapon slot is left to the solver.</span></li>
+        <li><span class="n">4</span><span>Three knobs: which <b>targets</b> the run uses (this draft's sheet or the Targets tab), whether placed jewels stay, and whether the solver may re-jewel kept pieces.</span></li>
+        <li><span class="n">5</span><span>The run returns a short <b>strip of completions</b>, not a full results list. Kept rows read "kept", new rows show piece and jewels. <b>Take it</b> writes the completion into the draft; <b>Keep as draft</b> adds it as a new build next to it. Damage numbers are illustrative.</span></li>
+        <li><span class="n">6</span><span>Not solved here: you still need to know <b>which pieces to lock</b>. Nothing on this page helps you browse pieces or skills. Idea 1 or 3 covers that; this idea is the finishing move.</span></li>
+        <li><span class="n">7</span><span>Variant B: the idea scales down. With all five pieces kept the same button only <b>fills the jewels</b>, which is a much faster run.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <div class="scorebar">
+      <span class="scorebar-total"><b id="dmg"></b> <span class="muted small">damage per attack</span></span>
+      <span class="statchip atk"><img src="" data-ico="ui/attack-up.png" alt="">ATK <b id="atk"></b></span>
+      <span class="statchip aff"><img src="" data-ico="ui/affinity-up.png" alt="">AFF <b id="aff"></b></span>
+      <span class="tcount" id="tcount"></span>
+      <span class="muted small" id="keptcount"></span>
+      <div class="fillbox newpart">
+        <span><span class="n">1</span> <button class="btn primary">▶ Fill the rest</button></span>
+        <span class="cap">runs the optimizer with the kept pieces as Allowed armor</span>
+      </div>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title"><h2>Equipment</h2><p class="hint">Pick the pieces you care about and keep them. Everything else is up to the optimizer.</p></div>
+        <div class="card-actions"><span class="muted small">name</span><span class="fakeselect" style="min-width:200px">Crit draft</span></div>
+      </header>
+      <div class="card-body" style="padding-top:0">
+        <div class="equip" id="equip"></div>
+        <div class="options newpart">
+          <span class="n">4</span>
+          <span class="lbl">Targets:</span>
+          <span class="segmented small"><button class="active">this draft's sheet</button><button>the Targets tab</button></span>
+          <label><input type="checkbox" checked> keep the jewels I placed</label>
+          <label><input type="checkbox"> may change kept pieces' jewels</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card newpart">
+      <header class="card-head">
+        <div class="card-title"><h2>Completions <span class="n">5</span></h2><p class="hint">The best builds that wear the kept pieces, scored like any optimizer result.</p></div>
+        <div class="card-actions"><span class="ranline"><s class="progress"><span class="spinner" style="animation:none"></span> scoring 112 of 112</s> ran 2.1 s · 3 completions · targets from this draft's sheet</span></div>
+      </header>
+      <div class="card-body">
+        <div class="resultstrip" id="strip"></div>
+      </div>
+    </section>
+
+    <section class="card variant newpart">
+      <header class="card-head">
+        <div class="card-title"><h2>Variant B · all five pieces kept = fill the jewels only <span class="n">7</span></h2><p class="hint">Same button, smaller job. With no piece left open, the run only has to place jewels into the free slots.</p></div>
+      </header>
+      <div class="card-body">
+        <div class="oneline" id="variant-line"></div>
+        <div class="resultstrip" id="variant-strip"></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  document.querySelectorAll('img[data-ico]').forEach((i) => { i.src = ICO + i.dataset.ico; });
+  const draft = DRAFT;
+  const KEPT = { head: true, chest: true, arms: false, waist: false, legs: false, talisman: false };
+  const KEPT_WEAPON_DECOS = [true, true, false];
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>${draft.name}</span><b>${fmt(draft.dmg)}</b></button>`,
+  ].join('');
+  document.getElementById('dmg').textContent = fmt(draft.dmg);
+  document.getElementById('atk').textContent = draft.atk;
+  document.getElementById('aff').textContent = draft.aff + '%';
+
+  // a target counts as met when the level is reached; over the cap is still reached
+  const metOf = (d) => sheetRows(d).filter((r) => r.want && r.have >= r.want);
+  const shortOf = (d) => sheetRows(d).filter((r) => r.want && r.have < r.want);
+  const nTargets = draft.targets.length;
+  {
+    const met = metOf(draft).length;
+    const tc = document.getElementById('tcount');
+    tc.textContent = `targets ${met}/${nTargets}`;
+    tc.className = `tcount ${met === nTargets ? 'ok' : 'warn'}`;
+    const kept = Object.values(KEPT).filter(Boolean).length;
+    document.getElementById('keptcount').textContent = `${kept} pieces kept · ${6 - kept} left to the optimizer`;
+  }
+
+  const lockBtn = (on) => `<button class="lockbtn ${on ? 'on' : ''}">${on ? '🔒 kept' : 'keep'}</button>`;
+
+  /** SlotPickers with a "kept" mark per placed jewel and a dashed "optimizer fills" for empty ones. */
+  function slotPicksFill(levels, decos, keptFlags, kind = 'armor') {
+    return `<div class="slotpicks">${levels.map((l, i) => {
+      const d = decos[i];
+      if (d) return `<button class="slotpick">${slotBox(l, kind)}${decoImg(d, 22)}<span class="slotpick-name">${shortDeco(d)}</span>${keptFlags[i] ? '<span class="keptmark">kept</span>' : ''}</button>`;
+      return `<button class="slotpick fills">${slotBox(l, kind)}<img class="deco" src="${ICO}ui/decoration.png" alt="" style="opacity:.35"><span class="slotpick-name">optimizer fills</span></button>`;
+    }).join('')}</div>`;
+  }
+
+  function renderEquip() {
+    const rows = [];
+    const r = (icon, label, main, skills, decos, cls = '') => rows.push(`
+      <div class="icon-cell ${cls}">${icon}</div>
+      <div class="piece-label ${cls}">${label}</div>
+      <div class="${cls}">${main}</div>
+      <div class="${cls}"><span class="chip-row">${skills}</span></div>
+      <div class="${cls}">${decos}</div>`);
+    r(`<img src="${weaponIcon}" alt="">`, '<span>Weapon</span><span class="muted tiny">always kept</span>',
+      `<b>Great Sword</b> <span class="muted small">from the <a href="#">Weapon tab</a></span><div class="muted small">${WEAPON.attack} attack, ${WEAPON.affinity}% affinity, no element, ${WEAPON.sharpness} sharpness</div>
+       <div class="piece-meta"><span class="with-icon muted small"><img class="ico16" src="${ICO}skills/set.png" alt=""> set bonus</span><span class="fakeselect" style="min-width:150px;padding:3px 8px;font-size:12px">as rolled: ${WEAPON.setBonus}</span></div>
+       <div class="piece-meta"><span class="with-icon muted small"><img class="ico16" src="${ICO}skills/group.png" alt=""> group skill</span><span class="fakeselect" style="min-width:150px;padding:3px 8px;font-size:12px">as rolled: ${WEAPON.group}</span></div>`,
+      '', slotPicksFill(WEAPON.slots, draft.weapon.decos, KEPT_WEAPON_DECOS, 'weapon'));
+    for (const k of KINDS) {
+      const a = draft.armor[k];
+      const p = a && ARMOR.get(a.name);
+      if (p) {
+        const dot = k === 'head' ? ' <span class="n">2</span>' : '';
+        r(`<img src="${armorIcon(k, p.rarity)}" alt="">`, `<span>${KIND_LABEL[k]}</span><span>${lockBtn(KEPT[k])}${dot}</span>`,
+          `<div class="piecepick"><span>${p.name} ${rarityBadge(p.rarity)}</span></div>
+           <div class="piece-meta">${p.setBonus.map((b) => `<span class="chip skill set tiny"><img src="${ICO}skills/set.png" alt="">${b}</span>`).join('')}${p.group ? `<span class="chip skill group tiny"><img src="${ICO}skills/group.png" alt="">${p.group}</span>` : ''}</div>`,
+          p.skills.map(([s, l]) => chip(s, l)).join(''), slotPicksFill(p.slots, a.decos, a.decos.map(Boolean)), KEPT[k] ? 'row-locked' : '');
+      } else {
+        const dot = k === 'arms' ? ' <span class="n">3</span>' : '';
+        r(`<img src="${armorBase(k)}" alt="">`, `<span>${KIND_LABEL[k]}</span><span>${lockBtn(false)}</span>`,
+          `<div class="piecepick vacant">optimizer fills this${dot}</div>`, '', '', 'ghost');
+      }
+    }
+    r(`<img src="${talismanIcon(8)}" alt="" style="opacity:.5">`, `<span>Talisman</span><span>${lockBtn(false)}</span>`, `<div class="piecepick vacant">optimizer fills this</div>`, '', '', 'ghost');
+    document.getElementById('equip').innerHTML = rows.join('');
+  }
+
+  // ---------------------------------------------------------------- completions (damage illustrative, pieces real)
+  const completion = (w3, arms, waist, legs, talisman) => ({ ...draft, weapon: { decos: ['Critical Jewel III [3]', 'Critical Jewel III [3]', w3] }, armor: { ...draft.armor, arms, waist, legs }, talisman });
+  const CANDIDATES = [
+    { dmg: 1318, d: completion('Expert Jewel III [3]', { name: 'Gogmazios Vambraces β', decos: ['Counter Jewel [2]', null] }, { name: 'Numinous Overlay β', decos: [null] }, { name: 'Dahaad Shardgreaves γ', decos: [null] }, { name: 'Secret Charm', decos: [null] }) },
+    { dmg: 1302, d: completion('Attack Jewel III [3]', { name: 'G. Arkveld Vambraces β', decos: [null, null, null] }, { name: 'Dahaad Shardcoil γ', decos: [null] }, { name: 'Gala Suit Slacks α', decos: ['Mighty Jewel [2]', 'Counter Jewel [2]', null] }, { name: 'Golden Age Charm', decos: [null, null, null] }) },
+    { dmg: 1296, d: completion('Expert Jewel III [3]', { name: 'Arkvulcan Vambraces γ', decos: [null, null] }, { name: 'Dahaad Shardcoil γ', decos: [null] }, { name: 'Rey Sandgreaves α', decos: ['Mighty Jewel [2]'] }, { name: 'Secret Charm', decos: [null] }) },
+  ];
+
+  const decosHtml = (levels, decos) => `<span class="decos">${levels.map((l, i) => decos[i] ? decoImg(decos[i], 18) : `<span class="free" title="free level ${l} slot">${slotBox(l)}</span>`).join('')}</span>`;
+  const skillsShort = (skills) => skills.map(([s, l]) => `${s} ${l}`).join(', ');
+
+  function rline(icon, name, decos, kept, title = '') {
+    return `<div class="rline ${kept ? 'kept' : ''}"><img src="${icon}" alt=""><span class="pn" title="${title}">${name}</span>${decos}</div>`;
+  }
+
+  function rcard(c, i) {
+    const d = c.d;
+    const met = metOf(d).length, short = shortOf(d);
+    const pct = (c.dmg - draft.dmg) / draft.dmg * 100;
+    const lines = [];
+    lines.push(rline(weaponIcon, 'Great Sword', decosHtml(WEAPON.slots, d.weapon.decos), false, 'weapon jewels: two kept, the third placed'));
+    for (const k of KINDS) {
+      const a = d.armor[k], p = ARMOR.get(a.name);
+      lines.push(rline(armorIcon(k, p.rarity), p.name, decosHtml(p.slots, a.decos), KEPT[k], skillsShort(p.skills)));
+    }
+    const t = TALISMANS.find((x) => x.name === d.talisman.name);
+    lines.push(rline(talismanIcon(t.rarity), t.name, decosHtml(t.slots.map(([, l]) => l), d.talisman.decos), false, skillsShort(t.skills)));
+    return `<div class="rcard ${i === 0 ? 'best' : ''}">
+      <div class="rhead"><span class="total ${i === 0 ? '' : 'mid'}">${fmt(c.dmg)}</span>${delta(c.dmg - draft.dmg)}<span class="pct">(${pct > 0 ? '+' : ''}${fmt(pct, 1)}% vs draft)</span></div>
+      ${lines.join('')}
+      <div class="rtargets"><span class="${met === nTargets ? 'ok' : 'warn'}"><b>${met}/${nTargets}</b> targets</span>${short.map((r) => `<span class="short">${r.skill} ${r.have}/${r.want}</span>`).join('')}</div>
+      <div class="ractions"><button class="btn primary">Take it</button><button class="btn">Keep as draft</button></div>
+    </div>`;
+  }
+  document.getElementById('strip').innerHTML = CANDIDATES.map(rcard).join('');
+
+  // ---------------------------------------------------------------- variant B: every piece kept, only the jewels differ
+  {
+    const base = CANDIDATES[0].d;
+    const free = totals({ ...base, weapon: { decos: ['Critical Jewel III [3]', 'Critical Jewel III [3]', null] }, armor: { ...base.armor, arms: { name: base.armor.arms.name, decos: [null, null] } } }).free;
+    const freeHtml = free.map(([k, l]) => slotBox(l, k)).join('');
+    document.getElementById('variant-line').innerHTML = `All six rows kept (the pieces of completion 1). Free: ${freeHtml} <span class="muted">· the run only places jewels, ran 0.3 s</span>`;
+    const vcard = (dmg, w3, armsDecos, label) => {
+      const pct = (dmg - draft.dmg) / draft.dmg * 100;
+      return `<div class="rcard">
+        <div class="rhead"><span class="total ${dmg >= 1318 ? '' : 'mid'}">${fmt(dmg)}</span>${delta(dmg - draft.dmg)}<span class="pct">(${pct > 0 ? '+' : ''}${fmt(pct, 1)}% vs draft)</span></div>
+        ${rline(weaponIcon, 'Great Sword', decosHtml(WEAPON.slots, ['Critical Jewel III [3]', 'Critical Jewel III [3]', w3]), false)}
+        ${rline(armorIcon('arms', 8), base.armor.arms.name, decosHtml(ARMOR.get(base.armor.arms.name).slots, armsDecos), false)}
+        <div class="muted tiny">${label}</div>
+        <div class="ractions"><button class="btn primary">Take it</button><button class="btn">Keep as draft</button></div>
+      </div>`;
+    };
+    document.getElementById('variant-strip').innerHTML = [
+      vcard(1318, 'Expert Jewel III [3]', ['Counter Jewel [2]', null], 'Critical Eye 3 in the weapon, Counterstrike to 3'),
+      vcard(1311, 'Attack Jewel III [3]', ['Counter Jewel [2]', null], 'Attack Boost 3 in the weapon instead'),
+    ].join('');
+  }
+
+  renderEquip();
+</script>
+</body>
+</html>

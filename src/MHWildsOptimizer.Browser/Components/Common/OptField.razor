@@ -2,7 +2,7 @@
     A field of the described weapon the optimizer can choose instead: the switch sits on the field's own label line, and while
     it is on the field's value is not used (it is greyed out and cannot be edited).
 *@
-<div class="field optfield @(Optimized ? "optimized" : "")">
+<div class="field optfield @Class @(Optimized ? "optimized" : "")">
     <div class="optfield-head">
         <span class="field-label">
             @Label
@@ -42,4 +42,6 @@
     /// <summary>What the optimizer does with the part while it chooses it (and its settings).</summary>
     [Parameter] public RenderFragment? OptimizedContent { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Extra classes on the field (e.g. <c>wide</c> to span the whole form row).</summary>
+    [Parameter] public string? Class { get; set; }
 }
