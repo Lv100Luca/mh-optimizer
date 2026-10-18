@@ -112,6 +112,26 @@ public class UptimeTests
     }
 
     [Fact]
+    public void APartScoresAsTheTimedSkillsItTurnsOn()
+    {
+        // the score model probes each part only once per set of timed skills turned on (ScoreDecomposition.Prober): exactly the same score
+        var cond = Conditions.Default with { LatentPowerActive = true, OffensiveGuardActive = true, OffensiveGuardUptime = 0.5 };
+        var parts = cond.UptimeParts();
+        Assert.Equal(24, parts.Count);
+        foreach (var latent in new[] { 0, 1, 5 })
+        foreach (var guard in new[] { 0, 3 })
+        foreach (var roar in new[] { 0, 2, 4 })
+        foreach (var fury in new[] { 0, 2, 4 })
+        {
+            var skills = Skills([(SkillNames.LatentPower, latent), (SkillNames.OffensiveGuard, guard), (SkillNames.CriticalBoost, 3)],
+                (SkillNames.ReyDausVoltage, roar), (SkillNames.LeviathansFury, fury));
+            foreach (var (part, _) in parts)
+                Assert.Equal(DamageCalculator.Calculate(Sa, skills, part, trace: false).Total,
+                    DamageCalculator.Calculate(Sa, skills, part.WithTimedSkills(part.TimedSkillsOn(skills)), trace: false).Total);
+        }
+    }
+
+    [Fact]
     public void AllOnCountsTheTimedSkillsAllTheTime()
     {
         Assert.Single(Conditions.AllOn.UptimeParts());

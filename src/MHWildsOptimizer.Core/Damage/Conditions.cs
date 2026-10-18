@@ -210,19 +210,28 @@ public sealed record Conditions
         if (skills is null) return parts;
 
         // what each part turns on for this loadout; parts that turn on the same score the same
-        var roar = (int)SetTier(skills, SkillNames.ReyDausVoltage);
         return parts
-            .GroupBy(p => (Latent: p.Part.LatentPowerActive && hasLatent && roar >= p.Part.LatentPowerMinRoarTier,
-                           Bolt: p.Part.AzureBoltActive && fury >= Math.Max(1, p.Part.AzureBoltMinTier),
-                           Guard: p.Part.OffensiveGuardActive && hasGuard,
-                           Buffs: string.Join(",", p.Part.Buffs.Keys.Order(StringComparer.Ordinal))))
-            .Select(g => (g.First().Part with
-            {
-                LatentPowerActive = g.Key.Latent, LatentPowerMinRoarTier = 0, AzureBoltActive = g.Key.Bolt, AzureBoltMinTier = 0,
-                OffensiveGuardActive = g.Key.Guard,
-            }, g.Sum(p => p.Share)))
+            .GroupBy(p => (On: p.Part.TimedSkillsOn(skills), Buffs: string.Join(",", p.Part.Buffs.Keys.Order(StringComparer.Ordinal))))
+            .Select(g => (g.First().Part.WithTimedSkills(g.Key.On), g.Sum(p => p.Share)))
             .ToList();
     }
+
+    /// <summary>
+    /// The timed skills this part of the hunt (<see cref="UptimeParts"/>) turns on for the loadout. <see cref="LatentPowerActive"/>,
+    /// <see cref="AzureBoltActive"/>, <see cref="OffensiveGuardActive"/> and the tier gates change a part's score only through this:
+    /// parts that agree on it score alike, and <see cref="WithTimedSkills"/> of it scores the same as the part.
+    /// </summary>
+    public (bool Latent, bool Bolt, bool Guard) TimedSkillsOn(ActiveSkills skills) =>
+        (LatentPowerActive && Effective(SkillNames.LatentPower, skills.Level(SkillNames.LatentPower)) > 0
+                           && (int)SetTier(skills, SkillNames.ReyDausVoltage) >= LatentPowerMinRoarTier,
+         AzureBoltActive && (int)SetTier(skills, SkillNames.LeviathansFury) >= Math.Max(1, AzureBoltMinTier),
+         OffensiveGuardActive && Effective(SkillNames.OffensiveGuard, skills.Level(SkillNames.OffensiveGuard)) > 0);
+
+    /// <summary>This part with the timed skills set on or off and no tier gates.</summary>
+    public Conditions WithTimedSkills((bool Latent, bool Bolt, bool Guard) on) => this with
+    {
+        LatentPowerActive = on.Latent, LatentPowerMinRoarTier = 0, AzureBoltActive = on.Bolt, AzureBoltMinTier = 0, OffensiveGuardActive = on.Guard,
+    };
 
     /// <summary>
     /// A timed skill's parts as (on, from tier, share): none when it is always on (uptime 1), off for an uptime of 0, on and off for
