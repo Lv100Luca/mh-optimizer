@@ -1,0 +1,62 @@
+@inject AppState App
+@inherits HoverTip
+@* A craftable charm's zenny to reach its rank (rank I crafted, then each upgrade), as a pill; hovered or focused, the
+   zenny and materials of every rank of the line. Lazily created like InfoHover: result lists show many builds. *@
+@if (_ranks is { Count: > 0 } ranks)
+{
+    if (Armed)
+    {
+        <MudTooltip Placement="Placement.Bottom" Delay="120" Class="infotip-pop" RootClass="infohover" RootStyle="display: inline-flex" Visible="Visible" VisibleChanged="OnVisibleChanged">
+            <ChildContent><span @ref="Anchor" class="cost-pill" tabindex="0" @onclick:stopPropagation="true">@Pill</span></ChildContent>
+            <TooltipContent>
+                <div class="infotip">
+                    <b>Smithy cost</b>
+                    <table class="charm-cost">
+                        <tbody>
+                            @foreach (var r in ranks)
+                            {
+                                <tr class="@(r.Level == _charm!.Level ? "current" : r.Level > _charm.Level ? "muted" : "")">
+                                    <th>@Roman(r.Level)</th>
+                                    <td class="z">@Zenny(r.Crafting!.Zenny)</td>
+                                    <td>@(string.Join(", ", r.Crafting.Materials.Select(m => $"{m.Quantity}x {m.Item}")))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <span class="muted">Rank I is crafted, each later rank is an upgrade of the one before. @(_charm!.Name) costs @Zenny(_total) in all.</span>
+                </div>
+            </TooltipContent>
+        </MudTooltip>
+    }
+    else
+    {
+        <span class="mud-tooltip-root mud-tooltip-inline infohover" style="display: inline-flex" @onpointerenter="Arm" @onfocusin="ArmFocus" @onclick:stopPropagation="true">
+            <span class="cost-pill" tabindex="0">@Pill</span>
+        </span>
+    }
+}
+
+@code {
+    /// <summary>The charm rank as named in the build ("Challenger Charm III"); nothing shows for a name that is no craftable charm.</summary>
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+
+    private string? _resolvedName;
+    private CharmDto? _charm;
+    private IReadOnlyList<CharmDto>? _ranks;
+    private int _total;
+
+    private RenderFragment Pill => @<text>@Zenny(_total)</text>;
+
+    protected override void OnParametersSet()
+    {
+        if (_resolvedName == Name) return;
+        _resolvedName = Name;
+        _charm = App.Index.CharmsByName.GetValueOrDefault(Name);
+        _ranks = _charm is null ? null : App.Index.CharmRanks(_charm).Where(r => r.Crafting is not null).ToList();
+        _total = _ranks?.Where(r => r.Level <= _charm!.Level).Sum(r => r.Crafting!.Zenny) ?? 0;
+    }
+
+    private static string Zenny(int z) => $"{Fmt.N(z, 0)} z";
+
+    private static string Roman(int level) => level switch { 1 => "I", 2 => "II", 3 => "III", 4 => "IV", 5 => "V", _ => level.ToString() };
+}

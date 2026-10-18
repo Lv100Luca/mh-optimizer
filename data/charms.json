@@ -11,7 +11,28 @@
     "skill_id": 35,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Congalala Pelt",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 1,
@@ -25,7 +46,28 @@
     "skill_id": 35,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Kut-Ku Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Giant Beak",
+     "quantity": 2
+    },
+    {
+     "item": "Kut-Ku Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 1,
@@ -39,7 +81,28 @@
     "skill_id": 35,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Rathian Spike+",
+     "quantity": 3
+    },
+    {
+     "item": "Rathian Ruby",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Rathalos Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Guardian Rathalos Wing",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 2,
@@ -53,7 +116,28 @@
     "skill_id": 90,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Uth Duna Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Uth Duna Cilia",
+     "quantity": 1
+    },
+    {
+     "item": "Piragill Fin",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 2,
@@ -67,7 +151,28 @@
     "skill_id": 90,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Vibrant Pelt+",
+     "quantity": 2
+    },
+    {
+     "item": "Gravios Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Gravios Skull",
+     "quantity": 3
+    },
+    {
+     "item": "Gravios Medulla",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 2,
@@ -81,7 +186,28 @@
     "skill_id": 90,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Uth Duna Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Uth Duna Tentacle+",
+     "quantity": 2
+    },
+    {
+     "item": "Uth Duna Watergem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 2,
@@ -95,7 +221,28 @@
     "skill_id": 90,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Uth Duna Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Uth Duna Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Jin Dahaad Icegem",
+     "quantity": 1
+    },
+    {
+     "item": "Uth Duna Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 3,
@@ -109,7 +256,24 @@
     "skill_id": 125,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Quematrice Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Quematrice Igniter",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 3,
@@ -123,7 +287,28 @@
     "skill_id": 125,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Ajarakan Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Jewel",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull",
+     "quantity": 2
+    },
+    {
+     "item": "Firestone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 3,
@@ -137,7 +322,28 @@
     "skill_id": 125,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Quematrice Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Quematrice Igniter+",
+     "quantity": 3
+    },
+    {
+     "item": "Talioth Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 4,
@@ -151,7 +357,24 @@
     "skill_id": 151,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Balahara Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Tail",
+     "quantity": 1
+    },
+    {
+     "item": "Sharp Fang",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 4,
@@ -165,7 +388,28 @@
     "skill_id": 151,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Talioth Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Webbing",
+     "quantity": 1
+    },
+    {
+     "item": "Frozen Icebone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 4,
@@ -179,7 +423,28 @@
     "skill_id": 151,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Chatacabra Carapace",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Fang+",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 5,
@@ -193,7 +458,28 @@
     "skill_id": 87,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Fur",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Seikret Feather",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 5,
@@ -207,7 +493,28 @@
     "skill_id": 87,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Guardian Doshaguma Fur+",
+     "quantity": 6
+    },
+    {
+     "item": "Guardian Doshaguma Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Seikret Feather+",
+     "quantity": 5
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 5,
@@ -221,7 +528,28 @@
     "skill_id": 87,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Rey Dau Bolthorn",
+     "quantity": 3
+    },
+    {
+     "item": "Xu Wu Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Xu Wu Umbragem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 5,
@@ -235,7 +563,28 @@
     "skill_id": 87,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Rey Dau Boltgem",
+     "quantity": 1
+    },
+    {
+     "item": "Seregios Airblade",
+     "quantity": 6
+    },
+    {
+     "item": "Seregios Breacher",
+     "quantity": 3
+    },
+    {
+     "item": "Seregios Dissenter",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 6,
@@ -249,7 +598,28 @@
     "skill_id": 111,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Doshaguma Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Brute Bone",
+     "quantity": 1
+    },
+    {
+     "item": "Talioth Scale",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Fang",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 6,
@@ -263,7 +633,28 @@
     "skill_id": 111,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Congalala Pelt+",
+     "quantity": 4
+    },
+    {
+     "item": "Congalala Fang+",
+     "quantity": 2
+    },
+    {
+     "item": "Conga Pelt+",
+     "quantity": 3
+    },
+    {
+     "item": "Quality Bone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 6,
@@ -277,7 +668,28 @@
     "skill_id": 111,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Doshaguma Fur+",
+     "quantity": 4
+    },
+    {
+     "item": "Doshaguma Claw+",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Scale+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 7,
@@ -291,7 +703,28 @@
     "skill_id": 102,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Skull",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 7,
@@ -305,7 +738,28 @@
     "skill_id": 102,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Balahara Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Talioth Scale+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 7,
@@ -319,7 +773,28 @@
     "skill_id": 102,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Ajarakan Ridge+",
+     "quantity": 3
+    },
+    {
+     "item": "Rathalos Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Rathalos Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Rathalos Ruby",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 8,
@@ -333,7 +808,28 @@
     "skill_id": 154,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hirabami Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Hirabami Webbing+",
+     "quantity": 4
+    },
+    {
+     "item": "Vibrant Pelt+",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 8,
@@ -347,7 +843,28 @@
     "skill_id": 154,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Jin Dahaad Icegem",
+     "quantity": 1
+    },
+    {
+     "item": "Gravios Medulla",
+     "quantity": 2
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 8,
@@ -361,7 +878,28 @@
     "skill_id": 154,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Uth Duna Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Uth Duna Tentacle+",
+     "quantity": 4
+    },
+    {
+     "item": "Uth Duna Watergem",
+     "quantity": 1
+    },
+    {
+     "item": "Uth Duna Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 9,
@@ -375,7 +913,24 @@
     "skill_id": 64,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Bulaqchi Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Congalala Pelt",
+     "quantity": 1
+    },
+    {
+     "item": "Congalala Claw",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 9,
@@ -389,7 +944,28 @@
     "skill_id": 64,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Comaqchi Shell",
+     "quantity": 3
+    },
+    {
+     "item": "Nerscylla Chelicera",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 3
+    },
+    {
+     "item": "Frozen Icebone",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 9,
@@ -403,7 +979,28 @@
     "skill_id": 64,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Nerscylla Shear",
+     "quantity": 2
+    },
+    {
+     "item": "Comaqchi Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Nerscylla Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Quality Bone",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 10,
@@ -417,7 +1014,28 @@
     "skill_id": 100,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Doshaguma Fur",
+     "quantity": 2
+    },
+    {
+     "item": "Doshaguma Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Brute Bone",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Scale",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 10,
@@ -431,7 +1049,28 @@
     "skill_id": 100,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Nu Udra Horn",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Ebony Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Ebony Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Tough Guardian Bone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 10,
@@ -445,7 +1084,28 @@
     "skill_id": 100,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rathian Webbing",
+     "quantity": 2
+    },
+    {
+     "item": "Chatacabra Jaw+",
+     "quantity": 4
+    },
+    {
+     "item": "Rath Medulla",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Fulgur Fang+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 11,
@@ -459,7 +1119,28 @@
     "skill_id": 144,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Rathian Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Rathian Webbing",
+     "quantity": 3
+    },
+    {
+     "item": "Kut-Ku Scale+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 11,
@@ -473,7 +1154,28 @@
     "skill_id": 144,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Uth Duna Watergem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    },
+    {
+     "item": "Guardian Rathalos Ruby",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 11,
@@ -487,7 +1189,28 @@
     "skill_id": 144,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Jin Dahaad Claw+",
+     "quantity": 6
+    },
+    {
+     "item": "Gogmazios Shredders",
+     "quantity": 6
+    },
+    {
+     "item": "Wartorn Dragongem",
+     "quantity": 1
+    },
+    {
+     "item": "Jin Dahaad Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 12,
@@ -501,7 +1224,28 @@
     "skill_id": 77,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Hirabami Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Tail Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Icium",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 12,
@@ -515,7 +1259,28 @@
     "skill_id": 77,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Hirabami Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Hirabami Tail Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Herbivore Carapace",
+     "quantity": 5
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 12,
@@ -529,7 +1294,28 @@
     "skill_id": 77,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Ajarakan Ridge+",
+     "quantity": 3
+    },
+    {
+     "item": "Rathalos Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Rathalos Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Rathalos Ruby",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 12,
@@ -543,7 +1329,28 @@
     "skill_id": 77,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    },
+    {
+     "item": "Mizutsune Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Mizutsune Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Mizutsune Water Orb",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 13,
@@ -557,7 +1364,24 @@
     "skill_id": 110,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Quematrice Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Wingdrake Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Quematrice Igniter",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 13,
@@ -571,7 +1395,28 @@
     "skill_id": 110,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Herbivore Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Ridge",
+     "quantity": 1
+    },
+    {
+     "item": "Firestone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 13,
@@ -585,7 +1430,28 @@
     "skill_id": 110,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rathian Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Ajarakan Scale+",
+     "quantity": 5
+    },
+    {
+     "item": "Wingdrake Hide+",
+     "quantity": 3
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 14,
@@ -599,7 +1465,28 @@
     "skill_id": 99,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Nerscylla Shear",
+     "quantity": 3
+    },
+    {
+     "item": "Nerscylla Claw+",
+     "quantity": 6
+    },
+    {
+     "item": "Gypceros Head",
+     "quantity": 3
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 14,
@@ -613,7 +1500,28 @@
     "skill_id": 99,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Rey Dau Boltgem",
+     "quantity": 1
+    },
+    {
+     "item": "Xu Wu Umbragem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 14,
@@ -627,7 +1535,28 @@
     "skill_id": 99,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Uth Duna Watergem",
+     "quantity": 1
+    },
+    {
+     "item": "Ajarakan Carapace",
+     "quantity": 5
+    },
+    {
+     "item": "Gore Magala Nyctgem",
+     "quantity": 1
+    },
+    {
+     "item": "SF6 Ticket",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 15,
@@ -641,7 +1570,24 @@
     "skill_id": 105,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Balahara Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Balahara Skull",
+     "quantity": 2
+    },
+    {
+     "item": "Talioth Scale",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 15,
@@ -655,7 +1601,28 @@
     "skill_id": 105,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Sturdy Bone",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Ridge",
+     "quantity": 2
+    },
+    {
+     "item": "Kranodath Skull",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 15,
@@ -669,7 +1636,28 @@
     "skill_id": 105,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 4
+    },
+    {
+     "item": "Balahara Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Balahara Skull+",
+     "quantity": 4
+    },
+    {
+     "item": "Kranodath Skull+",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 16,
@@ -688,7 +1676,11 @@
     "skill_id": 138,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 0,
+   "materials": []
+  }
  },
  {
   "charm_id": 17,
@@ -702,7 +1694,24 @@
     "skill_id": 92,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Lala Barina Floret",
+     "quantity": 2
+    },
+    {
+     "item": "Vespoid Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Mucus",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 17,
@@ -716,7 +1725,28 @@
     "skill_id": 92,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Lala Barina Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Vespoid Wing",
+     "quantity": 2
+    },
+    {
+     "item": "Charred Oilbone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 17,
@@ -730,7 +1760,28 @@
     "skill_id": 92,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Colossal Bone",
+     "quantity": 4
+    },
+    {
+     "item": "Lala Barina Floret+",
+     "quantity": 4
+    },
+    {
+     "item": "Nerscylla Spike+",
+     "quantity": 3
+    },
+    {
+     "item": "Vespoid Carapace",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 18,
@@ -744,7 +1795,24 @@
     "skill_id": 48,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Lala Barina Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Floret",
+     "quantity": 2
+    },
+    {
+     "item": "Vespoid Shell",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 18,
@@ -758,7 +1826,28 @@
     "skill_id": 48,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Lala Barina Floret+",
+     "quantity": 5
+    },
+    {
+     "item": "Lala Barina Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Herbivore Carapace",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 18,
@@ -772,7 +1861,28 @@
     "skill_id": 48,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Blangonga Pelt+",
+     "quantity": 5
+    },
+    {
+     "item": "Blangonga Fang+",
+     "quantity": 3
+    },
+    {
+     "item": "Vespoid Innerwing",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 19,
@@ -786,7 +1896,28 @@
     "skill_id": 80,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Kut-Ku Ear",
+     "quantity": 2
+    },
+    {
+     "item": "Rathalos Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Rathalos Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Rathalos Ruby",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 19,
@@ -800,7 +1931,28 @@
     "skill_id": 80,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Zoh Shia Crystalscale",
+     "quantity": 6
+    },
+    {
+     "item": "Zoh Shia Stakeclaw",
+     "quantity": 4
+    },
+    {
+     "item": "Faux Whitegleam Orb",
+     "quantity": 1
+    },
+    {
+     "item": "Blackember Mass",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 20,
@@ -814,7 +1966,24 @@
     "skill_id": 156,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Rompopolo Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Spotted Poison Hide",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 20,
@@ -828,7 +1997,28 @@
     "skill_id": 156,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Bulaqchi Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Rey Dau Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Rey Dau Wingtalon",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 20,
@@ -842,7 +2032,28 @@
     "skill_id": 156,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rompopolo Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Spotted Poison Hide+",
+     "quantity": 3
+    },
+    {
+     "item": "Talioth Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Lightcrystal",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 21,
@@ -856,7 +2067,28 @@
     "skill_id": 58,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Nu Udra Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Xu Wu Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Xu Wu Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Xu Wu Cerebrospinal Fluid",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 21,
@@ -870,7 +2102,28 @@
     "skill_id": 58,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rubbery Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Gypceros Tail",
+     "quantity": 2
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Lightcrystal",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 21,
@@ -884,7 +2137,28 @@
     "skill_id": 58,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Doshaguma Fang+",
+     "quantity": 3
+    },
+    {
+     "item": "Golden Corneum+",
+     "quantity": 6
+    },
+    {
+     "item": "Xu Wu Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Xu Wu Umbragem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 22,
@@ -898,7 +2172,28 @@
     "skill_id": 142,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Quematrice Igniter+",
+     "quantity": 3
+    },
+    {
+     "item": "Quematrice Crest+",
+     "quantity": 3
+    },
+    {
+     "item": "Hirabami Scale+",
+     "quantity": 6
+    }
+   ]
+  }
  },
  {
   "charm_id": 22,
@@ -912,7 +2207,28 @@
     "skill_id": 142,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Rey Dau Boltgem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Fulgur Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 22,
@@ -926,7 +2242,28 @@
     "skill_id": 142,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Rey Dau Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Rey Dau Bolthorn",
+     "quantity": 4
+    },
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Rey Dau Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 23,
@@ -940,7 +2277,28 @@
     "skill_id": 118,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Skull",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 23,
@@ -954,7 +2312,28 @@
     "skill_id": 118,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Fang",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 23,
@@ -968,7 +2347,28 @@
     "skill_id": 118,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Chatacabra Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Chatacabra Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Quematrice Crest+",
+     "quantity": 2
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 23,
@@ -982,7 +2382,28 @@
     "skill_id": 118,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Guardian Doshaguma Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Doshaguma Claw+",
+     "quantity": 2
+    },
+    {
+     "item": "Gravios Carapace",
+     "quantity": 2
+    },
+    {
+     "item": "Gravios Wing",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 23,
@@ -996,7 +2417,28 @@
     "skill_id": 118,
     "level": 5
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Ajarakan Ridge+",
+     "quantity": 3
+    },
+    {
+     "item": "Gravios Skull",
+     "quantity": 2
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Rey Dau Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 24,
@@ -1010,7 +2452,24 @@
     "skill_id": 128,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Rompopolo Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Rompopolo Beak",
+     "quantity": 1
+    },
+    {
+     "item": "Monster Fluid",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 24,
@@ -1024,7 +2483,28 @@
     "skill_id": 128,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Sturdy Bone",
+     "quantity": 2
+    },
+    {
+     "item": "Bulaqchi Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Spike",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 24,
@@ -1038,7 +2518,28 @@
     "skill_id": 128,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rompopolo Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Kut-Ku Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Vespoid Carapace",
+     "quantity": 3
+    },
+    {
+     "item": "Quality Bone",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 25,
@@ -1052,7 +2553,28 @@
     "skill_id": 81,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rathian Webbing",
+     "quantity": 3
+    },
+    {
+     "item": "Talioth Scale+",
+     "quantity": 5
+    },
+    {
+     "item": "Gypceros Head",
+     "quantity": 3
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 25,
@@ -1066,7 +2588,28 @@
     "skill_id": 81,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Blangonga Pelt+",
+     "quantity": 6
+    },
+    {
+     "item": "Blangonga Whisker",
+     "quantity": 3
+    },
+    {
+     "item": "Blango Pelt+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 25,
@@ -1080,7 +2623,28 @@
     "skill_id": 81,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Nu Udra Horn+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Rathalos Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Rathalos Ruby",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 26,
@@ -1094,7 +2658,28 @@
     "skill_id": 32,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Skull",
+     "quantity": 1
+    },
+    {
+     "item": "Hirabami Tail Claw",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 26,
@@ -1108,7 +2693,28 @@
     "skill_id": 32,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Spotted Poison Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Rompopolo Beak+",
+     "quantity": 3
+    },
+    {
+     "item": "Ajarakan Marrow",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 26,
@@ -1122,7 +2728,28 @@
     "skill_id": 32,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Guardian Rathalos Wing",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Fulgur Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Fulgur Nosebone+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Fulgur Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 27,
@@ -1136,7 +2763,24 @@
     "skill_id": 84,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Skull",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 27,
@@ -1150,7 +2794,28 @@
     "skill_id": 84,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Uth Duna Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Uth Duna Cilia",
+     "quantity": 1
+    },
+    {
+     "item": "Piragill Fin",
+     "quantity": 2
+    },
+    {
+     "item": "Icium",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 27,
@@ -1164,7 +2829,28 @@
     "skill_id": 84,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Balahara Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Balahara Carapace",
+     "quantity": 4
+    },
+    {
+     "item": "Piragill Fin+",
+     "quantity": 3
+    },
+    {
+     "item": "Gracium",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 28,
@@ -1178,7 +2864,28 @@
     "skill_id": 113,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Wingdrake Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Rompopolo Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Spotted Poison Hide",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 28,
@@ -1192,7 +2899,28 @@
     "skill_id": 113,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Herbivore Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Tail Claw",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 28,
@@ -1206,7 +2934,28 @@
     "skill_id": 113,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Rathalos Scale",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Rathalos Tail",
+     "quantity": 1
+    },
+    {
+     "item": "Comaqchi Shell",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 28,
@@ -1220,7 +2969,28 @@
     "skill_id": 113,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Spotted Poison Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Hirabami Tail Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Wingdrake Hide+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 28,
@@ -1234,7 +3004,28 @@
     "skill_id": 113,
     "level": 5
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Lagiacrus Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Lagiacrus Shockspike",
+     "quantity": 4
+    },
+    {
+     "item": "Lagiacrus Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Lagiacrus Sapphire",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 29,
@@ -1248,7 +3039,28 @@
     "skill_id": 49,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Balahara Scale+",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Scale+",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Fulgur Pelt+",
+     "quantity": 4
+    },
+    {
+     "item": "Blangonga Pelt+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 29,
@@ -1262,7 +3074,28 @@
     "skill_id": 49,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Arkveld Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "White Arkveld Pelt",
+     "quantity": 4
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 29,
@@ -1276,7 +3109,28 @@
     "skill_id": 49,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Nu Udra Hide+",
+     "quantity": 5
+    },
+    {
+     "item": "Nu Udra Flamegem",
+     "quantity": 1
+    },
+    {
+     "item": "Gogmazios Certificate S",
+     "quantity": 1
+    },
+    {
+     "item": "Gogmazios Fortalice",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 30,
@@ -1290,7 +3144,28 @@
     "skill_id": 15,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Chatacabra Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Herbivore Shell",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 30,
@@ -1304,7 +3179,28 @@
     "skill_id": 15,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Doshaguma Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Bulaqchi Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Spotted Poison Hide",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 30,
@@ -1318,7 +3214,28 @@
     "skill_id": 15,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Chatacabra Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Chatacabra Jaw+",
+     "quantity": 2
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Mucus+",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 31,
@@ -1332,7 +3249,24 @@
     "skill_id": 101,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Pelt",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Fang",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 31,
@@ -1346,7 +3280,28 @@
     "skill_id": 101,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Hirabami Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Webbing",
+     "quantity": 1
+    },
+    {
+     "item": "Comaqchi Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Icium",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 31,
@@ -1360,7 +3315,28 @@
     "skill_id": 101,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Hirabami Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Hirabami Webbing+",
+     "quantity": 3
+    },
+    {
+     "item": "Blango Pelt+",
+     "quantity": 3
+    },
+    {
+     "item": "Gracium",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 32,
@@ -1374,7 +3350,28 @@
     "skill_id": 129,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Carapace",
+     "quantity": 4
+    },
+    {
+     "item": "Balahara Skull+",
+     "quantity": 3
+    },
+    {
+     "item": "Piragill Fin+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 32,
@@ -1388,7 +3385,28 @@
     "skill_id": 129,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Rey Dau Bolthorn",
+     "quantity": 3
+    },
+    {
+     "item": "Ajarakan Jewel+",
+     "quantity": 4
+    },
+    {
+     "item": "Ajarakan Medulla",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 32,
@@ -1402,7 +3420,28 @@
     "skill_id": 129,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Arkveld Horn+",
+     "quantity": 3
+    },
+    {
+     "item": "Gogmazios Lacerator",
+     "quantity": 3
+    },
+    {
+     "item": "Heavy Drakesbone Oil",
+     "quantity": 8
+    }
+   ]
+  }
  },
  {
   "charm_id": 33,
@@ -1416,7 +3455,28 @@
     "skill_id": 18,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Hirabami Tail Claw+",
+     "quantity": 2
+    },
+    {
+     "item": "Frenzy Shard",
+     "quantity": 5
+    },
+    {
+     "item": "Nerscylla Shear",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 33,
@@ -1430,7 +3490,28 @@
     "skill_id": 18,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Blangonga Pelt+",
+     "quantity": 4
+    },
+    {
+     "item": "Blangonga Whisker",
+     "quantity": 3
+    },
+    {
+     "item": "Frenzy Crystal",
+     "quantity": 5
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 33,
@@ -1444,7 +3525,28 @@
     "skill_id": 18,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Gore Magala Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Gore Magala Ripclaw+",
+     "quantity": 4
+    },
+    {
+     "item": "Gore Magala Feeler+",
+     "quantity": 2
+    },
+    {
+     "item": "Gore Magala Nyctgem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 34,
@@ -1458,7 +3560,28 @@
     "skill_id": 130,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Doshaguma Fur",
+     "quantity": 2
+    },
+    {
+     "item": "Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Monster Fluid",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 34,
@@ -1472,7 +3595,28 @@
     "skill_id": 130,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Rathian Scale+",
+     "quantity": 5
+    },
+    {
+     "item": "Rathian Webbing",
+     "quantity": 3
+    },
+    {
+     "item": "Monster Broth",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 34,
@@ -1486,7 +3630,28 @@
     "skill_id": 130,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Guardian Rathalos Tail",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Rathalos Scale+",
+     "quantity": 5
+    },
+    {
+     "item": "Guardian Rathalos Wing",
+     "quantity": 3
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 35,
@@ -1500,7 +3665,28 @@
     "skill_id": 108,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Quematrice Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Quematrice Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 35,
@@ -1514,7 +3700,28 @@
     "skill_id": 108,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Rathalos Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Rathalos Webbing",
+     "quantity": 1
+    },
+    {
+     "item": "Piragill Fin",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 35,
@@ -1528,7 +3735,28 @@
     "skill_id": 108,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Quematrice Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Quematrice Crest+",
+     "quantity": 2
+    },
+    {
+     "item": "Piragill Fin+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 36,
@@ -1542,7 +3770,28 @@
     "skill_id": 52,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Congalala Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Chelicera",
+     "quantity": 1
+    },
+    {
+     "item": "Conga Pelt",
+     "quantity": 1
+    },
+    {
+     "item": "Charred Oilbone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 36,
@@ -1556,7 +3805,28 @@
     "skill_id": 52,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Doshaguma Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Congalala Fang+",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 36,
@@ -1570,7 +3840,28 @@
     "skill_id": 52,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Uth Duna Watergem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Fulgur Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 37,
@@ -1584,7 +3875,28 @@
     "skill_id": 120,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Stinger+",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Webbing+",
+     "quantity": 4
+    },
+    {
+     "item": "Hirabami Tail Claw+",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 37,
@@ -1598,7 +3910,28 @@
     "skill_id": 120,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Rathalos Ruby",
+     "quantity": 1
+    },
+    {
+     "item": "Gore Magala Nyctgem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 37,
@@ -1612,7 +3945,28 @@
     "skill_id": 120,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Seregios Carver",
+     "quantity": 4
+    },
+    {
+     "item": "Seregios Impaler",
+     "quantity": 2
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 38,
@@ -1626,7 +3980,28 @@
     "skill_id": 43,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Guardian Doshaguma Fur",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Seikret Feather",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 38,
@@ -1640,7 +4015,28 @@
     "skill_id": 43,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Chatacabra Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Rubbery Hide+",
+     "quantity": 4
+    },
+    {
+     "item": "Gypceros Head",
+     "quantity": 3
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 38,
@@ -1654,7 +4050,28 @@
     "skill_id": 43,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Doshaguma Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Fulgur Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Guardian Fulgur Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Fulgur Gem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 39,
@@ -1668,7 +4085,28 @@
     "skill_id": 46,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Ridge",
+     "quantity": 1
+    },
+    {
+     "item": "Congalala Claw",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 39,
@@ -1682,7 +4120,28 @@
     "skill_id": 46,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Chatacabra Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Chatacabra Carapace",
+     "quantity": 4
+    },
+    {
+     "item": "Balahara Carapace",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 39,
@@ -1696,7 +4155,28 @@
     "skill_id": 46,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Guardian Doshaguma Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Gravios Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Gravios Pleura+",
+     "quantity": 3
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 40,
@@ -1710,7 +4190,28 @@
     "skill_id": 38,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Guardian Scale",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Seikret Feather",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Blood",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Pelt",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 40,
@@ -1724,7 +4225,28 @@
     "skill_id": 38,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Arkveld Armorplate",
+     "quantity": 5
+    },
+    {
+     "item": "Arkveld Calloushell",
+     "quantity": 3
+    },
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 40,
@@ -1738,7 +4260,28 @@
     "skill_id": 38,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "White Arkveld Pelt",
+     "quantity": 6
+    },
+    {
+     "item": "Seregios Breacher",
+     "quantity": 3
+    },
+    {
+     "item": "Seregios Dissenter",
+     "quantity": 1
+    },
+    {
+     "item": "Arkveld Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 41,
@@ -1752,7 +4295,28 @@
     "skill_id": 13,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Rathalos Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Xu Wu Tentacle+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Seikret Feather+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 41,
@@ -1766,7 +4330,28 @@
     "skill_id": 13,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Gore Magala Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Gore Magala Wing+",
+     "quantity": 4
+    },
+    {
+     "item": "Gore Magala Feeler+",
+     "quantity": 3
+    },
+    {
+     "item": "Gore Magala Nyctgem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 41,
@@ -1780,7 +4365,28 @@
     "skill_id": 13,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Jin Dahaad Iceplate",
+     "quantity": 6
+    },
+    {
+     "item": "Jin Dahaad Horn",
+     "quantity": 3
+    },
+    {
+     "item": "Jin Dahaad Icegem",
+     "quantity": 1
+    },
+    {
+     "item": "Jin Dahaad Certificate γ",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 42,
@@ -1794,7 +4400,28 @@
     "skill_id": 37,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Ajarakan Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Jewel",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull",
+     "quantity": 1
+    },
+    {
+     "item": "Firestone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 42,
@@ -1808,7 +4435,28 @@
     "skill_id": 37,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Quematrice Scale+",
+     "quantity": 3
+    },
+    {
+     "item": "Quematrice Igniter+",
+     "quantity": 2
+    },
+    {
+     "item": "Kranodath Skull+",
+     "quantity": 4
+    },
+    {
+     "item": "Firecell Stone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 42,
@@ -1822,7 +4470,28 @@
     "skill_id": 37,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Ajarakan Carapace",
+     "quantity": 4
+    },
+    {
+     "item": "Ajarakan Jewel+",
+     "quantity": 2
+    },
+    {
+     "item": "Inferno Sac",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 43,
@@ -1836,7 +4505,28 @@
     "skill_id": 146,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Talioth Scale",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Ebony Scale",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Ebony Sinew",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 43,
@@ -1850,7 +4540,28 @@
     "skill_id": 146,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Hirabami Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Hirabami Webbing+",
+     "quantity": 4
+    },
+    {
+     "item": "Blango Pelt+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 43,
@@ -1864,7 +4575,28 @@
     "skill_id": 146,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Ebony Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Guardian Ebony Sinew+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Seikret Feather+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 44,
@@ -1878,7 +4610,28 @@
     "skill_id": 152,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Arkveld Scale+",
+     "quantity": 4
+    },
+    {
+     "item": "Arkveld Horn+",
+     "quantity": 3
+    },
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 44,
@@ -1892,7 +4645,28 @@
     "skill_id": 152,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Zoh Shia Layershell",
+     "quantity": 6
+    },
+    {
+     "item": "Zoh Shia Crystalhorn",
+     "quantity": 4
+    },
+    {
+     "item": "Zoh Shia Crystaltail",
+     "quantity": 2
+    },
+    {
+     "item": "Faux Whitegleam Orb",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 45,
@@ -1906,7 +4680,28 @@
     "skill_id": 122,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Chatacabra Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Quematrice Scale",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Mucus",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 45,
@@ -1920,7 +4715,28 @@
     "skill_id": 122,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Uth Duna Tentacle",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Hirabami Webbing",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 45,
@@ -1934,7 +4750,28 @@
     "skill_id": 122,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Rathian Spike+",
+     "quantity": 3
+    },
+    {
+     "item": "Hirabami Webbing+",
+     "quantity": 4
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 46,
@@ -1948,7 +4785,28 @@
     "skill_id": 135,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Doshaguma Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Doshaguma Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Iron Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Piragill Fin",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 46,
@@ -1962,7 +4820,28 @@
     "skill_id": 135,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Balahara Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Balahara Skull+",
+     "quantity": 3
+    },
+    {
+     "item": "Piragill Fin+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 46,
@@ -1976,7 +4855,28 @@
     "skill_id": 135,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Guardian Doshaguma Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Seikret Feather+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 47,
@@ -1990,7 +4890,28 @@
     "skill_id": 67,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Golden Corneum",
+     "quantity": 2
+    },
+    {
+     "item": "Xu Wu Tentacle",
+     "quantity": 1
+    },
+    {
+     "item": "Xu Wu Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Firestone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 47,
@@ -2004,7 +4925,28 @@
     "skill_id": 67,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Golden Corneum+",
+     "quantity": 6
+    },
+    {
+     "item": "Xu Wu Tentacle+",
+     "quantity": 4
+    },
+    {
+     "item": "Xu Wu Fang+",
+     "quantity": 2
+    },
+    {
+     "item": "Xu Wu Umbragem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 47,
@@ -2018,7 +4960,28 @@
     "skill_id": 67,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Nu Udra Spike+",
+     "quantity": 6
+    },
+    {
+     "item": "Nu Udra Horn+",
+     "quantity": 4
+    },
+    {
+     "item": "Nu Udra Flamegem",
+     "quantity": 1
+    },
+    {
+     "item": "Nu Udra Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 48,
@@ -2032,7 +4995,28 @@
     "skill_id": 133,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Arkveld Tail",
+     "quantity": 2
+    },
+    {
+     "item": "White Arkveld Pelt",
+     "quantity": 4
+    },
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 48,
@@ -2046,7 +5030,28 @@
     "skill_id": 133,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Arkveld Calloushell",
+     "quantity": 4
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    },
+    {
+     "item": "Lagiacrus Shockspike",
+     "quantity": 4
+    },
+    {
+     "item": "Lagiacrus Sapphire",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 49,
@@ -2060,7 +5065,28 @@
     "skill_id": 147,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Vespoid Shell",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 49,
@@ -2074,7 +5100,28 @@
     "skill_id": 147,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Ebony Sinew+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Ebony Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Nerscylla Spike+",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 49,
@@ -2088,7 +5135,28 @@
     "skill_id": 147,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Jin Dahaad Iceplate",
+     "quantity": 4
+    },
+    {
+     "item": "Jin Dahaad Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Blangonga Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Freezer Sac",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 50,
@@ -2102,7 +5170,28 @@
     "skill_id": 31,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Doshaguma Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Doshaguma Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Brute Bone",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Hide",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 50,
@@ -2116,7 +5205,28 @@
     "skill_id": 31,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Lala Barina Certificate",
+     "quantity": 1
+    },
+    {
+     "item": "Hirabami Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Hirabami Webbing",
+     "quantity": 1
+    },
+    {
+     "item": "Frozen Icebone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 50,
@@ -2130,7 +5240,28 @@
     "skill_id": 31,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Rompopolo Beak+",
+     "quantity": 2
+    },
+    {
+     "item": "Gypceros Wing",
+     "quantity": 4
+    },
+    {
+     "item": "Gypceros Tail",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 51,
@@ -2144,7 +5275,28 @@
     "skill_id": 30,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Sturdy Bone",
+     "quantity": 2
+    },
+    {
+     "item": "Lala Barina Floret",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Pelt",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Mucus",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 51,
@@ -2158,7 +5310,28 @@
     "skill_id": 30,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Spotted Poison Hide",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Chelicera",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Charred Oilbone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 51,
@@ -2172,7 +5345,28 @@
     "skill_id": 30,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Lala Barina Floret+",
+     "quantity": 6
+    },
+    {
+     "item": "Giant Beak",
+     "quantity": 3
+    },
+    {
+     "item": "Bird Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Lala Barina Mucus+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 52,
@@ -2186,7 +5380,28 @@
     "skill_id": 14,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Ajarakan Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Ajarakan Ridge",
+     "quantity": 1
+    },
+    {
+     "item": "Ajarakan Jewel",
+     "quantity": 1
+    },
+    {
+     "item": "Kranodath Skull",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 52,
@@ -2200,7 +5415,28 @@
     "skill_id": 14,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Carbalite Ore",
+     "quantity": 5
+    },
+    {
+     "item": "Kut-Ku Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Kut-Ku Ear",
+     "quantity": 3
+    },
+    {
+     "item": "Kut-Ku Wing",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 52,
@@ -2214,7 +5450,28 @@
     "skill_id": 14,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Doshaguma Claw+",
+     "quantity": 3
+    },
+    {
+     "item": "Guardian Ebony Claw+",
+     "quantity": 4
+    },
+    {
+     "item": "Guardian Ebony Fang+",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 52,
@@ -2228,7 +5485,28 @@
     "skill_id": 14,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Guardian Ebony Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Gore Magala Wing+",
+     "quantity": 4
+    },
+    {
+     "item": "Gore Magala Tail",
+     "quantity": 2
+    },
+    {
+     "item": "Gore Magala Nyctgem",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 52,
@@ -2242,7 +5520,28 @@
     "skill_id": 14,
     "level": 5
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    },
+    {
+     "item": "Mizutsune Purplefur+",
+     "quantity": 6
+    },
+    {
+     "item": "Mizutsune Fin+",
+     "quantity": 4
+    },
+    {
+     "item": "Mizutsune Water Orb",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 53,
@@ -2256,7 +5555,28 @@
     "skill_id": 123,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Rompopolo Beak+",
+     "quantity": 3
+    },
+    {
+     "item": "Nerscylla Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Nerscylla Spike+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 53,
@@ -2270,7 +5590,28 @@
     "skill_id": 123,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Ajarakan Medulla",
+     "quantity": 1
+    },
+    {
+     "item": "Nu Udra Flamegem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 53,
@@ -2284,7 +5625,28 @@
     "skill_id": 123,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Nu Udra Hide+",
+     "quantity": 6
+    },
+    {
+     "item": "Nu Udra Oilmucus+",
+     "quantity": 4
+    },
+    {
+     "item": "Faux Whitegleam Orb",
+     "quantity": 1
+    },
+    {
+     "item": "Nu Udra Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 54,
@@ -2298,7 +5660,24 @@
     "skill_id": 98,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Sturdy Bone",
+     "quantity": 2
+    },
+    {
+     "item": "Balahara Shell",
+     "quantity": 1
+    },
+    {
+     "item": "Balahara Scale",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 54,
@@ -2312,7 +5691,28 @@
     "skill_id": 98,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Machalite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Dragonite Ore",
+     "quantity": 2
+    },
+    {
+     "item": "Rompopolo Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Rompopolo Beak",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 54,
@@ -2326,7 +5726,28 @@
     "skill_id": 98,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Wyvern Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Balahara Scale+",
+     "quantity": 6
+    },
+    {
+     "item": "Balahara Skull+",
+     "quantity": 4
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 55,
@@ -2340,7 +5761,24 @@
     "skill_id": 112,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Congalala Claw",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Fang",
+     "quantity": 1
+    },
+    {
+     "item": "Conga Pelt",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 55,
@@ -2354,7 +5792,28 @@
     "skill_id": 112,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Brute Bone",
+     "quantity": 2
+    },
+    {
+     "item": "Herbivore Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Congalala Pelt",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Claw",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 55,
@@ -2368,7 +5827,28 @@
     "skill_id": 112,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Guardian Rathalos Scale",
+     "quantity": 2
+    },
+    {
+     "item": "Comaqchi Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Spike",
+     "quantity": 2
+    },
+    {
+     "item": "Charred Oilbone",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 55,
@@ -2382,7 +5862,28 @@
     "skill_id": 112,
     "level": 4
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Dragonbone Relic",
+     "quantity": 1
+    },
+    {
+     "item": "Congalala Fang+",
+     "quantity": 4
+    },
+    {
+     "item": "Nerscylla Spike+",
+     "quantity": 4
+    },
+    {
+     "item": "Conga Pelt+",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 56,
@@ -2396,7 +5897,24 @@
     "skill_id": 1,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Lala Barina Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Lala Barina Mucus",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 56,
@@ -2410,7 +5928,28 @@
     "skill_id": 1,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Guardian Doshaguma Fur",
+     "quantity": 2
+    },
+    {
+     "item": "Guardian Doshaguma Claw",
+     "quantity": 1
+    },
+    {
+     "item": "Vespoid Shell",
+     "quantity": 2
+    },
+    {
+     "item": "Firestone",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 56,
@@ -2424,7 +5963,28 @@
     "skill_id": 1,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Nerscylla Shear",
+     "quantity": 2
+    },
+    {
+     "item": "Nerscylla Carapace",
+     "quantity": 4
+    },
+    {
+     "item": "Vespoid Carapace",
+     "quantity": 2
+    },
+    {
+     "item": "Novacrystal",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 57,
@@ -2438,7 +5998,28 @@
     "skill_id": 57,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Rathian Carapace",
+     "quantity": 6
+    },
+    {
+     "item": "Rathian Spike+",
+     "quantity": 3
+    },
+    {
+     "item": "Rathian Ruby",
+     "quantity": 1
+    },
+    {
+     "item": "Chatacabra Carapace",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 57,
@@ -2452,7 +6033,28 @@
     "skill_id": 57,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Arkveld Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    },
+    {
+     "item": "Guardian Rathalos Ruby",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 57,
@@ -2466,7 +6068,28 @@
     "skill_id": 57,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Arkveld Calloushell",
+     "quantity": 4
+    },
+    {
+     "item": "Zoh Shia Crystalhorn",
+     "quantity": 4
+    },
+    {
+     "item": "Lagiacrus Sapphire",
+     "quantity": 1
+    },
+    {
+     "item": "Arkveld Certificate γ",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 58,
@@ -2480,7 +6103,28 @@
     "skill_id": 75,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 1500,
+   "materials": [
+    {
+     "item": "Earth Crystal",
+     "quantity": 2
+    },
+    {
+     "item": "Lala Barina Floret",
+     "quantity": 1
+    },
+    {
+     "item": "Spotted Poison Hide",
+     "quantity": 2
+    },
+    {
+     "item": "Vespoid Wing",
+     "quantity": 2
+    }
+   ]
+  }
  },
  {
   "charm_id": 58,
@@ -2494,7 +6138,28 @@
     "skill_id": 75,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 6000,
+   "materials": [
+    {
+     "item": "Rathian Spike+",
+     "quantity": 3
+    },
+    {
+     "item": "Rathian Ruby",
+     "quantity": 1
+    },
+    {
+     "item": "Gravios Pleura+",
+     "quantity": 4
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    }
+   ]
+  }
  },
  {
   "charm_id": 58,
@@ -2508,7 +6173,28 @@
     "skill_id": 75,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Lagiacrus Sapphire",
+     "quantity": 1
+    },
+    {
+     "item": "Omega Data 1.0",
+     "quantity": 3
+    },
+    {
+     "item": "Omega Lens",
+     "quantity": 3
+    },
+    {
+     "item": "Omega Nodule",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 59,
@@ -2522,7 +6208,28 @@
     "skill_id": 95,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 3000,
+   "materials": [
+    {
+     "item": "Beast Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Nerscylla Shear",
+     "quantity": 3
+    },
+    {
+     "item": "Congalala Claw+",
+     "quantity": 6
+    },
+    {
+     "item": "Nerscylla Claw+",
+     "quantity": 4
+    }
+   ]
+  }
  },
  {
   "charm_id": 59,
@@ -2536,7 +6243,28 @@
     "skill_id": 95,
     "level": 2
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 9000,
+   "materials": [
+    {
+     "item": "Nu Udra Flamegem",
+     "quantity": 1
+    },
+    {
+     "item": "Guardian Ebony Gem",
+     "quantity": 1
+    },
+    {
+     "item": "Hunter Symbol II",
+     "quantity": 3
+    },
+    {
+     "item": "Hunter Symbol III",
+     "quantity": 5
+    }
+   ]
+  }
  },
  {
   "charm_id": 59,
@@ -2550,7 +6278,28 @@
     "skill_id": 95,
     "level": 3
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 16000,
+   "materials": [
+    {
+     "item": "Seregios Dissenter",
+     "quantity": 1
+    },
+    {
+     "item": "Omega Data 1.0",
+     "quantity": 5
+    },
+    {
+     "item": "Omega Axle",
+     "quantity": 3
+    },
+    {
+     "item": "Omega Nodule",
+     "quantity": 1
+    }
+   ]
+  }
  },
  {
   "charm_id": 60,
@@ -2564,6 +6313,10 @@
     "skill_id": 158,
     "level": 1
    }
-  ]
+  ],
+  "crafting": {
+   "zenny": 0,
+   "materials": []
+  }
  }
 ]

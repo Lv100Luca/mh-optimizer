@@ -870,6 +870,14 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .infotip { font-size: 12.5px; line-height: 1.45; display: flex; flex-direction: column; gap: 4px; }
 .infotip ol, .infotip ul { margin: 0; padding-left: 18px; }
 .infotip .muted { color: var(--muted); }
+.cost-pill { display: inline-flex; align-items: center; margin-left: 4px; padding: 0 7px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--border-2); color: var(--set); font-size: 11px; font-weight: 600; line-height: 1.6; white-space: nowrap; cursor: default; }
+.cost-pill:hover, .cost-pill:focus-visible { border-color: var(--set); outline: none; }
+.charm-cost { border-collapse: collapse; }
+.charm-cost th, .charm-cost td { padding: 2px 6px; text-align: left; vertical-align: top; }
+.charm-cost th { padding-left: 0; color: var(--muted); font-weight: 600; }
+.charm-cost td.z { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+.charm-cost tr.current th, .charm-cost tr.current td { color: var(--text); font-weight: 600; }
+.charm-cost tr.muted td { color: var(--muted); }
 
 .import-summary { margin: 12px 0; display: flex; flex-direction: column; gap: 6px; }
 .grants { display: inline-flex; flex-wrap: wrap; gap: 4px; }
