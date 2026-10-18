@@ -1,7 +1,7 @@
 {
   "Label": "grouped-ties-rank",
-  "Commit": "1d7073d",
-  "Started": "2026-10-19T00:15:04.3466403+02:00",
+  "Commit": "2744f4b",
+  "Started": "2026-10-19T00:50:57.0249439+02:00",
   "Threads": 8,
   "Machine": "LUCA-DESKTOP",
   "Scenarios": [
@@ -10,7 +10,7 @@
       "Path": "bench\\scenarios\\bow-everything.json",
       "Runs": [
         {
-          "Seconds": 30.77,
+          "Seconds": 28.45,
           "Best": 813.9344,
           "Builds": [
             {
@@ -29,7 +29,7 @@
               "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
               "Score": 813.645,
               "Proof": "Proved",
-              "Signature": "Bow|Attack|Fire|True|3|Attack EX,Attack EX,Element II,Element EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Gore Mail \u03B1|Arkvulcan Vambraces \u03B3|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+              "Signature": "Bow|Attack|Fire|True|3|Attack EX,Attack EX,Element II,Element EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Sororal Coat \u03B1|Arkvulcan Vambraces \u03B3|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
             },
             {
               "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
@@ -110,19 +110,19 @@
           "Solves": 7,
           "Log": [
             "    0.0  10 skill pair classes that score differently, 2 classes at a time (4 threads each): the best build of every class, then the top 5 of the best 3",
-            "    4.0  [1/10] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,060 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
-            "    4.4  [2/10] Ebony Odogaron\u0027s Power \u002B Lord\u0027s Soul: best 1,047 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
-            "    8.1  [3/10] Gogmapocalypse \u002B Lord\u0027s Soul: best 1,059 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
-            "    9.5  [4/10] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,039 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
+            "    3.4  [1/10] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,060 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
+            "    4.3  [2/10] Ebony Odogaron\u0027s Power \u002B Lord\u0027s Soul: best 1,047 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
+            "    7.6  [3/10] Gogmapocalypse \u002B Lord\u0027s Soul: best 1,059 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
+            "    7.9  [4/10] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,039 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (1 rollable pairs)",
             "   11.7  [5/10] (any other) \u002B Lord\u0027s Soul: best 1,039 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (17 rollable pairs)",
-            "   15.0  [6/10] Gore Magala\u0027s Tyranny \u002B (any other): best 1,060 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (13 rollable pairs)",
-            "   15.5  [7/10] Ebony Odogaron\u0027s Power \u002B (any other): best 1,044 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX, Element EX x2, Element II x2 (13 rollable pairs)",
-            "   21.6  [8/10] Gogmapocalypse \u002B (any other): best 1,040 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (13 rollable pairs)",
-            "   23.0  [9/10] Leviathan\u0027s Fury \u002B (any other): best 1,036 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX, Element EX x2, Element II x2 (13 rollable pairs)",
-            "   25.9  [10/10] (any other) \u002B (any other): best 1,029 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (221 rollable pairs)",
-            "   28.0  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
-            "   28.5  Gore Magala\u0027s Tyranny \u002B (any other): top 5 builds",
-            "   30.8  Gogmapocalypse \u002B Lord\u0027s Soul: top 5 builds"
+            "   13.6  [6/10] Ebony Odogaron\u0027s Power \u002B (any other): best 1,044 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX, Element EX x2, Element II x2 (13 rollable pairs)",
+            "   14.9  [7/10] Gore Magala\u0027s Tyranny \u002B (any other): best 1,060 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (13 rollable pairs)",
+            "   19.5  [8/10] Gogmapocalypse \u002B (any other): best 1,040 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (13 rollable pairs)",
+            "   20.2  [9/10] Leviathan\u0027s Fury \u002B (any other): best 1,036 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX, Element EX x2, Element II x2 (13 rollable pairs)",
+            "   23.5  [10/10] (any other) \u002B (any other): best 1,029 with Attack focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Element EX x2, Element II (221 rollable pairs)",
+            "   25.3  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
+            "   25.8  Gore Magala\u0027s Tyranny \u002B (any other): top 5 builds",
+            "   28.4  Gogmapocalypse \u002B Lord\u0027s Soul: top 5 builds"
           ]
         }
       ]
@@ -132,7 +132,7 @@
       "Path": "bench\\scenarios\\bow-tech-stamina.json",
       "Runs": [
         {
-          "Seconds": 50.48,
+          "Seconds": 49.89,
           "Best": 657.2061,
           "Builds": [
             {
@@ -140,12 +140,6 @@
               "Score": 657.2061,
               "Proof": "Proved",
               "Signature": "|Challenger Charm III|G. Ebony Helm \u03B2*|Sororal Coat \u03B1|Gore Vambraces \u03B1|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
-            },
-            {
-              "Pair": "- \u002B -",
-              "Score": 657.2061,
-              "Proof": "Proved",
-              "Signature": "|Exploiter Charm III|G. Ebony Helm \u03B2*|Mizutsune Mail \u03B2*|Lagiacrus Braces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
             },
             {
               "Pair": "- \u002B -",
@@ -163,26 +157,32 @@
               "Pair": "- \u002B -",
               "Score": 657.2061,
               "Proof": "Proved",
+              "Signature": "|Exploiter Charm III|G. Ebony Helm \u03B2*|Mizutsune Mail \u03B2*|Lagiacrus Braces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "- \u002B -",
+              "Score": 657.2061,
+              "Proof": "Proved",
               "Signature": "|Challenger Charm III|Arkvulcan Helm \u03B3|Mizutsune Mail \u03B2*|G. Ebony Braces \u03B2*|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
             }
           ],
           "Proofs": {
             "Proved": 5
           },
-          "Solves": 66,
+          "Solves": 77,
           "Log": [
             "    0.0  Searching builds for no rolled pair on 8 threads: a search not proved within 8 s is split into parts searched 2 at a time (4 threads each)",
             "    0.0    armor to search: Chest 22, Waist 23, Head 24, Legs 24, Arms 28 pieces, 11 talismans",
             "    0.0    damage model built in 0.0 s (15 groups of skills, 3 parts of the attack or uptime)",
-            "    8.0    build 1 not proved within 8 s (best so far 856, at most 919 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
+            "    8.0    build 1 not proved within 8 s (best so far 856, at most 904 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
             "    8.0    narrowed 5 of 8 damage factors to what a build can reach (8 short solves, 1.3 s)",
-            "   23.4    build 1: 856, proved the best at 23.4 s",
-            "   50.5    build 2: 856, proved the next best at 50.4 s",
-            "   50.5    build 3: 856, proved the next best at 50.4 s",
-            "   50.5    build 4: 856, proved the next best at 50.4 s",
-            "   50.5    build 5: 856, proved the next best at 50.4 s",
-            "   50.5    top 5 searched in 18 parts on 2 lanes, 1 part split again, 2 floors: 65 solves in 50.4 s (build 1 after 23.4 s)",
-            "   50.5    5 builds: 5 proved"
+            "   22.0    build 1: 856, proved the best at 22.0 s",
+            "   46.9    build 2: 856, proved the next best at 46.8 s",
+            "   47.7    build 3: 856, proved the next best at 47.7 s",
+            "   48.5    build 4: 856, proved the next best at 48.5 s",
+            "   49.9    build 5: 856, proved the next best at 49.9 s",
+            "   49.9    top 5 searched in 18 parts on 2 lanes, 2 parts split again, 2 floors: 76 solves in 49.9 s (build 1 after 22.0 s)",
+            "   49.9    5 builds: 5 proved"
           ]
         }
       ]
@@ -192,7 +192,7 @@
       "Path": "bench\\scenarios\\gs-everything.json",
       "Runs": [
         {
-          "Seconds": 60.94,
+          "Seconds": 57,
           "Best": 739.8096,
           "Builds": [
             {
@@ -253,7 +253,7 @@
               "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
               "Score": 726.9126,
               "Proof": "Proved",
-              "Signature": "GreatSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Affinity EX|Exploiter Charm III|Lagiacrus Helm \u03B2|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Lagiacrus Greaves \u03B2"
+              "Signature": "GreatSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Affinity EX|Challenger Charm III|Lagiacrus Helm \u03B2|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Lagiacrus Greaves \u03B2"
             },
             {
               "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
@@ -292,23 +292,23 @@
           "Solves": 16,
           "Log": [
             "    0.0  14 skill pair classes that score differently, 2 classes at a time (4 threads each): the best build of every class, then the top 5 of the best 3",
-            "    5.5  [1/14] Doshaguma\u0027s Might \u002B Lord\u0027s Soul: best 1,438 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "    6.6  [2/14] Nu Udra\u0027s Mutiny \u002B Lord\u0027s Soul: best 1,433 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "    7.8  [3/14] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,463 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "   15.6  [4/14] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "   16.8  [5/14] Gogmapocalypse \u002B Lord\u0027s Soul: best 1,413 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "   19.4  [6/14] Soul of the Dark Knight \u002B Lord\u0027s Soul: best 1,463 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
-            "   23.2  [7/14] Doshaguma\u0027s Might \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   27.4  [8/14] (any other) \u002B Lord\u0027s Soul: best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (15 rollable pairs)",
-            "   30.8  [9/14] Nu Udra\u0027s Mutiny \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   32.3  [10/14] Gore Magala\u0027s Tyranny \u002B (any other): best 1,414 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   35.9  [11/14] Leviathan\u0027s Fury \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   37.6  [12/14] Gogmapocalypse \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   43.3  [13/14] (any other) \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (195 rollable pairs)",
-            "   49.7  [14/14] Soul of the Dark Knight \u002B (any other): best 1,433 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
-            "   56.6  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
-            "   57.5  Soul of the Dark Knight \u002B Lord\u0027s Soul: top 5 builds",
-            "   60.9  Doshaguma\u0027s Might \u002B Lord\u0027s Soul: top 5 builds"
+            "    6.2  [1/14] Nu Udra\u0027s Mutiny \u002B Lord\u0027s Soul: best 1,433 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "    7.0  [2/14] Doshaguma\u0027s Might \u002B Lord\u0027s Soul: best 1,438 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "    8.6  [3/14] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,463 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "   15.8  [4/14] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "   15.9  [5/14] Gogmapocalypse \u002B Lord\u0027s Soul: best 1,413 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "   19.6  [6/14] Soul of the Dark Knight \u002B Lord\u0027s Soul: best 1,463 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (1 rollable pairs)",
+            "   21.8  [7/14] Doshaguma\u0027s Might \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   25.9  [8/14] (any other) \u002B Lord\u0027s Soul: best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (15 rollable pairs)",
+            "   30.6  [9/14] Gore Magala\u0027s Tyranny \u002B (any other): best 1,414 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   31.8  [10/14] Nu Udra\u0027s Mutiny \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   34.8  [11/14] Leviathan\u0027s Fury \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   36.5  [12/14] Gogmapocalypse \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   41.4  [13/14] (any other) \u002B (any other): best 1,412 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (195 rollable pairs)",
+            "   46.8  [14/14] Soul of the Dark Knight \u002B (any other): best 1,433 with Affinity focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Affinity EX (13 rollable pairs)",
+            "   53.0  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
+            "   55.7  Soul of the Dark Knight \u002B Lord\u0027s Soul: top 5 builds",
+            "   57.0  Doshaguma\u0027s Might \u002B Lord\u0027s Soul: top 5 builds"
           ]
         }
       ]
@@ -318,7 +318,7 @@
       "Path": "bench\\scenarios\\gs-fixed-allcharms.json",
       "Runs": [
         {
-          "Seconds": 24.78,
+          "Seconds": 23.7,
           "Best": 687.4392,
           "Builds": [
             {
@@ -360,12 +360,12 @@
             "    0.0  Searching builds for Leviathan\u0027s Fury \u002B Lord\u0027s Soul on 8 threads: a search not proved within 8 s is split into parts searched 2 at a time (4 threads each)",
             "    0.0    armor to search: Waist 19, Chest 21, Arms 23, Head 26, Legs 26 pieces, 13 talismans \u002B every possible roll (100 roll rows)",
             "    0.0    damage model built in 0.0 s (16 groups of skills, 3 parts of the attack or uptime)",
-            "    5.0    build 1: 1,362, proved the best in 4.9 s",
-            "    9.7    build 2: 1,362, proved the next best in 4.7 s (whole search first, 0 of 18 parts done)",
-            "   16.5    build 3: 1,359, proved the next best in 6.8 s (18 parts on 1 lanes)",
-            "   20.2    build 4: 1,359, proved the next best in 3.7 s (18 parts on 1 lanes)",
-            "   24.8    build 5: 1,358, proved the next best in 4.6 s (18 parts on 1 lanes)",
-            "   24.8    5 builds: 5 proved"
+            "    4.6    build 1: 1,362, proved the best in 4.5 s",
+            "    9.6    build 2: 1,362, proved the next best in 5.1 s (whole search first, 0 of 18 parts done)",
+            "   15.5    build 3: 1,359, proved the next best in 5.8 s (18 parts on 1 lanes)",
+            "   19.0    build 4: 1,359, proved the next best in 3.5 s (18 parts on 1 lanes)",
+            "   23.7    build 5: 1,358, proved the next best in 4.7 s (18 parts on 1 lanes)",
+            "   23.7    5 builds: 5 proved"
           ]
         }
       ]
@@ -375,7 +375,7 @@
       "Path": "bench\\scenarios\\gs-fixed-uptimes.json",
       "Runs": [
         {
-          "Seconds": 16.68,
+          "Seconds": 17.53,
           "Best": 684.8829,
           "Builds": [
             {
@@ -417,12 +417,12 @@
             "    0.0  Searching builds for Rey Dau\u0027s Voltage \u002B Buttery Leathercraft on 8 threads: a search not proved within 8 s is split into parts searched 2 at a time (4 threads each)",
             "    0.0    armor to search: Waist 22, Chest 23, Arms 27, Legs 28, Head 32 pieces, 14 talismans",
             "    0.0    damage model built in 0.0 s (17 groups of skills, 12 parts of the attack or uptime)",
-            "    5.1    build 1: 1,357, proved the best in 5.1 s",
-            "    7.1    build 2: 1,353, proved the next best in 1.9 s (short search first)",
-            "   11.0    build 3: 1,344, proved the next best in 3.9 s (whole search first, 0 of 18 parts done)",
-            "   11.0    build 4: 1,344, proved the next best (ties build 3: the same skills on other pieces)",
-            "   16.7    build 5: 1,342, proved the next best in 5.6 s (whole search first, 0 of 18 parts done)",
-            "   16.7    5 builds: 5 proved"
+            "    3.2    build 1: 1,357, proved the best in 3.2 s",
+            "    5.7    build 2: 1,353, proved the next best in 2.4 s (short search first)",
+            "   11.7    build 3: 1,344, proved the next best in 6.0 s (whole search first, 0 of 18 parts done)",
+            "   11.7    build 4: 1,344, proved the next best (ties build 3: the same skills on other pieces)",
+            "   17.5    build 5: 1,342, proved the next best in 5.8 s (whole search first, 0 of 18 parts done)",
+            "   17.5    5 builds: 5 proved"
           ]
         }
       ]
@@ -432,7 +432,7 @@
       "Path": "bench\\scenarios\\gs-fixed.json",
       "Runs": [
         {
-          "Seconds": 5.72,
+          "Seconds": 4.61,
           "Best": 673.6925,
           "Builds": [
             {
@@ -474,12 +474,12 @@
             "    0.0  Searching builds for Leviathan\u0027s Fury \u002B Lord\u0027s Soul on 8 threads: a search not proved within 8 s is split into parts searched 2 at a time (4 threads each)",
             "    0.0    armor to search: Waist 19, Chest 21, Arms 23, Head 26, Legs 26 pieces, 13 talismans",
             "    0.0    damage model built in 0.0 s (16 groups of skills, 3 parts of the attack or uptime)",
-            "    2.3    build 1: 1,335, proved the best in 2.2 s",
-            "    5.7    build 2: 1,332, proved the next best in 3.4 s (whole search first, 0 of 18 parts done)",
-            "    5.7    build 3: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
-            "    5.7    build 4: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
-            "    5.7    build 5: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
-            "    5.7    5 builds: 5 proved"
+            "    2.3    build 1: 1,335, proved the best in 2.3 s",
+            "    4.6    build 2: 1,332, proved the next best in 2.3 s (whole search first, 0 of 18 parts done)",
+            "    4.6    build 3: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
+            "    4.6    build 4: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
+            "    4.6    build 5: 1,332, proved the next best (ties build 2: the same skills on other pieces)",
+            "    4.6    5 builds: 5 proved"
           ]
         }
       ]
@@ -489,7 +489,7 @@
       "Path": "bench\\scenarios\\gs-heavy-targets.json",
       "Runs": [
         {
-          "Seconds": 2.29,
+          "Seconds": 2.09,
           "Best": 673.6925,
           "Builds": [
             {
@@ -532,11 +532,11 @@
             "    0.0    armor to search: Waist 19, Chest 21, Arms 23, Head 26, Legs 26 pieces, 13 talismans",
             "    0.0    damage model built in 0.0 s (16 groups of skills, 3 parts of the attack or uptime)",
             "    0.3    build 1: 1,335, proved the best in 0.3 s",
-            "    0.7    build 2: 1,315, proved the next best in 0.4 s (short search first)",
-            "    1.2    build 3: 1,315, proved the next best in 0.5 s (short search first)",
-            "    1.7    build 4: 1,315, proved the next best in 0.5 s (short search first)",
-            "    2.3    build 5: 1,307, proved the next best in 0.6 s (whole search first, 0 of 18 parts done)",
-            "    2.3    5 builds: 5 proved"
+            "    0.7    build 2: 1,315, proved the next best in 0.4 s (whole search first, 0 of 18 parts done)",
+            "    1.2    build 3: 1,315, proved the next best in 0.4 s (whole search first, 0 of 18 parts done)",
+            "    1.6    build 4: 1,315, proved the next best in 0.4 s (short search first)",
+            "    2.1    build 5: 1,307, proved the next best in 0.5 s (short search first)",
+            "    2.1    5 builds: 5 proved"
           ]
         }
       ]
@@ -546,7 +546,7 @@
       "Path": "bench\\scenarios\\gs-main-48parts.json",
       "Runs": [
         {
-          "Seconds": 220.47,
+          "Seconds": 220.46,
           "Best": 652.5093,
           "Builds": [
             {
@@ -577,7 +577,7 @@
               "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
               "Score": 646.0557,
               "Proof": "Ranked",
-              "Signature": "GreatSword|Attack|Dragon|False|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Talisman 10|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Dahaad Shardcoil \u03B3|Bale Sollerets \u03B1"
+              "Signature": "GreatSword|Attack|Dragon|False|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Talisman 10|Udra Mirehelm \u03B1|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Dahaad Shardcoil \u03B3|Bale Sollerets \u03B1"
             }
           ],
           "Proofs": {
@@ -589,13 +589,13 @@
             "    0.0  Searching builds for Leviathan\u0027s Fury \u002B Lord\u0027s Soul on 8 threads: a search not proved within 8 s is split into parts searched 2 at a time (4 threads each)",
             "    0.0    armor to search: Waist 27, Chest 31, Arms 31, Legs 33, Head 36 pieces, 8 talismans",
             "    0.4    damage model built in 0.4 s (19 groups of skills, 48 parts of the attack or uptime)",
-            "    8.4    build 1 not proved within 8 s (best so far 5,815, at most 6,174 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
-            "    8.4    narrowed 0 of 68 damage factors to what a build can reach (35 short solves, 0.5 s)",
-            "  108.5    build 1: 5,815, proved the best at 108.0 s",
-            "  183.6    whole searches of 25 s on 2 lanes: best 5,772",
-            "  208.7    whole searches of 25 s on 2 lanes: best 5,770",
-            "  220.5    whole searches of 12 s on 2 lanes: best 5,758",
-            "  220.5    top 5 searched in 48 parts on 2 lanes, 3 builds ranked by whole searches, 48 not finished: 60 solves in 220.1 s (build 1 after 108.0 s)",
+            "    8.4    build 1 not proved within 8 s (best so far 5,815, at most 6,258 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
+            "    8.4    narrowed 0 of 68 damage factors to what a build can reach (35 short solves, 0.4 s)",
+            "   98.8    build 1: 5,815, proved the best at 98.5 s",
+            "  174.0    whole searches of 25 s on 2 lanes: best 5,772",
+            "  199.1    whole searches of 25 s on 2 lanes: best 5,770",
+            "  220.5    whole searches of 21 s on 2 lanes: best 5,758",
+            "  220.5    top 5 searched in 48 parts on 2 lanes, 3 builds ranked by whole searches, 48 not finished: 60 solves in 220.1 s (build 1 after 98.5 s)",
             "  220.5    build 2: 5,804, ranked, not proved within the 25 s limit for builds 2 and on",
             "  220.5    build 3: 5,772, ranked, not proved within the 25 s limit for builds 2 and on",
             "  220.5    build 4: 5,770, ranked, not proved within the 25 s limit for builds 2 and on",
@@ -610,7 +610,7 @@
       "Path": "bench\\scenarios\\gs-pairs.json",
       "Runs": [
         {
-          "Seconds": 20.12,
+          "Seconds": 19.53,
           "Best": 701.7376,
           "Builds": [
             {
@@ -659,13 +659,13 @@
               "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
               "Score": 692.7782,
               "Proof": "Proved",
-              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Gore Greaves \u03B2"
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B1|Sororal Boots \u03B1"
             },
             {
               "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
               "Score": 692.7782,
               "Proof": "Proved",
-              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B1|Sororal Boots \u03B1"
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Gore Greaves \u03B2"
             },
             {
               "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
@@ -710,23 +710,23 @@
           "Solves": 13,
           "Log": [
             "    0.0  14 skill pair classes that score differently, 2 classes at a time (4 threads each): the best build of every class, then the top 5 of the best 3",
-            "    1.6  [1/14] Doshaguma\u0027s Might \u002B Lord\u0027s Soul: best 1,358 (1 rollable pairs; candidates 1 ms, model 17 ms, 1 solve 1625 ms)",
-            "    2.3  [2/14] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 635 ms)",
-            "    2.4  [3/14] Nu Udra\u0027s Mutiny \u002B Lord\u0027s Soul: best 1,354 (1 rollable pairs; candidates 1 ms, model 16 ms, 1 solve 2373 ms)",
-            "    3.0  [4/14] Gogmapocalypse \u002B Lord\u0027s Soul: cannot reach the best 3 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 577 ms)",
-            "    4.6  [5/14] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,335 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 2282 ms)",
-            "    4.7  [6/14] Soul of the Dark Knight \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1687 ms)",
-            "    5.0  [7/14] (any other) \u002B Lord\u0027s Soul: cannot reach the best 3 (15 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 327 ms)",
-            "    5.0  [8/14] Doshaguma\u0027s Might \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 420 ms)",
-            "    5.3  [9/14] Gore Magala\u0027s Tyranny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 4 ms, 1 solve 305 ms)",
-            "    5.4  [10/14] Nu Udra\u0027s Mutiny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 4 ms, 1 solve 368 ms)",
-            "    5.6  [11/14] Leviathan\u0027s Fury \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 296 ms)",
-            "    5.7  [12/14] Gogmapocalypse \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 325 ms)",
-            "    6.0  [13/14] (any other) \u002B (any other): cannot reach the best 3 (195 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 358 ms)",
-            "    6.8  [14/14] Soul of the Dark Knight \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1215 ms)",
-            "   10.6  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 1 ms, 4 solves 4402 ms)",
-            "   17.2  Soul of the Dark Knight \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 1 ms, 4 solves 11955 ms)",
-            "   20.1  Doshaguma\u0027s Might \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 17 ms, 5 solves 11009 ms)"
+            "    1.3  [1/14] Doshaguma\u0027s Might \u002B Lord\u0027s Soul: best 1,358 (1 rollable pairs; candidates 1 ms, model 13 ms, 1 solve 1289 ms)",
+            "    2.4  [2/14] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1077 ms)",
+            "    2.5  [3/14] Nu Udra\u0027s Mutiny \u002B Lord\u0027s Soul: best 1,354 (1 rollable pairs; candidates 1 ms, model 12 ms, 1 solve 2479 ms)",
+            "    3.0  [4/14] Gogmapocalypse \u002B Lord\u0027s Soul: cannot reach the best 3 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 526 ms)",
+            "    4.1  [5/14] Soul of the Dark Knight \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1067 ms)",
+            "    4.5  [6/14] Doshaguma\u0027s Might \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 402 ms)",
+            "    4.6  [7/14] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,335 (1 rollable pairs; candidates 1 ms, model 3 ms, 1 solve 2171 ms)",
+            "    4.7  [8/14] (any other) \u002B Lord\u0027s Soul: cannot reach the best 3 (15 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 234 ms)",
+            "    4.9  [9/14] Nu Udra\u0027s Mutiny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 357 ms)",
+            "    5.0  [10/14] Gore Magala\u0027s Tyranny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 279 ms)",
+            "    5.2  [11/14] Leviathan\u0027s Fury \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 248 ms)",
+            "    5.3  [12/14] Gogmapocalypse \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 265 ms)",
+            "    5.6  [13/14] (any other) \u002B (any other): cannot reach the best 3 (195 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 340 ms)",
+            "    6.2  [14/14] Soul of the Dark Knight \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1064 ms)",
+            "   11.2  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 1 ms, 4 solves 5934 ms)",
+            "   16.4  Soul of the Dark Knight \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 1 ms, 4 solves 11170 ms)",
+            "   19.5  Doshaguma\u0027s Might \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 13 ms, 5 solves 9593 ms)"
           ]
         }
       ]
@@ -736,7 +736,7 @@
       "Path": "bench\\scenarios\\ls-everything.json",
       "Runs": [
         {
-          "Seconds": 18.29,
+          "Seconds": 16.11,
           "Best": 765.628,
           "Builds": [
             {
@@ -773,7 +773,7 @@
               "Pair": "Gogmapocalypse \u002B Lord\u0027s Soul",
               "Score": 758.6788,
               "Proof": "Proved",
-              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Exploiter Charm III|Sororal Earrings \u03B1|Dahaad Shardmail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B2|Duna Wildgreaves \u03B3"
+              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Exploiter Charm III|Sororal Earrings \u03B1|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Dahaad Shardcoil \u03B3|Gore Greaves \u03B2"
             },
             {
               "Pair": "Gogmapocalypse \u002B Lord\u0027s Soul",
@@ -785,13 +785,13 @@
               "Pair": "Gogmapocalypse \u002B Lord\u0027s Soul",
               "Score": 758.6788,
               "Proof": "Proved",
-              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Sororal Earrings \u03B1|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B2|Duna Wildgreaves \u03B3"
+              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Exploiter Charm III|Sororal Earrings \u03B1|Dahaad Shardmail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B2|Duna Wildgreaves \u03B3"
             },
             {
               "Pair": "Gogmapocalypse \u002B Lord\u0027s Soul",
               "Score": 758.6788,
               "Proof": "Proved",
-              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Exploiter Charm III|Sororal Earrings \u03B1|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Dahaad Shardcoil \u03B3|Gore Greaves \u03B2"
+              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Sororal Earrings \u03B1|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B2|Duna Wildgreaves \u03B3"
             },
             {
               "Pair": "Gogmapocalypse \u002B Lord\u0027s Soul",
@@ -815,19 +815,19 @@
               "Pair": "Gore Magala\u0027s Tyranny \u002B (any other)",
               "Score": 747.5191,
               "Proof": "Proved",
-              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Rey Sandhelm \u03B3|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Sororal Coil \u03B1|Duna Wildgreaves \u03B3"
-            },
-            {
-              "Pair": "Gore Magala\u0027s Tyranny \u002B (any other)",
-              "Score": 747.5191,
-              "Proof": "Proved",
               "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B1|Duna Wildgreaves \u03B3"
             },
             {
               "Pair": "Gore Magala\u0027s Tyranny \u002B (any other)",
               "Score": 747.5191,
               "Proof": "Proved",
-              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Gore Coil \u03B2|Duna Wildgreaves \u03B3"
+              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Gogmazios Vambraces \u03B1|Udra Mirecoil \u03B3|Gore Greaves \u03B2"
+            },
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B (any other)",
+              "Score": 747.5191,
+              "Proof": "Proved",
+              "Signature": "LongSword|Element|Fire|True|3|Attack III,Attack III,Attack EX,Attack EX,Element EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Gore Vambraces \u03B2|Udra Mirecoil \u03B3|Duna Wildgreaves \u03B3"
             }
           ],
           "Proofs": {
@@ -836,19 +836,19 @@
           "Solves": 7,
           "Log": [
             "    0.0  10 skill pair classes that score differently, 2 classes at a time (4 threads each): the best build of every class, then the top 5 of the best 3",
-            "    3.3  [1/10] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 359 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (1 rollable pairs)",
-            "    4.2  [2/10] Ebony Odogaron\u0027s Power \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (1 rollable pairs)",
-            "    5.8  [3/10] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (1 rollable pairs)",
-            "    6.4  [4/10] Gogmapocalypse \u002B Lord\u0027s Soul: best 356 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (1 rollable pairs)",
-            "    8.8  [5/10] (any other) \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (17 rollable pairs)",
-            "    9.4  [6/10] Ebony Odogaron\u0027s Power \u002B (any other): best 348 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (13 rollable pairs)",
-            "   11.4  [7/10] Gore Magala\u0027s Tyranny \u002B (any other): best 354 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (13 rollable pairs)",
-            "   12.9  [8/10] Leviathan\u0027s Fury \u002B (any other): best 347 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (13 rollable pairs)",
-            "   14.3  [9/10] Gogmapocalypse \u002B (any other): best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (13 rollable pairs)",
-            "   15.3  [10/10] (any other) \u002B (any other): best 347 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (221 rollable pairs)",
-            "   15.8  Gogmapocalypse \u002B Lord\u0027s Soul: top 5 builds",
-            "   17.1  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
-            "   18.3  Gore Magala\u0027s Tyranny \u002B (any other): top 5 builds"
+            "    2.2  [1/10] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 359 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (1 rollable pairs)",
+            "    3.8  [2/10] Ebony Odogaron\u0027s Power \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (1 rollable pairs)",
+            "    4.1  [3/10] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (1 rollable pairs)",
+            "    5.9  [4/10] Gogmapocalypse \u002B Lord\u0027s Soul: best 356 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (1 rollable pairs)",
+            "    6.7  [5/10] (any other) \u002B Lord\u0027s Soul: best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (17 rollable pairs)",
+            "    8.4  [6/10] Ebony Odogaron\u0027s Power \u002B (any other): best 348 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (13 rollable pairs)",
+            "    8.9  [7/10] Gore Magala\u0027s Tyranny \u002B (any other): best 354 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (13 rollable pairs)",
+            "   11.4  [8/10] Leviathan\u0027s Fury \u002B (any other): best 347 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (13 rollable pairs)",
+            "   11.5  [9/10] Gogmapocalypse \u002B (any other): best 352 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III, Affinity EX x2 (13 rollable pairs)",
+            "   13.8  [10/10] (any other) \u002B (any other): best 347 with Element focus \u00B7 Fire, infused \u00B7 3 attack parts \u00B7 Attack EX x2, Attack III x2, Element EX (221 rollable pairs)",
+            "   14.3  Gogmapocalypse \u002B Lord\u0027s Soul: top 5 builds",
+            "   15.4  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds",
+            "   16.1  Gore Magala\u0027s Tyranny \u002B (any other): top 5 builds"
           ]
         }
       ]

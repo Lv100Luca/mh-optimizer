@@ -1,0 +1,177 @@
+{
+  "Label": "laptop-fix-split10-uptimes",
+  "Commit": "e72ba56",
+  "Started": "2026-10-18T14:43:08.2814135+02:00",
+  "Threads": 8,
+  "Machine": "LDI-L-2023",
+  "Scenarios": [
+    {
+      "Name": "gs-fixed-uptimes",
+      "Path": "bench\\scenarios\\gs-fixed-uptimes.json",
+      "Runs": [
+        {
+          "Seconds": 129.75,
+          "Best": 684.8829,
+          "Builds": [
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 684.8829,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 682.9091,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Rey Sandcoil \u03B3|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Rey Sandhelm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 677.6312,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 5
+          },
+          "Solves": 65,
+          "Log": [
+            "    0.0  Searching builds for Rey Dau\u0027s Voltage \u002B Buttery Leathercraft on 8 threads: a search not proved within 10 s is split into parts searched 2 at a time (4 threads each)",
+            "    0.0    armor to search: Waist 22, Chest 23, Arms 27, Legs 28, Head 32 pieces, 14 talismans",
+            "    0.5    damage model built in 0.5 s (17 groups of skills, 12 parts of the attack or uptime)",
+            "    8.0    build 1: 1,357, proved the best in 7.5 s",
+            "   19.6    build 2 not proved within the 10 s limit for builds 2 and on: narrowing the search and looking for builds 2 to 5 in parts on 2 lanes (141 s left)",
+            "   31.7    narrowed 58 of 72 damage factors to what a build can reach (50 short solves, 12.1 s)",
+            "   45.3    build 2: 1,353, proved the next best at 25.7 s",
+            "  129.7    build 3: 1,344, proved the next best at 110.2 s",
+            "  129.7    build 4: 1,344, proved the next best at 110.2 s",
+            "  129.7    build 5: 1,342, proved the next best at 110.2 s",
+            "  129.7    builds 2 to 5 searched in 18 parts on 2 lanes, 2 floors: 62 solves in 110.2 s (build 2 after 25.7 s)",
+            "  129.7    5 builds: 5 proved"
+          ]
+        },
+        {
+          "Seconds": 134.47,
+          "Best": 684.8829,
+          "Builds": [
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 684.8829,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 682.9091,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Rey Sandcoil \u03B3|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Rey Sandhelm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 677.6312,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 5
+          },
+          "Solves": 65,
+          "Log": [
+            "    0.0  Searching builds for Rey Dau\u0027s Voltage \u002B Buttery Leathercraft on 8 threads: a search not proved within 10 s is split into parts searched 2 at a time (4 threads each)",
+            "    0.0    armor to search: Waist 22, Chest 23, Arms 27, Legs 28, Head 32 pieces, 14 talismans",
+            "    0.2    damage model built in 0.2 s (17 groups of skills, 12 parts of the attack or uptime)",
+            "   10.3    build 1 not proved within 10 s (best so far 1,357, at most 1,406 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
+            "   23.3    narrowed 58 of 72 damage factors to what a build can reach (50 short solves, 23.1 s)",
+            "   35.6    build 1: 1,357, proved the best at 35.3 s",
+            "   61.2    build 2: 1,353, proved the next best at 60.9 s",
+            "  134.5    build 3: 1,344, proved the next best at 134.2 s",
+            "  134.5    build 4: 1,344, proved the next best at 134.2 s",
+            "  134.5    build 5: 1,342, proved the next best at 134.2 s",
+            "  134.5    top 5 searched in 18 parts on 2 lanes, 2 floors: 64 solves in 134.2 s (build 1 after 35.3 s)",
+            "  134.5    5 builds: 5 proved"
+          ]
+        },
+        {
+          "Seconds": 137.76,
+          "Best": 684.8829,
+          "Builds": [
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 684.8829,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 682.9091,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Rey Sandcoil \u03B3|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 678.2143,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Rey Sandhelm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 677.6312,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 5
+          },
+          "Solves": 65,
+          "Log": [
+            "    0.0  Searching builds for Rey Dau\u0027s Voltage \u002B Buttery Leathercraft on 8 threads: a search not proved within 10 s is split into parts searched 2 at a time (4 threads each)",
+            "    0.0    armor to search: Waist 22, Chest 23, Arms 27, Legs 28, Head 32 pieces, 14 talismans",
+            "    0.2    damage model built in 0.2 s (17 groups of skills, 12 parts of the attack or uptime)",
+            "   10.3    build 1 not proved within 10 s (best so far 1,357, at most 1,400 possible): narrowing the search and looking for the top 5 in parts on 2 lanes",
+            "   23.2    narrowed 58 of 72 damage factors to what a build can reach (50 short solves, 23.0 s)",
+            "   35.4    build 1: 1,357, proved the best at 35.1 s",
+            "   62.3    build 2: 1,353, proved the next best at 62.1 s",
+            "  137.8    build 3: 1,344, proved the next best at 137.5 s",
+            "  137.8    build 4: 1,344, proved the next best at 137.5 s",
+            "  137.8    build 5: 1,342, proved the next best at 137.5 s",
+            "  137.8    top 5 searched in 18 parts on 2 lanes, 2 floors: 64 solves in 137.5 s (build 1 after 35.1 s)",
+            "  137.8    5 builds: 5 proved"
+          ]
+        }
+      ]
+    }
+  ]
+}

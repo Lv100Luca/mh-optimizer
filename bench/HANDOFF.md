@@ -9,7 +9,9 @@ threads is fine. Small tweaks kept making things worse, so this branch first mea
   the bench suite (`bench/`, CLI `bench` / `bench compare` / `bench probe`), a compare fix, and a tie search (5d6c1c2).
 - `archive/topn-ties-bar-prototype`: the first try, a rising-bar top-N search, built on the older main.
   Dropped: split-topn on main does the same with a cutoff in parts on every lane.
-- `feature/score-model-speed` (097c9e9, not merged): the damage model probes each uptime part once per set of timed skills;
+- 2026-10-18 later: `feature/solver-bench` now also holds origin/main (7693883) and `feature/score-model-speed` (merged, all
+  tests pass). Unify further work here.
+- `feature/score-model-speed` (097c9e9, merged into this branch): the damage model probes each uptime part once per set of timed skills;
   12-part GS model 5.4 s -> 0.9 s in the browser (natively the model takes ~0.2 s either way, so the bench barely sees it).
 - `archive/split-topn-regions` (216d798): the "top N by regions" version of split-topn; main merged the other version
   ("two phases on every lane", 25dc8d2), so this one is kept for reference only.
@@ -39,11 +41,42 @@ bin/bench-cli/MHWildsOptimizer.Cli.exe --data data bench compare bench/results/<
   optimize mode. Asking "is there a build above X?" costs about as much as a proof: the bottleneck is proof hardness (the
   weak bound of the product chain in the CP model), not how the questions are ordered.
 - Tie search (5d6c1c2, `MHW_TIES=0` turns it off): before proving the next build in the single-solve loop (first build proved
-  within 8 s, optimize mode), look 1.5 s for a build that ties the last proved one. All tests pass; not benchmarked cleanly yet.
+  within 8 s, optimize mode), look 1.5 s for a build that ties the last proved one. All tests pass.
+- Laptop A/B (i5-13500H, 2 rounds off/on/on/off, `baseline-laptop-ties-off.json` / `-on.json`): ties lose no build and are
+  faster on gs-fixed (30.5 -> 18.9 s), bow-everything (115 -> 99 s) and ls-everything (61 -> 55 s); the rest is within noise.
+- 8 s cliff in `SplitTopAsync`: when the seed proves build 1 within `SplitAfterSeconds`, the narrowing is cancelled and the
+  single-solve loop takes over, where builds 2+ get only the 10 s rank limit. gs-fixed-uptimes (build 1 at 7.2 s) then kept
+  1 proved + 4 ranked and lost both 678.21 builds; at 8.3 s the same request proves all 5. Off-r1 vs off-r2 also swings
+  0.6x on gs-fixed-allcharms and bow-tech-stamina for the same reason. This is most of the run-to-run noise, ties on or off.
+- Cliff fixed (uncommitted): after an early build 1 the loop goes on one solve at a time; the first build 2+ it cannot
+  prove hands the rest to the parts (narrowing included) within the shared budget (120 s + 10 s per further build). Forced with
+  SplitAfterSeconds = 10 (`laptop-fix-split10-uptimes.json`): 5 of 5 proved, baseline scores, 130 s. Full suite x2
+  (`laptop-fix-r1/r2.json`): no build lost, speed within noise of ties on. New brute-force test case covers the fallback.
+- `bench compare` checks every candidate repeat against the baseline's first run (it only checked the first repeat).
+
+- Idea (B) tried and dropped (2026-10-18): exact search over pair classes x weapon variants, the CP model choosing the variant
+  within 15 focus x element groups. gs-everything: 2198 s instead of 128 s, best 1,466 instead of 1,463 (coordinate descent
+  stops at a local optimum). Elements tie on this target, so every group needs its own proofs. Too slow to be useful; the
+  patch is kept outside the repo (side-session notes, idea-b-exact-weapon-search.patch).
+- Many uptime parts (Latent Power + Azure Bolt defaults, Offensive Guard 50%, a two-segment sequence: 48 parts) left the
+  CP bound 15% above the best build: no build proved, 221 s natively, 350 s in the browser. Above 12 parts per health side
+  the search now uses an averaged model (one part per segment, `ScoreDecomposition.Averaged`), scores every build exactly,
+  finds 2 builds more and ranks builds 2+ for 5 s each: same best build (652.51) in 41 s. Bench scenarios have at most 12
+  parts and are unaffected.
+
+## Merged with feature/solver-redesign (2026-10-19)
+
+The PC session's branch (notes/solver_review_2026-10-18.md) landed on top of the above: one damage chain per group of
+sides that differ only in affinity (exact; the 48-part model groups into 4 chains and build 1 is proved at 70 s in the
+browser), ties found without a solve, a split solve racing a whole search against the parts, hard models ranking builds
+2-N by whole searches on every lane, narrowing solves that give up once they return nothing, CP-SAT as the default engine.
+The averaged model (`ScoreDecomposition.Averaged`) is no longer used by the search: a proof on an averaged objective is not
+a proof of the real score, and the grouped chains make the exact model fast enough. The method and its test stay for
+reference. The 8 s cliff fix above (builds 2+ handed to the parts) is kept and composes with the race.
 
 ## Next steps
 
-1. Clean baseline of this branch with `MHW_TIES=0`, and the same with ties on: A/B, 2 rounds.
-2. Then the bigger ideas: (B) exact search over skill pair classes x weapon variants instead of coordinate-descent weapon
+1. Done: laptop baselines (ties off/on) and the 8 s cliff fix. Review and commit.
+2. The bigger ideas: (B) exact search over skill pair classes x weapon variants instead of coordinate-descent weapon
    tuning; (C) a tighter bound for the damage model, or a custom engine (in the browser that needs AOT + web workers).
 3. After any change to the search: `dotnet test --filter FullyQualifiedName~CpSat`.
