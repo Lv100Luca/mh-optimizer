@@ -23,6 +23,11 @@ window.mhwo = {
     persist: async () => { try { return await navigator.storage?.persist?.() ?? false; } catch { return false; } },
   },
 
+  /** indeterminate is a DOM property only: checkboxes inside root with data-mixed="true" get it, the others lose it */
+  syncMixed: (root) => {
+    root?.querySelectorAll('input[type=checkbox][data-mixed]').forEach((c) => { c.indeterminate = c.dataset.mixed === 'true'; });
+  },
+
   /** Saves text as a file. */
   download: (fileName, mime, text) => {
     const url = URL.createObjectURL(new Blob([text], { type: mime }));

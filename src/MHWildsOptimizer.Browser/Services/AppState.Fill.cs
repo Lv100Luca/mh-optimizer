@@ -52,6 +52,7 @@ public sealed partial class AppState
         var options = request.Options;
         var include = options.IncludeArmor.ToList();
         var exclude = options.ExcludeSets.ToList();
+        var excludeArmor = options.ExcludeArmor.ToList();
         var minRarity = options.MinRarity;
         foreach (var slot in kept)
         {
@@ -60,6 +61,7 @@ public sealed partial class AppState
             include.RemoveAll(n => Index.ArmorByName.GetValueOrDefault(n)?.Kind == kind);
             include.Add(p.Name);
             exclude.Remove(p.Set);
+            excludeArmor.Remove(p.Name);
             minRarity = Math.Min(minRarity, p.Rarity);
         }
         var talismans = Talismans.ToList();
@@ -91,7 +93,7 @@ public sealed partial class AppState
             TargetSkills = build.TargetsWith(request.TargetSkills),
             Conditions = build.ConditionsFor(request.Conditions),
             Talismans = talismanSettings,
-            Options = options with { IncludeArmor = include, ExcludeSets = exclude, MinRarity = minRarity, TopN = 3 },
+            Options = options with { IncludeArmor = include, ExcludeSets = exclude, ExcludeArmor = excludeArmor, MinRarity = minRarity, TopN = 3 },
         };
         return (filled, talismans);
     }
