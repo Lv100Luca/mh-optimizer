@@ -47,7 +47,7 @@ public sealed class ScoreUnit
 /// <param name="BaseEleFlat">True element the conditions give every build.</param>
 public sealed record ScoreSide(Conditions Conditions, int Health, double Weight, ResolvedAttackProfile Attack, double RawFactor, double SharpEle,
     double BaseCritMult, double BaseCritEleMult, double ElementCap, double ShockwaveRawShare, double ShockwaveConstant, double BaseRawFlat = 0,
-    double BaseRawPct = 1, int BaseAffinity = 0, double BaseElePct = 1, double BaseEleFlat = 0)
+    double BaseRawPct = 1, int BaseAffinity = 0, double BaseElePct = 1, double BaseEleFlat = 0, int Segment = 0)
 {
     /// <summary>Element per true element point per 100 MV of the segment's attack, sharpness included: <see cref="ResolvedAttackProfile.ElementFactor"/>.</summary>
     public double ElementScale => Attack.ElementFactor;
@@ -142,7 +142,7 @@ public sealed class ScoreDecomposition
                     sides.Add(new ScoreSide(part, health, p.TotalMv / totalMv * share, p, p.RawFactor, r.SharpnessElementModifier,
                         r.CriticalMultiplier, r.CriticalElementMultiplier, r.ElementCap,
                         DamageConstants.DarkArtsShockwaveMv / 100.0 * sharpRaw / p.RawFactor * p.Shockwaves * p.PerHundredMv,
-                        Shockwave(0, r.SharpnessElementModifier, p), b.RawFlat, b.RawPct, b.Affinity, b.ElePct, b.EleFlat));
+                        Shockwave(0, r.SharpnessElementModifier, p), b.RawFlat, b.RawPct, b.Affinity, b.ElePct, b.EleFlat, i));
                 }
             }
         }
@@ -172,6 +172,41 @@ public sealed class ScoreDecomposition
         // units that never change the score (target-only skills such as Focus, sets whose condition is off) are left out
         units = units.Where(u => u.Tables.Select((t, side) => t.Any(c => !Same(c, Base(sides[side])))).Any(x => x)).ToList();
         return new ScoreDecomposition(bare, cond, features, units, sides) { Probes = prober.Calculations };
+    }
+
+    /// <summary>
+    /// This model with the parts of the hunt of each attack segment (<see cref="Conditions.UptimeParts"/>) merged into one part
+    /// at their share-weighted average contributions: one part per segment instead of up to dozens. An approximation, as the
+    /// affinity cap and timed skills that change raw and affinity together do not average exactly. This model itself when no
+    /// segment is split.
+    /// </summary>
+    public ScoreDecomposition Averaged()
+    {
+        var groups = Enumerable.Range(0, Sides.Count).GroupBy(s => (Sides[s].Health, Sides[s].Segment)).Select(g => g.ToList()).ToList();
+        if (groups.Count == Sides.Count) return this;
+        var weights = groups.Select(g => g.Sum(s => Sides[s].Weight)).ToList();
+        double Avg(int k, Func<int, double> value) => groups[k].Sum(s => value(s) * Sides[s].Weight) / weights[k];
+        var sides = groups.Select((g, k) => Sides[g[0]] with
+        {
+            Weight = weights[k],
+            BaseCritMult = Avg(k, s => Sides[s].BaseCritMult), BaseCritEleMult = Avg(k, s => Sides[s].BaseCritEleMult),
+            ShockwaveRawShare = Avg(k, s => Sides[s].ShockwaveRawShare), ShockwaveConstant = Avg(k, s => Sides[s].ShockwaveConstant),
+            BaseRawFlat = Avg(k, s => Sides[s].BaseRawFlat), BaseRawPct = Avg(k, s => Sides[s].BaseRawPct),
+            BaseAffinity = (int)Math.Round(Avg(k, s => Sides[s].BaseAffinity)), BaseElePct = Avg(k, s => Sides[s].BaseElePct),
+            BaseEleFlat = Avg(k, s => Sides[s].BaseEleFlat),
+        }).ToList();
+        var units = Units.Select(u => new ScoreUnit
+        {
+            Features = u.Features, Strides = u.Strides,
+            Tables = groups.Select((_, k) => Enumerable.Range(0, u.States).Select(state =>
+            {
+                double A(Func<Channels, double> ch) => Avg(k, s => ch(u.Tables[s][state]));
+                var first = u.Tables[groups[k][0]][state];
+                return new Channels(A(c => c.RawPct), A(c => c.RawFlat), A(c => c.Affinity), A(c => c.ElePct), A(c => c.EleFlat), A(c => c.CritMult),
+                    A(c => c.CritEleMult), A(c => c.Procs), first.Shockwave, A(c => c.RawMult));
+            }).ToArray()).ToArray(),
+        }).ToList();
+        return new ScoreDecomposition(_weapon, _cond, Features.ToList(), units, sides);
     }
 
     /// <summary>What the conditions give every build (no skills): read off the calculator with the two probe weapons.</summary>

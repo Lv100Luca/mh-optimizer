@@ -159,6 +159,18 @@ public class UptimeTests
         Assert.Equal(2 * 12 * score.HealthSides, score.Sides.Count);
         Assert.Equal(score.HealthSides, score.Sides.Sum(s => s.Weight), 1e-9);
         Assert.True(score.Verify(1000) < 1e-6);
+
+        // averaged over the uptimes: one part per segment and health side, close to the exact score (the affinity cap does not average)
+        var averaged = score.Averaged();
+        Assert.Equal(2 * score.HealthSides, averaged.Sides.Count);
+        Assert.Equal(score.HealthSides, averaged.Sides.Sum(s => s.Weight), 1e-9);
+        var rng = new Random(1);
+        for (var n = 0; n < 500; n++)
+        {
+            var values = score.Features.Select(f => rng.Next(f.Max + 1)).ToArray();
+            var exact = score.Evaluate(values);
+            Assert.True(Math.Abs(averaged.Evaluate(values) - exact) <= 0.05 * exact, $"averaged {averaged.Evaluate(values):0.00} vs exact {exact:0.00}");
+        }
     }
 
     [Fact]

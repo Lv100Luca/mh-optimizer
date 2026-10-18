@@ -54,6 +54,16 @@ bin/bench-cli/MHWildsOptimizer.Cli.exe --data data bench compare bench/results/<
   (`laptop-fix-r1/r2.json`): no build lost, speed within noise of ties on. New brute-force test case covers the fallback.
 - `bench compare` checks every candidate repeat against the baseline's first run (it only checked the first repeat).
 
+- Idea (B) tried and dropped (2026-10-18): exact search over pair classes x weapon variants, the CP model choosing the variant
+  within 15 focus x element groups. gs-everything: 2198 s instead of 128 s, best 1,466 instead of 1,463 (coordinate descent
+  stops at a local optimum). Elements tie on this target, so every group needs its own proofs. Too slow to be useful; the
+  patch is kept outside the repo (side-session notes, idea-b-exact-weapon-search.patch).
+- Many uptime parts (Latent Power + Azure Bolt defaults, Offensive Guard 50%, a two-segment sequence: 48 parts) left the
+  CP bound 15% above the best build: no build proved, 221 s natively, 350 s in the browser. Above 12 parts per health side
+  the search now uses an averaged model (one part per segment, `ScoreDecomposition.Averaged`), scores every build exactly,
+  finds 2 builds more and ranks builds 2+ for 5 s each: same best build (652.51) in 41 s. Bench scenarios have at most 12
+  parts and are unaffected.
+
 ## Next steps
 
 1. Done: laptop baselines (ties off/on) and the 8 s cliff fix. Review and commit.

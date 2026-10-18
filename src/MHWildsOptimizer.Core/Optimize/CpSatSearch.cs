@@ -159,6 +159,18 @@ internal sealed class CpSatSearch
 
     private readonly int[] _weaponSkills;
 
+    /// <summary>
+    /// A score model with more parts of the attack or uptime than this (per health side) is searched averaged
+    /// (<see cref="ScoreDecomposition.Averaged"/>): 48 parts left the bound 15% above the best build after two minutes.
+    /// </summary>
+    public const int MaxExactParts = 12;
+    private bool _averaged;
+    /// <summary>An averaged model's builds after the first are only ranked, briefly: its proofs would not hold for the real score anyway.</summary>
+    public const double AveragedRankSeconds = 5;
+    /// <summary>Builds an averaged search finds beyond the top N, for the calculator's scores to choose from.</summary>
+    public const int AveragedExtraBuilds = 2;
+    private double? RankLimit => _averaged ? Math.Min(RankTimeLimitSeconds ?? AveragedRankSeconds, AveragedRankSeconds) : RankTimeLimitSeconds;
+
     /// <summary>Score models shared with other searches of the same weapon and conditions; null builds one for this search.</summary>
     public ScoreDecompositionCache? Scores { get; init; }
 
@@ -198,18 +210,21 @@ internal sealed class CpSatSearch
     {
         if (_model is null) await BuildAsync();
         var (model, vars) = (_model!, _vars!);
-        if (SplitLanes > 1 && Solves == 0 && _cutoff is null && await SplitTopAsync(topN)) return Finish(topN);
+        // an averaged model ranks builds only roughly: a few more, and the calculator's scores pick the top N
+        var shown = topN;
+        if (_averaged) topN += AveragedExtraBuilds;
+        if (SplitLanes > 1 && Solves == 0 && _cutoff is null && await SplitTopAsync(topN)) return Finish(shown);
         // tie searches do not count: the limit guards against builds that cannot be laid out
         var maxSolves = Solves - _tieSolves + topN - _builds.Count + 3;
 
         while (_builds.Count < topN && Solves - _tieSolves < maxSolves)
         {
             // the best build is proved; the next ones only get the rank time limit
-            var ranking = _builds.Count > 0 && RankTimeLimitSeconds is { } rank && rank < _parameters.TimeLimitSeconds;
+            var ranking = _builds.Count > 0 && RankLimit is { } rank && rank < _parameters.TimeLimitSeconds;
             // a first solve that would take long is tried briefly, then tightened and solved again
             var tryFor = Math.Min(TightenAfterSeconds, _parameters.TimeLimitSeconds / 2);
             var trying = !_tightened && _builds.Count == 0 && tryFor >= Math.Min(1, TightenAfterSeconds);
-            var parameters = ranking ? _parameters with { TimeLimitSeconds = RankTimeLimitSeconds!.Value }
+            var parameters = ranking ? _parameters with { TimeLimitSeconds = RankLimit!.Value }
                 : trying ? _parameters with { TimeLimitSeconds = tryFor } : _parameters;
             var number = _builds.Count + 1;
             Stage?.Set(2, _builds.Count == 0
@@ -240,7 +255,7 @@ internal sealed class CpSatSearch
             }
             Solves++;
             // a split search that proved build 1 early: once the solves one at a time stop proving, its parts take over
-            if (_splitPending && ranking && tie is null && status is (CpSolverStatus.Feasible or CpSolverStatus.Unknown) && _splitClock!.Elapsed.TotalSeconds < SplitBudget(topN))
+            if (_splitPending && !_averaged && ranking && tie is null && status is (CpSolverStatus.Feasible or CpSolverStatus.Unknown) && _splitClock!.Elapsed.TotalSeconds < SplitBudget(topN))
             {
                 await SplitTopAsync(topN, response);
                 return Finish(topN);
@@ -263,7 +278,7 @@ internal sealed class CpSatSearch
                 : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
             Record(response, proof, number, bound, tie is not null ? $" (ties the last one, found in {solveSw.Elapsed.TotalSeconds:0.0} s)" : $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
         }
-        return Finish(topN);
+        return Finish(shown);
     }
 
     /// <summary>
@@ -333,7 +348,9 @@ internal sealed class CpSatSearch
         if (loadout is null) return;
         var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
         if (!_seen.Add(key)) return;
-        _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, "", Proof: proof));
+        // a proof holds for the averaged model, not for the calculator's score
+        _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, "",
+            Proof: _averaged && proof.Kind == ProofKind.Proved ? proof with { Kind = ProofKind.Ranked } : proof));
     }
 
     /// <summary>The armor pieces, talisman and rolled talisman literals a solve chose: what excluding its combination fixes.</summary>
@@ -916,6 +933,14 @@ internal sealed class CpSatSearch
             ? $"  damage model built in {sw.Elapsed.TotalSeconds:0.0} s ({Plural(score.Units.Count, "group")} of skills{(score.Sides.Count > score.HealthSides ? $", {score.Sides.Count / score.HealthSides} parts of the attack or uptime" : "")})"
             : "  damage model shared with an earlier search");
 
+        if (score.Sides.Count > MaxExactParts * score.HealthSides)
+        {
+            var parts = score.Sides.Count / score.HealthSides;
+            score = score.Averaged();
+            _averaged = true;
+            _progress?.Report($"  {parts} parts of the attack or uptime: searching a model with each attack part averaged over the uptimes " +
+                              $"({score.Sides.Count / score.HealthSides} parts), every build scored exactly");
+        }
         _score = score;
         var model = new CpModel();
         _vars = await BuildModelAsync(model, score);
