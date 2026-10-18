@@ -102,26 +102,35 @@ internal static class Bench
             double Median(IEnumerable<double> xs) { var l = xs.Order().ToList(); return l[l.Count / 2]; }
             var ta = Median(sa.Runs.Select(r => r.Seconds));
             var tb = Median(sb.Runs.Select(r => r.Seconds));
-            var ra = sa.Runs[0]; var rb = sb.Runs[0];
-            // the score lists, best first: equal, better or worse at the first place they differ
-            var sca = ra.Builds.Select(x => x.Score).ToList();
-            var scb = rb.Builds.Select(x => x.Score).ToList();
-            var verdict = "same";
-            for (var i = 0; i < Math.Min(sca.Count, scb.Count); i++)
-            {
-                if (Math.Abs(sca[i] - scb[i]) < 0.005) continue;
-                verdict = scb[i] > sca[i] ? $"better at #{i + 1}" : $"WORSE at #{i + 1} ({scb[i] - sca[i]:+0.00;-0.00})";
-                break;
-            }
-            if (verdict == "same" && scb.Count < sca.Count) verdict = $"WORSE: {scb.Count} of {sca.Count} builds";
-            else if (verdict == "same" && scb.Count > sca.Count) verdict = $"{scb.Count} vs {sca.Count} builds";
-            // proofs: builds proved in the baseline must stay proved
-            var pa = ra.Proofs.GetValueOrDefault("Proved"); var pb = rb.Proofs.GetValueOrDefault("Proved");
-            if (pb != pa) verdict += $", proved {pb} vs {pa}";
+            var ra = sa.Runs[0];
+            // every repeat of the candidate against the baseline's first run: a build lost in one repeat is lost
+            var verdicts = sb.Runs.Select((rb, k) => (Run: rb, K: k, Text: Verdict(ra, rb))).ToList();
+            var (rb, k, verdict) = verdicts.FirstOrDefault(v => v.Text.StartsWith("WORSE"), verdicts.FirstOrDefault(v => v.Text != "same", verdicts[0]));
+            if (sb.Runs.Count > 1 && verdict != "same") verdict += $" (run {k + 1} of {sb.Runs.Count})";
             if (verdict.StartsWith("WORSE")) worse++;
             Console.WriteLine($"{sa.Name,-22} {ta,8:0.0} {tb,8:0.0} {ta / Math.Max(tb, 0.01),6:0.00}x  {ra.Best,10:0.00} {rb.Best,10:0.00}  {verdict}");
         }
         return worse > 0 ? 1 : 0;
+    }
+
+    /// <summary>The score lists, best first: equal, better or worse at the first place they differ, and the proofs.</summary>
+    private static string Verdict(RunRow ra, RunRow rb)
+    {
+        var sca = ra.Builds.Select(x => x.Score).ToList();
+        var scb = rb.Builds.Select(x => x.Score).ToList();
+        var verdict = "same";
+        for (var i = 0; i < Math.Min(sca.Count, scb.Count); i++)
+        {
+            if (Math.Abs(sca[i] - scb[i]) < 0.005) continue;
+            verdict = scb[i] > sca[i] ? $"better at #{i + 1}" : $"WORSE at #{i + 1} ({scb[i] - sca[i]:+0.00;-0.00})";
+            break;
+        }
+        if (verdict == "same" && scb.Count < sca.Count) verdict = $"WORSE: {scb.Count} of {sca.Count} builds";
+        else if (verdict == "same" && scb.Count > sca.Count) verdict = $"{scb.Count} vs {sca.Count} builds";
+        // proofs: builds proved in the baseline must stay proved
+        var pa = ra.Proofs.GetValueOrDefault("Proved"); var pb = rb.Proofs.GetValueOrDefault("Proved");
+        if (pb != pa) verdict = verdict == "same" ? $"proved {pb} vs {pa}" : verdict + $", proved {pb} vs {pa}";
+        return verdict;
     }
 
     /// <summary>

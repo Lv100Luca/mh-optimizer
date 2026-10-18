@@ -42,7 +42,8 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
     /// <summary>
     /// The plain case, and a Great Sword attack sequence whose Strong Charged Slash step runs without Maximum Might (after a
     /// tackle): the CP model adds the sequence's segments up weighted by their motion value. <paramref name="split"/> looks for
-    /// the top N in parts on four lanes at once, one of them with 2 workers (<see cref="CpSatSearch.Split"/>).
+    /// the top N in parts on four lanes at once, one of them with 2 workers (<see cref="CpSatSearch.Split"/>). <paramref name="fallback"/>
+    /// proves build 1 before the split and gives the next builds too little time to prove one at a time, so the parts take over.
     /// </summary>
     [Theory]
     [InlineData("long sword", false)]
@@ -51,7 +52,8 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
     [InlineData("long sword buffed", false)]
     [InlineData("long sword", true)]
     [InlineData("bow dash dance", true)]
-    public void CpSatMatchesAnExhaustiveEnumeration(string name, bool split)
+    [InlineData("long sword", true, true)]
+    public void CpSatMatchesAnExhaustiveEnumeration(string name, bool split, bool fallback = false)
     {
         var data = TestData.Data;
         var conditions = Conditions.AllOff with
@@ -105,7 +107,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         output.WriteLine($"exhaustive: {brute.Combinations} armor + talisman combinations, {brute.Feasible} meet the targets, {brute.DistinctScores} distinct best scores, {brute.TiedAtTop} tied at the top, {sw.ElapsedMilliseconds} ms");
         output.WriteLine($"pruned before the solve: {string.Join(", ", data.Armor.Where(a => a.Rarity >= 7 && KeptSets.Contains(a.Set ?? "") && !candidates.Contains(a.Name)).Select(a => a.Name))}");
         sw.Restart();
-        var cp = split ? SplitSearch(data, resolved, rel) : new Optimizer(data, resolved).Run().PairResults.Single();
+        var cp = split ? SplitSearch(data, resolved, rel, fallback) : new Optimizer(data, resolved).Run().PairResults.Single();
         output.WriteLine($"cp-sat: {cp.CandidateSummary}, {sw.ElapsedMilliseconds} ms");
         for (var i = 0; i < TopN; i++)
             output.WriteLine($"#{i + 1}  exhaustive {brute.BestOfCandidates[i].Score:0.000} {brute.BestOfCandidates[i].Key}   cp-sat {(i < cp.Builds.Count ? $"{cp.Builds[i].Score:0.000} {Key(cp.Builds[i].Loadout)}" : "-")}");
@@ -133,20 +135,35 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
 
     /// <summary>
     /// The fixed pair's search split into parts on lanes of 4, 4, 4 and 2 workers at once, no short solve first, and an idle lane
-    /// splits a running part again at once.
+    /// splits a running part again at once. <paramref name="fallback"/>: a short solve first proves build 1, and the next builds get
+    /// 0.01 s each one at a time (no tie search), so the parts must find and prove them.
     /// </summary>
-    private static SkillPairResult SplitSearch(GameData data, ResolvedRequest resolved, Relevance rel)
+    private static SkillPairResult SplitSearch(GameData data, ResolvedRequest resolved, Relevance rel, bool fallback)
     {
         var armor = Candidates.Armor(data, rel, resolved.Options);
         var kinds = Enum.GetValues<ArmorPieceKind>().OrderBy(k => armor[k].Count).ToArray();
+        var log = new Log();
         var search = new CpSatSearch(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
-            Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, null, CancellationToken.None)
+            Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, log, CancellationToken.None)
         {
-            LaneWorkers = [4, 4, 4, 2], Split = true, SplitAfterSeconds = 0, ResplitAfterSeconds = 0,
+            LaneWorkers = [4, 4, 4, 2], Split = true, SplitAfterSeconds = fallback ? 8 : 0, ResplitAfterSeconds = 0,
+            RankTimeLimitSeconds = fallback ? 0.01 : null, FindTies = !fallback,
         };
         var builds = search.Run();
         Assert.Contains("parts on 4 lanes", search.LastSplit ?? "");
+        if (fallback)
+        {
+            Assert.Contains(log.Lines, l => l.Contains("build 1: ") && l.Contains("proved the best in"));
+            Assert.Contains(log.Lines, l => l.Contains("in parts on 4 lanes") && l.Contains("not proved within"));
+            Assert.All(builds, b => Assert.Equal(ProofKind.Proved, b.Proof!.Kind));
+        }
         return new SkillPairResult("split", null, builds.ToList(), search.Solves, search.Summary, OptimizerEngine.CpSat);
+    }
+
+    private sealed class Log : IProgress<string>
+    {
+        public List<string> Lines { get; } = [];
+        public void Report(string value) { lock (Lines) Lines.Add(value); }
     }
 
     private static string Key(Loadout l) => string.Join(" | ", l.ArmorPieces.OrderBy(a => a.Piece.Piece).Select(a => a.Piece.Name)) + " | " + l.Talisman?.Talisman.Name;

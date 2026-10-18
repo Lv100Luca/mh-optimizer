@@ -87,6 +87,8 @@ public sealed class ScoreDecomposition
     /// <summary>The weapon the score is for, without its set bonus and group skill (they count as pieces instead).</summary>
     public GogmaWeaponStats Weapon => _weapon;
     public int HealthSides => Sides.Select(s => s.Health).Distinct().Count();
+    /// <summary>Calls of <see cref="DamageCalculator"/> it took to build the model.</summary>
+    public int Probes { get; private init; }
 
     private ScoreDecomposition(GogmaWeaponStats weapon, Conditions cond, List<Feature> features, List<ScoreUnit> units, List<ScoreSide> sides)
     {
@@ -169,7 +171,7 @@ public sealed class ScoreDecomposition
 
         // units that never change the score (target-only skills such as Focus, sets whose condition is off) are left out
         units = units.Where(u => u.Tables.Select((t, side) => t.Any(c => !Same(c, Base(sides[side])))).Any(x => x)).ToList();
-        return new ScoreDecomposition(bare, cond, features, units, sides);
+        return new ScoreDecomposition(bare, cond, features, units, sides) { Probes = prober.Calculations };
     }
 
     /// <summary>What the conditions give every build (no skills): read off the calculator with the two probe weapons.</summary>
@@ -286,12 +288,17 @@ public sealed class ScoreDecomposition
     /// <summary>Reads a feature combination's contributions off the calculator.</summary>
     private sealed class Prober(GogmaWeaponStats weapon, List<Feature> features, List<ScoreSide> sides, Pacer pacer)
     {
-        private readonly Dictionary<(string, int), Channels> _cache = new();
+        private readonly Dictionary<(int, (bool, bool, bool), string), Channels> _cache = new();
+        private readonly Dictionary<string, ActiveSkills> _skills = new();
+        private readonly int[] _groups = Groups(sides);
         private readonly Dictionary<string, ScoreUnit> _units = new();
         private readonly Dictionary<(ScoreUnit, ScoreUnit), bool> _composes = new();
         private readonly bool _hasElement = weapon.ElementTrue > 0;
         private readonly GogmaWeaponStats _w1 = weapon with { TrueRaw = (int)B1, Affinity = ProbeAffinity, ElementDisplay = weapon.ElementTrue > 0 ? E1 : 0, SetBonus = null, GroupSkill = null };
         private readonly GogmaWeaponStats _w2 = weapon with { TrueRaw = (int)B2, Affinity = ProbeAffinity, ElementDisplay = weapon.ElementTrue > 0 ? E2 : 0, SetBonus = null, GroupSkill = null };
+
+        /// <summary>Calls of the calculator so far.</summary>
+        public int Calculations { get; private set; }
 
         /// <summary>The unit of these features; the same instance every time they are asked for again.</summary>
         public async ValueTask<ScoreUnit> TabulateAsync(int[] unitFeatures)
@@ -303,14 +310,12 @@ public sealed class ScoreDecomposition
             for (var i = 0; i < unitFeatures.Length; i++) { strides[i] = states; states *= features[unitFeatures[i]].Max + 1; }
             if (states > MaxUnitStates) throw new InvalidOperationException($"Interacting skills form a unit with {states} states: {string.Join(", ", unitFeatures.Select(f => features[f].Name))}");
             var tables = new Channels[sides.Count][];
-            for (var side = 0; side < sides.Count; side++)
+            for (var side = 0; side < sides.Count; side++) tables[side] = new Channels[states];
+            for (var state = 0; state < states; state++)
             {
-                tables[side] = new Channels[states];
-                for (var state = 0; state < states; state++)
-                {
-                    tables[side][state] = Probe(Values(unitFeatures, strides, state), side);
-                    await pacer.PauseAsync();
-                }
+                var loadout = Loadout(Values(unitFeatures, strides, state));
+                for (var side = 0; side < sides.Count; side++) tables[side][state] = Probe(loadout, side);
+                await pacer.PauseAsync();
             }
             return _units[key] = new ScoreUnit { Features = unitFeatures, Strides = strides, Tables = tables };
         }
@@ -330,33 +335,49 @@ public sealed class ScoreDecomposition
 
             async ValueTask<bool> Check()
             {
-                for (var side = 0; side < sides.Count; side++)
-                    for (var sa = 1; sa < a.States; sa++)
-                        for (var sb = 1; sb < b.States; sb++)
+                for (var sa = 1; sa < a.States; sa++)
+                    for (var sb = 1; sb < b.States; sb++)
+                    {
+                        var values = Values(a.Features, a.Strides, sa);
+                        var vb = Values(b.Features, b.Strides, sb);
+                        for (var f = 0; f < values.Length; f++) values[f] += vb[f];
+                        var loadout = Loadout(values);
+                        for (var side = 0; side < sides.Count; side++)
                         {
-                            var values = Values(a.Features, a.Strides, sa);
-                            var vb = Values(b.Features, b.Strides, sb);
-                            for (var f = 0; f < values.Length; f++) values[f] += vb[f];
                             var composed = Compose(a.Tables[side][sa], b.Tables[side][sb], sides[side]);
-                            if (composed is null || !Same(composed.Value, Probe(values, side))) return false;
-                            await pacer.PauseAsync();
+                            if (composed is null || !Same(composed.Value, Probe(loadout, side))) return false;
                         }
+                        await pacer.PauseAsync();
+                    }
                 return true;
             }
         }
 
-        private Channels Probe(int[] values, int side)
+        /// <summary>A feature combination as the calculator takes it, with its key in the caches.</summary>
+        private (string Key, ActiveSkills Skills) Loadout(int[] values)
         {
-            var key = (string.Join(",", values), side);
+            var key = string.Create(values.Length, values, static (span, v) =>
+            {
+                for (var i = 0; i < v.Length; i++) span[i] = (char)('0' + v[i]);
+            });
+            if (!_skills.TryGetValue(key, out var skills)) _skills[key] = skills = Skills(features, values);
+            return (key, skills);
+        }
+
+        private Channels Probe((string Key, ActiveSkills Skills) loadout, int side)
+        {
+            var s = sides[side];
+            var cond = s.Conditions;
+            // the uptime parts of a segment give the same contributions for loadouts that turn on the same timed skills in them
+            var key = (_groups[side], cond.TimedSkillsOn(loadout.Skills), loadout.Key);
             if (_cache.TryGetValue(key, out var cached)) return cached;
-            var skills = Skills(features, values);
-            var cond = sides[side].Conditions;
+            var skills = loadout.Skills;
             var r1 = DamageCalculator.Calculate(_w1, skills, cond, trace: false);
             var r2 = DamageCalculator.Calculate(_w2, skills, cond, trace: false);
-            var s = sides[side];
+            Calculations += 2;
             var rawSlope = (r2.TrueRaw - r1.TrueRaw) / (B2 - B1);
             var eleSlope = _hasElement ? (r2.ElementTrue - r1.ElementTrue) / ((E2 - E1) / 10.0) : 1.0;
-            var profile = sides[side].Attack;
+            var profile = s.Attack;
             var shockwave = cond.DarkArtsShockwave && weapon.Type == WeaponType.GreatSword && profile.Shockwaves > 0
                             && cond.SetTier(skills, SkillNames.SoulOfTheDarkKnight) != SetBonusTier.None;
             var shock = shockwave ? Shockwave(r1.TrueRaw * r1.SharpnessRawModifier * r1.CriticalFactor, r1.SharpnessElementModifier, profile) : 0;
@@ -366,6 +387,17 @@ public sealed class ScoreDecomposition
                 r1.ShotMultiplier);
             _cache[key] = ch;
             return ch;
+        }
+
+        /// <summary>
+        /// Sides that differ only in which timed skills are on (the uptime parts of a segment, <see cref="Conditions.UptimeParts"/>)
+        /// and in weight share a group: the calculator scores a loadout alike on them when <see cref="Conditions.TimedSkillsOn"/>
+        /// agrees, and their bases are the same, so the loadout's contributions are too.
+        /// </summary>
+        private static int[] Groups(List<ScoreSide> sides)
+        {
+            var bare = sides.Select(s => s with { Conditions = s.Conditions.WithTimedSkills((false, false, false)), Weight = 0 }).ToList();
+            return bare.Select(b => bare.IndexOf(b)).ToArray();
         }
     }
 }
