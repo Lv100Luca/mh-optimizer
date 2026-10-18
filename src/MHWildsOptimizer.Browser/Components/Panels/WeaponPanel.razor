@@ -117,7 +117,7 @@
                                 </ChildContent>
                             </OptField>
 
-                            <OptField Label="Reinforcement Bonus" CanOptimize="true" Optimized="opt.Reinforcements" OptimizedChanged="v => PatchOptimize(o => o with { Reinforcements = v })"
+                            <OptField Label="Reinforcement Bonus" Class="wide" CanOptimize="true" Optimized="opt.Reinforcements" OptimizedChanged="v => PatchOptimize(o => o with { Reinforcements = v })"
                                       Hint="@($"One row per line of the game's Reinforcement Bonus screen, top to bottom: pick the bonus, then its level. At most two identical lines, {(isBow ? "ammo" : "sharpness")} lines at most two in all; element lines need an element.")">
                                 <OptimizedContent>
                                     <span>Every split of the five lines over @(isBow ? "attack, affinity and element" : "attack, affinity, element and sharpness") is tried, each type at its best tiers up to</span>

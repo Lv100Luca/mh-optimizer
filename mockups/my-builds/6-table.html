@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 · Skill table · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .tablewrap { overflow-x: auto; margin: 0 -18px; padding: 0 18px; }
+  /* the wrapper is the scroll container, so CSS sticky cannot follow the page; a few lines of JS move thead and tfoot instead */
+  .tablewrap .stable thead th { top: auto; }
+  .tablewrap .stable tfoot td { bottom: auto; }
+  .stable thead th.first, .stable tfoot td.first { left: 0; z-index: 3; }
+  .stable thead th.first { background: var(--panel-2); }
+  .stable thead th.skillcol { cursor: pointer; }
+  .stable thead th.skillcol:hover { color: var(--text); text-decoration: underline dotted; }
+  .stable thead th.pc { color: var(--muted); font-size: 11px; text-align: center; vertical-align: bottom; }
+  .stable thead th.pc.set { color: var(--set); }
+  .stable thead th.pc.group { color: var(--group); }
+  .stable thead th.lbl { vertical-align: bottom; text-align: left; }
+  .stable td.first { min-width: 250px; }
+  .stable td.cell { padding-left: 6px; padding-right: 6px; }
+  .stable tr:hover td.first { background: var(--panel-2); }
+  .stable tr.srow td { border-bottom-color: transparent; padding-top: 2px; padding-bottom: 2px; }
+  .stable tr.srow.last td { border-bottom-color: var(--border); padding-bottom: 6px; }
+  .stable tr.prow td { padding-top: 8px; }
+  .stable tr.prow.open td { border-bottom-color: transparent; }
+  .piececell { display: flex; align-items: center; gap: 10px; }
+  .piececell img.kind { width: 30px; height: 30px; flex: none; }
+  .piececell img.kind.dim { opacity: 0.4; }
+  .piececell > div { min-width: 0; max-width: 250px; display: flex; flex-direction: column; gap: 3px; white-space: normal; }
+  .ppick { display: inline-flex; align-items: center; gap: 8px; padding: 3px 10px; border: 1px solid var(--border-2); border-radius: 6px; background: var(--bg-2); font-weight: 600; font-size: 12.5px; cursor: pointer; white-space: nowrap; }
+  .ppick::after { content: "▾"; color: var(--muted); font-size: 11px; }
+  .ppick.vacant { color: var(--muted); font-weight: 400; }
+  .ppick.fixed::after { content: ""; }
+  .ppick.fixed { cursor: default; }
+  .dl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .dl .with-icon { gap: 3px; }
+  .dl .set { color: var(--set); }
+  .dl .group { color: var(--group); }
+  .jewel { display: flex; align-items: center; gap: 6px; padding-left: 40px; font-size: 12px; }
+  .jewel .arrow { color: var(--muted); }
+  .jewel.empty { color: var(--muted); font-style: italic; }
+  .jewel .btn { font-style: normal; color: var(--muted); padding: 0 7px; font-size: 11.5px; }
+  .jewel.empty:hover .btn { color: var(--accent-2); border-color: var(--accent-2); }
+  .stable td.cell.set { color: var(--set); }
+  .stable td.cell.group { color: var(--group); }
+  .stable tfoot td.pc { font-weight: 400; font-size: 11.5px; text-align: left; white-space: normal; min-width: 100px; max-width: 150px; line-height: 1.35; vertical-align: top; }
+  .stable tfoot td.pc .cnt { font-weight: 700; }
+  .stable tfoot tr.max td { font-weight: 400; color: var(--muted); border-top: none; font-size: 11.5px; }
+  .stable tfoot td.first { background: var(--panel-2); }
+  .stable tfoot .free { display: inline-flex; gap: 3px; align-items: center; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+  .legend .sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .legend .right { margin-left: auto; }
+  .stable tbody td.cell:not(.z):not(.d) { color: var(--armor); font-weight: 600; }
+  .stable tbody td.cell.d { font-weight: 600; }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 6 · One table, every piece against every skill</h3>
+      <ol>
+        <li><span class="n">1</span><span>The build <b>is</b> the table. One row per piece, one column per skill, a level in each cell. Targets come first in gold. There is nothing else on the page, so nothing is below the fold.</span></li>
+        <li><span class="n">2</span><span>The piece cell holds the picker, its slots and the <b>set bonus / group</b> it brings. Empty kinds are rows too: "choose arms" sits where the piece will go, so you see the gap in the sums.</span></li>
+        <li><span class="n">3</span><span>Every jewel is its own <b>sub-row</b> under its piece, levels in blue. An empty slot is a sub-row with "+ jewel". Swapping a jewel changes exactly one line, and you see which.</span></li>
+        <li><span class="n">4</span><span>The footer adds up against <b>Wanted</b>. Green met, amber short, red over the cap. Critical Boost is the only one met so far, and the blue sub-rows show it comes from two jewels, not from a piece. The editor today shows these sums on a card at the very bottom.</span></li>
+        <li><span class="n">5</span><span><b>Set</b> and <b>Group</b> are piece counts per row; the footer lists each set with its count against the 2 / 4 and 3 piece steps.</span></li>
+        <li><span class="n">6</span><span>Click a <b>column header</b> for where to get that skill (idea 1's list). The first column and the header stay put; the rest scrolls sideways inside the card when there are many skills.</span></li>
+        <li><span class="n">7</span><span>Not solved: nothing here helps you <i>choose</i> a piece, the table only shows what you picked. With 15+ skills it gets wide and the headers hard to read. Set bonuses are counts, not skills, so their effects are not in the sums. Damage is illustrative.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <div class="scorebar">
+      <span class="scorebar-total"><b id="dmg"></b> <span class="muted small">damage per attack <span title="the mockups cannot score">(illustrative)</span></span></span>
+      <span class="statchip atk"><img src="" data-ico="ui/attack-up.png" alt="">ATK <b id="atk"></b></span>
+      <span class="statchip aff"><img src="" data-ico="ui/affinity-up.png" alt="">AFF <b id="aff"></b></span>
+      <span class="tcount" id="tcount"></span>
+      <span class="muted small">last change: Critical Jewel II into the weapon, <span class="delta up">+37</span></span>
+      <span class="right muted small">vs <a href="#">Optimizer build 1</a>: <span class="delta down">−312</span> <span class="pct">(−23.1%)</span></span>
+    </div>
+
+    <section class="card newpart" id="buildcard">
+      <header class="card-head">
+        <div class="card-title"><h2>Build <span class="n">1</span></h2><p class="hint">Rows are the pieces you wear, columns the skills they give. The last rows add it up against what you want.</p></div>
+        <div class="card-actions"><span class="muted small">name</span><span class="fakeselect" style="min-width:200px">Crit draft</span></div>
+      </header>
+      <div class="card-body" style="padding-top:0">
+        <div class="tablewrap" id="wrap"></div>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--ok)"></span>Green: target met.</span>
+          <span><span class="sw" style="background:var(--warn)"></span>Amber: short.</span>
+          <span><span class="sw" style="background:var(--err)"></span>Red: over the cap.</span>
+          <span><span class="sw" style="background:var(--accent-2)"></span>Blue: from a jewel.</span>
+          <span class="right">Click a column header to see where to get that skill (idea 1's list). <span class="n">6</span></span>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  document.querySelectorAll('img[data-ico]').forEach((i) => { i.src = ICO + i.dataset.ico; });
+  const draft = DRAFT;
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>${draft.name}</span><b>${fmt(draft.dmg)}</b></button>`,
+  ].join('');
+  document.getElementById('dmg').textContent = fmt(draft.dmg);
+  document.getElementById('atk').textContent = draft.atk;
+  document.getElementById('aff').textContent = draft.aff + '%';
+
+  const rowsInfo = sheetRows(draft);
+  const met = rowsInfo.filter((r) => r.want && r.state === 'met').length;
+  const tc = document.getElementById('tcount');
+  tc.textContent = `targets ${met}/${draft.targets.length}`;
+  tc.className = `tcount ${met === draft.targets.length ? 'ok' : 'warn'}`;
+
+  const want = Object.fromEntries(draft.targets);
+  const skills = rowsInfo.map((r) => r.skill);
+  const tot = totals(draft);
+
+  const cells = (levels, cls = '') => skills.map((s) => {
+    const l = levels[s] ?? 0;
+    return `<td class="cell ${l ? cls : 'z'}">${l || '·'}</td>`;
+  }).join('');
+  const setIcon = `<img class="ico16" src="${ICO}skills/set.png" alt="">`;
+  const groupIcon = `<img class="ico16" src="${ICO}skills/group.png" alt="">`;
+
+  // one piece row plus a sub-row per slot
+  function pieceRows(kind, icon, nameHtml, dl, skillLevels, slots, decos, slotKind, note = '') {
+    const out = [];
+    const hasSubs = slots.length > 0;
+    const setN = dl.set ? 1 : 0, grpN = dl.group ? 1 : 0;
+    const dlHtml = (dl.set || dl.group) ? `<div class="dl">${dl.set ? `<span class="with-icon set">${setIcon}${dl.set}</span>` : ''}${dl.group ? `<span class="with-icon group">${groupIcon}${dl.group}</span>` : ''}</div>` : '';
+    out.push(`<tr class="prow ${hasSubs ? 'open' : ''}">
+      <td class="first"><div class="piececell">${icon}<div>${nameHtml}${dlHtml}</div></div>${note}</td>
+      <td>${hasSubs ? slotsOf(slots, slotKind) : '<span class="muted">·</span>'}</td>
+      ${cells(skillLevels)}
+      <td class="cell ${setN ? 'set' : 'z'}">${setN || '·'}</td>
+      <td class="cell ${grpN ? 'group' : 'z'}">${grpN || '·'}</td>
+    </tr>`);
+    slots.forEach((l, i) => {
+      const last = i === slots.length - 1 ? 'last' : '';
+      const d = decos[i] && DECOS.get(decos[i]);
+      if (d) {
+        out.push(`<tr class="srow ${last}">
+          <td class="first"><div class="jewel"><span class="arrow">↳</span>${decoImg(d.name, 18)}<span>${shortDeco(d.name)}</span>${slotBox(d.slot, slotKind)}</div></td>
+          <td></td>${cells(Object.fromEntries(d.skills), 'd')}<td class="cell z">·</td><td class="cell z">·</td>
+        </tr>`);
+      } else {
+        out.push(`<tr class="srow ${last}">
+          <td class="first"><div class="jewel empty"><span class="arrow">↳</span><span>empty level ${l} slot</span>${slotBox(l, slotKind)}<button class="btn sm text">+ jewel</button></div></td>
+          <td></td>${cells({})}<td class="cell z">·</td><td class="cell z">·</td>
+        </tr>`);
+      }
+    });
+    return out.join('');
+  }
+
+  function render() {
+    const head = `<thead><tr>
+      <th class="first lbl">Piece <span class="n">2</span></th>
+      <th class="lbl">Slots</th>
+      ${skills.map((s) => `<th class="skillcol ${want[s] ? 'target' : ''}" data-skill="${s}" title="where to get ${s}">${s}</th>`).join('')}
+      <th class="pc set">Set<br>pieces <span class="n">5</span></th>
+      <th class="pc group">Group<br>pieces</th>
+    </tr></thead>`;
+
+    let body = pieceRows('weapon', `<img class="kind" src="${weaponIcon}" alt="">`,
+      `<span class="ppick fixed">Great Sword · ${WEAPON.name} ${rarityBadge(8)}</span>`,
+      { set: WEAPON.setBonus, group: WEAPON.group }, {}, WEAPON.slots, draft.weapon.decos, 'weapon');
+    let noted = false;
+    for (const k of KINDS) {
+      const a = draft.armor[k];
+      const p = a && ARMOR.get(a.name);
+      if (p) {
+        const note = !noted && p.slots.length ? '<span class="n" style="position:absolute;left:8px;margin-top:14px">3</span>' : '';
+        noted = noted || !!note;
+        body += pieceRows(k, `<img class="kind" src="${armorIcon(k, p.rarity)}" alt="">`,
+          `<span class="ppick">${p.name} ${rarityBadge(p.rarity)}</span>`,
+          { set: p.setBonus[0], group: p.group }, Object.fromEntries(p.skills), p.slots, a.decos ?? [], 'armor', note);
+      } else {
+        body += pieceRows(k, `<img class="kind dim" src="${armorBase(k)}" alt="">`, `<span class="ppick vacant">— choose ${k} —</span>`, {}, {}, [], [], 'armor');
+      }
+    }
+    body += pieceRows('talisman', `<img class="kind dim" src="${talismanIcon(8)}" alt="">`, `<span class="ppick vacant">— choose talisman —</span>`, {}, {}, [], [], 'armor');
+
+    const freeHtml = tot.free.length ? `<span class="free">${tot.free.map(([k, l]) => slotBox(l, k)).join('')}</span>` : '<span class="muted">none</span>';
+    const countList = (obj, steps) => Object.entries(obj).map(([name, n]) => {
+      const st = SKILL[name]?.ranks?.map((r) => r.pieces).filter(Boolean) ?? steps;
+      return `<div><span class="cnt">${n}</span> ${name} <span class="muted">/ ${st.join(' · ')}</span></div>`;
+    }).join('') || '<span class="muted">·</span>';
+    const foot = `<tfoot>
+      <tr>
+        <td class="first">Total <span class="n">4</span></td>
+        <td><span class="muted small" style="font-weight:400">free</span> ${freeHtml}</td>
+        ${rowsInfo.map((r) => `<td class="cell ${r.state}">${r.have}</td>`).join('')}
+        <td class="pc" rowspan="3">${countList(tot.sets, [2, 4])}</td>
+        <td class="pc" rowspan="3">${countList(tot.groups, [3])}</td>
+      </tr>
+      <tr class="want">
+        <td class="first">Wanted</td><td></td>
+        ${skills.map((s) => `<td class="cell">${want[s] ?? '·'}</td>`).join('')}
+      </tr>
+      <tr class="max">
+        <td class="first">Max</td><td></td>
+        ${skills.map((s) => `<td class="cell">${skillInfo(s).max}</td>`).join('')}
+      </tr>
+    </tfoot>`;
+
+    document.getElementById('wrap').innerHTML = `<table class="stable" id="stable">${head}<tbody>${body}</tbody>${foot}</table>`;
+    document.querySelectorAll('th.skillcol').forEach((th) => th.addEventListener('click', () => alert(`Where to get ${th.dataset.skill}: idea 1's list would open here.`)));
+  }
+  render();
+
+  // header follows the score bar, footer stays at the viewport bottom while the table is cut off
+  const wrap = document.getElementById('wrap'), bar = document.querySelector('.scorebar');
+  function follow() {
+    const t = document.getElementById('stable');
+    const r = wrap.getBoundingClientRect(), room = r.height - t.tHead.offsetHeight - t.tFoot.offsetHeight;
+    const down = Math.min(Math.max(0, bar.getBoundingClientRect().bottom + 4 - r.top), room);
+    const up = Math.min(Math.max(0, r.bottom - window.innerHeight), room);
+    t.tHead.style.transform = `translateY(${down}px)`;
+    t.tFoot.style.transform = `translateY(-${up}px)`;
+  }
+  addEventListener('scroll', follow, { passive: true });
+  addEventListener('resize', follow);
+  follow();
+</script>
+</body>
+</html>

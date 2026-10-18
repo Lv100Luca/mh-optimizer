@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7 · Board + sheet + fill · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .round { font-size: 12.5px; color: var(--muted); }
+  .round a { color: #ffb3d4; }
+  .draft-layout { grid-template-columns: minmax(0, 1fr) 300px; }
+  .draft-layout .side { top: 160px; }
+  .board { grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); }
+  .tile { position: relative; min-height: 164px; padding: 9px; }
+  .tile .n { position: absolute; top: -9px; right: -9px; }
+  .tile.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .tile.empty .tile-head { align-self: flex-start; }
+  .tile.empty .tile-msg { margin: auto 0; font-size: 11.5px; line-height: 1.35; }
+  .tile.empty .tile-msg b { display: block; color: var(--text); font-weight: 500; }
+  .tile.empty .tile-msg .fillnote { display: block; margin-top: 6px; color: var(--accent-2); font-size: 11px; }
+  .tile .tile-name { font-size: 12.5px; }
+  .tile .tile-skills { font-size: 11px; }
+  .tile .tile-chips { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tile .tile-chips .chip.tiny { max-width: 100%; }
+  .tile .tile-chips .chip.tiny span { overflow: hidden; text-overflow: ellipsis; }
+  .tile .tile-stat { font-size: 11px; color: var(--muted); }
+  .tile .tile-stat b { color: var(--text); font-weight: 600; }
+  .tile .dslot.filled { border-color: rgba(79, 163, 230, 0.45); }
+  .tile .dslot.weapon { background: #2b3a4d; }
+  .tile .dslot.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .tile .tile-foot { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: auto; }
+  .tile .lockbtn { padding: 0 6px; font-size: 10.5px; }
+  .tile.kept { background: rgba(227, 182, 78, 0.05); }
+  .palette-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .palette-toolbar .search { flex: 1 1 240px; }
+  .palette-toolbar .search::before { content: "⌕"; font-size: 15px; }
+  .palette-toolbar .filters { flex-basis: 100%; }
+  .filters .flabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 2px; }
+  .filters .fsep { width: 1px; height: 16px; background: var(--border-2); margin: 0 4px; }
+  .filter.from-sheet { border-color: var(--armor); color: var(--armor); }
+  .filter.from-tile { border-color: var(--accent); color: var(--accent); }
+  .pcard .pn span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pcard .pr { flex-wrap: wrap; }
+  .pcard .pr .set { color: var(--set); flex: 1 1 90px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pcard .fit { white-space: nowrap; }
+  .pcard.dim .fit { color: var(--muted); font-weight: 500; }
+  .pcard.hover { border-color: var(--accent); background: rgba(227, 182, 78, 0.06); }
+  .pcard .equip-tag { font-size: 10px; color: var(--accent); margin-left: auto; white-space: nowrap; }
+  .hintline { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-head .n { margin-left: 6px; }
+  .sheet .skillrow { cursor: pointer; }
+  .sheet .skillrow.sel { outline: 1px solid var(--armor); }
+  .sheet-foot { display: flex; flex-direction: column; gap: 6px; padding: 10px 14px 12px; border-top: 1px solid var(--border); }
+  .sheet-foot .btn { justify-content: center; }
+  .sheet-foot .muted { text-align: center; }
+  .completions .card-body { padding-top: 10px; }
+  .rcard .rline .pn { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .rcard .rline.new .pn { color: var(--text); }
+  .rcard .rfoot { display: flex; gap: 6px; margin-top: 4px; }
+  .rcard .rfoot .btn { flex: 1; justify-content: center; }
+  .rcard .rtargets { font-size: 11.5px; }
+  .fakeinput { display: inline-flex; align-items: center; min-width: 180px; padding: 5px 10px; border: 1px solid var(--border-2); border-radius: 4px; background: transparent; font-weight: 600; }
+  .mini-palette { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mini-palette .pcard { flex: 0 0 220px; cursor: pointer; }
+  .draft-layout > .stack { min-width: 0; }
+  @media (max-width: 1100px) { .draft-layout { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Round 2 · Board + skill sheet + fill the rest</h3>
+      <p class="round">After the first round: the sheet of <a href="1-sheet.html">idea 1</a> was the most readable (its "where to get it" list was too much), <a href="2-fill.html">idea 2</a> is wanted, and the board and palette of <a href="4-board.html">idea 4</a> suit browsing and making things up. This page is the three together. Ideas 3, 5 and 6 were not picked.</p>
+      <ol>
+        <li><span class="n">1</span><span>The <b>board</b> is the editor. Click a tile to select it (Arms here); the palette narrows to that kind. Each tile has a <b>keep</b> toggle for fill the rest; kept tiles are tinted. Empty tiles say the optimizer may fill them.</span></li>
+        <li><span class="n">2</span><span>Click an <b>empty slot square</b> on a tile and the palette switches to jewels of that level and kind (the Jewels state is shown small at the bottom). The board wraps to two rows beside the sheet; that is on purpose, the tiles need the width for names and slots.</span></li>
+        <li><span class="n">3</span><span>The <b>palette</b>: search, Armor / Jewels / Talismans, kind pills (Arms set by the selected tile, gold), skill pills (Weakness Exploit set from the sheet, teal), "helps a target" sort. A click equips into the selected tile; drag onto a tile works too.</span></li>
+        <li><span class="n">4</span><span>The <b>skill sheet</b> stays on the right, sticky, without the source list. Clicking a skill row toggles it as a palette filter instead: same job, no extra list.</span></li>
+        <li><span class="n">5</span><span><b>Fill the rest</b> lives under the sheet, where the targets it works toward are. Completions appear as cards above the palette; "Take it" fills the unkept tiles.</span></li>
+        <li><span class="n">6</span><span>Conditions, damage per attack, upgrades and compare fold below the palette. Damage numbers are illustrative.</span></li>
+        <li><span class="n">7</span><span>Costs: a new editor component, a virtualized palette grid (hundreds of pieces), drag and drop in Blazor is optional work, the talisman keep needs a new solver option. Not solved: a build with 15+ skills makes the sheet long; a phone layout stacks everything.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <div class="scorebar">
+      <span class="scorebar-total"><b id="dmg"></b> <span class="muted small">damage per attack</span></span>
+      <span class="statchip atk"><img src="" data-ico="ui/attack-up.png" alt="">ATK <b id="atk"></b></span>
+      <span class="statchip aff"><img src="" data-ico="ui/affinity-up.png" alt="">AFF <b id="aff"></b></span>
+      <span class="tcount" id="tcount"></span>
+      <span class="muted small">vs <a href="#">Optimizer build 1</a>: <span class="delta down">−312</span> <span class="pct">(−23.1%)</span></span>
+      <span class="right" style="display:inline-flex;align-items:center;gap:8px"><span class="muted small">name</span><span class="fakeinput">Crit draft</span></span>
+    </div>
+
+    <div class="draft-layout">
+      <div class="stack">
+        <section class="card newpart">
+          <header class="card-head" style="padding-bottom:6px">
+            <div class="card-title"><h2>Equipment <span class="n">1</span></h2><p class="hint">Click a tile to pick for it, a slot square to pick a jewel for it. Keep what the optimizer must not touch.</p></div>
+            <div class="card-actions"><span class="muted small" id="keptnote"></span></div>
+          </header>
+          <div class="card-body" style="padding-top:10px"><div class="board" id="board"></div></div>
+        </section>
+
+        <section class="card completions newpart">
+          <header class="card-head" style="padding-bottom:6px">
+            <div class="card-title"><h2>Completions <span class="n">5</span></h2><p class="hint">The optimizer filled arms, waist, legs and talisman and the free slots, with head, chest and the weapon jewels kept. Ran 2.1 s.</p></div>
+            <div class="card-actions"><button class="btn sm text">Dismiss</button></div>
+          </header>
+          <div class="card-body"><div class="resultstrip" id="completions"></div></div>
+        </section>
+
+        <section class="card newpart">
+          <header class="card-head" style="padding-bottom:8px">
+            <div class="card-title"><h2>Palette <span class="n">3</span></h2></div>
+            <div class="card-actions"><span class="muted small" id="pcount"></span></div>
+          </header>
+          <div class="card-body">
+            <div class="palette-toolbar">
+              <span class="search">Search pieces, sets, skills, jewels…</span>
+              <span class="segmented small"><button class="active">Armor</button><button>Jewels</button><button>Talismans</button></span>
+              <div class="filters">
+                <span class="flabel">kind</span>
+                <button class="filter">Head</button><button class="filter">Chest</button><button class="filter on from-tile" title="set by the selected tile">Arms</button><button class="filter">Waist</button><button class="filter">Legs</button>
+                <span class="fsep"></span>
+                <span class="flabel">skill</span>
+                <button class="filter on from-sheet" title="set from the skill sheet">Weakness Exploit ✕</button><button class="filter">+ skill</button>
+                <span class="fsep"></span>
+                <button class="filter on">Rarity 8</button><button class="filter on">Helps a target</button><button class="filter">Hide what I wear</button>
+              </div>
+            </div>
+            <div class="palette-grid" id="palette"></div>
+            <div class="hintline">Click equips into the selected tile (Arms). Drag onto any tile to put it there instead. <span class="kbd">Shift</span> + click swaps without asking.</div>
+          </div>
+        </section>
+
+        <details class="fold"><summary>Conditions and stats of this build <span class="hint">· follows the weapon's conditions · 8 on</span> <span class="n">6</span></summary><div class="card-body"><p class="muted small">As today.</p></div></details>
+        <details class="fold"><summary>Damage per attack <span class="hint">· scored on True Charged Slash Lv3</span></summary><div class="card-body"><p class="muted small">As today.</p></div></details>
+        <details class="fold"><summary>One-piece upgrades <span class="hint">· from the last run</span></summary><div class="card-body"><p class="muted small">As today.</p></div></details>
+        <details class="fold"><summary>Compare <span class="hint">· with Optimizer build 1</span></summary><div class="card-body"><p class="muted small">As today.</p></div></details>
+
+        <section class="card">
+          <header class="card-head" style="padding-bottom:6px"><div class="card-title"><h2>Palette when a slot square is selected <span class="n">2</span></h2><p class="hint">Shown small: the state after clicking an empty level 3 armor slot. The segmented control jumps to Jewels; the level and kind come from the slot, the skill pill stays.</p></div></header>
+          <div class="card-body">
+            <div class="filters"><span class="flabel">fits</span><button class="filter on from-tile">level 3 armor slot</button><span class="fsep"></span><span class="flabel">skill</span><button class="filter on from-sheet">Weakness Exploit ✕</button><button class="filter">+ skill</button><span class="fsep"></span><button class="filter on">Helps a target</button></div>
+            <div class="mini-palette" id="jewels"></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="card newpart">
+          <header class="card-head" style="padding-bottom:8px"><div class="card-title"><h2>Skill sheet <span class="n">4</span></h2></div></header>
+          <div class="card-body sheet" id="sheet" style="padding-top:6px"></div>
+          <div class="sheet-foot">
+            <button class="btn primary">Fill the rest</button>
+            <span class="muted small" id="fillnote"></span>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  document.querySelectorAll('img[data-ico]').forEach((i) => { i.src = ICO + i.dataset.ico; });
+  const draft = DRAFT;
+  const T = totals(draft);
+  const WANT = Object.fromEntries(draft.targets);
+  const SELECTED_KIND = 'arms';
+  const SHEET_FILTER = 'Weakness Exploit';
+  const KEPT = new Set(['head', 'chest']);
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>${draft.name}</span><b>${fmt(draft.dmg)}</b></button>`,
+  ].join('');
+  document.getElementById('dmg').textContent = fmt(draft.dmg);
+  document.getElementById('atk').textContent = draft.atk;
+  document.getElementById('aff').textContent = draft.aff + '%';
+  const rows = sheetRows(draft);
+  const met = rows.filter((r) => r.want && r.state === 'met').length;
+  const tc = document.getElementById('tcount');
+  tc.textContent = `targets ${met}/${draft.targets.length}`;
+  tc.className = `tcount ${met === draft.targets.length ? 'ok' : 'warn'}`;
+
+  // ---------------- board
+  const dslot = (level, deco, kind = 'armor', sel = false) => `<span class="dslot ${kind} ${deco ? 'filled' : ''} ${sel ? 'sel' : ''}" title="${deco ? deco : `level ${level} ${kind} slot, empty: click to pick a jewel`}">${deco ? `<img src="${decoIcon(deco)}" alt="">` : level}</span>`;
+  const dslots = (levels, decos, kind = 'armor', selIndex = -1) => `<div class="tile-slots">${levels.map((l, i) => dslot(l, decos[i], kind, i === selIndex)).join('')}</div>`;
+  const bonusChips = (sets, group) => `<div class="tile-chips">${sets.map((b) => `<span class="chip skill set tiny"><img src="${ICO}skills/set.png" alt=""><span>${b}</span></span>`).join('')}${group ? `<span class="chip skill group tiny"><img src="${ICO}skills/group.png" alt=""><span>${group}</span></span>` : ''}</div>`;
+  const skillLines = (skills) => `<div class="tile-skills">${skills.map(([s, l]) => `<span>${s} ${l}</span>`).join('')}</div>`;
+  const head = (icon, label) => `<div class="tile-head"><img src="${icon}" alt="">${label}</div>`;
+  const lock = (kind) => `<button class="lockbtn ${KEPT.has(kind) ? 'on' : ''}" title="${KEPT.has(kind) ? 'Kept: fill the rest leaves this piece and its jewels alone' : 'Keep: fill the rest must not change this'}">${KEPT.has(kind) ? '🔒 kept' : 'keep'}</button>`;
+
+  function pieceTile(kind, a) {
+    const p = ARMOR.get(a.name);
+    return `<div class="tile ${KEPT.has(kind) ? 'kept' : ''}" draggable="true">${head(armorIcon(kind, p.rarity), KIND_LABEL[kind])}
+      <div class="tile-name">${p.name} ${rarityBadge(p.rarity)}</div>
+      ${skillLines(p.skills)}
+      ${bonusChips(p.setBonus, p.group)}
+      <div class="tile-foot">${dslots(p.slots, a.decos)}${lock(kind)}</div></div>`;
+  }
+  function emptyTile(kind, icon, sel = false) {
+    return `<div class="tile empty ${sel ? 'sel' : ''}">${head(icon, KIND_LABEL[kind])}
+      <div class="tile-msg"><b>${sel ? 'pick from the palette' : 'click to pick'}</b>${sel ? 'or drop a piece here' : 'or drop a piece here'}<span class="fillnote">fill the rest may fill this</span></div></div>`;
+  }
+  function weaponTile() {
+    return `<div class="tile kept">${head(weaponIcon, 'Weapon')}
+      <div class="tile-name">Great Sword <span class="muted small" style="font-weight:400">· ${WEAPON.name}</span></div>
+      <div class="tile-stat"><b>${WEAPON.attack}</b> attack · <b>${WEAPON.affinity}%</b> affinity · ${WEAPON.sharpness}</div>
+      ${bonusChips([WEAPON.setBonus], WEAPON.group)}
+      <div class="tile-foot">${dslots(WEAPON.slots, draft.weapon.decos, 'weapon', 2)}<button class="lockbtn on" title="The weapon is the Weapon tab's; its jewels are kept">🔒 jewels</button></div></div>`;
+  }
+  document.getElementById('board').innerHTML = [
+    weaponTile(),
+    ...KINDS.map((k) => draft.armor[k] ? pieceTile(k, draft.armor[k]) : emptyTile(k, armorBase(k), k === SELECTED_KIND)),
+    emptyTile('talisman', talismanIcon(8)),
+  ].join('');
+  document.getElementById('keptnote').textContent = `${KEPT.size} pieces and the weapon jewels kept · 4 left to the optimizer`;
+  document.getElementById('fillnote').textContent = `fills arms, waist, legs, talisman and 2 free slots toward the 5 targets`;
+
+  // ---------------- sheet (no source list; rows filter the palette)
+  const sheet = document.getElementById('sheet');
+  sheet.innerHTML = sheetHtml(draft, SHEET_FILTER).replace('· click one to see where to get it', '· click one to filter the palette');
+
+  // ---------------- palette: arms with Weakness Exploit first, sorted by target levels added
+  const fitOf = (p) => p.skills.reduce((sum, [s, l]) => sum + (WANT[s] ? Math.max(0, Math.min(l, WANT[s] - (T.skills[s] ?? 0))) : 0), 0);
+  const hasFilter = (p) => p.skills.some(([s]) => s === SHEET_FILTER);
+  const arms = GAME.armor.filter((p) => p.piece === SELECTED_KIND).map((p) => ({ ...p, fit: fitOf(p), match: hasFilter(p) }))
+    .sort((a, b) => b.match - a.match || b.fit - a.fit || b.rarity - a.rarity || b.slots.length - a.slots.length);
+  const cards = arms.slice(0, 12);
+  document.getElementById('pcount').textContent = `${arms.filter((p) => p.match).length} arms with Weakness Exploit · ${arms.filter((p) => p.fit > 0).length} of ${arms.length} help a target`;
+  document.getElementById('palette').innerHTML = cards.map((p, i) => `
+    <div class="pcard ${p.fit ? '' : 'dim'} ${i === 0 ? 'hover' : ''}" draggable="true" title="click: equips Arms">
+      <img src="${armorIcon(p.piece, p.rarity)}" alt="">
+      <div class="pn"><span>${p.name}</span>${rarityBadge(p.rarity)}${i === 0 ? '<span class="equip-tag">click: equip Arms</span>' : ''}</div>
+      <div class="ps">${skillsText(p.skills)}</div>
+      <div class="pr">${slotsOf(p.slots)}${p.setBonus.length ? `<span class="set" title="set bonus">${p.setBonus.join(', ')}</span>` : ''}<span class="fit">${p.fit ? `+${p.fit} target lvl${p.fit === 1 ? '' : 's'}` : 'no target'}</span></div>
+    </div>`).join('');
+
+  // ---------------- jewels state of the palette (a level 3 armor slot selected)
+  const jewels = GAME.decos.filter((d) => d.kind === 'armor' && d.slot <= 3)
+    .map((d) => ({ ...d, fit: d.skills.reduce((s, [sk, l]) => s + (WANT[sk] ? Math.max(0, Math.min(l, WANT[sk] - (T.skills[sk] ?? 0))) : 0), 0), match: d.skills.some(([s]) => s === SHEET_FILTER) }))
+    .sort((a, b) => b.match - a.match || b.fit - a.fit || b.slot - a.slot).slice(0, 8);
+  document.getElementById('jewels').innerHTML = jewels.map((d) => `
+    <div class="pcard ${d.fit || d.match ? '' : 'dim'}">
+      <img src="${decoIcon(d.name)}" alt="">
+      <div class="pn"><span>${shortDeco(d.name)}</span>${slotBox(d.slot, 'armor')}</div>
+      <div class="ps">${skillsText(d.skills)}</div>
+      <div class="pr"><span class="fit">${d.fit ? `+${d.fit} target lvl${d.fit === 1 ? '' : 's'}` : 'no target'}</span></div>
+    </div>`).join('');
+
+  // ---------------- completions (illustrative damage; real pieces and jewels)
+  const C = [
+    { dmg: 1318, ok: 5, arms: ['Gogmazios Vambraces β', ['Counter Jewel [2]']], waist: ['Dahaad Shardcoil γ', ['Mighty Jewel [2]']], legs: ['Dahaad Shardgreaves γ', ['Tenderizer Jewel [3]']], talisman: ['Secret Charm', ['Mighty Jewel [2]']], weapon: 'Expert Jewel III [3]' },
+    { dmg: 1302, ok: 5, arms: ['G. Arkveld Vambraces β', ['Tenderizer Jewel [3]']], waist: ['Dahaad Shardcoil γ', []], legs: ['Gala Suit Slacks α', ['Mighty Jewel [2]', 'Counter Jewel [2]']], talisman: ['Golden Age Charm', []], weapon: 'Attack Jewel III [3]' },
+    { dmg: 1296, ok: 4, short: 'Counterstrike 2/3', arms: ['Arkvulcan Vambraces γ', []], waist: ['Dahaad Shardcoil γ', []], legs: ['Rey Sandgreaves α', ['Mighty Jewel [2]']], talisman: ['Secret Charm', []], weapon: 'Expert Jewel III [3]' },
+  ];
+  const keptLine = (kind, name, decos, icon) => `<div class="rline kept"><img src="${icon}" alt=""><span class="pn">${name}</span><span class="decos">${decos.filter(Boolean).map((d) => decoImg(d, 16)).join('')}</span></div>`;
+  const newLine = (kind, name, decos, icon) => `<div class="rline new"><img src="${icon}" alt=""><span class="pn">${name}</span><span class="decos">${decos.map((d) => decoImg(d, 16)).join('')}</span></div>`;
+  document.getElementById('completions').innerHTML = C.map((c, i) => `
+    <div class="rcard ${i === 0 ? 'best' : ''}">
+      <div class="rhead"><span class="total">${fmt(c.dmg)}</span>${delta(c.dmg - draft.dmg)} <span class="pct">(+${fmt((c.dmg - draft.dmg) / draft.dmg * 100, 1)}% vs draft)</span></div>
+      ${keptLine('weapon', 'Weapon', [...draft.weapon.decos.slice(0, 2), c.weapon], weaponIcon)}
+      ${keptLine('head', draft.armor.head.name, draft.armor.head.decos, armorIcon('head'))}
+      ${keptLine('chest', draft.armor.chest.name, draft.armor.chest.decos, armorIcon('chest'))}
+      ${newLine('arms', c.arms[0], c.arms[1], armorIcon('arms'))}
+      ${newLine('waist', c.waist[0], c.waist[1], armorIcon('waist'))}
+      ${newLine('legs', c.legs[0], c.legs[1], armorIcon('legs'))}
+      ${newLine('talisman', c.talisman[0], c.talisman[1], talismanIcon(8))}
+      <div class="rtargets ${c.ok === 5 ? 'ok' : 'warn'}">targets ${c.ok}/5${c.short ? ` · ${c.short}` : ''}</div>
+      <div class="rfoot"><button class="btn sm primary">Take it</button><button class="btn sm">Keep as draft</button></div>
+    </div>`).join('');
+</script>
+</body>
+</html>

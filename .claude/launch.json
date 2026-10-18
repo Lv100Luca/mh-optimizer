@@ -68,6 +68,19 @@
       ],
       "port": 5250,
       "autoPort": false
+    },
+    {
+      "name": "mockups",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5251",
+        "--directory",
+        "."
+      ],
+      "port": 5251,
+      "autoPort": false
     }
   ]
 }

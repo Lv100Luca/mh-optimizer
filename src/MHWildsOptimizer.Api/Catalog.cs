@@ -10,7 +10,9 @@ public sealed record SkillDto(int Id, string Name, SkillKind Kind, int MaxLevel,
 
 public sealed record DecorationDto(int Id, string Name, SkillKind Kind, int Slot, int Rarity, string? IconColor, IReadOnlyList<SkillGrant> Skills);
 
-public sealed record ArmorSetPieceDto(int Id, string Name, ArmorPieceKind Kind, int Rarity, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<int> Slots, IReadOnlyList<int> SlotsTranscended);
+/// <param name="SetBonus">The set bonuses this piece counts toward; a set lists the union of its pieces' (Gogmazios pieces each carry one of their own plus the shared one).</param>
+public sealed record ArmorSetPieceDto(int Id, string Name, ArmorPieceKind Kind, int Rarity, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<int> Slots, IReadOnlyList<int> SlotsTranscended,
+    IReadOnlyList<string>? SetBonus = null);
 
 /// <summary>
 /// A craftable charm at one rank; <paramref name="IsMaxRank"/> marks the rank the optimizer uses. <paramref name="Line"/> groups
@@ -114,7 +116,7 @@ public sealed record Catalog(
                 g.Max(a => a.Rarity),
                 g.SelectMany(a => a.SetBonus).Distinct().OrderBy(x => x).ToList(),
                 g.Select(a => a.GroupSkill).FirstOrDefault(x => x is not null),
-                g.OrderBy(a => a.Piece).Select(a => new ArmorSetPieceDto(a.Id, a.Name, a.Piece, a.Rarity, a.Skills, a.Slots, a.SlotsTranscended)).ToList()))
+                g.OrderBy(a => a.Piece).Select(a => new ArmorSetPieceDto(a.Id, a.Name, a.Piece, a.Rarity, a.Skills, a.Slots, a.SlotsTranscended, a.SetBonus)).ToList()))
             .OrderByDescending(s => s.Rarity).ThenBy(s => s.Name)
             .ToList();
 

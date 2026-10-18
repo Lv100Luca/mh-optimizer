@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Sets first · My builds mockup</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  .settools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .settools .search { flex: 1 1 260px; }
+  .setcard { position: relative; }
+  .setcard .sethead .cnt { margin-left: auto; color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+  .setcard .sethead img { width: 22px; height: 22px; }
+  .setcard .bonusline .ranks { color: var(--muted); }
+  .setcard .bonusline.none { color: var(--muted); font-style: italic; }
+  .setcard .bonusline .more { color: var(--muted); font-size: 11px; }
+  .setcard .pc .kind { font-weight: 600; color: var(--text); font-size: 10.5px; }
+  .setcard .pc.taken .kind { color: var(--muted); }
+  .setcard .pc .skl { display: block; line-height: 1.25; min-height: 24px; }
+  .setcard .pc:hover { border-color: var(--accent-2); }
+  .setcard .pcbtns { display: flex; gap: 6px; align-items: center; }
+  .setcard .pcbtns .btn { padding: 1px 8px; font-size: 11.5px; }
+  .setcard .pcbtns .worn { margin-left: auto; font-size: 11.5px; color: var(--armor); }
+  .hiddenline { color: var(--muted); font-size: 12.5px; }
+  .finetune { font-size: 12.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .loadout { display: flex; flex-direction: column; }
+  .loadrow { display: grid; grid-template-columns: 26px 52px minmax(0, 1fr) 18px; gap: 8px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+  .loadrow:last-child { border-bottom: none; }
+  .loadrow img { width: 26px; height: 26px; }
+  .loadrow .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .loadrow .pn { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .loadrow .pn small { font-weight: 400; color: var(--muted); }
+  .loadrow .sub { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .loadrow.empty .pn { color: var(--muted); font-style: italic; font-weight: 400; }
+  .loadrow .x { color: var(--muted); cursor: pointer; text-align: center; }
+  .loadrow .x:hover { color: var(--err); }
+  .tracker { display: flex; flex-direction: column; gap: 2px; }
+  .tracker .setrow { padding-bottom: 0; }
+  .tracker .setrow .nm { font-weight: 600; }
+  .tracker .ranks { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11.5px; padding: 1px 6px 8px 30px; border-bottom: 1px solid var(--border); }
+  .tracker > div:last-child .ranks { border-bottom: none; }
+  .tracker .ranks .act { color: var(--ok); }
+  .tracker .ranks .next { color: var(--muted); }
+  .tracker .ranks .far { color: var(--muted); opacity: 0.6; }
+  .tracker .setrow .steps span.on.weapon { background: var(--weapon); border-color: var(--weapon); }
+  .tracker .legend { font-size: 11px; padding: 6px 6px 0; }
+  .side .card-head { padding-bottom: 8px; }
+  .side .card-body { padding-top: 8px; }
+</style>
+</head>
+<body data-active="builds" data-weapon="Current">
+<main>
+  <div class="panel">
+    <div class="notes">
+      <h3>Idea 5 · Build from sets, then fine-tune</h3>
+      <ol>
+        <li><span class="n">1</span><span>You browse <b>sets, not pieces</b>. One card per armor set from the game data: its set bonus with the piece steps, its group skill, the five pieces with their skills in short. Search and pills narrow the grid. "Rarity 8" is on; the rarity 7 sets are one click away.</span></li>
+        <li><span class="n">2</span><span>Click a piece tile to wear it. Tiles the draft wears light up. A kind another set already fills is struck through, so you see what this set would push out. <b>All 5</b> and <b>Best 2 for the bonus</b> fill a set in one go; the best 2 are the pieces with the most of your target skills.</span></li>
+        <li><span class="n">3</span><span>Sets you wear <b>float to the top</b> of the grid, so what is in play never scrolls away.</span></li>
+        <li><span class="n">4</span><span><b>Your loadout</b>: the seven slots as a compact list, always in view. The x takes a piece off. Legs and talisman are still empty here.</span></li>
+        <li><span class="n">5</span><span><b>Set bonus tracker</b>: one row per bonus or group skill the draft touches. The weapon counts as one piece for Soul of the Dark Knight in this app, so weapon plus two Bale pieces is 3 of 4: Dark Arts is active, The Blackest Night needs one more.</span></li>
+        <li><span class="n">6</span><span><b>Skills</b>: the sheet from idea 1, cut to the wanted skills, plus free slots. Same pips, same colors.</span></li>
+        <li><span class="n">7</span><span><b>Not solved</b>: jewels. Nothing here places them, the editor still does that. Sets below rarity 7 are many and most are noise, so they are hidden outright. The card grid takes a lot of room, like browsing layered armor. All damage numbers are illustrative.</span></li>
+      </ol>
+    </div>
+
+    <section class="card">
+      <header class="card-head">
+        <div class="card-title">
+          <h2>My builds</h2>
+          <p class="hint">Builds entered by hand are scored exactly like the optimizer's. The picked one (★) represents the weapon in the inventory.</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn sm">☆ Pick</button>
+          <button class="btn sm primary">+ New</button>
+          <button class="btn sm">Try a change</button>
+          <button class="btn sm">Duplicate</button>
+          <button class="btn sm">⇄ Compare</button>
+          <button class="btn sm text">Delete</button>
+        </div>
+      </header>
+      <div class="card-body">
+        <div class="buildtabs" id="tabs"></div>
+      </div>
+    </section>
+
+    <div class="draft-layout">
+      <div class="stack">
+        <section class="card">
+          <header class="card-head">
+            <div class="card-title"><h2>Sets <span class="n">1</span></h2><p class="hint">Combine sets the way you think about them: "2 Bale for Dark Arts, 2 Udra, one Dahaad". Then fine-tune the pieces.</p></div>
+            <div class="card-actions"><span class="muted small">name</span><span class="fakeselect" style="min-width:200px">Crit draft</span></div>
+          </header>
+          <div class="card-body">
+            <div class="settools">
+              <div class="search"><span>Search sets, bonuses, skills…</span></div>
+              <div class="filters" id="filters">
+                <button class="filter on" data-f="r8">Rarity 8</button>
+                <button class="filter" data-f="bonus">Has a set bonus</button>
+                <button class="filter" data-f="group">Has a group skill</button>
+                <button class="filter" data-f="mix">Only sets I can mix in</button>
+              </div>
+            </div>
+            <div class="row small muted"><span class="n">2</span><span>Click a tile to wear that piece. Struck-through tiles are kinds another set already fills.</span><span class="n" style="margin-left:12px">3</span><span>Sets you wear come first.</span></div>
+            <div class="setgrid newpart" id="setgrid"></div>
+            <p class="hiddenline" id="hiddenline"></p>
+            <p class="finetune"><span>Pieces in place?</span><a href="1-sheet.html">Fine-tune pieces and jewels in the editor</a><span class="n">7</span></p>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="card">
+          <header class="card-head"><div class="card-title"><h2>Your loadout <span class="n">4</span></h2><p class="hint" id="loadhint"></p></div></header>
+          <div class="card-body loadout" id="loadout" style="gap:0"></div>
+        </section>
+        <section class="card newpart">
+          <header class="card-head"><div class="card-title"><h2>Set bonuses <span class="n">5</span></h2><p class="hint">Piece counts per bonus. Blue dot: the weapon counts as one piece.</p></div></header>
+          <div class="card-body tracker" id="tracker"></div>
+        </section>
+        <section class="card">
+          <header class="card-head"><div class="card-title"><h2>Skills <span class="n">6</span></h2><p class="hint">Wanted skills only. Jewels are placed in the editor.</p></div></header>
+          <div class="card-body sheet" id="sheet"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
+<script src="gamedata.js"></script>
+<script src="data.js"></script>
+<script src="mock.js"></script>
+<script>
+  // scenario: the DRAFT plus the two Bale pieces just clicked in the Bale Armor α card
+  const draft = JSON.parse(JSON.stringify(DRAFT));
+  draft.armor.arms = { name: 'Bale Gauntlets α', decos: [null] };
+  draft.armor.waist = { name: 'Bale Flanchard α', decos: [null, null, null] };
+  draft.dmg = 1097; // illustrative
+  const targets = new Set(draft.targets.map(([s]) => s));
+  const bySet = {};
+  for (const p of GAME.armor) (bySet[p.set] ??= []).push(p);
+
+  const abbr = (s) => { const w = s.split(/[\s-]+/).filter((x) => /^[A-Za-z]/.test(x)); return w.length > 1 ? w.map((x) => x[0]).join('').toUpperCase() : s.slice(0, 3).toUpperCase(); };
+  const setIcon = `<img src="${ICO}skills/set.png" alt="">`;
+  const groupIcon = `<img src="${ICO}skills/group.png" alt="">`;
+  const ranksText = (name) => (SKILL[name]?.ranks ?? []).map((r) => `${r.pieces} pc ${r.name}`).join(' · ');
+  const wornSetOf = (kind) => { const a = draft.armor[kind]; return a ? ARMOR.get(a.name)?.set : null; };
+  const targetScore = (p) => p.skills.reduce((n, [s, l]) => n + (targets.has(s) ? l : 0), 0) + p.slots.length * 0.1;
+
+  document.getElementById('tabs').innerHTML = [
+    ...OTHERS.map((b) => `<button class="buildtab"><span>${b.picked ? '<span class="pickstar">★</span> ' : ''}${b.name}</span><b>${fmt(b.dmg)}</b></button>`),
+    `<button class="buildtab active"><span>${draft.name}</span><b>${fmt(draft.dmg)}</b></button>`,
+  ].join('');
+
+  function filtersOn() {
+    const on = {};
+    document.querySelectorAll('#filters .filter').forEach((f) => { on[f.dataset.f] = f.classList.contains('on'); });
+    return on;
+  }
+
+  function renderGrid() {
+    const f = filtersOn();
+    const worn = new Set(KINDS.map(wornSetOf).filter(Boolean));
+    const all = GAME.sets.filter((s) => s.rarity >= 7 && s.pieces.length >= 3);
+    const shown = all.filter((s) => (!f.r8 || s.rarity >= 8) && (!f.bonus || s.setBonus.length) && (!f.group || s.group))
+      .sort((a, b) => (worn.has(b.set) - worn.has(a.set)) || (b.rarity - a.rarity) || a.set.localeCompare(b.set));
+    document.getElementById('setgrid').innerHTML = shown.map((s) => {
+      const pieces = bySet[s.set] ?? [];
+      const isOn = worn.has(s.set);
+      const wornHere = KINDS.filter((k) => wornSetOf(k) === s.set).length;
+      const bonuses = s.setBonus.slice(0, 2).map((b) => `<div class="bonusline">${setIcon}<b>${b}</b><span class="ranks">${ranksText(b)}</span></div>`).join('')
+        + (s.setBonus.length > 2 ? `<div class="bonusline"><span class="more">+${s.setBonus.length - 2} more set bonuses</span></div>` : '')
+        + (s.setBonus.length ? '' : `<div class="bonusline none">${setIcon}no set bonus</div>`);
+      const group = s.group ? `<div class="bonusline">${groupIcon}<b>${s.group}</b><span class="ranks">${ranksText(s.group)}</span></div>` : `<div class="bonusline none">${groupIcon}no group skill</div>`;
+      const tiles = KINDS.map((k) => {
+        const p = pieces.find((x) => x.piece === k);
+        if (!p) return `<div class="pc taken"><img src="${armorBase(k)}" alt=""><span class="kind">${KIND_LABEL[k]}</span><small class="skl muted">none</small></div>`;
+        const ws = wornSetOf(k);
+        const cls = ws === s.set ? 'on' : ws ? 'taken' : '';
+        const skl = p.skills.map(([sk, l]) => `${abbr(sk)} ${l}`).join(', ');
+        return `<div class="pc ${cls}" data-set="${s.set}" data-kind="${k}" data-name="${p.name}" title="${p.name}: ${skillsText(p.skills)}${ws && ws !== s.set ? ` (replaces ${draft.armor[k].name})` : ''}"><img src="${armorIcon(k, p.rarity)}" alt=""><span class="kind">${KIND_LABEL[k]}</span><small class="skl">${skl}</small></div>`;
+      }).join('');
+      return `<div class="setcard ${isOn ? 'on' : ''}" data-set="${s.set}">
+        <div class="sethead">${setIcon}<b>${s.set}</b>${rarityBadge(s.rarity)}<span class="cnt">${s.pieces.length} pieces</span></div>
+        ${bonuses}${group}
+        <div class="pieces5">${tiles}</div>
+        <div class="pcbtns"><button class="btn sm" data-all="${s.set}">All 5</button>${s.setBonus.length ? `<button class="btn sm ${wornHere === 2 ? 'on' : ''}" data-best="${s.set}">Best 2 for the bonus</button>` : ''}${wornHere ? `<span class="worn">${wornHere} worn</span>` : ''}</div>
+      </div>`;
+    }).join('');
+    const hidden = all.length - shown.length;
+    document.getElementById('hiddenline').innerHTML = hidden ? `${shown.length} sets shown, ${hidden} hidden by the filters. Sets below rarity 7 are not listed at all.` : `${shown.length} sets shown. Sets below rarity 7 are not listed at all.`;
+  }
+
+  function renderLoadout() {
+    const rows = [];
+    rows.push(`<div class="loadrow"><img src="${weaponIcon}" alt=""><span class="k">Weapon</span><span><div class="pn">Great Sword <small>· Current</small></div><div class="sub">${WEAPON.setBonus} · ${WEAPON.group}</div></span><span></span></div>`);
+    for (const k of KINDS) {
+      const a = draft.armor[k];
+      const p = a && ARMOR.get(a.name);
+      if (p) rows.push(`<div class="loadrow"><img src="${armorIcon(k, p.rarity)}" alt=""><span class="k">${KIND_LABEL[k]}</span><span><div class="pn">${p.name}</div><div class="sub">${skillsText(p.skills)}</div></span><span class="x" data-off="${k}" title="Take off">×</span></div>`);
+      else rows.push(`<div class="loadrow empty"><img src="${armorBase(k)}" alt=""><span class="k">${KIND_LABEL[k]}</span><span class="pn">empty</span><span></span></div>`);
+    }
+    rows.push(`<div class="loadrow empty"><img src="${talismanIcon(8)}" alt="" style="opacity:.4"><span class="k">Talisman</span><span class="pn">empty</span><span></span></div>`);
+    document.getElementById('loadout').innerHTML = rows.join('');
+    const met = sheetRows(draft).filter((r) => r.want && r.state === 'met').length;
+    document.getElementById('loadhint').innerHTML = `<b>${fmt(draft.dmg)}</b> damage per attack <span class="muted">(illustrative)</span> · targets <span class="${met === draft.targets.length ? 'ok' : 'warn'}">${met}/${draft.targets.length}</span>`;
+  }
+
+  function trackerRow(name, n, icon, weaponCounts) {
+    const ranks = SKILL[name]?.ranks ?? [];
+    const steps = ranks.map((r) => r.pieces);
+    const max = Math.max(...steps, n);
+    const dots = Array.from({ length: max }, (_, i) => `<span class="${i < n ? 'on' : ''} ${i === 0 && weaponCounts ? 'weapon' : ''}" title="${i + 1} of ${max}"></span>`).join('');
+    const next = ranks.find((r) => n < r.pieces);
+    const lines = ranks.map((r) => {
+      if (n >= r.pieces) return `<span class="act">${r.name} active</span>`;
+      if (r === next) { const d = r.pieces - n; return `<span class="next">${d} more piece${d > 1 ? 's' : ''} for ${r.name}</span>`; }
+      return `<span class="far">${r.pieces} pc ${r.name}</span>`;
+    }).join('');
+    return `<div><div class="setrow"><img class="ico16" src="${ICO}skills/${icon}.png" alt=""><span class="nm">${name}</span><span class="steps">${dots}</span><span class="cnt">${n} of ${steps[steps.length - 1] ?? max}</span></div><div class="ranks">${lines}</div></div>`;
+  }
+
+  function renderTracker() {
+    const t = totals(draft);
+    const sets = Object.entries(t.sets).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const groups = Object.entries(t.groups).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    document.getElementById('tracker').innerHTML =
+      sets.map(([name, n]) => trackerRow(name, n, 'set', name === WEAPON.setBonus)).join('')
+      + groups.map(([name, n]) => trackerRow(name, n, 'group', name === WEAPON.group)).join('')
+      || '<p class="muted small">No set or group pieces yet.</p>';
+  }
+
+  function renderSheet() {
+    const box = document.getElementById('sheet');
+    box.innerHTML = sheetHtml(draft);
+    box.querySelectorAll('.skillrow:not(.target)').forEach((el) => el.remove());
+    // the tracker card already shows set and group pieces
+    const heads = box.querySelectorAll('h4');
+    let el = heads[2];
+    while (el) { const nx = el.nextElementSibling; el.remove(); el = nx; }
+    heads[0].innerHTML = 'Wanted skills';
+  }
+
+  function renderAll() { renderGrid(); renderLoadout(); renderTracker(); renderSheet(); }
+
+  document.getElementById('setgrid').addEventListener('click', (e) => {
+    const tile = e.target.closest('.pc[data-name]');
+    const all = e.target.closest('[data-all]');
+    const best = e.target.closest('[data-best]');
+    if (tile) {
+      const k = tile.dataset.kind;
+      draft.armor[k] = draft.armor[k]?.name === tile.dataset.name ? null : { name: tile.dataset.name, decos: [] };
+    } else if (all) {
+      for (const p of bySet[all.dataset.all] ?? []) draft.armor[p.piece] = { name: p.name, decos: [] };
+    } else if (best) {
+      const pick = [...(bySet[best.dataset.best] ?? [])].sort((a, b) => targetScore(b) - targetScore(a)).slice(0, 2);
+      for (const p of pick) draft.armor[p.piece] = { name: p.name, decos: [] };
+    } else return;
+    renderAll();
+  });
+  document.getElementById('loadout').addEventListener('click', (e) => {
+    const x = e.target.closest('[data-off]');
+    if (!x) return;
+    draft.armor[x.dataset.off] = null;
+    renderAll();
+  });
+  // mock.js toggles the pill class on document, after this listener; render once it has
+  document.getElementById('filters').addEventListener('click', (e) => { if (e.target.closest('.filter')) setTimeout(renderGrid); });
+
+  renderAll();
+</script>
+</body>
+</html>

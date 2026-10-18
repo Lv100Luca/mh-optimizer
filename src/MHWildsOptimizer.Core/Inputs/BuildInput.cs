@@ -74,8 +74,22 @@ public sealed record BuildInput
     /// <summary>The meal's attack this build is scored with; null: the weapon's.</summary>
     public int? MealAttack { get; init; }
 
+    /// <summary>
+    /// Target skills of this build on top of the request's (the weapon's): added, or the same skill at another level. They
+    /// steer "fill the rest" and the build's target checks, not the weapon's optimizer run. Empty: the weapon's targets only.
+    /// </summary>
+    public Dictionary<string, int> Targets { get; init; } = new();
+
     [JsonIgnore]
     public bool HasOwnConditions => Conditions.Count > 0 || Resonance is not null || Target is not null || MealAttack is not null;
+
+    /// <summary>The request's target skills with this build's own on top.</summary>
+    public Dictionary<string, int> TargetsWith(IReadOnlyDictionary<string, int> weapon)
+    {
+        var merged = new Dictionary<string, int>(weapon);
+        foreach (var (k, v) in Targets) merged[k] = v;
+        return merged;
+    }
 
     /// <summary>The conditions this build is scored under: <paramref name="weapon"/>'s with the build's overrides applied (the same object when it has none).</summary>
     public Conditions ConditionsFor(Conditions weapon)

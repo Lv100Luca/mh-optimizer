@@ -149,10 +149,27 @@
         }
     </div>
 
-    <Section Key="Equipment" Title="@(baseInput is not null ? $"Equipment · draft of {baseInput.Name}" : "Equipment")"
-             Hint="@(baseInput is not null ? $"{baseInput.Name} is on the left as it is; change pieces and decorations on the right. Each changed row says what that change alone is worth." : "Pick each piece and the decorations in its slots. Pieces with better transcended slots (rarity 5/6) can be marked as transcended.")">
-        <EquipmentEditor Build="current" Update="Update" Baseline="baseInput" BaselineName="@baseInput?.Name" Changes="@draftDiff?.Slots"
-                         Effect="@(baseInput is not null && baseBuild is not null ? SwapEffect(baseInput, baseBuild, current) : null)" />
+    <div class="draft-layout">
+    <div class="stack">
+    <Section Key="Equipment" Title="@(baseInput is not null ? $"Equipment · draft of {baseInput.Name}" : "Equipment")" Collapsible="false"
+             Hint="@(baseInput is not null ? $"{baseInput.Name} is on the left as it is; change pieces and decorations on the right. Each changed row says what that change alone is worth." : "Click a tile to pick for it, a slot square to pick a jewel for it. Keep what fill the rest must not replace.")">
+        <Actions>
+            @if (baseInput is null)
+            {
+                var kept = KeptOf(current);
+                <span class="muted small">@(kept.Count == 0 ? "nothing kept" : $"{Fmt.Plural(kept.Count, "piece")} kept")</span>
+            }
+        </Actions>
+        <ChildContent>
+        @if (baseInput is not null)
+        {
+            <EquipmentEditor Build="current" Update="Update" Baseline="baseInput" BaselineName="@baseInput.Name" Changes="@draftDiff?.Slots"
+                             Effect="@(baseBuild is not null ? SwapEffect(baseInput, baseBuild, current) : null)" />
+        }
+        else
+        {
+            <LoadoutBoard Build="current" Update="Update" Selection="_selection" SelectionChanged="s => _selection = s" Kept="KeptOf(current)" OnToggleKeep="slot => ToggleKeep(current, slot)" />
+        }
         @if (baseEv is not null && ev is not null)
         {
             var lost = ev.Targets.Where(t => !t.Met && baseEv.Targets.Any(x => x.Skill == t.Skill && x.Met)).ToList();
@@ -181,7 +198,22 @@
         {
             <p class="muted small">Your own random talismans come from the Talismans tab; craftable charms are always listed.</p>
         }
+        </ChildContent>
     </Section>
+
+    @if (baseInput is null && _selection is { } sel)
+    {
+        <MudOverlay Visible="true" DarkBackground="true" LockScroll="true" ZIndex="1200" OnClick="() => _selection = null" />
+        <div class="palette-modal" role="dialog" aria-label="@($"Palette for {BoardSlots.Label(sel.Slot)}")">
+            <PaletteDrawer Build="current" Update="Update" Selection="sel" SelectionChanged="s => _selection = s" SkillFilter="@_skillFilter" SkillFilterChanged="f => _skillFilter = f"
+                           Want="WantOf(current)" Have="HaveOf(b)" OnClose="() => _selection = null" />
+        </div>
+    }
+
+    @if (App.Fill is { Status: not FillStatus.Idle } fill && fill.Weapon == App.ActiveKey && fill.ForBuild == current.Name)
+    {
+        @Completions(current, b, fill)
+    }
 
     @if (b is not null)
     {
@@ -193,7 +225,7 @@
         var weaponTarget = weaponConditions.Target ?? new Target();
         var st = b.StatsRequested;
         var s = b.Summary;
-        <Section Title="Conditions and stats of this build"
+        <Section Title="Conditions and stats of this build" DefaultCollapsed="true"
                  Hint="What is active for this build. Unset toggles follow the weapon's conditions (Conditions tab), so the optimizer's search is not affected: set them to score the build as you play it, or to match the game's status screen and training dummy. Only conditions whose skills this build carries are listed.">
             <Actions>
                 <div class="btn-row">
@@ -295,33 +327,13 @@
         </Section>
     }
 
-    @if (ev is { Targets.Count: > 0 })
-    {
-        <Section Title="Targets" Hint="The requirements of this configuration, checked against this build (the optimizer only returns builds that meet all of them).">
-            <div class="chip-row">
-                @foreach (var t in ev.Targets)
-                {
-                    var bonus = t.Kind is SkillKind.Set or SkillKind.Group;
-                    <SkillHover Name="@t.Skill" Class="@("chip tcheck " + (t.Met ? "met" : "miss"))">
-                        <SkillIcon Name="@t.Skill" Size="18" />
-                        <span>@(t.Met ? "✓" : "✗") @t.Label</span>
-                        @if (!t.Met)
-                        {
-                            <span class="muted small">has @t.Actual@(bonus ? $" piece{(t.Actual == 1 ? "" : "s")}" : "")</span>
-                        }
-                    </SkillHover>
-                }
-            </div>
-        </Section>
-    }
-
     @{
         var upgradeFor = baseInput ?? current;
         var upgradeBuild = baseInput is not null ? baseBuild : b;
     }
     @if (App.Run.Result is { Pairs.Count: > 0 } && upgradeBuild is not null)
     {
-        <Section Key="upgrades" Title="@($"One-piece upgrades for {upgradeFor.Name}")"
+        <Section Key="upgrades" Title="@($"One-piece upgrades for {upgradeFor.Name}")" DefaultCollapsed="true"
                  Hint="@($"Each line swaps one slot of {upgradeFor.Name} for that slot of a build of the last run and keeps the rest. Gains are each on their own; together they can add up to more or less.")">
             <Actions>
                 <MudButton Size="Size.Small" Variant="Variant.Outlined" Disabled="_finding" OnClick="() => FindUpgrades(upgradeFor, upgradeBuild)">
@@ -391,7 +403,7 @@
         // bars compare attacks within their group (a sequence deals far more than one move)
         var groupMax = breakdown.GroupBy(x => x.Group).ToDictionary(g => g.Key, g => g.Max(x => x.DamagePerExecution));
         var refById = refBreakdown?.ToDictionary(x => x.Id) ?? [];
-        <Section Title="Damage per attack"
+        <Section Title="Damage per attack" DefaultCollapsed="true"
                  Hint="This build on every move, combo and example sequence, under the current conditions and target. The build is scored on the highlighted one (Conditions tab). Click a row for its hits.">
             <Actions>
                 @if (_expanded.Count > 0)
@@ -472,7 +484,7 @@
     }
 
     <div id="builds-compare"></div>
-    <Section Title="Compare"
+    <Section Title="Compare" DefaultCollapsed="true"
              Hint="@(reference?.Input is not null ? "The optimizer build is scored again under this build's conditions, so both sides use the same assumptions." : "Differences are this build minus the other one, each under its own conditions; green means this build is ahead.")">
         <Actions>
             @if (references.Count > 0)
@@ -510,8 +522,34 @@
 
     @if (b is not null)
     {
-        <BuildCard Build="b" Title="@(current.Name.Length > 0 ? current.Name : "This build")" Compact="true" />
+        <Section Key="buildcard" Title="Build card" Hint="The build as the Results tab shows it: stats, skill sources and the text report." DefaultCollapsed="true">
+            <BuildCard Build="b" Title="@(current.Name.Length > 0 ? current.Name : "This build")" Compact="true" />
+        </Section>
     }
+    </div>
+
+    <aside class="side">
+        <section class="card sheet-card">
+            <header class="card-head"><div class="card-title"><h2>Skill sheet</h2></div></header>
+            <div class="card-body">
+                <SkillSheet Build="current" Evaluated="ev" Update="Update" Filter="@_skillFilter" FilterChanged="f => _skillFilter = f" />
+            </div>
+            <div class="sheet-foot">
+                @if (App.Fill is { Status: FillStatus.Running } running && running.Weapon == App.ActiveKey)
+                {
+                    <div class="progress"><span class="spinner"></span> @(running.Stage ?? "filling…")</div>
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="App.CancelFill">Cancel</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(App.Resolved is not { Weapon: not null })" OnClick="() => App.FillRestAsync(current, KeptOf(current))"
+                               title="Runs the optimizer with the kept pieces as the only allowed ones of their kind and this build's targets and conditions">Fill the rest</MudButton>
+                    <span class="muted small">@FillNote(current)</span>
+                }
+            </div>
+        </section>
+    </aside>
+    </div>
 </div>
 
 @code {
@@ -685,6 +723,142 @@
     /// <summary>"Lord's Soul (Guts)" -> "Lord's Soul".</summary>
     private static readonly System.Text.RegularExpressions.Regex SkillSuffix = new(@"\s*\(.*\)$");
 
+    // ---------------- the board, the palette and fill the rest
+
+    private BoardSelection? _selection;
+    private string? _skillFilter;
+    // what fill the rest must leave alone, per weapon and build; a drafting aid, not saved with the build
+    private static readonly Dictionary<string, HashSet<BuildSlot>> _kept = new();
+
+    private string KeptKey(string name) => $"{App.ActiveKey}\n{name}";
+
+    private HashSet<BuildSlot> KeptOf(BuildInput b) => _kept.TryGetValue(KeptKey(b.Name), out var k) ? k : new HashSet<BuildSlot>();
+
+    private void ToggleKeep(BuildInput b, BuildSlot slot)
+    {
+        var set = _kept.TryGetValue(KeptKey(b.Name), out var k) ? k : _kept[KeptKey(b.Name)] = new HashSet<BuildSlot>();
+        if (!set.Remove(slot)) set.Add(slot);
+    }
+
+    /// <summary>Wanted skill levels: the weapon's targets with the build's own on top (set bonuses and group skills are not skill grants and are left out).</summary>
+    private Dictionary<string, int> WantOf(BuildInput b) =>
+        b.TargetsWith(App.Request!.TargetSkills).Where(kv => Cat.SkillsByName.GetValueOrDefault(kv.Key)?.Kind is SkillKind.Armor or SkillKind.Weapon).ToDictionary(kv => kv.Key, kv => kv.Value);
+
+    private static Dictionary<string, int> HaveOf(BuildDto? b) => (b?.Skills ?? []).ToDictionary(x => x.Skill, x => x.Level);
+
+    private string FillNote(BuildInput b)
+    {
+        var kept = KeptOf(b);
+        var open = BuildDiff.AllSlots.Where(x => x != BuildSlot.Weapon && !kept.Contains(x)).Select(x => BoardSlots.Label(x).ToLowerInvariant()).ToList();
+        var targets = b.TargetsWith(App.Request!.TargetSkills).Count;
+        return open.Count == 0
+            ? $"every piece kept: the optimizer fills the jewels toward {Fmt.Plural(targets, "target")}"
+            : $"fills {string.Join(", ", open)} and every jewel toward {Fmt.Plural(targets, "target")}";
+    }
+
+    /// <summary>The fill's completions as cards: kept rows muted, new rows plain, "Take it" puts one into the build.</summary>
+    private RenderFragment Completions(BuildInput current, BuildDto? b, FillState fill) => __builder =>
+    {
+        <Section Title="Completions" Collapsible="false" Class="completions"
+                 Hint="@(fill.Status switch { FillStatus.Running => fill.Stage ?? "The optimizer is filling the open slots…", FillStatus.Error => "The fill failed.", FillStatus.Cancelled => "The fill was cancelled.", _ => $"The optimizer filled the open pieces and every jewel toward this build's targets, with {(fill.Kept.Count == 0 ? "nothing" : Fmt.Plural(fill.Kept.Count, "piece"))} kept. {Fmt.N(fill.Seconds, 1)} s." })">
+            <Actions>
+                @if (fill.Status == FillStatus.Running)
+                {
+                    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="App.CancelFill">Cancel</MudButton>
+                }
+                else
+                {
+                    <MudButton Size="Size.Small" Variant="Variant.Text" OnClick="App.DismissFill">Dismiss</MudButton>
+                }
+            </Actions>
+            <ChildContent>
+                @if (fill.Status == FillStatus.Running)
+                {
+                    <div class="progress"><span class="spinner"></span> @(fill.Stage ?? "filling…")</div>
+                }
+                else if (fill.Status == FillStatus.Error)
+                {
+                    <Alert Kind="error">@fill.Error</Alert>
+                }
+                else if (fill.Completions.Count == 0 && fill.Status == FillStatus.Done)
+                {
+                    <p class="muted">No build meets every target with the kept pieces. Drop a target, or keep less.</p>
+                }
+                else
+                {
+                    <div class="resultstrip">
+                        @foreach (var c in fill.Completions)
+                        {
+                            var (value, against, digits) = b is not null ? BuildDamage.Compare(c, b) : (BuildDamage.Of(c) ?? c.Score, 0d, 0);
+                            var met = TargetsMet(current, c);
+                            <div @key="c.Rank" class="rcard @(c.Rank == 1 ? "best" : "")">
+                                <div class="rhead">
+                                    <span class="total">@BuildDamage.Text(c)</span>
+                                    @if (b is not null) { <Delta Value="@(value - against)" Digits="digits" /> }
+                                </div>
+                                @CompletionLine(BuildSlot.Weapon, c.Weapon.Label, c.Weapon.Decorations, SlotStrip.Icon(BuildSlot.Weapon, App.WeaponKind), true)
+                                @foreach (var kind in BuildHelpers.ArmorKinds)
+                                {
+                                    var slot = BuildDiff.ArmorSlots.First(x => x.Value == kind).Key;
+                                    var a = c.Armor.FirstOrDefault(x => x.Kind == kind);
+                                    @CompletionLine(slot, a is null ? "nothing" : a.Name + (a.Transcended ? " (T)" : ""), a?.Decorations ?? [], a is null ? GameIcons.ArmorBase(kind) : GameIcons.Armor(kind, a.Rarity), fill.Kept.Contains(slot))
+                                }
+                                @CompletionLine(BuildSlot.Talisman, c.Talisman?.Name ?? "no talisman", c.Talisman?.Decorations ?? [], GameIcons.Talisman(c.Talisman?.Rarity ?? 0), fill.Kept.Contains(BuildSlot.Talisman))
+                                <div class="rtargets @(met.Met == met.Total ? "ok" : "warn")">targets @met.Met/@met.Total@(met.Short is { } sh ? $" · {sh}" : "")</div>
+                                <div class="rfoot">
+                                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => TakeCompletion(current, c)" title="This build takes the completion's pieces and jewels">Take it</MudButton>
+                                    <MudButton Size="Size.Small" Variant="Variant.Outlined" OnClick="() => KeepCompletion(current, c)" title="A draft of this build with the completion's equipment">Keep as draft</MudButton>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <p class="muted small">Kept pieces stayed; their jewels were chosen again with the rest. Damage under this build's conditions.</p>
+                }
+            </ChildContent>
+        </Section>
+    };
+
+    private RenderFragment CompletionLine(BuildSlot slot, string name, IReadOnlyList<DecoDto?> decos, string icon, bool kept) => __builder =>
+    {
+        <div class="rline @(kept ? "kept" : "new")" title="@BoardSlots.Label(slot)">
+            <img src="@icon" alt="" />
+            <span class="pn">@name</span>
+            <span class="equipview-decos">
+                @foreach (var d in decos.Where(d => d is not null))
+                {
+                    <DecoIcon Deco="d" Size="16" Card="false" />
+                }
+            </span>
+        </div>
+    };
+
+    /// <summary>How many of the build's targets (the weapon's and its own) a completion meets, and the first one it misses.</summary>
+    private (int Met, int Total, string? Short) TargetsMet(BuildInput current, BuildDto c)
+    {
+        var scored = App.Score(App.Request!, BuildHelpers.FromBuild(c, c.Weapon.Label) with { Targets = current.Targets, Conditions = current.Conditions, Resonance = current.Resonance, Target = current.Target, MealAttack = current.MealAttack });
+        var targets = scored?.Targets ?? [];
+        var missed = targets.FirstOrDefault(t => !t.Met);
+        return (targets.Count(t => t.Met), targets.Count, missed is null ? null : $"{missed.Label} has {missed.Actual}");
+    }
+
+    private void TakeCompletion(BuildInput current, BuildDto c)
+    {
+        Update(x => BuildHelpers.FromBuild(c, x.Name) with
+        {
+            Picked = x.Picked, DraftOf = x.DraftOf, Targets = x.Targets,
+            Conditions = x.Conditions, Resonance = x.Resonance, Target = x.Target, MealAttack = x.MealAttack,
+        });
+        App.DismissFill();
+        App.Toast($"{current.Name} took the completion");
+    }
+
+    private void KeepCompletion(BuildInput current, BuildDto c) =>
+        AddNew(BuildHelpers.FromBuild(c, BuildHelpers.UniqueName($"{current.Name} (fill)", Names)) with
+        {
+            DraftOf = current.DraftOf ?? current.Name, Targets = new(current.Targets),
+            Conditions = new(current.Conditions), Resonance = current.Resonance, Target = current.Target, MealAttack = current.MealAttack,
+        });
+
     private void Update(Func<BuildInput, BuildInput> fn)
     {
         var index = Math.Max(0, Math.Min(App.BuildIndex, App.Builds.Count - 1));
@@ -847,6 +1021,7 @@
         // drafts of the build follow the new name, and so do the comparisons that point at it
         App.SetBuilds(list => list.Select((b, i) => i == index ? b with { Name = next } : b.DraftOf == old ? b with { DraftOf = next } : b).ToList());
         App.BuildRenamed(old, next);
+        if (_kept.Remove(KeptKey(old), out var kept)) _kept[KeptKey(next)] = kept;
     }
 
     private void AddNew(BuildInput build)

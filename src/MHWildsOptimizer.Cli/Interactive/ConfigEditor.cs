@@ -563,19 +563,20 @@ public sealed class ConfigEditor
         var primary = pool is null
             ? _data.Skills.Where(s => s.Kind == SkillKind.Weapon).Select(s => s.Name).OrderBy(n => n).ToList()
             : pool.Skills.Where(kv => kv.Value.Group == "primary").Select(kv => kv.Key).OrderBy(n => n).ToList();
+        // skills 2 and 3 roll from both lot tables (an R8 row is [2, 1, 8] points: weapon, weapon, armor)
         var secondary = pool is null
-            ? _data.Skills.Where(s => s.Kind == SkillKind.Armor).Select(s => s.Name).OrderBy(n => n).ToList()
-            : pool.Skills.Where(kv => kv.Value.Group == "secondary").Select(kv => kv.Key).OrderBy(n => n).ToList();
+            ? _data.Skills.Where(s => s.Kind is SkillKind.Weapon or SkillKind.Armor).Select(s => s.Name).OrderBy(n => n).ToList()
+            : pool.Skills.Keys.OrderBy(n => n).ToList();
 
         var existingPrimary = existing?.Skills.Keys.FirstOrDefault(primary.Contains);
-        var existingSecondary = existing?.Skills.Keys.Where(secondary.Contains).ToList() ?? [];
+        var existingSecondary = existing?.Skills.Keys.Where(k => k != existingPrimary && secondary.Contains(k)).ToList() ?? [];
 
         var p = Pick("Skill 1 (weapon-kind skill; the first line on the talisman)", [None, .. primary], existingPrimary ?? None);
         if (p != None) skills[p] = AskLevel(p, existing?.Skills.GetValueOrDefault(p));
         for (var i = 0; i < 2; i++)
         {
             var def = i < existingSecondary.Count ? existingSecondary[i] : None;
-            var s = Pick($"Skill {i + 2} (armor-kind skill, or none)", [None, .. secondary.Where(n => !skills.ContainsKey(n))], def);
+            var s = Pick($"Skill {i + 2} (usually an armor skill, or none)", [None, .. secondary.Where(n => !skills.ContainsKey(n))], def);
             if (s == None) break;
             skills[s] = AskLevel(s, existing?.Skills.GetValueOrDefault(s));
         }
