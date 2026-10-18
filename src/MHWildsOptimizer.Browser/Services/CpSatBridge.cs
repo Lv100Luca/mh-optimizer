@@ -81,6 +81,7 @@ public sealed class CpSatBridge(IJSRuntime js) : ICpSatBackend
         var options = new Dictionary<string, object> { ["numWorkers"] = p.Workers, ["maxTimeInSeconds"] = p.TimeLimitSeconds };
         if (p.Subsolvers.Count > 0) options["subsolvers"] = p.Subsolvers;
         if (p.LinearizationLevel is { } level) options["linearizationLevel"] = level;
+        if (p.StopAtFirst) options["stopAfterFirstSolution"] = true;
         return options;
     }
 }

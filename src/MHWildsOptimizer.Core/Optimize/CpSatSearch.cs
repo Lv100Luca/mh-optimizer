@@ -195,9 +195,10 @@ internal sealed class CpSatSearch
         if (_model is null) await BuildAsync();
         var (model, vars) = (_model!, _vars!);
         if (SplitLanes > 1 && Solves == 0 && _cutoff is null && await SplitTopAsync(topN)) return Finish(topN);
-        var maxSolves = Solves + topN - _builds.Count + 3;
+        // tie searches do not count: the limit guards against builds that cannot be laid out
+        var maxSolves = Solves - _tieSolves + topN - _builds.Count + 3;
 
-        while (_builds.Count < topN && Solves < maxSolves)
+        while (_builds.Count < topN && Solves - _tieSolves < maxSolves)
         {
             // the best build is proved; the next ones only get the rank time limit
             var ranking = _builds.Count > 0 && RankTimeLimitSeconds is { } rank && rank < _parameters.TimeLimitSeconds;
@@ -215,8 +216,10 @@ internal sealed class CpSatSearch
             var solveSw = Stopwatch.StartNew();
             _split = null;
             if (!trying && _incumbent is null && SplitLanes > 1) _incumbent = FromPool();
-            var response = trying ? await Backend.SolveAsync(model, parameters, Lane, _ct) : await SolveSplitAsync(model, vars, parameters, _incumbent, number);
-            _incumbent = null;
+            // a build that ties the last proved one is the next best too, and far quicker to find than to prove
+            var tie = !trying && FindTies && _lastProved is { } last ? await TieAsync(model, vars, last) : null;
+            var response = tie ?? (trying ? await Backend.SolveAsync(model, parameters, Lane, _ct) : await SolveSplitAsync(model, vars, parameters, _incumbent, number));
+            if (tie is null) _incumbent = null;
             SolveTime += solveSw.Elapsed;
             var status = response.Status;
             _ct.ThrowIfCancellationRequested();
@@ -239,6 +242,8 @@ internal sealed class CpSatSearch
                     _progress?.Report(_builds.Count == 0 ? "  no build reaches the targets" : $"  no further build reaches the targets ({Plural(_builds.Count, "build")} in all)");
                 break;
             }
+            if (tie is not null) ranking = false;
+            _lastProved = status == CpSolverStatus.Optimal ? response.Value(vars.Score) : null;
             if (status != CpSolverStatus.Optimal && !ranking) ProvedOptimal = false;
             _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : ranking ? "ranked" : "time limit");
 
@@ -246,9 +251,41 @@ internal sealed class CpSatSearch
             var bound = response.BestObjectiveBound / ObjectiveScale / Micro;
             var proof = status == CpSolverStatus.Optimal ? new SolveProof(ProofKind.Proved, 0, parameters.TimeLimitSeconds)
                 : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
-            Record(response, proof, number, bound, $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
+            Record(response, proof, number, bound, tie is not null ? $" (ties the last one, found in {solveSw.Elapsed.TotalSeconds:0.0} s)" : $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
         }
         return Finish(topN);
+    }
+
+    /// <summary>
+    /// Before proving the next build, look briefly for one that scores as much as the last proved one (the same skills on other
+    /// armor): it is the best left, so proved too. Ties are common (5 builds of one score) and each cost a full proof.
+    /// <c>MHW_TIES=0</c> turns it off.
+    /// </summary>
+    public bool FindTies { get; init; } = Environment.GetEnvironmentVariable("MHW_TIES") != "0";
+    /// <summary>Time limit of the search for a tie; finding one takes about 0.5-1.2 s, a failed search costs this much.</summary>
+    public const double TieSolveSeconds = 1.5;
+    /// <summary>The model score of the last build proved in the loop of single solves; null after one that was not proved.</summary>
+    private long? _lastProved;
+    private int _tieSolves;
+
+    /// <summary>A build not found yet that scores at least <paramref name="score"/> (model micro points); null if none turns up in time.</summary>
+    private async Task<CpSolverResponse?> TieAsync(CpModel model, Vars vars, long score)
+    {
+        var bar = model.Add(vars.Score >= score);
+        try
+        {
+            var r = await Backend.SolveAsync(model, _parameters with { TimeLimitSeconds = TieSolveSeconds, StopAtFirst = true }, Lane, _ct);
+            Solves++;
+            _tieSolves++;
+            _ct.ThrowIfCancellationRequested();
+            if (r.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Optimal)) return null;
+            // nothing left scores more than the last proved build: this one is proved, decorations included
+            var tie = r.Clone();
+            tie.Status = CpSolverStatus.Optimal;
+            tie.BestObjectiveBound = tie.ObjectiveValue;
+            return tie;
+        }
+        finally { bar.Proto.ClearConstraint(); }
     }
 
     private IReadOnlyList<RankedBuild> Finish(int topN)
@@ -343,6 +380,7 @@ internal sealed class CpSatSearch
             {
                 _statuses.Add("optimal");
                 Record(seed, new SolveProof(ProofKind.Proved, 0, limit), 1, 0, $" in {sw.Elapsed.TotalSeconds:0.0} s");
+                _lastProved = seed.Value(vars.Score);
                 return false;
             }
             _statuses.Add(seed.Status.ToString().ToLowerInvariant());

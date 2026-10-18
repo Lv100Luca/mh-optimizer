@@ -9,7 +9,8 @@ namespace MHWildsOptimizer.Core.Optimize;
 /// 8 workers. Naming them makes 4 workers as fast as 16 default ones, and one worker with linearization level 2 about half
 /// as fast (measured on saved configurations, see spikes/WasmSpeedTest).
 /// </summary>
-public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IReadOnlyList<string> Subsolvers, int? LinearizationLevel = null)
+/// <param name="StopAtFirst">Stop at the first solution (a feasibility question, e.g. a build that ties another).</param>
+public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IReadOnlyList<string> Subsolvers, int? LinearizationLevel = null, bool StopAtFirst = false)
 {
     /// <summary>More workers per solve do not help; spare threads solve skill pair classes side by side instead.</summary>
     public const int MaxWorkersPerSolve = 4;
@@ -49,6 +50,7 @@ public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IRead
             $"max_time_in_seconds:{TimeLimitSeconds.ToString(CultureInfo.InvariantCulture)}",
         };
         if (LinearizationLevel is { } level) parts.Add($"linearization_level:{level}");
+        if (StopAtFirst) parts.Add("stop_after_first_solution:true");
         parts.AddRange(Subsolvers.Select(s => $"subsolvers:\"{s}\""));
         return string.Join(", ", parts);
     }
