@@ -963,29 +963,68 @@ internal sealed class CpSatSearch
         if (SplitLanes <= 1) return await Backend.SolveAsync(model, parameters, Lane, _ct);
         var sw = Stopwatch.StartNew();
         double Left() => parameters.TimeLimitSeconds - sw.Elapsed.TotalSeconds;
-        CpSolverResponse? quick = null;
-        if (incumbent is null && SplitAfterSeconds > 0)
-        {
-            quick = await Backend.SolveAsync(model, parameters with { TimeLimitSeconds = Math.Min(SplitAfterSeconds, parameters.TimeLimitSeconds / 4) }, Lane, _ct);
-            _ct.ThrowIfCancellationRequested();
-            if (quick.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown)) return quick;
-            if (quick.Status == CpSolverStatus.Feasible) incumbent = quick;
-        }
-
         var (split, parts) = Parts(vars);
-        var beat = incumbent is null ? null : ObjectiveAtLeast(model.Model.Objective, incumbent.ObjectiveValue + 1);
 
-        Stage?.Set(2, $"build {number}: proving it in {parts.Count} parts on {SplitLanes} lanes");
+        // a race: the whole model on the first lane from the start (on many models a single solve proves a build in a few
+        // seconds where the parts take longer), the parts on the other lanes, each beating the best build known (a short solve
+        // on the second lane finds one first when none is known); the first to finish wins, the other is stopped
+        Stage?.Set(2, $"build {number}: a whole search beside {parts.Count} parts on {SplitLanes - 1} lanes");
+        using var race = CancellationTokenSource.CreateLinkedTokenSource(_ct);
         var results = new CpSolverResponse?[parts.Count];
         var done = 0;
-        await OnLanesAsync(parts.Count, 0, SplitLanes, async (i, lane) =>
+        CpSolverResponse? quick = null;
+        async Task<CpSolverResponse?> WholeAsync()
         {
-            if (Left() < 0.05) return;
-            var part = PartModel(model, split.Select((s, k) => (s.Index, parts[i][k])), beat is null ? [] : [beat]);
-            await Pacer.PauseAsync();
-            results[i] = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, _ct);
-            Stage?.Set(2, $"build {number}: proving it in {parts.Count} parts on {SplitLanes} lanes ({Interlocked.Increment(ref done)} done)");
-        });
+            try { return await Backend.SolveAsync(model, ParametersOn(Lane, Math.Max(0.05, Left())), Lane, race.Token); }
+            catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { return null; }
+        }
+        async Task PartsAsync()
+        {
+            try
+            {
+                if (incumbent is null && SplitAfterSeconds > 0)
+                {
+                    quick = await Backend.SolveAsync(model, ParametersOn(Lane + 1, Math.Min(SplitAfterSeconds, parameters.TimeLimitSeconds / 4)), Lane + 1, race.Token);
+                    if (quick.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown)) return;
+                    if (quick.Status == CpSolverStatus.Feasible) incumbent = quick;
+                }
+                var beat = incumbent is null ? null : ObjectiveAtLeast(model.Model.Objective, incumbent.ObjectiveValue + 1);
+                await OnLanesAsync(parts.Count, 1, SplitLanes - 1, async (i, lane) =>
+                {
+                    if (Left() < 0.05) return;
+                    var part = PartModel(model, split.Select((s, k) => (s.Index, parts[i][k])), beat is null ? [] : [beat]);
+                    await Pacer.PauseAsync();
+                    results[i] = await Backend.SolveAsync(part, ParametersOn(lane, Math.Max(0.05, Left())), lane, race.Token);
+                    Stage?.Set(2, $"build {number}: a whole search beside {parts.Count} parts on {SplitLanes - 1} lanes ({Interlocked.Increment(ref done)} done)");
+                }, race.Token);
+            }
+            catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { }
+        }
+        var wholeTask = WholeAsync();
+        var partsTask = PartsAsync();
+        var first = await Task.WhenAny(wholeTask, partsTask);
+        _ct.ThrowIfCancellationRequested();
+        if (first == wholeTask && wholeTask.Result?.Status is CpSolverStatus.Optimal or CpSolverStatus.Infeasible)
+        {
+            race.Cancel();
+            await partsTask;
+            _ct.ThrowIfCancellationRequested();
+            _pool.AddRange(results.Where(r => r?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible).Select(r => r!));
+            LastSplit = _split = $"whole search first, {done} of {parts.Count} parts done";
+            return wholeTask.Result!;
+        }
+        await partsTask;
+        if (quick?.Status is CpSolverStatus.Optimal or CpSolverStatus.Infeasible)
+        {
+            // the short solve on the second lane settled it
+            race.Cancel();
+            await wholeTask;
+            _ct.ThrowIfCancellationRequested();
+            LastSplit = _split = "short search first";
+            return quick;
+        }
+        race.Cancel();
+        var wholeResult = await wholeTask;
         _ct.ThrowIfCancellationRequested();
 
         var best = incumbent;
@@ -1002,9 +1041,15 @@ internal sealed class CpSatSearch
                 bound = Math.Max(bound, r?.Status is CpSolverStatus.Feasible ? r.BestObjectiveBound : (quick ?? incumbent)?.BestObjectiveBound ?? double.PositiveInfinity);
             }
         }
+        // the whole search may have found a better build, and its bound holds for every part
+        if (wholeResult?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible)
+        {
+            if (best is null || wholeResult.ObjectiveValue > best.ObjectiveValue) best = wholeResult;
+            if (open > 0) bound = Math.Min(bound, wholeResult.BestObjectiveBound);
+        }
         if (incumbent is not null) _pool.Add(incumbent);
         _pool.AddRange(results.Where(r => r?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible).Select(r => r!));
-        LastSplit = _split = open == 0 ? $"{parts.Count} parts on {SplitLanes} lanes" : $"{parts.Count} parts on {SplitLanes} lanes, {open} not finished";
+        LastSplit = _split = open == 0 ? $"{parts.Count} parts on {SplitLanes - 1} lanes" : $"{parts.Count} parts on {SplitLanes - 1} lanes, {open} not finished";
         // no build anywhere: every part infeasible is a proof that there is none
         if (best is null) return new CpSolverResponse { Status = open == 0 ? CpSolverStatus.Infeasible : CpSolverStatus.Unknown };
         var response = best.Clone();
