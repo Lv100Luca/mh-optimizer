@@ -12,6 +12,7 @@ using Spectre.Console;
 //   MHWildsOptimizer.Cli [edit [request.json]]   - interactive editor for a request (default command)
 //   MHWildsOptimizer.Cli request <request.json>  - load + validate a request and show the resolved inputs
 //   MHWildsOptimizer.Cli example                 - evaluate a hard-coded example loadout
+//   MHWildsOptimizer.Cli bench [scenarios]       - run the fixed benchmarks in bench/scenarios (see Bench.cs; bench compare a.json b.json)
 //   (--data <dir> overrides the dataset directory, --inputs <dir> the configuration directory)
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -53,6 +54,8 @@ switch (command)
     case "example":
         RunExample();
         return 0;
+    case "bench":
+        return MHWildsOptimizer.Cli.Bench.Run(data, argList.Skip(1).ToList(), Directory.GetParent(dataDir)!.FullName);
     default:
         Console.Error.WriteLine($"unknown command '{command}'");
         return 2;

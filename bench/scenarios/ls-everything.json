@@ -1,0 +1,50 @@
+{
+  "weapon": {
+    "spec": {
+      "type": "long-sword",
+      "focus": "attack",
+      "element": "dragon",
+      "infused": true,
+      "attack_parts": 3,
+      "reinforcements": [
+        "attack EX",
+        "attack EX",
+        "attack III",
+        "affinity EX",
+        "affinity EX"
+      ]
+    }
+  },
+  "weapon_optimize": {
+    "focus": true,
+    "element": true,
+    "attack_parts": true,
+    "reinforcements": true,
+    "max_tier": "EX"
+  },
+  "skill_pair": {
+    "mode": "optimize",
+    "top_n": 3
+  },
+  "target_skills": {},
+  "conditions": {
+    "counterstrike_active": true,
+    "full_health": false,
+    "red_health": false
+  },
+  "talismans": {
+    "include_craftable": true,
+    "include_all_possible": false
+  },
+  "options": {
+    "allow_transcendence": true,
+    "top_n": 5,
+    "min_rarity": 5,
+    "exclude_sets": [],
+    "require_weapon_core_skills": true,
+    "max_threads": 8,
+    "engine": "cp_sat",
+    "cp_sat_time_limit_seconds": 120,
+    "cp_sat_rank_time_limit_seconds": 10
+  }
+}
