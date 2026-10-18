@@ -139,7 +139,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         var search = new CpSatSearch(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
             Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, null, CancellationToken.None)
         {
-            SplitLanes = 4, SplitAfterSeconds = 0,
+            SplitLanes = 4, SplitAfterSeconds = 0, TopN = CpSatSearch.TopNSearch.EachProved, // ties are found without a split: this checks the split proofs
         };
         var builds = search.Run();
         Assert.Contains("parts on 4 lanes", search.LastSplit ?? "");

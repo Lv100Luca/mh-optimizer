@@ -166,9 +166,14 @@ internal sealed class CpSatSearch
     {
         if (_model is null) await BuildAsync();
         var (model, vars) = (_model!, _vars!);
-        var maxSolves = Solves + topN - _builds.Count + 3;
+        // tie searches do not count: a solve limit guards against builds that cannot be laid out
+        // with the bar search the loop below only proves build 1; the bar search finds the others
+        var byBar = TopN == TopNSearch.Bar && topN > 1;
+        var infeasible = false;
 
-        while (_builds.Count < topN && Solves < maxSolves)
+        var maxSolves = Solves - _tieSolves + topN - _builds.Count + 3;
+
+        while (_builds.Count < (byBar ? 1 : topN) && Solves - _tieSolves < maxSolves)
         {
             // the best build is proved; the next ones only get the rank time limit
             var ranking = _builds.Count > 0 && RankTimeLimitSeconds is { } rank && rank < _parameters.TimeLimitSeconds;
@@ -186,8 +191,10 @@ internal sealed class CpSatSearch
             var solveSw = Stopwatch.StartNew();
             _split = null;
             if (!trying && _incumbent is null && SplitLanes > 1) _incumbent = FromPool();
-            var response = trying ? await Backend.SolveAsync(model, parameters, Lane, _ct) : await SolveSplitAsync(model, vars, parameters, _incumbent, number);
-            _incumbent = null;
+            // a build that ties the last proved one is the next best too, and quick to find
+            var tie = !trying && TopN == TopNSearch.Ties && _lastProved && _modelScores.Count > 0 ? await TieAsync(model, vars) : null;
+            var response = tie ?? (trying ? await Backend.SolveAsync(model, parameters, Lane, _ct) : await SolveSplitAsync(model, vars, parameters, _incumbent, number));
+            if (tie is null) _incumbent = null;
             SolveTime += solveSw.Elapsed;
             var status = response.Status;
             _ct.ThrowIfCancellationRequested();
@@ -208,8 +215,11 @@ internal sealed class CpSatSearch
                 _statuses.Add(status.ToString().ToLowerInvariant());
                 if (status == CpSolverStatus.Infeasible)
                     _progress?.Report(_builds.Count == 0 ? "  no build reaches the targets" : $"  no further build reaches the targets ({Plural(_builds.Count, "build")} in all)");
+                infeasible = true;
                 break;
             }
+            if (tie is not null) ranking = false;
+            _lastProved = status == CpSolverStatus.Optimal;
             if (status != CpSolverStatus.Optimal && !ranking) ProvedOptimal = false;
             _statuses.Add(status == CpSolverStatus.Optimal ? "optimal" : ranking ? "ranked" : "time limit");
 
@@ -226,7 +236,7 @@ internal sealed class CpSatSearch
                 : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
             _progress?.Report($"  build {number}: {Damage(objective)}, " + proof.Kind switch
             {
-                ProofKind.Proved => number == 1 ? "proved the best" : "proved the next best",
+                ProofKind.Proved => number == 1 ? "proved the best" : tie is not null ? "ties the last one" : "proved the next best",
                 ProofKind.Ranked => $"ranked, not proved within the {OptimizerText.Seconds(parameters.TimeLimitSeconds)} limit for builds 2 and on",
                 _ => $"best found when the {OptimizerText.Seconds(parameters.TimeLimitSeconds)} time limit ran out (up to {Damage(bound)} possible)",
             } + $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
@@ -244,10 +254,171 @@ internal sealed class CpSatSearch
             var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
             if (!_seen.Add(key)) continue;
             _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, "", Proof: proof));
+            _modelScores.Add(response.Value(vars.Score));
         }
+        if (byBar && !infeasible && _builds.Count >= 1 && _builds.Count < topN) await TopByBarAsync(model, vars, topN);
         Summary = $"cp-sat {Solves} solve(s): {string.Join(", ", _statuses.GroupBy(s => s).Select(g => $"{g.Count()} {g.Key}"))}";
         Stage?.Set(2, null);
         return _builds.OrderByDescending(b => b.Score).Take(topN).ToList();
+    }
+
+    /// <summary>
+    /// Builds 2 and on by a rising bar instead of one proof per build: each solve looks briefly for the best build not found yet
+    /// that beats the Nth best found so far, takes the best decorations for its armor and talisman, and
+    /// excludes them. When no build beats the bar any more, the whole top N is proved at once. Prototype for the solver rethink
+    /// (bench/README.md): <c>MHW_TOPN=bar</c>; <c>ties</c> (default) proves each build but first looks for one that ties the last,
+    /// <c>old</c> proves each build.
+    /// </summary>
+    public TopNSearch TopN { get; init; } = Environment.GetEnvironmentVariable("MHW_TOPN") switch
+    {
+        "old" => TopNSearch.EachProved, "bar" => TopNSearch.Bar, _ => TopNSearch.Ties,
+    };
+    public enum TopNSearch { EachProved, Ties, Bar }
+    /// <summary>Time limit of the search for a build that ties the last proved one.</summary>
+    public const double TieSolveSeconds = 1.5;
+    private bool _lastProved;
+    private int _tieSolves;
+
+    /// <summary>
+    /// A build not found yet that scores as much as the last proved one (the best left, so proved too), with the best
+    /// decorations; null when there is none or none turns up within <see cref="TieSolveSeconds"/>.
+    /// </summary>
+    private async Task<CpSolverResponse?> TieAsync(CpModel model, Vars vars)
+    {
+        var tieBar = model.Add(vars.Score >= _modelScores[^1]);
+        try
+        {
+            var r = await Backend.SolveAsync(model, _parameters with { TimeLimitSeconds = TieSolveSeconds, StopAtFirst = true }, Lane, _ct);
+            Solves++;
+            _tieSolves++;
+            _ct.ThrowIfCancellationRequested();
+            if (r.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Optimal)) return null;
+            var tie = r.Clone();
+            tie.Status = CpSolverStatus.Optimal;
+            tie.BestObjectiveBound = tie.ObjectiveValue;
+            return tie;
+        }
+        finally { tieBar.Proto.ClearConstraint(); }
+    }
+    /// <summary>Time limit of one bar solve; one that finds nothing in time goes on as a split solve with the time left.</summary>
+    public const double BarSolveSeconds = 2;
+    /// <summary>The model's score of each build found (micro points), in the order of <see cref="_builds"/>.</summary>
+    private readonly List<long> _modelScores = [];
+
+    private async Task TopByBarAsync(CpModel model, Vars vars, int topN)
+    {
+        var sw = Stopwatch.StartNew();
+        var perBuild = RankTimeLimitSeconds is { } rank && rank < _parameters.TimeLimitSeconds ? rank : _parameters.TimeLimitSeconds;
+        var budget = perBuild * (topN - _builds.Count);
+        double Left() => budget - sw.Elapsed.TotalSeconds;
+        var first = _builds.Count;
+        Constraint? bar = null;
+        var proved = false;
+        while (Left() > 0.05)
+        {
+            // fewer than N found: the best build not found yet, briefly (not proved); then any build that beats the Nth best
+            var collecting = _modelScores.Count < topN;
+            long? barValue = collecting ? null : _modelScores.OrderByDescending(x => x).ElementAt(topN - 1) + 1;
+            bar?.Proto.ClearConstraint();
+            bar = barValue is { } b ? model.Add(vars.Score >= b) : null;
+            Stage?.Set(2, $"builds 2 to {topN}: {Plural(_builds.Count, "build")} found" + (barValue is { } bv ? $", looking for one above {Damage(bv / (double)Micro)}" : ""));
+            await Pacer.PauseAsync();
+            var solveSw = Stopwatch.StartNew();
+            _split = null;
+            var response = await Backend.SolveAsync(model, _parameters with
+            {
+                TimeLimitSeconds = Math.Min(collecting ? CollectSolveSeconds : BarSolveSeconds, Left()), StopAtFirst = !collecting,
+            }, Lane, _ct);
+            Solves++;
+            _ct.ThrowIfCancellationRequested();
+            if (response.Status == CpSolverStatus.Unknown && Left() > 0.05)
+            {
+                // a hard one: the best build left (above the bar), or the proof that there is none, in parts on the lanes
+                response = await SolveSplitAsync(model, vars, _parameters with { TimeLimitSeconds = Left() }, null, _builds.Count + 1, quickFirst: false);
+                Solves++;
+                _ct.ThrowIfCancellationRequested();
+            }
+            SolveTime += solveSw.Elapsed;
+            // none left above the bar: the top N is proved; none left at all: every build there is was found
+            if (response.Status == CpSolverStatus.Infeasible) { proved = true; break; }
+            if (response.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) break;
+
+            var used = UsedLiterals(response, vars);
+            // a solve stopped early may not have the best decorations for its armor and talisman: they are excluded from now on
+            if (response.Status != CpSolverStatus.Optimal && await BestFillAsync(model, used, Left()) is { } filled) response = filled;
+            model.Add(LinearExpr.Sum(used) <= used.Count - 1);
+            _excluded.Add(used);
+
+            var loadout = Decode(response, vars);
+            if (loadout is null) continue;
+            var key = string.Join("|", loadout.ArmorPieces.Select(a => a.Piece.Id)) + "|" + loadout.Talisman?.Talisman.Name;
+            if (!_seen.Add(key)) continue;
+            var objective = response.ObjectiveValue / ObjectiveScale / Micro;
+            _builds.Add(new RankedBuild(loadout, DamageCalculator.Calculate(loadout, _data, _cond), null, ""));
+            _modelScores.Add(response.Value(vars.Score));
+            _progress?.Report($"  found {Damage(objective)} in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
+        }
+        bar?.Proto.ClearConstraint();
+        var kind = proved ? ProofKind.Proved : ProofKind.Ranked;
+        for (var i = first; i < _builds.Count; i++)
+            _builds[i] = _builds[i] with { Proof = new SolveProof(kind, 0, perBuild) };
+        _statuses.AddRange(Enumerable.Repeat(proved ? "optimal" : "ranked", _builds.Count - first));
+        _progress?.Report(proved
+            ? $"  builds 2 to {topN}: proved, no other build beats the {Ordinal(topN)} best ({Plural(_builds.Count - first, "build")} found in {sw.Elapsed.TotalSeconds:0.0} s)"
+            : $"  builds 2 to {topN}: ranked, not proved within {OptimizerText.Seconds(budget)} ({Plural(_builds.Count - first, "build")} found)");
+    }
+
+    /// <summary>Time limit of a solve that looks for the best build left while fewer than N are found.</summary>
+    public const double CollectSolveSeconds = 1;
+
+    private static string Ordinal(int n) => n switch { 1 => "1st", 2 => "2nd", 3 => "3rd", _ => $"{n}th" };
+
+    /// <summary>The literals of a solution's armor and talisman (rolled or listed), which exclude it.</summary>
+    private static List<ILiteral> UsedLiterals(CpSolverResponse response, Vars vars)
+    {
+        var used = new List<ILiteral>();
+        foreach (var list in vars.Pieces)
+            if (list.FindIndex(x => response.BooleanValue(x.Var)) is var c and >= 0) used.Add(list[c].Var);
+        if (vars.Talismans.FindIndex(t => response.BooleanValue(t)) is var t and >= 0) used.Add(vars.Talismans[t]);
+        if (vars.Rolls is { } rv)
+        {
+            var row = rv.Rows.FindIndex(r => response.BooleanValue(r));
+            if (row >= 0)
+            {
+                used.Add(rv.Rows[row]);
+                used.AddRange(rv.Skills.Where(s => response.BooleanValue(s.Var)).Select(s => (ILiteral)s.Var));
+            }
+        }
+        return used;
+    }
+
+    /// <summary>The best decorations for this armor and talisman: the model with them fixed, solved; null if not proved in time.</summary>
+    private async Task<CpSolverResponse?> BestFillAsync(CpModel model, List<ILiteral> used, double left)
+    {
+        var proto = model.Model.Clone();
+        foreach (var lit in used)
+        {
+            var domain = proto.Variables[lit.GetIndex()].Domain;
+            domain.Clear();
+            domain.Add(1);
+            domain.Add(1);
+        }
+        var fixedModel = new CpModel();
+        fixedModel.Model.MergeFrom(proto);
+        var r = await Backend.SolveAsync(fixedModel, _parameters with { TimeLimitSeconds = Math.Max(0.05, Math.Min(BarSolveSeconds, left)) }, Lane, _ct);
+        Solves++;
+        return r.Status == CpSolverStatus.Optimal ? r : null;
+    }
+
+    private Loadout? Decode(CpSolverResponse response, Vars vars)
+    {
+        var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
+        var talisman = vars.Talismans.FindIndex(t => response.BooleanValue(t));
+        var rolled = vars.Rolls is { } rv ? rv.Decode(response, _data) : null;
+        var decos = new List<DecoCandidate>();
+        for (var i = 0; i < vars.Decos.Count; i++)
+            for (var n = response.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
+        return BuildLoadout(chosen, rolled?.Talisman ?? (talisman >= 0 ? _talismans[talisman].Talisman : null), decos);
     }
 
     /// <summary>
@@ -255,13 +426,14 @@ internal sealed class CpSatSearch
     /// <paramref name="incumbent"/> is one already), then every combination of states of the largest skill groups is a part that
     /// must beat it (any build, without one). All parts infeasible or optimal is a proof; the best build of any part is the best build.
     /// </summary>
-    private async Task<CpSolverResponse> SolveSplitAsync(CpModel model, Vars vars, CpSatParameters parameters, CpSolverResponse? incumbent, int number)
+    /// <param name="quickFirst">Look briefly for a build to beat first (<see cref="SplitAfterSeconds"/>); false splits at once.</param>
+    private async Task<CpSolverResponse> SolveSplitAsync(CpModel model, Vars vars, CpSatParameters parameters, CpSolverResponse? incumbent, int number, bool quickFirst = true)
     {
         if (SplitLanes <= 1) return await Backend.SolveAsync(model, parameters, Lane, _ct);
         var sw = Stopwatch.StartNew();
         double Left() => parameters.TimeLimitSeconds - sw.Elapsed.TotalSeconds;
         CpSolverResponse? quick = null;
-        if (incumbent is null && SplitAfterSeconds > 0)
+        if (incumbent is null && SplitAfterSeconds > 0 && quickFirst)
         {
             quick = await Backend.SolveAsync(model, parameters with { TimeLimitSeconds = Math.Min(SplitAfterSeconds, parameters.TimeLimitSeconds / 4) }, Lane, _ct);
             _ct.ThrowIfCancellationRequested();

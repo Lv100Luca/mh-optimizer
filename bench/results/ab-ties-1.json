@@ -1,0 +1,369 @@
+{
+  "Label": "ab-ties",
+  "Commit": "60eb903",
+  "Started": "2026-10-18T11:27:31.9676076+02:00",
+  "Threads": 8,
+  "Machine": "LUCA-DESKTOP",
+  "Scenarios": [
+    {
+      "Name": "gs-fixed",
+      "Path": "bench\\scenarios\\gs-fixed.json",
+      "Runs": [
+        {
+          "Seconds": 11.62,
+          "Best": 673.6925,
+          "Builds": [
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 673.6925,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 672.1806,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Lagiacrus Braces \u03B2|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 672.1806,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Lagiacrus Greaves \u03B2"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 672.1806,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Lagiacrus Helm \u03B2|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 672.1806,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Lagiacrus Helm \u03B2|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 5
+          },
+          "Solves": 9,
+          "Log": [
+            "    0.0  Searching builds for Leviathan\u0027s Fury \u002B Lord\u0027s Soul on 4 of the 8 threads; a build not proved within 3 s is split into parts proved 2 at a time",
+            "    0.0    armor to search: Waist 19, Chest 21, Arms 23, Head 26, Legs 26 pieces, 13 talismans",
+            "    0.2    damage model built in 0.1 s (16 groups of skills, 3 parts of the attack or uptime)",
+            "    2.9    build 1: 1,335, proved the best in 2.7 s",
+            "    9.4    build 2: 1,332, proved the next best in 6.5 s (18 parts on 2 lanes)",
+            "   10.3    build 3: 1,332, ties the last one in 0.9 s",
+            "   11.0    build 4: 1,332, ties the last one in 0.8 s",
+            "   11.6    build 5: 1,332, ties the last one in 0.6 s",
+            "   11.6    5 builds: 5 proved"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "gs-fixed-uptimes",
+      "Path": "bench\\scenarios\\gs-fixed-uptimes.json",
+      "Runs": [
+        {
+          "Seconds": 46.06,
+          "Best": 684.8829,
+          "Builds": [
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 684.8829,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Bale Sollerets \u03B1"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 682.9091,
+              "Proof": "Ranked",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 677.6312,
+              "Proof": "Ranked",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 675.8652,
+              "Proof": "Ranked",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Attack Boost 3, Iron Skin 3)|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Rey Dau\u0027s Voltage \u002B Buttery Leathercraft",
+              "Score": 675.6372,
+              "Proof": "Ranked",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Exploiter Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Dahaad Shardcoil \u03B3|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 1,
+            "Ranked": 4
+          },
+          "Solves": 6,
+          "Log": [
+            "    0.0  Searching builds for Rey Dau\u0027s Voltage \u002B Buttery Leathercraft on 4 of the 8 threads; a build not proved within 3 s is split into parts proved 2 at a time",
+            "    0.0    armor to search: Waist 22, Chest 23, Arms 27, Legs 28, Head 32 pieces, 14 talismans",
+            "    0.5    damage model built in 0.5 s (17 groups of skills, 12 parts of the attack or uptime)",
+            "    4.4    build 1: 1,357, proved the best in 3.9 s",
+            "   16.0    build 2: 1,353, ranked, not proved within the 10 s limit for builds 2 and on in 11.5 s (18 parts on 2 lanes, 17 not finished)",
+            "   26.0    build 3: 1,342, ranked, not proved within the 10 s limit for builds 2 and on in 10.0 s (18 parts on 2 lanes, 16 not finished)",
+            "   36.0    build 4: 1,339, ranked, not proved within the 10 s limit for builds 2 and on in 10.0 s (18 parts on 2 lanes, 17 not finished)",
+            "   46.1    build 5: 1,338, ranked, not proved within the 10 s limit for builds 2 and on in 10.0 s (18 parts on 2 lanes, 16 not finished)",
+            "   46.1    5 builds: 1 proved, 4 ranked"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "gs-fixed-allcharms",
+      "Path": "bench\\scenarios\\gs-fixed-allcharms.json",
+      "Runs": [
+        {
+          "Seconds": 25.77,
+          "Best": 687.4392,
+          "Builds": [
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 687.4392,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Possible: Attack Boost 2, Critical Eye 1, Agitator 1 [weapon1, armor1, armor1]|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 687.4392,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Possible: Attack Boost 2, Critical Eye 1, Agitator 1 [weapon1, armor1]|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 686.2255,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Possible: Critical Eye 2, Attack Boost 1, Agitator 1 [weapon1, armor1, armor1]|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 686.2255,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Possible: Critical Eye 2, Attack Boost 1, Agitator 1 [weapon1, armor1]|Arkvulcan Helm \u03B3|Udra Miremail \u03B3|Bale Gauntlets \u03B1|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            },
+            {
+              "Pair": "Leviathan\u0027s Fury \u002B Lord\u0027s Soul",
+              "Score": 685.6056,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Possible: Attack Boost 2, Critical Eye 1, Agitator 1 [weapon1, armor1, armor1]|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Lagiacrus Braces \u03B2|Bale Flanchard \u03B1|Udra Miregreaves \u03B3"
+            }
+          ],
+          "Proofs": {
+            "Proved": 5
+          },
+          "Solves": 9,
+          "Log": [
+            "    0.0  Searching builds for Leviathan\u0027s Fury \u002B Lord\u0027s Soul on 4 of the 8 threads; a build not proved within 3 s is split into parts proved 2 at a time",
+            "    0.0    armor to search: Waist 19, Chest 21, Arms 23, Head 26, Legs 26 pieces, 13 talismans \u002B every possible roll (100 roll rows)",
+            "    0.0    damage model built in 0.0 s (16 groups of skills, 3 parts of the attack or uptime)",
+            "    8.1    build 1 not proved within 8 s (best so far 1,362, at most 1,430 possible): narrowing the search",
+            "    9.8    narrowed 13 of 18 damage factors to what a build can reach (14 short solves, 1.7 s)",
+            "   11.8    build 1: 1,362, proved the best in 2.0 s (18 parts on 2 lanes)",
+            "   12.2    build 2: 1,362, ties the last one in 0.4 s",
+            "   18.8    build 3: 1,359, proved the next best in 6.6 s (18 parts on 2 lanes)",
+            "   20.1    build 4: 1,359, ties the last one in 1.3 s",
+            "   25.8    build 5: 1,358, proved the next best in 5.7 s (18 parts on 2 lanes)",
+            "   25.8    5 builds: 5 proved"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "gs-pairs",
+      "Path": "bench\\scenarios\\gs-pairs.json",
+      "Runs": [
+        {
+          "Seconds": 34.23,
+          "Best": 701.7376,
+          "Builds": [
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
+              "Score": 701.7376,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
+              "Score": 701.7376,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
+              "Score": 698.7487,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Attack Boost 3, Iron Skin 3)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
+              "Score": 694.6507,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
+              "Score": 694.6507,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Exploiter Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul",
+              "Score": 694.2476,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Secret Charm (Focus 3, Stun Resistance 2, Hunger Resistance 1)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
+              "Score": 694.2476,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Secret Charm (Focus 3, Stun Resistance 2, Hunger Resistance 1)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
+              "Score": 692.7782,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B1|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
+              "Score": 692.7782,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Gore Greaves \u03B2"
+            },
+            {
+              "Pair": "Soul of the Dark Knight \u002B Lord\u0027s Soul",
+              "Score": 691.1062,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Attack Boost 3, Iron Skin 3)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Gore Coil \u03B2|Sororal Boots \u03B1"
+            },
+            {
+              "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
+              "Score": 685.5457,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Exploiter Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
+              "Score": 685.5457,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Challenger Charm III|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
+              "Score": 683.2082,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Focus 3, Fire Resistance 2, Defense Boost 2)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
+              "Score": 680.7884,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Golden Age Charm (Attack Boost 3, Iron Skin 3)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "Doshaguma\u0027s Might \u002B Lord\u0027s Soul",
+              "Score": 675.4846,
+              "Proof": "Proved",
+              "Signature": "GreatSword|Attack|Dragon|True|3|Attack III,Attack III,Affinity III,Affinity EX,Sharpness EX|Secret Charm (Focus 3, Stun Resistance 2, Hunger Resistance 1)|Bale Burgeonet \u03B1|Udra Miremail \u03B3|Udra Mirebraces \u03B3|Bale Flanchard \u03B1|Gogmazios Greaves \u03B1"
+            }
+          ],
+          "Proofs": {
+            "Proved": 15
+          },
+          "Solves": 27,
+          "Log": [
+            "    0.0  14 skill pair classes that score differently, 2 classes at a time on 4 threads each: the best build of every class, then the top 5 of the best 3",
+            "    1.9  [1/14] Doshaguma\u0027s Might \u002B Lord\u0027s Soul: best 1,358 (1 rollable pairs; candidates 1 ms, model 34 ms, 1 solve 1869 ms)",
+            "    2.1  [2/14] Nu Udra\u0027s Mutiny \u002B Lord\u0027s Soul: best 1,354 (1 rollable pairs; candidates 1 ms, model 33 ms, 1 solve 2055 ms)",
+            "    3.1  [3/14] Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 23 ms, 1 solve 1158 ms)",
+            "    4.0  [4/14] Gogmapocalypse \u002B Lord\u0027s Soul: cannot reach the best 3 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 864 ms)",
+            "    4.8  [5/14] Leviathan\u0027s Fury \u002B Lord\u0027s Soul: best 1,335 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 2733 ms)",
+            "    5.7  [6/14] Soul of the Dark Knight \u002B Lord\u0027s Soul: best 1,390 (1 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1707 ms)",
+            "    5.7  [7/14] Doshaguma\u0027s Might \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 918 ms)",
+            "    6.1  [8/14] (any other) \u002B Lord\u0027s Soul: cannot reach the best 3 (15 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 388 ms)",
+            "    6.6  [9/14] Nu Udra\u0027s Mutiny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 804 ms)",
+            "    6.7  [10/14] Gore Magala\u0027s Tyranny \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 619 ms)",
+            "    6.8  [11/14] Leviathan\u0027s Fury \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 247 ms)",
+            "    7.3  [12/14] Gogmapocalypse \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 574 ms)",
+            "    7.6  [13/14] (any other) \u002B (any other): cannot reach the best 3 (195 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 339 ms)",
+            "    8.5  [14/14] Soul of the Dark Knight \u002B (any other): cannot reach the best 3 (13 rollable pairs; candidates 1 ms, model 1 ms, 1 solve 1696 ms)",
+            "   17.3  Gore Magala\u0027s Tyranny \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 23 ms, 9 solves 9913 ms)",
+            "   32.6  Doshaguma\u0027s Might \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 34 ms, 9 solves 17215 ms)",
+            "   34.2  Soul of the Dark Knight \u002B Lord\u0027s Soul: top 5 builds (candidates 1 ms, model 1 ms, 9 solves 27431 ms)"
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "bow-tech-stamina",
+      "Path": "bench\\scenarios\\bow-tech-stamina.json",
+      "Runs": [
+        {
+          "Seconds": 128.62,
+          "Best": 657.2061,
+          "Builds": [
+            {
+              "Pair": "- \u002B -",
+              "Score": 657.2061,
+              "Proof": "Proved",
+              "Signature": "|Challenger Charm III|G. Ebony Helm \u03B2*|Sororal Coat \u03B1|Gore Vambraces \u03B1|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "- \u002B -",
+              "Score": 657.2061,
+              "Proof": "Proved",
+              "Signature": "|Challenger Charm III|G. Ebony Helm \u03B2*|Mizutsune Mail \u03B2*|Lagiacrus Braces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "- \u002B -",
+              "Score": 657.2061,
+              "Proof": "Ranked",
+              "Signature": "|Exploiter Charm III|G. Ebony Helm \u03B2*|Mizutsune Mail \u03B2*|Lagiacrus Braces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "- \u002B -",
+              "Score": 657.2061,
+              "Proof": "Proved",
+              "Signature": "|Exploiter Charm III|G. Ebony Helm \u03B2*|Blango Mail \u03B2*|Lagiacrus Braces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            },
+            {
+              "Pair": "- \u002B -",
+              "Score": 656.2581,
+              "Proof": "Ranked",
+              "Signature": "|Secret Charm (Attack Boost 3, Burst 1)|Sororal Earrings \u03B1|G. Ebony Mail \u03B2*|Gore Vambraces \u03B2|Gogmazios Coil \u03B1|Gogmazios Greaves \u03B1"
+            }
+          ],
+          "Proofs": {
+            "Proved": 3,
+            "Ranked": 2
+          },
+          "Solves": 7,
+          "Log": [
+            "    0.0  Searching builds for no rolled pair on 4 of the 8 threads; a build not proved within 3 s is split into parts proved 2 at a time",
+            "    0.0    armor to search: Chest 22, Waist 23, Head 24, Legs 24, Arms 28 pieces, 11 talismans",
+            "    0.1    damage model built in 0.1 s (15 groups of skills, 3 parts of the attack or uptime)",
+            "    8.1    build 1 not proved within 8 s (best so far 856, at most 928 possible): narrowing the search",
+            "    9.8    narrowed 13 of 18 damage factors to what a build can reach (14 short solves, 1.7 s)",
+            "   30.6    build 1: 856, proved the best in 20.8 s (18 parts on 2 lanes)",
+            "   56.4    build 2: 856, proved the next best in 25.9 s (18 parts on 2 lanes)",
+            "   83.0    build 3: 854, ranked, not proved within the 25 s limit for builds 2 and on in 26.5 s (18 parts on 2 lanes, 9 not finished)",
+            "  108.0    build 4: 856, ranked, not proved within the 25 s limit for builds 2 and on in 25.0 s (18 parts on 2 lanes, 1 not finished)",
+            "  128.6    build 5: 856, proved the next best in 20.7 s (18 parts on 2 lanes)",
+            "  128.6    5 builds: 3 proved, 2 ranked"
+          ]
+        }
+      ]
+    }
+  ]
+}
