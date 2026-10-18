@@ -1,0 +1,32 @@
+{
+  "weapon": {
+    "tech_tree": "G. Renowned Tristram"
+  },
+  "skill_pair": {
+    "mode": "fixed",
+    "top_n": 3
+  },
+  "target_skills": {
+    "Constitution": 5,
+    "Stamina Surge": 2
+  },
+  "conditions": {
+    "stamina_full": false,
+    "charged_attack": true
+  },
+  "talismans": {
+    "file": "luca.talismans.json",
+    "include_craftable": true
+  },
+  "options": {
+    "allow_transcendence": true,
+    "top_n": 5,
+    "min_rarity": 5,
+    "exclude_sets": [],
+    "require_weapon_core_skills": true,
+    "max_threads": 8,
+    "engine": "cp_sat",
+    "cp_sat_time_limit_seconds": 150,
+    "cp_sat_rank_time_limit_seconds": 25
+  }
+}
