@@ -52,7 +52,8 @@ public class OptimizerTests(ITestOutputHelper output)
         var data = TestData.Data;
         var request = RequestLoader.Load(Path.Combine(RepoRoot, "inputs", "request.example.json"), data);
         Assert.True(request.IsValid);
-        request = request with { Options = request.Options with { MaxStatesPerDepth = 20_000 } };
+        // the beam: CP-SAT returns tied builds in an order that depends on which lane finds them
+        request = request with { Options = request.Options with { MaxStatesPerDepth = 20_000, Engine = OptimizerEngine.Beam } };
 
         string Fingerprint(int threads)
         {

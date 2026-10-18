@@ -68,8 +68,8 @@ public sealed record OptimizerOptions
     public int MaxStatesPerDepth { get; init; } = 100_000;
     /// <summary>Worker threads for the search; 0 = all logical processors. Values above the processor count are capped.</summary>
     public int MaxThreads { get; init; }
-    /// <summary>Search engine: the state search with a beam (default) or the exact CP-SAT model.</summary>
-    public OptimizerEngine Engine { get; init; } = OptimizerEngine.Beam;
+    /// <summary>Search engine: the exact CP-SAT model (default) or the state search with a beam.</summary>
+    public OptimizerEngine Engine { get; init; } = OptimizerEngine.CpSat;
     /// <summary>CP-SAT only: time limit per solve in seconds; the best build found so far is used when it runs out.</summary>
     public double CpSatTimeLimitSeconds { get; init; } = 120;
     /// <summary>
