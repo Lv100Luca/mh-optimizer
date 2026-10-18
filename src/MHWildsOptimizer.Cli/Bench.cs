@@ -113,7 +113,11 @@ internal static class Bench
                 verdict = scb[i] > sca[i] ? $"better at #{i + 1}" : $"WORSE at #{i + 1} ({scb[i] - sca[i]:+0.00;-0.00})";
                 break;
             }
-            if (verdict == "same" && sca.Count != scb.Count) verdict = $"{scb.Count} vs {sca.Count} builds";
+            if (verdict == "same" && scb.Count < sca.Count) verdict = $"WORSE: {scb.Count} of {sca.Count} builds";
+            else if (verdict == "same" && scb.Count > sca.Count) verdict = $"{scb.Count} vs {sca.Count} builds";
+            // proofs: builds proved in the baseline must stay proved
+            var pa = ra.Proofs.GetValueOrDefault("Proved"); var pb = rb.Proofs.GetValueOrDefault("Proved");
+            if (pb != pa) verdict += $", proved {pb} vs {pa}";
             if (verdict.StartsWith("WORSE")) worse++;
             Console.WriteLine($"{sa.Name,-22} {ta,8:0.0} {tb,8:0.0} {ta / Math.Max(tb, 0.01),6:0.00}x  {ra.Best,10:0.00} {rb.Best,10:0.00}  {verdict}");
         }
