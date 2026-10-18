@@ -24,9 +24,9 @@
         var state = t.Actual > max && !bonus ? "over" : t.Met ? "met" : "short";
         var own = t.Own ? Build.Targets.GetValueOrDefault(t.Skill) : 0;
         var skillMax = Cat.SkillsByName.GetValueOrDefault(t.Skill)?.MaxLevel ?? 1;
-        <div @key="t.Skill" class="skillrow target @state @(Filter == t.Skill ? "sel" : "")" @onclick="() => Toggle(t.Skill)" title="@(bonus ? t.Label : $"{t.Skill}: has {t.Actual}, wants {t.Required}")">
+        <div @key="t.Skill" class="sheetrow target @state @(Filter == t.Skill ? "sel" : "")" @onclick="() => Toggle(t.Skill)" title="@(bonus ? t.Label : $"{t.Skill}: has {t.Actual}, wants {t.Required}")">
             <SkillIcon Name="@t.Skill" Kind="t.Kind" Size="18" />
-            <span class="skillrow-main">
+            <span class="sheetrow-main">
                 <span class="nm">
                     <span class="skillname">@t.Skill</span>
                     @if (t.Own)
@@ -65,10 +65,10 @@
         @foreach (var s in others)
         {
             var max = Cat.SkillsByName.GetValueOrDefault(s.Skill)?.MaxLevel ?? s.Level;
-            <div @key="s.Skill" class="skillrow @(s.Level > max ? "over" : "") @(Filter == s.Skill ? "sel" : "")" @onclick="() => Toggle(s.Skill)"
+            <div @key="s.Skill" class="sheetrow @(s.Level > max ? "over" : "") @(Filter == s.Skill ? "sel" : "")" @onclick="() => Toggle(s.Skill)"
                  title="@(s.Wasted > 0 ? $"{s.Skill} {s.Level}: {s.Wasted} over the cap" : $"{s.Skill} {s.Level}")">
                 <SkillIcon Name="@s.Skill" Kind="s.Kind" Size="18" />
-                <span class="skillrow-main">
+                <span class="sheetrow-main">
                     <span class="nm"><span class="skillname">@s.Skill</span></span>
                     @Pips(s.Level, jewel.GetValueOrDefault(s.Skill), max, null)
                 </span>
