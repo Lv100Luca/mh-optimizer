@@ -252,8 +252,177 @@ internal sealed class CpSatSearch
             var proof = status == CpSolverStatus.Optimal ? new SolveProof(ProofKind.Proved, 0, parameters.TimeLimitSeconds)
                 : new SolveProof(ranking ? ProofKind.Ranked : ProofKind.TimeLimit, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, parameters.TimeLimitSeconds);
             Record(response, proof, number, bound, tie is not null ? $" (ties the last one, found in {solveSw.Elapsed.TotalSeconds:0.0} s)" : $" in {solveSw.Elapsed.TotalSeconds:0.0} s" + (_split is { } split ? $" ({split})" : ""));
+            if (proof.Kind == ProofKind.Proved)
+                foreach (var t in Ties(response, topN - _builds.Count))
+                {
+                    _statuses.Add("optimal");
+                    Record(t, proof, _builds.Count + 1, bound, $" (ties build {number}: the same skills on other pieces)");
+                }
         }
         return Finish(topN);
+    }
+
+    /// <summary>
+    /// Builds that score exactly like <paramref name="source"/> in the model, found without a solve: one or two armor pieces
+    /// or the talisman swapped for other candidates, with the decorations refilled so that every capped skill level, set tier
+    /// and group skill stays the same (the same skills carried by other pieces, which is what ties look like). They are the
+    /// next best builds, proved by the same proof, and each used to cost a full proof. Breadth first from the source, at most
+    /// <paramref name="count"/>, never one already found. The responses are the source's with the swapped literals and
+    /// decoration counts changed, so they decode like a solve's. <c>MHW_NATIVE_TIES=0</c> turns it off.
+    /// </summary>
+    private IEnumerable<CpSolverResponse> Ties(CpSolverResponse source, int count)
+    {
+        if (!FindTiesNatively || count <= 0) yield break;
+        var vars = _vars!;
+        var decode0 = Used(source).Decode;
+        if (decode0.Rolled is not null || decode0.TalismanIndex < 0) yield break;
+        var decos = new List<DecoCandidate>();
+        for (var i = 0; i < vars.Decos.Count; i++)
+            for (var n = source.Value(vars.Decos[i]); n > 0; n--) decos.Add(_filler.All[i]);
+        var target = Signature(decode0.Chosen, decode0.TalismanIndex, decos);
+        var n0 = _rel.Skills.Count;
+        var queue = new Queue<(int[] Chosen, int Talisman, CpSolverResponse Response)>();
+        queue.Enqueue((decode0.Chosen, decode0.TalismanIndex, source));
+        var visited = new HashSet<string> { string.Join(",", decode0.Chosen) + "|" + decode0.TalismanIndex };
+        var found = 0;
+        while (queue.Count > 0 && found < count)
+        {
+            var (chosen, talisman, response) = queue.Dequeue();
+            foreach (var (c2, t2) in Neighbours(chosen, talisman))
+            {
+                if (!visited.Add(string.Join(",", c2) + "|" + t2)) continue;
+                // the same sets and groups, and no skill the decorations cannot make up
+                var bare = Signature(c2, t2, []);
+                var fits = true;
+                var needed = new int[n0];
+                for (var s = 0; s < n0 && fits; s++)
+                {
+                    needed[s] = target[s] - Math.Max(0, bare[s]);
+                    if (needed[s] < 0) fits = false;
+                }
+                for (var k = n0; k < bare.Length && fits; k++) if (bare[k] != target[k]) fits = false;
+                if (!fits) continue;
+                var free = FreeSlots(c2, _talismans[t2].Talisman);
+                var decos2 = needed.All(x => x == 0) && DecorationFiller.Pack(decos, free) is not null ? decos : FillTo(needed, free, c2, t2, target);
+                if (decos2 is null) continue;
+                var tie = response.Clone();
+                for (var d = 0; d < chosen.Length; d++)
+                    if (chosen[d] != c2[d]) { tie.Solution[vars.Pieces[d][chosen[d]].Var.GetIndex()] = 0; tie.Solution[vars.Pieces[d][c2[d]].Var.GetIndex()] = 1; }
+                if (talisman != t2) { tie.Solution[vars.Talismans[talisman].GetIndex()] = 0; tie.Solution[vars.Talismans[t2].GetIndex()] = 1; }
+                for (var i = 0; i < vars.Decos.Count; i++) tie.Solution[vars.Decos[i].GetIndex()] = decos2.Count(d => ReferenceEquals(d, _filler.All[i]));
+                queue.Enqueue((c2, t2, tie));
+                // found by a solve already (its combination is excluded): not a new build
+                var used = Used(tie).Used;
+                if (_excluded.Any(e => e.Count == used.Count && e.All(l => used.Any(u => u.GetIndex() == l.GetIndex())))) continue;
+                found++;
+                yield return tie;
+                if (found >= count) yield break;
+            }
+        }
+    }
+
+    public bool FindTiesNatively { get; init; } = Environment.GetEnvironmentVariable("MHW_NATIVE_TIES") != "0";
+
+    /// <summary>The combinations one or two swaps away: other candidates of one or two kinds, with or without another talisman.</summary>
+    private IEnumerable<(int[] Chosen, int Talisman)> Neighbours(int[] chosen, int talisman)
+    {
+        var kinds = Enumerable.Range(0, chosen.Length).Where(d => chosen[d] >= 0).ToList();
+        for (var j = -1; j < _talismans.Count; j++)
+        {
+            if (j == talisman) continue;
+            var t = j < 0 ? talisman : j;
+            if (j >= 0) yield return (chosen, t);
+            foreach (var d in kinds)
+                for (var i = 0; i < _armor[_kinds[d]].Count; i++)
+                {
+                    if (i == chosen[d]) continue;
+                    var c = (int[])chosen.Clone();
+                    c[d] = i;
+                    yield return (c, t);
+                    // a second kind swapped too (only without a talisman change, to keep the count down)
+                    if (j >= 0) continue;
+                    foreach (var d2 in kinds.Where(x => x > d))
+                        for (var i2 = 0; i2 < _armor[_kinds[d2]].Count; i2++)
+                        {
+                            if (i2 == chosen[d2]) continue;
+                            var c3 = (int[])c.Clone();
+                            c3[d2] = i2;
+                            yield return (c3, t);
+                        }
+                }
+        }
+    }
+
+    /// <summary>The free decoration slots of a combination, as <see cref="BuildLoadout"/> lays them out.</summary>
+    private List<FreeSlot> FreeSlots(int[] chosen, Talisman talisman)
+    {
+        var free = new List<FreeSlot>();
+        for (var i = 0; i < _weapon.Slots.Count; i++) free.Add(new FreeSlot(SkillKind.Weapon, _weapon.Slots[i], -1, i));
+        for (var i = 0; i < talisman.Slots.Count; i++) free.Add(new FreeSlot(talisman.Slots[i].Kind, talisman.Slots[i].Level, -2, i));
+        for (var d = 0; d < chosen.Length; d++)
+        {
+            if (chosen[d] < 0) continue;
+            var p = _armor[_kinds[d]][chosen[d]];
+            for (var i = 0; i < p.EffectiveSlots.Count; i++) free.Add(new FreeSlot(SkillKind.Armor, p.EffectiveSlots[i], d, i));
+        }
+        return free;
+    }
+
+    /// <summary>
+    /// Decorations that raise the skills by exactly <paramref name="needed"/> levels (capped) in these slots, so the combination
+    /// scores as <paramref name="target"/>; null if none is found within a small search. Largest jewels first per skill.
+    /// </summary>
+    private List<DecoCandidate>? FillTo(int[] needed, List<FreeSlot> free, int[] chosen, int talisman, int[] target)
+    {
+        var budget = 300;
+        var chosenDecos = new List<DecoCandidate>();
+        var left = (int[])needed.Clone();
+        return Search() ? chosenDecos : null;
+
+        bool Search()
+        {
+            if (--budget < 0) return false;
+            var s = Array.FindIndex(left, x => x > 0);
+            if (s < 0) return Signature(chosen, talisman, chosenDecos).SequenceEqual(target) && DecorationFiller.Pack(chosenDecos, free) is not null;
+            if (chosenDecos.Count >= free.Count) return false;
+            foreach (var d in _filler.All.Where(d => d.Grants.Any(g => g.Skill == s)).OrderByDescending(d => d.Grants.First(g => g.Skill == s).Level).ThenBy(d => d.Grants.Length))
+            {
+                chosenDecos.Add(d);
+                if (DecorationFiller.Pack(chosenDecos, free) is null) { chosenDecos.RemoveAt(chosenDecos.Count - 1); continue; }
+                foreach (var (skill, level) in d.Grants) left[skill] -= level;
+                if (Search()) return true;
+                foreach (var (skill, level) in d.Grants) left[skill] += level;
+                chosenDecos.RemoveAt(chosenDecos.Count - 1);
+                if (budget < 0) return false;
+            }
+            return false;
+        }
+    }
+
+    /// <summary>What the model scores a combination by: its capped skill levels, set tiers and group skills with these decorations.</summary>
+    private int[] Signature(int[] chosen, int talisman, List<DecoCandidate> decos)
+    {
+        var n = _rel.Skills.Count;
+        var sig = new int[n + _rel.SetBonuses.Count + _rel.GroupSkills.Count];
+        var pieces = chosen.Select((c, d) => c >= 0 ? _armor[_kinds[d]][c] : null).ToList();
+        for (var s = 0; s < n; s++)
+        {
+            var level = _weaponSkills[s] + _talismans[talisman].Skills[s] + pieces.Sum(p => p?.Skills[s] ?? 0);
+            foreach (var deco in decos) foreach (var (skill, grant) in deco.Grants) if (skill == s) level += grant;
+            // below a target the combination is no build at all
+            sig[s] = level < _rel.Targets[s] ? -1 : Math.Min(level, _rel.Caps[s]);
+        }
+        for (var si = 0; si < _rel.SetBonuses.Count; si++)
+        {
+            var count = (_weapon.SetBonus == _rel.SetBonuses[si] ? 1 : 0) + pieces.Count(p => p is not null && p.SetIds.Contains(si));
+            sig[n + si] = count < _rel.SetTargets[si] ? -1 : count >= SkillAggregator.SetTierTwoPieces ? 2 : count >= SkillAggregator.SetTierOnePieces ? 1 : 0;
+        }
+        for (var gi = 0; gi < _rel.GroupSkills.Count; gi++)
+        {
+            var count = (_weapon.GroupSkill == _rel.GroupSkills[gi] ? 1 : 0) + pieces.Count(p => p is not null && p.GroupId == gi);
+            sig[n + _rel.SetBonuses.Count + gi] = count < _rel.GroupTargets[gi] ? -1 : count >= SkillAggregator.GroupSkillPieces ? 1 : 0;
+        }
+        return sig;
     }
 
     /// <summary>
@@ -261,7 +430,7 @@ internal sealed class CpSatSearch
     /// armor): it is the best left, so proved too. Ties are common (5 builds of one score) and each cost a full proof.
     /// <c>MHW_TIES=0</c> turns it off.
     /// </summary>
-    public bool FindTies { get; init; } = Environment.GetEnvironmentVariable("MHW_TIES") != "0";
+    public bool FindTies { get; init; } = Environment.GetEnvironmentVariable("MHW_TIES") == "1";
     /// <summary>Time limit of the search for a tie; finding one takes about 0.5-1.2 s, a failed search costs this much.</summary>
     public const double TieSolveSeconds = 1.5;
     /// <summary>The model score of the last build proved in the loop of single solves; null after one that was not proved.</summary>
@@ -327,7 +496,7 @@ internal sealed class CpSatSearch
     }
 
     /// <summary>The armor pieces, talisman and rolled talisman literals a solve chose: what excluding its combination fixes.</summary>
-    private (List<ILiteral> Used, (int[] Chosen, Talisman? Talisman, Talisman? Rolled) Decode) Used(CpSolverResponse response)
+    private (List<ILiteral> Used, (int[] Chosen, int TalismanIndex, Talisman? Talisman, Talisman? Rolled) Decode) Used(CpSolverResponse response)
     {
         var vars = _vars!;
         var chosen = vars.Pieces.Select(list => list.FindIndex(x => response.BooleanValue(x.Var))).ToArray();
@@ -337,7 +506,7 @@ internal sealed class CpSatSearch
         for (var d = 0; d < chosen.Length; d++) if (chosen[d] >= 0) used.Add(vars.Pieces[d][chosen[d]].Var);
         if (talisman >= 0) used.Add(vars.Talismans[talisman]);
         if (rolled is not null) used.AddRange(rolled.Value.Literals);
-        return (used, (chosen, talisman >= 0 ? _talismans[talisman].Talisman : null, rolled?.Talisman));
+        return (used, (chosen, talisman, talisman >= 0 ? _talismans[talisman].Talisman : null, rolled?.Talisman));
     }
 
     /// <summary>
@@ -620,8 +789,21 @@ internal sealed class CpSatSearch
         stage = $"build 1 of {topN}";
         await PhaseAsync(1, () => limit - sw.Elapsed.TotalSeconds);
         var firstAt = sw.Elapsed.TotalSeconds;
+        // the ties of build 1 (the same skills on other pieces) are the next best builds, proved like it, without a solve;
+        // the parts look above them and leave them out
+        if (topN > 1 && proved.Count > 0)
+            foreach (var t in Ties(found[proved[0]], topN - proved.Count))
+            {
+                var used = Used(t).Used;
+                var key = string.Join(",", used.Select(l => l.GetIndex()));
+                if (proved.Contains(key)) continue;
+                Add(t, used);
+                proved.Add(key);
+                lock (gate) foreach (var p in all) p.Excluded.Add(NotAll(used));
+                _progress?.Report($"  build {proved.Count}: {Points(t.ObjectiveValue)}, ties build 1 (the same skills on other pieces)");
+            }
         var floors = 0;
-        if (topN > 1)
+        if (topN > 1 && proved.Count < topN)
         {
             stage = $"top {topN}";
             // the first build often leaves no other build found, and every part proving its own best before there are N builds
@@ -665,6 +847,13 @@ internal sealed class CpSatSearch
                 : new SolveProof(k == 0 ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, k == 0 ? limit : rank);
             Record(r, proof, k + 1, bound, "", report: k >= proved.Count);
         }
+        // ties of the other proved builds, should the top N not be full yet
+        for (var k = 1; k < Math.Min(top.Count, proved.Count) && _builds.Count < topN; k++)
+            foreach (var t in Ties(top[k], topN - _builds.Count))
+            {
+                _statuses.Add("optimal");
+                Record(t, new SolveProof(ProofKind.Proved, 0, limit), _builds.Count + 1, 0, $" (ties build {k + 1}: the same skills on other pieces)");
+            }
         if (notDone == 0 && top.Count < topN) _progress?.Report($"  no further build reaches the targets ({Plural(top.Count, "build")} in all)");
         return true;
     }
@@ -1065,30 +1254,31 @@ internal sealed class CpSatSearch
             m.Add(idx == LinearExpr.Sum(u.Features.Select((f, i) => LinearExpr.Term(featureVars[f], u.Strides[i]))));
             return idx;
         }).ToList();
-        var sideScores = new List<Bounded>();
-        for (var side = 0; side < score.Sides.Count; side++)
+        // the sides of a health side that share every damage factor but affinity (the parts of an uptime, the segments of
+        // one attack) are scored as one group: one raw chain, one element chain, the parts' crit factors summed by weight
+        var healthScores = new List<Bounded>();
+        foreach (var health in score.Sides.Select(s => s.Health).Distinct().Order())
         {
-            await Pacer.PauseAsync();
-            sideScores.Add(SideScore(m, score, side, unitIndex, keys));
-        }
-        // a sequence's segments add up weighted by their share of the motion value (weights in 1e-8), per health side
-        if (score.Sides.Count > score.HealthSides)
-            sideScores = score.Sides.Select((s, i) => (s, i)).GroupBy(x => x.s.Health).Select(g =>
+            var parts = new List<Bounded>();
+            foreach (var group in score.Sides.Select((s, i) => (s, i)).Where(x => x.s.Health == health).GroupBy(x => GroupSig(score, x.i)).Select(g => g.Select(x => x.i).ToList()))
             {
-                var weights = g.Select(x => (long)Math.Round(x.s.Weight * WeightScale)).ToList();
-                var parts = g.Select(x => sideScores[x.i]).ToList();
-                long lb = 0, ub = 0;
-                for (var i = 0; i < parts.Count; i++) { lb += parts[i].Lb * weights[i]; ub += parts[i].Ub * weights[i]; }
-                var health = NewVar(m, Math.Min(0, lb / WeightScale - 1), ub / WeightScale + 1, $"health{g.Key}");
-                m.AddDivisionEquality(health.Var, LinearExpr.WeightedSum(parts.Select(p => (LinearExpr)p.Var), weights), WeightScale);
-                return health;
-            }).ToList();
+                await Pacer.PauseAsync();
+                parts.Add(GroupScore(m, score, group, unitIndex, keys));
+            }
+            if (parts.Count == 1) healthScores.Add(parts[0]);
+            else
+            {
+                var h = NewVar(m, parts.Sum(p => p.Lb), parts.Sum(p => p.Ub), $"health{health}");
+                m.Add(h.Var == LinearExpr.Sum(parts.Select(p => (LinearExpr)p.Var)));
+                healthScores.Add(h);
+            }
+        }
         IntVar total;
-        if (sideScores.Count == 1) total = sideScores[0].Var;
+        if (healthScores.Count == 1) total = healthScores[0].Var;
         else
         {
-            total = m.NewIntVar(sideScores.Min(x => x.Lb), sideScores.Max(x => x.Ub), "score");
-            m.AddMaxEquality(total, sideScores.Select(x => (LinearExpr)x.Var));
+            total = m.NewIntVar(healthScores.Min(x => x.Lb), healthScores.Max(x => x.Ub), "score");
+            m.AddMaxEquality(total, healthScores.Select(x => (LinearExpr)x.Var));
         }
         m.Maximize(LinearExpr.Term(total, ObjectiveScale) - LinearExpr.Term(LinearExpr.Sum(decos), DecoPenalty));
         return new Vars(pieces, tals, rolls, decos, total, keys, unitIndex.Select((v, ui) => (v, score.Units[ui].States)).ToList());
@@ -1114,19 +1304,42 @@ internal sealed class CpSatSearch
         return (v.Var, v.Lb, v.Ub);
     }
 
-    /// <summary>Score of one health side in micro points: EFR + EFE (crits and hits that cannot crit) + procs (+ the Dark Arts shockwave, fixed damage).</summary>
-    /// <param name="keys">Collects the side's factors worth capping (<see cref="TightenAsync"/>).</param>
-    private Bounded SideScore(CpModel m, ScoreDecomposition score, int side, List<IntVar> unitIndex, List<(IntVar Var, long Ub, string Sig)> keys)
+    private static string R(double x) => x.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>The channel tables of one side, for the given channels, as text (the same text: the same lookups).</summary>
+    private static string Tables(ScoreDecomposition score, int side, params Func<Channels, double>[] channels) =>
+        string.Join(";", score.Units.Select(u => string.Join(",", u.Tables[side].Select(c => string.Join(" ", channels.Select(ch => R(ch(c))))))));
+
+    /// <summary>
+    /// Everything of a side that a group must share: every channel table but affinity, and the constants those channels
+    /// are scaled by. Sides with the same signature differ only in affinity, weight and per-side factors, which the group
+    /// score folds into its weights.
+    /// </summary>
+    private static string GroupSig(ScoreDecomposition score, int side)
     {
         var sc = score.Sides[side];
-        // what a capped factor depends on: factors with the same signature (e.g. the attack of a segment's uptime parts, which
-        // differ only in affinity) have the same maximum, so one solve caps them all
+        return string.Join("|", R(sc.BaseRawPct), R(sc.BaseRawFlat), R(sc.BaseCritMult), R(sc.BaseCritEleMult), R(sc.ElementCap), R(sc.BaseElePct), R(sc.BaseEleFlat),
+            Tables(score, side, c => c.RawPct, c => c.RawFlat, c => c.CritMult, c => c.ElePct, c => c.EleFlat, c => c.CritEleMult, c => c.Procs, c => c.Shockwave ? 1 : 0, c => c.RawMult));
+    }
+
+    /// <summary>
+    /// Score of a group of sides in micro points, weighted by their shares: EFR + EFE (crits and hits that cannot crit) + procs
+    /// (+ the Dark Arts shockwave, fixed damage). The sides share their raw (TR), element and crit multipliers; each has its own
+    /// affinity. EFR = TR x sum over sides of (weight x raw factor x crit factor): one product of two large ranges instead of one
+    /// per side, which keeps the solver's bound and the model small when an uptime splits the hunt into many parts.
+    /// </summary>
+    /// <param name="keys">Collects the group's factors worth capping (<see cref="TightenAsync"/>).</param>
+    private Bounded GroupScore(CpModel m, ScoreDecomposition score, List<int> group, List<IntVar> unitIndex, List<(IntVar Var, long Ub, string Sig)> keys)
+    {
+        var side0 = group[0];
+        var s0 = score.Sides[side0];
+        var tag = string.Join("_", group);
+        // what a capped factor depends on: factors with the same signature have the same maximum, so one solve caps them all
         string Sig(string kind, double constant, params Func<Channels, double>[] channels) =>
-            kind + "|" + constant.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "|" + string.Join(";", score.Units.Select(u =>
-                string.Join(",", u.Tables[side].Select(c => string.Join(" ", channels.Select(ch => ch(c).ToString("R", System.Globalization.CultureInfo.InvariantCulture)))))));
+            kind + "|" + R(constant) + "|" + string.Join("/", group.Select(i => Tables(score, i, channels)));
         // per-unit lookups of the channels that vary within the unit
         // state 0 of every unit is "nothing active", so a channel that is constant within a unit is at its neutral value
-        Bounded? Lookup(int ui, Func<Channels, long> value, string name)
+        Bounded? Lookup(int side, int ui, Func<Channels, long> value, string name)
         {
             var table = score.Units[ui].Tables[side].Select(value).ToArray();
             if (table.All(v => v == table[0])) return null;
@@ -1134,8 +1347,8 @@ internal sealed class CpSatSearch
             m.AddElement(unitIndex[ui], table, v.Var);
             return v;
         }
-        List<Bounded> All(Func<Channels, long> value, string name) =>
-            Enumerable.Range(0, score.Units.Count).Select(ui => Lookup(ui, value, name)).Where(b => b is not null).Select(b => b!).ToList();
+        List<Bounded> All(int side, Func<Channels, long> value, string name) =>
+            Enumerable.Range(0, score.Units.Count).Select(ui => Lookup(side, ui, value, name)).Where(b => b is not null).Select(b => b!).ToList();
         Bounded Product(List<Bounded> factors, string name)
         {
             var acc = new Bounded(m.NewConstant(S), S, S);
@@ -1150,72 +1363,110 @@ internal sealed class CpSatSearch
             return acc;
         }
         static long Sum(List<Bounded> xs, Func<Bounded, long> f) => xs.Sum(f);
+        static long W(double x) => (long)Math.Round(x * WeightScale);
+        Bounded Single(List<Bounded> varying, long baseValue) =>
+            varying.Count switch
+            {
+                0 => new Bounded(m.NewConstant(baseValue), baseValue, baseValue),
+                1 => varying[0],
+                _ => throw new InvalidOperationException("More than one unit changes the same critical multiplier."),
+            };
 
         // raw: TR = B * base pct * prod(pct) + base flat + sum(flat), in 1e-4
-        var pct = Product(All(c => (long)Math.Round(c.RawPct * S), "pct"), $"rawPct{side}");
-        var flats = All(c => (long)Math.Round(c.RawFlat * S), "flat");
-        var baseFlat = (long)Math.Round(sc.BaseRawFlat * S);
-        var scaled = Scaled(m, pct, _weapon.TrueRaw, sc.BaseRawPct, $"trPct{side}");
-        var tr = NewVar(m, scaled.Lb + baseFlat + Sum(flats, f => f.Lb), scaled.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{side}");
+        var pct = Product(All(side0, c => (long)Math.Round(c.RawPct * S), "pct"), $"rawPct{tag}");
+        var flats = All(side0, c => (long)Math.Round(c.RawFlat * S), "flat");
+        var baseFlat = (long)Math.Round(s0.BaseRawFlat * S);
+        var scaled = Scaled(m, pct, _weapon.TrueRaw, s0.BaseRawPct, $"trPct{tag}");
+        var tr = NewVar(m, scaled.Lb + baseFlat + Sum(flats, f => f.Lb), scaled.Ub + baseFlat + Sum(flats, f => f.Ub), $"tr{tag}");
         m.Add(tr.Var == scaled.Expr + baseFlat + LinearExpr.Sum(flats.Select(f => (LinearExpr)f.Var)));
-        keys.Add((tr.Var, tr.Ub, Sig($"tr{sc.BaseRawPct}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat)));
+        keys.Add((tr.Var, tr.Ub, Sig($"tr{s0.BaseRawPct}", s0.BaseRawFlat, c => c.RawPct, c => c.RawFlat)));
 
-        // affinity, clamped
-        var affs = All(c => (long)Math.Round(c.Affinity), "aff");
+        // affinity per side, clamped
         var cap = DamageConstants.AffinityCap;
-        var baseAff = _weapon.Affinity + sc.BaseAffinity;
-        var affRaw = LinearExpr.Constant(baseAff) + LinearExpr.Sum(affs.Select(a => (LinearExpr)a.Var));
-        var affLow = m.NewIntVar(-cap, Math.Max(-cap, baseAff + Sum(affs, a => a.Ub)), $"affLow{side}");
-        m.AddMaxEquality(affLow, [affRaw, LinearExpr.Constant(-cap)]);
-        keys.Add((affLow, Math.Max(-cap, baseAff + Sum(affs, a => a.Ub)), Sig("aff", sc.BaseAffinity, c => c.Affinity)));
-        var aff = m.NewIntVar(-cap, cap, $"aff{side}");
-        m.AddMinEquality(aff, [affLow, LinearExpr.Constant(cap)]);
-        var affPos = m.NewIntVar(0, cap, $"affPos{side}");
-        m.AddMaxEquality(affPos, [aff, LinearExpr.Constant(0)]);
-        var affNeg = m.NewIntVar(0, cap, $"affNeg{side}");
-        m.AddMaxEquality(affNeg, [LinearExpr.Term(aff, -1), LinearExpr.Constant(0)]);
+        var affPos = new List<IntVar>();
+        var affNeg = new List<IntVar>();
+        foreach (var side in group)
+        {
+            var sc = score.Sides[side];
+            var affs = All(side, c => (long)Math.Round(c.Affinity), "aff");
+            var baseAff = _weapon.Affinity + sc.BaseAffinity;
+            var affRaw = LinearExpr.Constant(baseAff) + LinearExpr.Sum(affs.Select(a => (LinearExpr)a.Var));
+            var affLowUb = Math.Max(-cap, baseAff + Sum(affs, a => a.Ub));
+            var affLow = m.NewIntVar(-cap, affLowUb, $"affLow{side}");
+            m.AddMaxEquality(affLow, [affRaw, LinearExpr.Constant(-cap)]);
+            keys.Add((affLow, affLowUb, "aff|" + R(sc.BaseAffinity) + "|" + Tables(score, side, c => c.Affinity)));
+            var aff = m.NewIntVar(-cap, cap, $"aff{side}");
+            m.AddMinEquality(aff, [affLow, LinearExpr.Constant(cap)]);
+            var pos = m.NewIntVar(0, cap, $"affPos{side}");
+            m.AddMaxEquality(pos, [aff, LinearExpr.Constant(0)]);
+            var neg = m.NewIntVar(0, cap, $"affNeg{side}");
+            m.AddMaxEquality(neg, [LinearExpr.Term(aff, -1), LinearExpr.Constant(0)]);
+            affPos.Add(pos);
+            affNeg.Add(neg);
+        }
 
-        // crit factor in 1e-6: 1 + aff/100 * (critMult - 1), or the negative-crit penalty
-        var crit = Single(All(c => (long)Math.Round(c.CritMult * S), "crit"), (long)Math.Round(sc.BaseCritMult * S));
-        var critGain = NewVar(m, 0, cap * (crit.Ub - S), $"critGain{side}");
-        m.AddMultiplicationEquality(critGain.Var, affPos, crit.Var - S);
+        // the crit factor of a side, 1 + aff/100 * (critMult - 1) or the negative-crit penalty, summed over the sides with
+        // weights u (1e-8): sum u * (1e6 + affPos * (crit - S) + affNeg * negStep), divided back to 1e-6
+        var crit = Single(All(side0, c => (long)Math.Round(c.CritMult * S), "crit"), (long)Math.Round(s0.BaseCritMult * S));
         var negStep = (long)Math.Round((DamageConstants.NegativeCriticalMultiplier - 1.0) * S);
-        var cf = NewVar(m, Micro + cap * negStep, Micro + critGain.Ub, $"cf{side}");
-        m.Add(cf.Var == Micro + critGain.Var + LinearExpr.Term(affNeg, negStep));
-        keys.Add((cf.Var, cf.Ub, Sig($"cf{sc.BaseAffinity}", sc.BaseCritMult, c => c.Affinity, c => c.CritMult)));
+        Bounded? WeightedCrit(List<long> u, Bounded mult, bool withNegative, string name)
+        {
+            if (u.All(x => x == 0)) return null;
+            var uSum = u.Sum();
+            var ap = NewVar(m, 0, uSum * cap, $"ap{name}");
+            m.Add(ap.Var == LinearExpr.WeightedSum(affPos.Select(p => (LinearExpr)p), u));
+            var gain = NewVar(m, 0, ap.Ub * Math.Max(0, mult.Ub - S), $"gain{name}");
+            m.AddMultiplicationEquality(gain.Var, ap.Var, mult.Var - S);
+            var terms = new List<LinearExpr> { LinearExpr.Constant(uSum * Micro), gain.Var };
+            long lb = uSum * Micro, ub = uSum * Micro + gain.Ub;
+            if (withNegative)
+            {
+                var an = NewVar(m, 0, uSum * cap, $"an{name}");
+                m.Add(an.Var == LinearExpr.WeightedSum(affNeg.Select(p => (LinearExpr)p), u));
+                terms.Add(LinearExpr.Term(an.Var, negStep));
+                lb += an.Ub * negStep;
+            }
+            var raw = NewVar(m, lb, ub, $"cfRaw{name}");
+            m.Add(raw.Var == LinearExpr.Sum(terms));
+            var cf = NewVar(m, lb / WeightScale, ub / WeightScale + 1, $"cf{name}");
+            m.AddDivisionEquality(cf.Var, raw.Var, WeightScale);
+            return cf;
+        }
 
-        // EFR in micro points = TR(1e-4) * CF(1e-6) * sharp(1e-4) / 1e8
-        var sharp = (long)Math.Round(sc.RawFactor * S);
-        var trcf = NewVar(m, Math.Min(tr.Lb * cf.Lb, 0), tr.Ub * cf.Ub, $"trcf{side}");
-        m.AddMultiplicationEquality(trcf.Var, tr.Var, cf.Var);
-        var efr = NewVar(m, Math.Min(trcf.Lb * sharp / 100_000_000, 0), trcf.Ub * sharp / 100_000_000 + 1, $"efr{side}");
-        m.AddDivisionEquality(efr.Var, LinearExpr.Term(trcf.Var, sharp), 100_000_000);
-        keys.Add((efr.Var, efr.Ub, Sig($"efr{sc.RawFactor}|{sc.BaseCritMult}|{sc.BaseRawPct}|{sc.BaseAffinity}", sc.BaseRawFlat, c => c.RawPct, c => c.RawFlat, c => c.Affinity, c => c.CritMult)));
+        // EFR in micro points = TR(1e-4) * sum(weight * raw factor * crit factor)(1e-6) / 1e4
+        var cfW = WeightedCrit(group.Select(i => W(score.Sides[i].Weight * score.Sides[i].RawFactor)).ToList(), crit, true, $"W{tag}")!;
+        keys.Add((cfW.Var, cfW.Ub, Sig($"cfW{string.Join(",", group.Select(i => R(score.Sides[i].Weight * score.Sides[i].RawFactor)))}", s0.BaseCritMult, c => c.Affinity, c => c.CritMult)));
+        var trcf = NewVar(m, Math.Min(tr.Lb * cfW.Lb, 0), tr.Ub * cfW.Ub, $"trcf{tag}");
+        m.AddMultiplicationEquality(trcf.Var, tr.Var, cfW.Var);
+        var efr = NewVar(m, Math.Min(trcf.Lb / S, 0), trcf.Ub / S + 1, $"efr{tag}");
+        m.AddDivisionEquality(efr.Var, trcf.Var, S);
+        keys.Add((efr.Var, efr.Ub, Sig($"efr{string.Join(",", group.Select(i => R(score.Sides[i].Weight * score.Sides[i].RawFactor)))}|{s0.BaseCritMult}|{s0.BaseRawPct}", s0.BaseRawFlat, c => c.RawPct, c => c.RawFlat, c => c.Affinity, c => c.CritMult)));
 
         // bow shot skills multiply EFR after the flat bonuses (1e-4)
-        var rawMults = All(c => (long)Math.Round(c.RawMult * S), "rmult");
+        var rawMults = All(side0, c => (long)Math.Round(c.RawMult * S), "rmult");
+        Bounded? mult = null;
         if (rawMults.Count > 0)
         {
-            var mult = Product(rawMults, $"rawMult{side}");
-            var boosted = NewVar(m, Math.Min(efr.Lb * mult.Lb, 0), efr.Ub * mult.Ub, $"efrMultx{side}");
+            mult = Product(rawMults, $"rawMult{tag}");
+            var boosted = NewVar(m, Math.Min(efr.Lb * mult.Lb, 0), efr.Ub * mult.Ub, $"efrMultx{tag}");
             m.AddMultiplicationEquality(boosted.Var, efr.Var, mult.Var);
-            efr = NewVar(m, Math.Min(boosted.Lb / S, 0), boosted.Ub / S + 1, $"efrMult{side}");
+            efr = NewVar(m, Math.Min(boosted.Lb / S, 0), boosted.Ub / S + 1, $"efrMult{tag}");
             m.AddDivisionEquality(efr.Var, boosted.Var, S);
         }
 
         var terms = new List<LinearExpr> { efr.Var };
         long lb = efr.Lb, ub = efr.Ub;
 
-        // raw of the hits that cannot crit in micro points = TR(1e-4) * factor(1e-6) / 1e4
-        var rawNoCrit = (long)Math.Round(sc.RawNoCrit * Micro);
+        // raw of the hits that cannot crit in micro points = TR(1e-4) * sum(weight * factor)(1e-6) / 1e4
+        var rawNoCrit = (long)Math.Round(group.Sum(i => score.Sides[i].Weight * score.Sides[i].RawNoCrit) * Micro);
         if (rawNoCrit > 0)
         {
-            var nc = NewVar(m, Math.Min(tr.Lb * rawNoCrit / S, 0), tr.Ub * rawNoCrit / S + 1, $"rawNoCrit{side}");
+            var nc = NewVar(m, Math.Min(tr.Lb * rawNoCrit / S, 0), tr.Ub * rawNoCrit / S + 1, $"rawNoCrit{tag}");
             m.AddDivisionEquality(nc.Var, LinearExpr.Term(tr.Var, rawNoCrit), S);
             terms.Add(nc.Var); lb += nc.Lb; ub += nc.Ub;
         }
 
-        var fixedDamage = (long)Math.Round(sc.Fixed * Micro);
+        var fixedDamage = (long)Math.Round(group.Sum(i => score.Sides[i].Weight * score.Sides[i].Fixed) * Micro);
         if (fixedDamage != 0)
         {
             terms.Add(LinearExpr.Constant(fixedDamage)); lb += fixedDamage; ub += fixedDamage;
@@ -1224,75 +1475,78 @@ internal sealed class CpSatSearch
         if (score.HasElement)
         {
             // element in 1e-5 true = display * prod(pct)(1e-4) + sum(flat * 1e5), capped
-            var elePct = Product(All(c => (long)Math.Round(c.ElePct * S), "epct"), $"elePct{side}");
-            var eleFlats = All(c => (long)Math.Round(c.EleFlat * 10 * S), "eflat");
-            var eleScaled = Scaled(m, elePct, _weapon.ElementDisplay, sc.BaseElePct, $"elePctB{side}");
-            var baseEle = (long)Math.Round(sc.BaseEleFlat * 10 * S);
-            var eleRaw = NewVar(m, eleScaled.Lb + baseEle + Sum(eleFlats, f => f.Lb), eleScaled.Ub + baseEle + Sum(eleFlats, f => f.Ub), $"eleRaw{side}");
+            var elePct = Product(All(side0, c => (long)Math.Round(c.ElePct * S), "epct"), $"elePct{tag}");
+            var eleFlats = All(side0, c => (long)Math.Round(c.EleFlat * 10 * S), "eflat");
+            var eleScaled = Scaled(m, elePct, _weapon.ElementDisplay, s0.BaseElePct, $"elePctB{tag}");
+            var baseEle = (long)Math.Round(s0.BaseEleFlat * 10 * S);
+            var eleRaw = NewVar(m, eleScaled.Lb + baseEle + Sum(eleFlats, f => f.Lb), eleScaled.Ub + baseEle + Sum(eleFlats, f => f.Ub), $"eleRaw{tag}");
             m.Add(eleRaw.Var == eleScaled.Expr + baseEle + LinearExpr.Sum(eleFlats.Select(f => (LinearExpr)f.Var)));
-            var eleCap = (long)Math.Round(sc.ElementCap * 10 * S);
-            var ele = NewVar(m, Math.Min(eleRaw.Lb, eleCap), Math.Min(eleRaw.Ub, eleCap), $"ele{side}");
+            var eleCap = (long)Math.Round(s0.ElementCap * 10 * S);
+            var ele = NewVar(m, Math.Min(eleRaw.Lb, eleCap), Math.Min(eleRaw.Ub, eleCap), $"ele{tag}");
             m.AddMinEquality(ele.Var, [eleRaw.Var, LinearExpr.Constant(eleCap)]);
-            keys.Add((ele.Var, ele.Ub, Sig($"ele{sc.BaseElePct}|{sc.BaseEleFlat}", sc.ElementCap, c => c.ElePct, c => c.EleFlat)));
+            keys.Add((ele.Var, ele.Ub, Sig($"ele{s0.BaseElePct}|{s0.BaseEleFlat}", s0.ElementCap, c => c.ElePct, c => c.EleFlat)));
 
-            var critEle = Single(All(c => (long)Math.Round(c.CritEleMult * S), "cele"), (long)Math.Round(sc.BaseCritEleMult * S));
-            var ceGain = NewVar(m, 0, cap * Math.Max(0, critEle.Ub - S), $"ceGain{side}");
-            m.AddMultiplicationEquality(ceGain.Var, affPos, critEle.Var - S);
-            var cef = NewVar(m, Micro, Micro + ceGain.Ub, $"cef{side}");
-            m.Add(cef.Var == Micro + ceGain.Var);
+            // EFE in micro points = ele(1e-5) * sum(weight * element scale * crit element factor)(1e-6) / 1e5
+            var critEle = Single(All(side0, c => (long)Math.Round(c.CritEleMult * S), "cele"), (long)Math.Round(s0.BaseCritEleMult * S));
+            var cefW = WeightedCrit(group.Select(i => W(score.Sides[i].Weight * score.Sides[i].ElementScale)).ToList(), critEle, false, $"E{tag}");
+            if (cefW is not null)
+            {
+                var ec = NewVar(m, ele.Lb * cefW.Lb, ele.Ub * cefW.Ub, $"ec{tag}");
+                m.AddMultiplicationEquality(ec.Var, ele.Var, cefW.Var);
+                var efe = NewVar(m, ec.Lb / 100_000, ec.Ub / 100_000 + 1, $"efe{tag}");
+                m.AddDivisionEquality(efe.Var, ec.Var, 100_000);
+                keys.Add((efe.Var, efe.Ub, Sig($"efe{string.Join(",", group.Select(i => R(score.Sides[i].Weight * score.Sides[i].ElementScale)))}|{s0.BaseCritEleMult}|{s0.BaseElePct}|{s0.BaseEleFlat}", s0.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
+                terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
+            }
 
-            // EFE in micro points = ele(1e-5) * CEF(1e-6) / 1e5 (-> 1e-6) * element scale (1e-6, sharpness included) / 1e6
-            var ec = NewVar(m, ele.Lb * cef.Lb, ele.Ub * cef.Ub, $"ec{side}");
-            m.AddMultiplicationEquality(ec.Var, ele.Var, cef.Var);
-            var ecMicro = NewVar(m, ec.Lb / 100_000, ec.Ub / 100_000, $"ecMicro{side}");
-            m.AddDivisionEquality(ecMicro.Var, ec.Var, 100_000);
-            var eleFactor = (long)Math.Round(sc.ElementScale * Micro);
-            var efe = NewVar(m, ecMicro.Lb * eleFactor / Micro, ecMicro.Ub * eleFactor / Micro + 1, $"efe{side}");
-            m.AddDivisionEquality(efe.Var, LinearExpr.Term(ecMicro.Var, eleFactor), Micro);
-            keys.Add((efe.Var, efe.Ub, Sig($"efe{sc.ElementScale}|{sc.BaseCritEleMult}|{sc.BaseElePct}|{sc.BaseEleFlat}|{sc.BaseAffinity}", sc.ElementCap, c => c.ElePct, c => c.EleFlat, c => c.Affinity, c => c.CritEleMult)));
-            terms.Add(efe.Var); lb += efe.Lb; ub += efe.Ub;
-
-            // element of the hits that cannot crit in micro points = ele(1e-5) * factor(1e-6) / 1e5
-            var eleNoCrit = (long)Math.Round(sc.ElementNoCrit * Micro);
+            // element of the hits that cannot crit in micro points = ele(1e-5) * sum(weight * factor)(1e-6) / 1e5
+            var eleNoCrit = (long)Math.Round(group.Sum(i => score.Sides[i].Weight * score.Sides[i].ElementNoCrit) * Micro);
             if (eleNoCrit > 0)
             {
-                var enc = NewVar(m, ele.Lb * eleNoCrit / 100_000, ele.Ub * eleNoCrit / 100_000 + 1, $"eleNoCrit{side}");
+                var enc = NewVar(m, ele.Lb * eleNoCrit / 100_000, ele.Ub * eleNoCrit / 100_000 + 1, $"eleNoCrit{tag}");
                 m.AddDivisionEquality(enc.Var, LinearExpr.Term(ele.Var, eleNoCrit), 100_000);
                 terms.Add(enc.Var); lb += enc.Lb; ub += enc.Ub;
             }
         }
 
-        foreach (var p in All(c => (long)Math.Round(c.Procs * Micro), "proc"))
+        // procs per 100 MV, the same in every side: times the group's share of the score
+        var weightSum = group.Sum(i => score.Sides[i].Weight);
+        foreach (var p in All(side0, c => (long)Math.Round(c.Procs * Micro), "proc"))
         {
-            terms.Add(p.Var); lb += p.Lb; ub += p.Ub;
+            var (expr, plb, pub) = Scaled(m, p, 1, weightSum, $"procW{tag}");
+            terms.Add(expr); lb += Math.Min(plb, 0); ub += pub;
         }
 
-        // Dark Arts shockwave: share * EFR + constant while Soul of the Dark Knight is active
-        var shock = All(c => c.Shockwave ? 1 : 0, "shock");
+        // Dark Arts shockwave while Soul of the Dark Knight is active: sum over sides of weight * (share * EFR + constant)
+        var shock = All(side0, c => c.Shockwave ? 1 : 0, "shock");
         if (shock.Count > 0)
         {
             var on = shock[0].Var;
-            var shockEfr = NewVar(m, Math.Min(efr.Lb, 0), efr.Ub, $"shockEfr{side}");
-            m.AddMultiplicationEquality(shockEfr.Var, on, efr.Var);
-            var share = (long)Math.Round(sc.ShockwaveRawShare * Micro);
-            var shockRaw = NewVar(m, Math.Min(shockEfr.Lb * share / Micro, 0), shockEfr.Ub * share / Micro + 1, $"shockRaw{side}");
-            m.AddDivisionEquality(shockRaw.Var, LinearExpr.Term(shockEfr.Var, share), Micro);
-            var constant = (long)Math.Round(sc.ShockwaveConstant * Micro);
-            terms.Add(shockRaw.Var); terms.Add(LinearExpr.Term(on, constant));
-            ub += shockRaw.Ub + constant; lb += Math.Min(0, shockRaw.Lb);
+            var shW = WeightedCrit(group.Select(i => W(score.Sides[i].Weight * score.Sides[i].ShockwaveRawShare * score.Sides[i].RawFactor)).ToList(), crit, true, $"S{tag}");
+            if (shW is not null)
+            {
+                var trsh = NewVar(m, Math.Min(tr.Lb * shW.Lb, 0), tr.Ub * shW.Ub, $"trsh{tag}");
+                m.AddMultiplicationEquality(trsh.Var, tr.Var, shW.Var);
+                var shockRaw = NewVar(m, Math.Min(trsh.Lb / S, 0), trsh.Ub / S + 1, $"shockRaw{tag}");
+                m.AddDivisionEquality(shockRaw.Var, trsh.Var, S);
+                if (mult is not null)
+                {
+                    var boosted = NewVar(m, Math.Min(shockRaw.Lb * mult.Lb, 0), shockRaw.Ub * mult.Ub, $"shockMultx{tag}");
+                    m.AddMultiplicationEquality(boosted.Var, shockRaw.Var, mult.Var);
+                    shockRaw = NewVar(m, Math.Min(boosted.Lb / S, 0), boosted.Ub / S + 1, $"shockMult{tag}");
+                    m.AddDivisionEquality(shockRaw.Var, boosted.Var, S);
+                }
+                var shockOn = NewVar(m, Math.Min(shockRaw.Lb, 0), shockRaw.Ub, $"shockOn{tag}");
+                m.AddMultiplicationEquality(shockOn.Var, on, shockRaw.Var);
+                terms.Add(shockOn.Var); ub += shockOn.Ub; lb += Math.Min(0, shockOn.Lb);
+            }
+            var constant = (long)Math.Round(group.Sum(i => score.Sides[i].Weight * score.Sides[i].ShockwaveConstant) * Micro);
+            terms.Add(LinearExpr.Term(on, constant)); ub += constant;
         }
 
-        var result = NewVar(m, lb, ub, $"side{side}");
+        var result = NewVar(m, lb, ub, $"side{tag}");
         m.Add(result.Var == LinearExpr.Sum(terms));
         return result;
-
-        Bounded Single(List<Bounded> varying, long baseValue) =>
-            varying.Count switch
-            {
-                0 => new Bounded(m.NewConstant(baseValue), baseValue, baseValue),
-                1 => varying[0],
-                _ => throw new InvalidOperationException("More than one unit changes the same critical multiplier."),
-            };
     }
 
     private static int Feature(ScoreDecomposition score, FeatureKind kind, int index)
