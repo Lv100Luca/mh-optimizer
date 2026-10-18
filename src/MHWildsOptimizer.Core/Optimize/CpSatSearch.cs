@@ -815,7 +815,6 @@ internal sealed class CpSatSearch
             }
         var floors = 0;
         var ranked = 0;
-        var reported = new HashSet<string>();
         if (topN > 1 && proved.Count < topN)
         {
             stage = $"top {topN}";
@@ -836,23 +835,35 @@ internal sealed class CpSatSearch
                 while (proved.Count + ranked < topN && Left() > 0.5)
                 {
                     var number = proved.Count + ranked + 1;
-                    Stage?.Set(2, $"build {number} of {topN}: ranked by a whole search with the time left");
+                    Stage?.Set(2, $"build {number} of {topN}: whole searches on {SplitLanes} lanes with the time left");
                     var extra = found.Values.Select(r => NotAll(Used(r).Used)).ToList();
                     var whole = PartModel(model, [], extra);
                     await Pacer.PauseAsync();
                     var give = Math.Min(Math.Max(rank, Left() / (topN - number + 1)), Left());
-                    var r = await Backend.SolveAsync(whole, ParametersOn(Lane, give), Lane, _ct);
+                    // the same search on every lane with its own seed: the best answer is the next build, the others are kept
+                    var answers = new CpSolverResponse?[SplitLanes];
+                    await OnLanesAsync(SplitLanes, 0, SplitLanes, async (l, lane) =>
+                    {
+                        answers[l] = await Backend.SolveAsync(whole, ParametersOn(lane, give) with { Seed = l }, lane, _ct);
+                    });
                     _ct.ThrowIfCancellationRequested();
-                    solves++;
-                    if (r.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) break;
-                    var used = Used(r).Used;
-                    var key = string.Join(",", used.Select(l => l.GetIndex()));
-                    Add(r, used);
-                    ranked++;
-                    reported.Add(key);
-                    // its best with every earlier build left out: the next best, proved
-                    if (r.Status == CpSolverStatus.Optimal && proved.Count + 1 == number) proved.Add(key);
-                    _progress?.Report($"  build {number}: {Points(r.ObjectiveValue)}, " + (r.Status == CpSolverStatus.Optimal ? "proved the next best" : "ranked, not proved") + $" by a whole search of {give:0} s");
+                    solves += SplitLanes;
+                    var good = answers.Where(r => r?.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible).Select(r => r!).OrderByDescending(r => r.ObjectiveValue).ToList();
+                    if (good.Count == 0) break;
+                    var distinct = 0;
+                    foreach (var r in good)
+                    {
+                        var used = Used(r).Used;
+                        var key = string.Join(",", used.Select(l => l.GetIndex()));
+                        if (found.ContainsKey(key)) continue;
+                        Add(r, used);
+                        distinct++;
+                        // a lane's best with every earlier build left out: the next best, proved
+                        if (r.Status == CpSolverStatus.Optimal && distinct == 1 && proved.Count + 1 == number) proved.Add(key);
+                    }
+                    ranked += distinct;
+                    _progress?.Report($"  whole searches of {give:0} s on {SplitLanes} lanes: best {Points(good[0].ObjectiveValue)}" +
+                                      (good[0].Status == CpSolverStatus.Optimal ? ", proved the next best" : "") + (distinct > 1 ? $", {distinct - 1} more kept" : ""));
                 }
             }
             else
@@ -893,7 +904,7 @@ internal sealed class CpSatSearch
             _statuses.Add(isProved ? "optimal" : k == 0 ? "time limit" : "ranked");
             var proof = isProved ? new SolveProof(ProofKind.Proved, 0, limit)
                 : new SolveProof(k == 0 ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, k == 0 ? limit : rank);
-            Record(r, proof, k + 1, bound, "", report: k >= proved.Count && !reported.Contains(string.Join(",", Used(r).Used.Select(l => l.GetIndex()))));
+            Record(r, proof, k + 1, bound, "", report: k >= proved.Count);
         }
         // ties of the other proved builds, should the top N not be full yet
         for (var k = 1; k < Math.Min(top.Count, proved.Count) && _builds.Count < topN; k++)

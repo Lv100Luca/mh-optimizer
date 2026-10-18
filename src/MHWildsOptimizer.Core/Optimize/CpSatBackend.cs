@@ -10,7 +10,8 @@ namespace MHWildsOptimizer.Core.Optimize;
 /// as fast (measured on saved configurations, see spikes/WasmSpeedTest).
 /// </summary>
 /// <param name="StopAtFirst">Stop at the first solution (a feasibility question, e.g. a build that ties another).</param>
-public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IReadOnlyList<string> Subsolvers, int? LinearizationLevel = null, bool StopAtFirst = false)
+/// <param name="Seed">Random seed, so the same search on several lanes takes different paths.</param>
+public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IReadOnlyList<string> Subsolvers, int? LinearizationLevel = null, bool StopAtFirst = false, int Seed = 0)
 {
     /// <summary>More workers per solve do not help; spare threads solve skill pair classes side by side instead.</summary>
     public const int MaxWorkersPerSolve = 4;
@@ -51,6 +52,7 @@ public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IRead
         };
         if (LinearizationLevel is { } level) parts.Add($"linearization_level:{level}");
         if (StopAtFirst) parts.Add("stop_after_first_solution:true");
+        if (Seed != 0) parts.Add($"random_seed:{Seed}");
         parts.AddRange(Subsolvers.Select(s => $"subsolvers:\"{s}\""));
         return string.Join(", ", parts);
     }
