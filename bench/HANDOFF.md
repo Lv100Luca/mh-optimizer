@@ -7,8 +7,12 @@ threads is fine. Small tweaks kept making things worse, so this branch first mea
 
 - Branch `feature/solver-bench` = origin/main (2bc8b9f, includes the split top-N search) + 3 commits:
   the bench suite (`bench/`, CLI `bench` / `bench compare` / `bench probe`), a compare fix, and a tie search (5d6c1c2).
-- `archive/topn-ties-bar-prototype` (local only on the PC): the first try, a rising-bar top-N search, built on the older main.
+- `archive/topn-ties-bar-prototype`: the first try, a rising-bar top-N search, built on the older main.
   Dropped: split-topn on main does the same with a cutoff in parts on every lane.
+- `feature/score-model-speed` (097c9e9, not merged): the damage model probes each uptime part once per set of timed skills;
+  12-part GS model 5.4 s -> 0.9 s in the browser (natively the model takes ~0.2 s either way, so the bench barely sees it).
+- `archive/split-topn-regions` (216d798): the "top N by regions" version of split-topn; main merged the other version
+  ("two phases on every lane", 25dc8d2), so this one is kept for reference only.
 - Nothing is merged into main.
 
 ## How to measure (see bench/README.md)
