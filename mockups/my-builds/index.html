@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My builds as a sketchpad · mockups</title>
+<link rel="stylesheet" href="mock.css">
+<link rel="stylesheet" href="mock-extra.css">
+<style>
+  body { background: var(--bg); }
+  .doc { max-width: 1180px; margin: 0 auto; padding: 28px 22px 80px; display: flex; flex-direction: column; gap: 22px; }
+  .doc h1 { font-size: 24px; }
+  .doc h2 { font-size: 17px; margin-bottom: 4px; }
+  .lead { color: var(--muted); font-size: 14.5px; max-width: 860px; }
+  .lead b { color: var(--text); }
+  .finding { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .finding:last-child { border-bottom: none; }
+  .finding .num { font-size: 18px; font-weight: 800; color: var(--err); }
+  .finding b { color: var(--text); }
+  .finding p { margin: 2px 0; color: var(--muted); }
+  .ideas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .idea { display: flex; flex-direction: column; gap: 8px; padding: 16px; text-decoration: none; color: var(--text); }
+  .idea:hover { border-color: var(--accent); }
+  .idea h3 { font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .idea .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .idea p { margin: 0; color: var(--muted); font-size: 13px; }
+  .idea p b { color: var(--text); font-weight: 600; }
+  .idea .solves { display: flex; gap: 4px; flex-wrap: wrap; margin-top: auto; }
+  .idea .solves span { font-size: 11px; padding: 0 6px; border-radius: 4px; background: rgba(224, 90, 79, 0.15); color: #f0a29b; }
+  .idea .cost { font-size: 11.5px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .idea .cost i { display: inline-flex; gap: 2px; }
+  .idea .cost i span { width: 8px; height: 8px; border-radius: 50%; background: var(--border-2); }
+  .idea .cost i span.on { background: var(--warn); }
+  .sketch { display: grid; gap: 3px; padding: 8px; border-radius: 6px; background: var(--bg-2); border: 1px solid var(--border); height: 96px; }
+  .sketch i { display: block; border-radius: 2px; background: var(--border-2); }
+  .sketch i.a { background: rgba(227, 182, 78, 0.55); }
+  .sketch i.b { background: rgba(79, 163, 230, 0.5); }
+  .sketch i.g { background: rgba(95, 191, 122, 0.5); }
+  .sketch i.d { border: 1px dashed var(--border-2); background: transparent; }
+  .combo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .combo .card { padding: 14px 16px; }
+  .combo h4 { font-size: 13.5px; margin-bottom: 4px; }
+  .combo p { margin: 0; color: var(--muted); font-size: 13px; }
+  .verdict { display: inline-block; font-size: 10.5px; padding: 0 6px; border-radius: 4px; border: 1px solid var(--border-2); color: var(--muted); vertical-align: middle; margin-left: 6px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+  @media (max-width: 900px) { .ideas { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="mockbar"><span class="title">Mockup</span><b>Overview</b><span class="muted">·</span><a href="1-sheet.html">1 · Skill sheet</a><span class="muted">·</span><a href="2-fill.html">2 · Fill the rest</a><span class="muted">·</span><a href="3-wishlist.html">3 · Skills first</a><span class="muted">·</span><a href="4-board.html">4 · Loadout board</a><span class="muted">·</span><a href="5-sets.html">5 · Sets first</a><span class="muted">·</span><a href="6-table.html">6 · Skill table</a><span class="muted">·</span><a href="7-combined.html">7 · Round 2</a><span class="muted">·</span><a href="8-drawer-targets.html">8 · Round 3</a></div>
+<div class="doc">
+  <div>
+    <h1>My builds as a sketchpad: six directions</h1>
+    <p class="lead">Today the tab is a <b>scorer</b>: you type a build in, it tells you what it does and compares it. The goal is to make it a place where you <b>draft a build yourself</b>: try an idea, see what it adds up to, fix the gaps, finish. Each page below pushes one direction as far as it goes so the differences are visible. The real answer is probably two of them together; see the bottom.</p>
+    <p class="lead small">All pages show the same scenario: the "Current" great sword, a new "Crit draft" that wants Critical Boost 5, Weakness Exploit 5, Agitator 5, Maximum Might 3 and Counterstrike 3, with the head and chest picked so far. Pieces, sets and jewels are the real ones from data/*.json. Damage numbers are illustrative; the mockups cannot score. Status: <span class="verdict">round 1 reviewed 2026-10-16; 1 (without the source list), 2 and 4 picked; round 2 combines them; round 3 (current) makes the palette a drawer and gives targets a source</span></p>
+  </div>
+
+  <section class="card">
+    <header class="card-head"><div class="card-title"><h2>What makes drafting hard today</h2><p class="hint">From the code (BuildsPanel.razor, EquipmentEditor.razor) and the running app.</p></div></header>
+    <div class="card-body">
+      <div class="finding"><span class="num">1</span><div><b>You start from nothing.</b><p>"+ New" gives seven empty rows and a dropdown per row with hundreds of pieces sorted by rarity. The search finds skills, but you need to know what you want from each slot first.</p></div></div>
+      <div class="finding"><span class="num">2</span><div><b>The skill totals are not where you edit.</b><p>You design toward skills, but the sum (Agitator 2 of 5, Critical Boost at the cap) is on the build card at the very bottom and the targets in a section of their own. Free slots are nowhere.</p></div></div>
+      <div class="finding"><span class="num">3</span><div><b>Jewels are 18 pickers.</b><p>Every slot is filled by hand, one dropdown at a time. The optimizer knows how to fill slots and is not asked.</p></div></div>
+      <div class="finding"><span class="num">4</span><div><b>Sets are not a unit.</b><p>Hunters think "2 Bale for Dark Arts, 2 Udra"; the editor only knows single pieces and shows the bonus names in small print.</p></div></div>
+      <div class="finding"><span class="num">5</span><div><b>The sketch and the solver are not linked.</b><p>Results can lock a piece into Allowed armor. The reverse ("I chose these two, finish it for me") does not exist, although the lock mechanics are there.</p></div></div>
+      <div class="finding"><span class="num">6</span><div><b>The page is long.</b><p>Conditions, damage per attack, upgrades, compare and the card follow the editor. Drafting wants editor, totals and score in one view; analysis can fold.</p></div></div>
+    </div>
+  </section>
+
+  <div>
+    <h2>Six directions</h2>
+    <p class="lead">Each card says what the page changes, what it costs to build, and which of the problems above it attacks (red tags). Open a page for the design notes.</p>
+  </div>
+  <div class="ideas">
+    <a class="card idea" href="1-sheet.html">
+      <span class="k">1 · Skill sheet</span>
+      <h3>A live skill sheet next to the editor <span class="verdict" style="color:var(--ok);border-color:rgba(95,191,122,.5)">picked, without "where to get it"</span></h3>
+      <div class="sketch" style="grid-template-columns: 2fr 1fr; grid-template-rows: 10px 1fr 14px 14px"><i class="a" style="grid-column: 1 / -1"></i><i></i><i class="g" style="grid-row: 2 / -1"></i><i class="d"></i><i class="d"></i></div>
+      <p><b>Changes:</b> two columns. Editor left as it is, analysis folds below it. Right: targets with level pips, free slots, set piece counts, always in view. Click a skill for the jewels and pieces that give it, with Equip / Swap buttons.</p>
+      <p><b>Keeps:</b> the editor, drafts, upgrades, compare. Nothing is relearned.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span></span><span></span></i> layout and one new component; data is already there</div>
+      <div class="solves"><span>2 totals</span><span>6 long page</span><span>1 blank start (partly)</span></div>
+    </a>
+    <a class="card idea" href="2-fill.html">
+      <span class="k">2 · Fill the rest</span>
+      <h3>Lock what you want, the optimizer fills the rest <span class="verdict" style="color:var(--ok);border-color:rgba(95,191,122,.5)">picked</span></h3>
+      <div class="sketch" style="grid-template-columns: 1fr; grid-template-rows: 10px 12px 12px 12px 12px 1fr"><i class="a"></i><i class="a"></i><i class="a"></i><i class="d"></i><i class="d"></i><i class="b"></i></div>
+      <p><b>Changes:</b> a keep toggle per row. Empty rows read "optimizer fills this". One button runs the solver with the kept pieces as Allowed armor and shows three completions you can take as the build or as a draft. All five kept = fill the jewels only.</p>
+      <p><b>Keeps:</b> everything; it is a button and a result strip.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span></span><span></span></i> reuses IncludeArmor and the run pipeline; talisman lock is new</div>
+      <div class="solves"><span>3 jewels</span><span>5 solver link</span><span>1 blank start</span></div>
+    </a>
+    <a class="card idea" href="3-wishlist.html">
+      <span class="k">3 · Skills first</span>
+      <h3>Start from the skills you want <span class="verdict">not picked</span></h3>
+      <div class="sketch" style="grid-template-columns: 1fr; grid-template-rows: 12px 12px 12px 12px 1fr"><i class="g"></i><i class="g"></i><i class="d"></i><i class="d"></i><i class="b"></i></div>
+      <p><b>Changes:</b> a new build opens on a wishlist (skill, level, coverage bar), not on empty rows. Below it, per armor kind, the three pieces that cover the most of the list; one click picks. Then "Open in the editor" or "Let the optimizer finish".</p>
+      <p><b>Keeps:</b> the editor for the fine work. The wishlist becomes the draft's targets.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span class="on"></span><span></span></i> new entry flow plus a ranking of pieces; cheap math, more UI</div>
+      <div class="solves"><span>1 blank start</span><span>2 totals</span><span>4 sets (no)</span></div>
+    </a>
+    <a class="card idea" href="4-board.html">
+      <span class="k">4 · Loadout board</span>
+      <h3>Seven tiles you fill from a palette <span class="verdict" style="color:var(--ok);border-color:rgba(95,191,122,.5)">picked</span></h3>
+      <div class="sketch" style="grid-template-columns: repeat(7, 1fr); grid-template-rows: 36px 8px 1fr"><i class="a"></i><i class="a"></i><i class="a"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i style="grid-column: 1 / -1"></i><i class="b" style="grid-column: 1 / -1"></i></div>
+      <p><b>Changes:</b> the build is a row of tiles like the game's equipment screen. A palette below with search, kind and skill filters and a "helps a target" sort; click or drag a card onto a tile. Totals as one strip of chips between the two.</p>
+      <p><b>Keeps:</b> the data; not the editor. The most visual and the most game-like.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></i> a new editor; drag and drop in Blazor is work; jewels need a second pass per tile</div>
+      <div class="solves"><span>1 blank start</span><span>2 totals (strip)</span><span>6 long page</span></div>
+    </a>
+    <a class="card idea" href="5-sets.html">
+      <span class="k">5 · Sets first</span>
+      <h3>Build from sets, then fine-tune <span class="verdict">not picked</span></h3>
+      <div class="sketch" style="grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr"><i class="a"></i><i></i><i></i><i></i><i class="a"></i><i></i></div>
+      <p><b>Changes:</b> browse set cards with their 2- and 4-piece bonus and group skill; click the pieces you want from each. A bonus tracker shows how many pieces each bonus still needs. Then the editor for jewels.</p>
+      <p><b>Keeps:</b> the editor. Matches how hunters talk about builds.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span class="on"></span><span></span></i> a set browser (data exists: armor_sets_hr.json) and a tracker; the card grid is big</div>
+      <div class="solves"><span>4 sets</span><span>1 blank start</span></div>
+    </a>
+    <a class="card idea" href="6-table.html">
+      <span class="k">6 · Skill table</span>
+      <h3>One table, every piece against every skill <span class="verdict">not picked</span></h3>
+      <div class="sketch" style="grid-template-columns: 2fr repeat(6, 1fr); grid-template-rows: 8px repeat(5, 1fr) 10px"><i></i><i class="a"></i><i class="a"></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="g"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="b"></i><i></i><i></i><i></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="g" style="grid-column: 1 / -1"></i></div>
+      <p><b>Changes:</b> rows are pieces (jewels as sub-rows), columns are skills, the footer sums against the wanted levels in green, amber and red. The whole build and all its skills on one screen, theorycrafter style.</p>
+      <p><b>Keeps:</b> the pickers in the first column. Nothing else from the editor.</p>
+      <div class="cost">cost <i><span class="on"></span><span class="on"></span><span></span><span></span></i> a table over data the editor already has; wide with many skills</div>
+      <div class="solves"><span>2 totals</span><span>6 long page</span></div>
+    </a>
+  </div>
+
+  <section class="card">
+    <header class="card-head"><div class="card-title"><h2>Round 2 · the picked three together</h2><p class="hint">Board as the editor, skill sheet on the right (rows filter the palette instead of a source list), fill the rest under the sheet with completions above the palette.</p></div><div class="card-actions"><a class="btn sm" href="7-combined.html">Open 7 · Round 2</a></div></header>
+  </section>
+  <section class="card">
+    <header class="card-head"><div class="card-title"><h2>Round 3 · drawer and target sources <span class="verdict" style="color:var(--ok);border-color:rgba(95,191,122,.5)">current</span></h2><p class="hint">The palette opens as a drawer under the board only while a tile or slot is selected. Targets show their source: the weapon's (Targets &amp; limits, steers the optimizer) and the draft's own additions or overrides (saved with the build, steer fill the rest).</p></div><div class="card-actions"><a class="btn sm primary" href="8-drawer-targets.html">Open 8 · Round 3</a></div></header>
+  </section>
+
+  <div>
+    <h2>How they combine</h2>
+    <p class="lead">They are not exclusive. The sheet (1) and the table (6) are two shapes of the same thing: totals where you edit. The entry flows (3, 5) decide what the first screen of a new build is. Fill the rest (2) is a button that any of them can carry. The board (4) replaces the editor and is the only one that cannot be added on top.</p>
+  </div>
+  <div class="combo">
+    <div class="card"><h4>Small: 1 + 2</h4><p>Keep the editor, add the sheet beside it and the keep toggles with "Fill the rest". Two features, no new entry flow. The blank start is softened by the sheet's "where to get it" list and by the solver.</p></div>
+    <div class="card"><h4>Guided: 3 + 1 + 2</h4><p>A new build opens on the wishlist, picks land in the editor with the sheet, the solver closes the gaps. The most "sketch" of the combinations; the most UI too.</p></div>
+    <div class="card"><h4>Hunter's way: 5 + 1</h4><p>Sets first, then the sheet for jewels and single swaps. Best when you already know the set bonus you are after; weakest for pure skill-stacking.</p></div>
+    <div class="card"><h4>Rebuild: 4 + 2</h4><p>The board as the editor, the solver as its fill. A different app; worth it only if the current editor is considered a dead end.</p></div>
+  </div>
+</div>
+</body>
+</html>

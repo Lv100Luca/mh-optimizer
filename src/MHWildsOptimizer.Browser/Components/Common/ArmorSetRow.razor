@@ -1,0 +1,107 @@
+@* One armor set of the allow list in Options: the checkbox allows the whole set (indeterminate when only some pieces are),
+   the pieces button opens a popover with a checkbox and a lock per piece. The indeterminate state is set by the list (mhwo.syncMixed). *@
+@{
+    var on = Set.Pieces.Count(p => Options.Allows(Set.Name, p.Name));
+    var state = on == Set.Pieces.Count ? "on" : on == 0 ? "off" : "mixed";
+    var locks = Set.Pieces.Count(p => Locked.Contains(p.Name));
+    var single = Set.Pieces.Count == 1 ? Set.Pieces[0] : null;
+}
+<div class="setrow armor-set @state">
+    <label class="armor-set-main">
+        <input type="checkbox" checked="@(state == "on")" data-mixed="@(state == "mixed" ? "true" : "false")"
+               title="@(state == "on" ? $"Disallow {Set.Name}" : $"Allow every piece of {Set.Name}")" @onchange="ToggleSet" />
+        <img class="icon" src="@GameIcons.Armor(single?.Kind ?? ArmorPieceKind.Head, Set.Rarity)" alt="" width="22" height="22" />
+        <span class="setmain">
+            <span class="setname">
+                <span class="nm">@Set.Name</span> <RarityBadge Rarity="Set.Rarity" />
+                @if (locks > 0)
+                {
+                    <span class="lockmark small">@(locks) locked</span>
+                }
+            </span>
+            @if (Set.SetBonus.Count > 0 || Set.GroupSkill is not null)
+            {
+                <span class="muted small setinfo">
+                    @foreach (var b in Set.SetBonus)
+                    {
+                        <SkillHover @key="b" Name="@b" Class="with-icon"><SkillIcon Name="@b" Kind="SkillKind.Set" Size="14" />@b</SkillHover>
+                    }
+                    @if (Set.GroupSkill is { } group)
+                    {
+                        <SkillHover Name="@group" Class="with-icon"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" />@group</SkillHover>
+                    }
+                </span>
+            }
+        </span>
+    </label>
+    @if (single is not null)
+    {
+        <span class="muted small armor-set-kind">@BuildHelpers.PieceLabel(single.Kind)</span>
+        <LockButton Name="@single.Name" Kind="single.Kind" Locked="Locked.Contains(single.Name)" OnClick="() => ToggleLock(single)">@(Locked.Contains(single.Name) ? "Locked" : "Lock")</LockButton>
+    }
+    else
+    {
+        <div class="picker-anchor">
+            <button type="button" class="armor-set-pieces @(state == "mixed" ? "mixed" : "") @(_open ? "open" : "")" title="Choose pieces"
+                    aria-haspopup="true" aria-expanded="@_open" @onclick="() => _open = !_open">
+                @on/@Set.Pieces.Count pieces
+                <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+            </button>
+            @if (_open)
+            {
+                <MudPopover Open="true" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Class="armor-pieces-pop" Fixed="false">
+                    <div class="armor-pieces-head small">
+                        <b>@Set.Name</b> <RarityBadge Rarity="Set.Rarity" />
+                        <span class="muted armor-pieces-count">@on of @Set.Pieces.Count allowed</span>
+                    </div>
+                    @foreach (var p in Set.Pieces)
+                    {
+                        var allowed = Options.Allows(Set.Name, p.Name);
+                        var lockedTo = Options.IncludeArmor.Where(n => n != p.Name && KindOf(n) == p.Kind).ToList();
+                        var blocked = lockedTo.Count > 0 && !Options.IncludeArmor.Contains(p.Name);
+                        <label @key="p.Name" class="armor-piece @(allowed ? "" : "off") @(blocked ? "blocked" : "")">
+                            <input type="checkbox" checked="@allowed" @onchange="() => TogglePiece(p, !allowed)" />
+                            <img src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" width="20" height="20" />
+                            <span class="armor-piece-name">
+                                <b>@p.Name</b>
+                                @if (blocked)
+                                {
+                                    <span class="lockmark tiny">@BuildHelpers.PieceLabel(p.Kind) locked to @string.Join(", ", lockedTo)</span>
+                                }
+                                else
+                                {
+                                    <span class="muted tiny">@BuildHelpers.PieceLabel(p.Kind)</span>
+                                }
+                            </span>
+                            <LockButton Name="@p.Name" Kind="p.Kind" Locked="Locked.Contains(p.Name)" OnClick="() => ToggleLock(p)">@(Locked.Contains(p.Name) ? "Locked" : "Lock")</LockButton>
+                        </label>
+                    }
+                </MudPopover>
+                <MudOverlay Visible="true" OnClick="() => _open = false" LockScroll="false" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ArmorSetDto Set { get; set; } = default!;
+    [Parameter, EditorRequired] public OptimizerOptions Options { get; set; } = default!;
+    /// <summary>The pieces locked as the only one of their kind (<see cref="ArmorChoices.LockedPieces"/>).</summary>
+    [Parameter, EditorRequired] public IReadOnlySet<string> Locked { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<string, ArmorPieceKind?> KindOf { get; set; } = default!;
+    [Parameter] public EventCallback<Func<OptimizerOptions, OptimizerOptions>> OnPatch { get; set; }
+
+    private bool _open;
+
+    private List<string> Names => Set.Pieces.Select(p => p.Name).ToList();
+
+    private Task ToggleSet()
+    {
+        var allOn = Set.Pieces.All(p => Options.Allows(Set.Name, p.Name));
+        return OnPatch.InvokeAsync(o => o.AllowSet(Set.Name, Names, !allOn));
+    }
+
+    private Task TogglePiece(ArmorSetPieceDto p, bool allow) => OnPatch.InvokeAsync(o => o.AllowPiece(Set.Name, Names, p.Name, allow));
+
+    private Task ToggleLock(ArmorSetPieceDto p) => OnPatch.InvokeAsync(o => o.ToggleLock(Set.Name, Names, p.Name, p.Kind, KindOf));
+}

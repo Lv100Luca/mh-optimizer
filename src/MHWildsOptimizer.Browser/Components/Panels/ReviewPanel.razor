@@ -157,9 +157,13 @@
                         <div class="small">
                             transcendence @(options.AllowTranscendence ? "on" : "off") · top @options.TopN · rarity @(options.MinRarity)+ ·
                             CP-SAT (exact, @options.CpSatTimeLimitSeconds.ToString(CultureInfo.InvariantCulture) s per solve) · @(options.MaxThreads > 0 ? $"{options.MaxThreads} threads" : "all threads") · @options.ExcludeSets.Count sets excluded
+                            @if (options.ExcludeArmor.Count > 0)
+                            {
+                                <text> · @Fmt.Plural(options.ExcludeArmor.Count, "armor piece") excluded</text>
+                            }
                             @if (options.IncludeArmor.Count > 0)
                             {
-                                <text> · @Fmt.Plural(options.IncludeArmor.Count, "allowed armor piece")</text>
+                                <text> · @Fmt.Plural(options.IncludeArmor.Count, "locked armor piece")</text>
                             }
                         </div>
                     </div>

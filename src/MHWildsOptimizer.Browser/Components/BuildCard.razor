@@ -172,7 +172,7 @@
                                 @if (OnToggleLock.HasDelegate)
                                 {
                                     var locked = Locked?.Contains(a.Name) == true;
-                                    <LockButton Piece="a" Locked="locked" OnClick="() => OnToggleLock.InvokeAsync(a)">@(locked ? "Locked" : "Lock")</LockButton>
+                                    <LockButton Name="@a.Name" Kind="a.Kind" Locked="locked" OnClick="() => OnToggleLock.InvokeAsync(a)">@(locked ? "Locked" : "Lock")</LockButton>
                                 }
                             </td>
                             <td class="name">

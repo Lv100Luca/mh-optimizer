@@ -1,0 +1,292 @@
+@inject AppState App
+
+@* The palette: opens under the board while a tile or a slot square is selected, with pieces of that kind, jewels for that slot
+   or talismans. Searchable, filtered by the sheet's skill, sorted by how many wanted levels an entry adds. A click equips and
+   keeps the drawer open for the next pick. *@
+@{
+    var slot = Selection.Slot;
+    var kind = BuildDiff.ArmorSlots.GetValueOrDefault(slot);
+    var isArmor = BuildDiff.ArmorSlots.ContainsKey(slot);
+    var slots = BoardSlots.SlotsOf(App, Build, slot);
+    var decoIndex = Selection.DecoIndex ?? FirstEmpty(slots, BoardSlots.DecorationsOf(Build, slot));
+    var mode = Mode;
+    var want = Want;
+    var have = Have;
+    var minRarity = App.Request?.Options.MinRarity ?? 5;
+    var modes = new List<SegmentOption<PaletteMode>>();
+    if (isArmor) modes.Add(new(PaletteMode.Pieces, "Pieces"));
+    if (slot == BuildSlot.Talisman) modes.Add(new(PaletteMode.Talismans, "Talismans"));
+    if (slots.Count > 0) modes.Add(new(PaletteMode.Jewels, "Jewels", Hint: decoIndex is { } di && di < slots.Count ? $"for the level {slots[di].Level} slot" : null));
+}
+<section class="drawer">
+    <header class="drawer-head">
+        <span class="for"><img src="@SlotStrip.Icon(slot, App.WeaponKind)" alt="" />Palette for @BoardSlots.Label(slot)</span>
+        @if (modes.Count > 1)
+        {
+            <Segmented T="PaletteMode" Small="true" Value="mode" ValueChanged="m => _mode = m" Options="modes" />
+        }
+        <span class="close"><span class="muted small">Picks keep this open; click outside to close</span><button type="button" class="linklike x" title="Close the palette" @onclick="() => OnClose.InvokeAsync()">✕</button></span>
+    </header>
+    <div class="drawer-body">
+        @if (want.Count > 0)
+        {
+            <div class="chip-row target-strip" title="This build's targets: what it has of what it wants">
+                <span class="flabel">targets</span>
+                @foreach (var (skill, w) in want.OrderBy(kv => have.GetValueOrDefault(kv.Key) >= kv.Value ? 1 : 0).ThenBy(kv => kv.Key))
+                {
+                    var h = have.GetValueOrDefault(skill);
+                    <span class="chip skill tiny @(h >= w ? "met" : "short") @(skill == SkillFilter ? "sel" : "")" @onclick="() => SkillFilterChanged.InvokeAsync(skill == SkillFilter ? null : skill)" title="@(skill == SkillFilter ? "Drop the filter" : $"Filter the palette by {skill}")"><SkillIcon Name="@skill" Size="14" />@skill <b>@h<small>/@w</small></b></span>
+                }
+            </div>
+        }
+        <div class="palette-toolbar">
+            <SearchBox Value="@_query" ValueChanged="q => _query = q ?? string.Empty" Placeholder="@(mode switch { PaletteMode.Jewels => "Search jewels or skills…", PaletteMode.Talismans => "Search talismans, charms, skills…", _ => "Search pieces, sets, skills…" })" Class="palette-search" />
+            <div class="filters">
+                <span class="flabel">for</span>
+                @foreach (var s in BuildDiff.AllSlots)
+                {
+                    var target = s;
+                    <button type="button" class="filter @(s == slot ? "on from-tile" : "")" @onclick="() => SelectionChanged.InvokeAsync(new BoardSelection(target))">@BoardSlots.Label(s)</button>
+                }
+                <span class="fsep"></span>
+                <span class="flabel">skill</span>
+                @if (SkillFilter is not null)
+                {
+                    <button type="button" class="filter on from-sheet" title="Set from the skill sheet; click to drop" @onclick="() => SkillFilterChanged.InvokeAsync(null)">@SkillFilter ✕</button>
+                }
+                else
+                {
+                    <span class="muted small">click one in the sheet</span>
+                }
+                <span class="fsep"></span>
+                @if (mode == PaletteMode.Pieces)
+                {
+                    <button type="button" class="filter @(_allRarities ? "" : "on")" @onclick="() => _allRarities = !_allRarities" title="@($"The options allow rarity {minRarity} and up")">Rarity @minRarity+</button>
+                }
+                <button type="button" class="filter @(_helpsOnly ? "on" : "")" @onclick="() => _helpsOnly = !_helpsOnly" title="Only what adds a wanted level">Helps a target</button>
+                @if (mode == PaletteMode.Pieces)
+                {
+                    <button type="button" class="filter @(_hideWorn ? "on" : "")" @onclick="() => _hideWorn = !_hideWorn">Hide what I wear</button>
+                }
+            </div>
+        </div>
+
+        @if (slot == BuildSlot.Weapon)
+        {
+            <div class="pairpick drawer-pair">
+                <span class="with-icon muted small"><SkillIcon Name="set" Kind="SkillKind.Set" Size="16" /> set bonus</span>
+                <SearchSelect Value="@Build.SetBonus" ValueChanged="v => Update.Invoke(b => b with { SetBonus = v })" Placeholder="@($"as rolled: {App.Resolved?.Weapon?.SetBonus ?? "none"}")"
+                              Options="@App.Catalog.SkillPool.SetBonuses.Select(s => new SelectOption(s, s)).ToList()" />
+                <span class="with-icon muted small"><SkillIcon Name="group" Kind="SkillKind.Group" Size="16" /> group skill</span>
+                <SearchSelect Value="@Build.GroupSkill" ValueChanged="v => Update.Invoke(b => b with { GroupSkill = v })" Placeholder="@($"as rolled: {App.Resolved?.Weapon?.GroupSkill ?? "none"}")"
+                              Options="@App.Catalog.SkillPool.GroupSkills.Select(s => new SelectOption(s, s)).ToList()" />
+            </div>
+        }
+
+        @switch (mode)
+        {
+            case PaletteMode.Pieces:
+                @Pieces(kind, want, have, minRarity)
+                break;
+            case PaletteMode.Jewels:
+                @Jewels(slot, slots, decoIndex, want, have)
+                break;
+            case PaletteMode.Talismans:
+                @Talismans(want, have)
+                break;
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public BuildInput Build { get; set; } = default!;
+    [Parameter, EditorRequired] public Action<Func<BuildInput, BuildInput>> Update { get; set; } = default!;
+    [Parameter, EditorRequired] public BoardSelection Selection { get; set; } = default!;
+    [Parameter] public EventCallback<BoardSelection?> SelectionChanged { get; set; }
+    [Parameter] public string? SkillFilter { get; set; }
+    [Parameter] public EventCallback<string?> SkillFilterChanged { get; set; }
+    /// <summary>Wanted skill levels (the weapon's targets with the build's own on top) and what the build has, for the "helps a target" sort.</summary>
+    [Parameter] public IReadOnlyDictionary<string, int> Want { get; set; } = new Dictionary<string, int>();
+    [Parameter] public IReadOnlyDictionary<string, int> Have { get; set; } = new Dictionary<string, int>();
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private const int PageSize = 36;
+
+    private string _query = "";
+    private PaletteMode? _mode;
+    private BoardSelection? _modeFor;
+    private bool _allRarities, _helpsOnly, _hideWorn;
+    private int _shown = PageSize;
+
+    /// <summary>The mode follows the selection: a slot square means jewels, a tile means pieces (or talismans); a manual switch sticks until the selection changes.</summary>
+    private PaletteMode Mode
+    {
+        get
+        {
+            if (_modeFor != Selection) { _mode = null; _modeFor = Selection; _shown = PageSize; }
+            if (_mode is { } m) return m;
+            if (Selection.DecoIndex is not null || Selection.Slot == BuildSlot.Weapon) return PaletteMode.Jewels;
+            return Selection.Slot == BuildSlot.Talisman ? PaletteMode.Talismans : PaletteMode.Pieces;
+        }
+    }
+
+    private static int? FirstEmpty(IReadOnlyList<SlotSpec> slots, IReadOnlyList<string?> decos)
+    {
+        for (var i = 0; i < slots.Count; i++)
+            if (i >= decos.Count || decos[i] is null) return i;
+        return slots.Count > 0 ? 0 : null;
+    }
+
+    private bool HasSkill(IEnumerable<SkillGrant> grants, IEnumerable<string> bonuses) =>
+        SkillFilter is null || grants.Any(g => g.Skill == SkillFilter) || bonuses.Contains(SkillFilter);
+
+    private static string Plural(int n, string one, string? many = null) => Fmt.Plural(n, one, many);
+
+    // ---------------- pieces
+    private RenderFragment Pieces(ArmorPieceKind kind, IReadOnlyDictionary<string, int> want, IReadOnlyDictionary<string, int> have, int minRarity) => __builder =>
+    {
+        var worn = BuildHelpers.ArmorKinds.Select(k => Build.Armor(k)?.Piece).OfType<string>().ToHashSet();
+        var all = App.Index.ArmorByName.Values.Where(p => p.Kind == kind).ToList();
+        var filtered = all
+            .Where(p => _allRarities || p.Rarity >= minRarity)
+            .Where(p => !_hideWorn || !worn.Contains(p.Name))
+            .Where(p => HasSkill(p.Piece.Skills, p.SetBonus.Append(p.GroupSkill ?? "")));
+        var searched = LooseSearch.Filter(filtered, p => string.Join(' ', [p.Name, p.Set, .. p.Piece.Skills.Select(s => s.Skill), .. p.SetBonus, p.GroupSkill ?? ""]), _query);
+        var scored = searched.Select(p => (Piece: p, Fit: BoardSlots.Fit(p.Piece.Skills, want, have))).ToList();
+        var helping = scored.Count(x => x.Fit > 0);
+        if (_helpsOnly && helping > 0) scored = scored.Where(x => x.Fit > 0).ToList();
+        scored = scored.OrderByDescending(x => x.Fit).ThenByDescending(x => x.Piece.Rarity).ThenByDescending(x => x.Piece.Piece.Slots.Sum()).ThenBy(x => x.Piece.Name).ToList();
+        <p class="palette-count muted small">@Plural(scored.Count, "piece")@(want.Count > 0 ? $" · {helping} help a target" : "")</p>
+        <div class="palette-grid">
+            @foreach (var (p, fit) in scored.Take(_shown))
+            {
+                var isWorn = worn.Contains(p.Name);
+                <button type="button" @key="p.Name" class="pcard @(isWorn ? "worn" : "")" title="@(isWorn ? $"{p.Name} is worn" : $"Equip {p.Name} as {BuildHelpers.PieceLabel(kind).ToLowerInvariant()}")" @onclick="() => PickPiece(kind, p)">
+                    <img src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" />
+                    <span class="pn"><span>@p.Name</span><RarityBadge Rarity="p.Rarity" />@if (isWorn) { <span class="tag">worn</span> }</span>
+                    <span class="ps">@string.Join(", ", p.Piece.Skills.Select(g => $"{g.Skill} {g.Level}"))</span>
+                    <span class="pr">
+                        <Slots Numbers="@(BoardSlots.CanTranscend(p) && App.Request?.Options.AllowTranscendence == true ? p.Piece.SlotsTranscended : p.Piece.Slots)" />
+                        @if (p.SetBonus.Count > 0 || p.GroupSkill is not null) { <span class="set">@string.Join(" · ", p.SetBonus.Append(p.GroupSkill ?? "").Where(x => x.Length > 0))</span> }
+                        <span class="fit">@(fit > 0 ? $"+{fit} target lvl{(fit == 1 ? "" : "s")}" : "")</span>
+                    </span>
+                </button>
+            }
+        </div>
+        @if (scored.Count > _shown)
+        {
+            <button type="button" class="linklike small" @onclick="() => _shown += PageSize">Show @Math.Min(PageSize, scored.Count - _shown) more of @scored.Count</button>
+        }
+        else if (scored.Count == 0)
+        {
+            <p class="muted small">Nothing matches. @(_helpsOnly ? "" : "")@(SkillFilter is not null ? "Drop the skill filter or " : "")@(_query.Length > 0 ? "change the search." : "widen the filters.")</p>
+        }
+        <p class="hintline">Click equips into @BoardSlots.Label(Selection.Slot) and keeps the palette open. Jewels already in the slots stay where they still fit.</p>
+    };
+
+    private void PickPiece(ArmorPieceKind kind, ArmorEntry p)
+    {
+        var next = new BuildArmorInput { Piece = p.Name, Transcended = App.Request!.Options.AllowTranscendence && BoardSlots.CanTranscend(p) };
+        Update.Invoke(b => b.WithArmor(kind, next with { Decorations = BuildHelpers.FitDecorations(b.Armor(kind)?.Decorations ?? [], BoardSlots.ArmorSlots(App, next), App.Index.DecorationsByName) }));
+    }
+
+    // ---------------- jewels
+    private RenderFragment Jewels(BuildSlot slot, IReadOnlyList<SlotSpec> slots, int? decoIndex, IReadOnlyDictionary<string, int> want, IReadOnlyDictionary<string, int> have) => __builder =>
+    {
+        if (decoIndex is not { } index || index >= slots.Count)
+        {
+            <p class="muted small">@(slots.Count == 0 ? $"{BoardSlots.Label(slot)} has no slots to fill." : "Pick a slot square on the tile.")</p>
+            return;
+        }
+        var spec = slots[index];
+        var decos = BoardSlots.DecorationsOf(Build, slot);
+        var current = index < decos.Count ? decos[index] : null;
+        var filtered = App.Catalog.Decorations
+            .Where(d => BuildHelpers.Fits(d, spec))
+            .Where(d => HasSkill(d.Skills, []));
+        var searched = LooseSearch.Filter(filtered, d => string.Join(' ', [d.Name, .. d.Skills.Select(g => g.Skill)]), _query);
+        var scored = searched.Select(d => (Deco: d, Fit: BoardSlots.Fit(d.Skills, want, have))).ToList();
+        var helping = scored.Count(x => x.Fit > 0);
+        if (_helpsOnly && helping > 0) scored = scored.Where(x => x.Fit > 0).ToList();
+        scored = scored.OrderByDescending(x => x.Fit).ThenByDescending(x => x.Deco.Slot).ThenBy(x => x.Deco.Name).ToList();
+        <p class="palette-count muted small">Slot @(index + 1) of @slots.Count: level @spec.Level @spec.Kind.ToString().ToLowerInvariant() · @Plural(scored.Count, "jewel")@(want.Count > 0 ? $" · {helping} help a target" : "")</p>
+        <div class="palette-grid jewels">
+            <button type="button" class="pcard empty-opt @(current is null ? "worn" : "")" @onclick="() => SetDeco(slot, slots, index, null)">
+                <span class="deco-empty" style="width: 24px; height: 24px">@spec.Level</span>
+                <span class="pn"><span>empty slot</span></span>
+                <span class="ps">leave the level @spec.Level slot free</span>
+            </button>
+            @foreach (var (d, fit) in scored.Take(_shown))
+            {
+                var inSlot = d.Name == current;
+                <button type="button" @key="d.Name" class="pcard @(inSlot ? "worn" : "")" title="@(inSlot ? "In this slot" : $"Put {d.Name} into the slot")" @onclick="() => SetDeco(slot, slots, index, d.Name)">
+                    <DecoIcon Decoration="d" Size="26" Card="false" />
+                    <span class="pn"><span>@d.Name</span>@if (inSlot) { <span class="tag">in slot</span> }</span>
+                    <span class="ps">@string.Join(", ", d.Skills.Select(g => $"{g.Skill} {g.Level}"))</span>
+                    <span class="pr"><Slots Numbers="@(new[] { d.Slot })" Kind="@(d.Kind == SkillKind.Weapon ? "weapon" : "armor")" /><span class="fit">@(fit > 0 ? $"+{fit} target lvl{(fit == 1 ? "" : "s")}" : "")</span></span>
+                </button>
+            }
+        </div>
+        @if (scored.Count > _shown)
+        {
+            <button type="button" class="linklike small" @onclick="() => _shown += PageSize">Show @Math.Min(PageSize, scored.Count - _shown) more of @scored.Count</button>
+        }
+        <p class="hintline">A pick fills this slot and moves on to the next empty one of the tile.</p>
+    };
+
+    private async Task SetDeco(BuildSlot slot, IReadOnlyList<SlotSpec> slots, int index, string? name)
+    {
+        Update.Invoke(b => b.WithDecoration(slot, index, name, slots));
+        if (name is null) return;
+        // on to the next empty slot of the tile, if any
+        var decos = BoardSlots.DecorationsOf(Build, slot).ToList();
+        for (var i = 0; i < slots.Count; i++)
+            if (i != index && (i >= decos.Count || decos[i] is null))
+            {
+                await SelectionChanged.InvokeAsync(new BoardSelection(slot, i));
+                return;
+            }
+    }
+
+    // ---------------- talismans
+    private RenderFragment Talismans(IReadOnlyDictionary<string, int> want, IReadOnlyDictionary<string, int> have) => __builder =>
+    {
+        var current = Build.Talisman?.Name;
+        var own = App.Talismans.Select(t => (Name: t.Name, Rarity: t.Rarity, Skills: (IReadOnlyList<SkillGrant>)t.Skills.Select(kv => new SkillGrant(kv.Key, 0, kv.Value)).ToList(), Slots: (IReadOnlyList<string>)t.Slots, Group: "Your talismans"));
+        var charms = App.Catalog.Charms.Where(c => c.IsMaxRank).Select(c => (c.Name, c.Rarity, c.Skills, Slots: (IReadOnlyList<string>)Array.Empty<string>(), Group: "Craftable charms"));
+        var all = own.Concat(charms).Where(t => HasSkill(t.Skills, [])).ToList();
+        var searched = LooseSearch.Filter(all, t => string.Join(' ', [t.Name, .. t.Skills.Select(g => g.Skill)]), _query);
+        var scored = searched.Select(t => (T: t, Fit: BoardSlots.Fit(t.Skills, want, have))).ToList();
+        var helping = scored.Count(x => x.Fit > 0);
+        if (_helpsOnly && helping > 0) scored = scored.Where(x => x.Fit > 0).ToList();
+        scored = scored.OrderByDescending(x => x.Fit).ThenBy(x => x.T.Group).ThenByDescending(x => x.T.Rarity).ThenBy(x => x.T.Name).ToList();
+        <p class="palette-count muted small">@App.Talismans.Count of yours, @App.Catalog.Charms.Count(c => c.IsMaxRank) craftable · @Plural(scored.Count, "match", "matches")</p>
+        <div class="palette-grid">
+            @foreach (var (t, fit) in scored.Take(_shown))
+            {
+                var inUse = t.Name == current;
+                <button type="button" @key="t.Name" class="pcard @(inUse ? "worn" : "")" title="@(inUse ? "Equipped" : $"Equip {t.Name}")" @onclick="() => PickTalisman(t.Name)">
+                    <img src="@GameIcons.Talisman(t.Rarity)" alt="" />
+                    <span class="pn"><span>@t.Name</span><RarityBadge Rarity="t.Rarity" />@if (inUse) { <span class="tag">worn</span> }</span>
+                    <span class="ps">@string.Join(", ", t.Skills.Select(g => $"{g.Skill} {g.Level}"))</span>
+                    <span class="pr">@if (t.Slots.Count > 0) { <Slots Named="t.Slots" /> }<span class="set">@t.Group</span><span class="fit">@(fit > 0 ? $"+{fit} target lvl{(fit == 1 ? "" : "s")}" : "")</span></span>
+                </button>
+            }
+        </div>
+        @if (scored.Count > _shown)
+        {
+            <button type="button" class="linklike small" @onclick="() => _shown += PageSize">Show @Math.Min(PageSize, scored.Count - _shown) more of @scored.Count</button>
+        }
+        @if (App.Talismans.Count == 0)
+        {
+            <p class="muted small">Your random talismans come from the <button class="linklike" @onclick="() => App.SetTab(Tab.Talismans)">Talismans tab</button>.</p>
+        }
+    };
+
+    private void PickTalisman(string name)
+    {
+        var r = App.Talismans.FirstOrDefault(x => x.Name == name);
+        var slots = r?.Slots.Select(BuildHelpers.ParseSlot).ToList() ?? [];
+        Update.Invoke(b => b with { Talisman = new BuildTalismanInput { Name = name, Decorations = BuildHelpers.FitDecorations(b.Talisman?.Decorations ?? [], slots, App.Index.DecorationsByName) } });
+    }
+}

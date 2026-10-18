@@ -67,7 +67,7 @@
         @if (_draft is { } draft)
         {
             <Section Key="talisman-editor" Collapsible="false" Class="talisman-editor" Title="@(_index is { } editing ? $"Edit {talismans.ElementAtOrDefault(editing)?.Name}" : "New talisman")"
-                     Hint="Skill 1 is the weapon-kind line a random talisman rolls first; skills 2 and 3 are armor-kind lines.">
+                     Hint="Skill 1 is the weapon-kind line a random talisman rolls first; skills 2 and 3 are usually armor skills, but rarity 6 to 8 rolls can put a 1-point weapon skill there too.">
                 <div class="form-grid">
                     <Field Label="Name">
                         <input class="text" value="@draft.Name" @oninput="e => _draft = _draft! with { Name = e.Value?.ToString() ?? string.Empty }" />
@@ -76,8 +76,8 @@
                         <Segmented T="int" Value="draft.Rarity" ValueChanged="r => _draft = _draft! with { Rarity = r }" Options="_rarityOptions" />
                     </Field>
                     @SkillField("Skill 1 (weapon-kind)", _primary, draft.Primary, p => _draft = _draft! with { Primary = p }, null)
-                    @SkillField("Skill 2 (armor-kind)", _secondary, draft.Second, p => _draft = _draft! with { Second = p }, draft.Third?.Skill)
-                    @SkillField("Skill 3 (armor-kind)", _secondary, draft.Third, p => _draft = _draft! with { Third = p }, draft.Second?.Skill)
+                    @SkillField("Skill 2", _secondary, draft.Second, p => _draft = _draft! with { Second = p }, draft.Third?.Skill)
+                    @SkillField("Skill 3", _secondary, draft.Third, p => _draft = _draft! with { Third = p }, draft.Second?.Skill)
                     <Field Label="Decoration slots" Hint="Weapon or armor kind and level per slot; choices that make a layout random talismans do not roll are greyed out.">
                         <TalismanSlotEditor Value="@draft.Slots" Patterns="_slotPatterns" ValueChanged="s => _draft = _draft! with { Slots = s }" />
                     </Field>
@@ -115,7 +115,9 @@
         base.OnInitialized();
         var pool = Catalog.TalismanPool;
         _primary = pool?.Primary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Weapon).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
-        _secondary = pool?.Secondary ?? Catalog.Skills.Where(s => s.Kind == SkillKind.Armor).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)).ToList();
+        // skills 2 and 3 roll from both lot tables: 1-4 points is a weapon skill, 5-10 an armor skill (R8 [2, 1, 8] = Speed Sharpening 2, Attack Boost 1, Maximum Might 1)
+        _secondary = (pool is null ? Catalog.Skills.Where(s => s.Kind is SkillKind.Weapon or SkillKind.Armor).Select(s => new PoolSkillDto(s.Name, s.MaxLevel)) : pool.Secondary.Concat(pool.Primary))
+            .OrderBy(s => s.Skill).ToList();
         _primaryNames = _primary.Select(p => p.Skill).ToHashSet();
         _slotPatterns = (pool?.SlotPatterns.Select(p => string.Join(',', p)) ?? FallbackSlotPatterns).Distinct().ToList();
         IReadOnlyList<int> rarities = pool is { Rarities.Count: > 0 } ? pool.Rarities : [5, 6, 7, 8];
@@ -149,7 +151,7 @@
     {
         var entries = t?.Skills.ToList() ?? [];
         var p = entries.FirstOrDefault(e => _primaryNames.Contains(e.Key));
-        var rest = entries.Where(e => !_primaryNames.Contains(e.Key)).ToList();
+        var rest = entries.Where(e => e.Key != p.Key).ToList();
         return new Draft(
             t?.Name ?? $"Talisman {App.Talismans.Count + 1}",
             t?.Rarity ?? 7,

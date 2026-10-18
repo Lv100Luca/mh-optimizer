@@ -4,7 +4,7 @@ using MHWildsOptimizer.Core.Domain;
 
 namespace MHWildsOptimizer.Browser.Services;
 
-/// <summary>An armor piece with what its set contributes (set bonuses, group skill).</summary>
+/// <summary>An armor piece with the set bonuses it counts toward and its set's group skill.</summary>
 public sealed record ArmorEntry(ArmorSetPieceDto Piece, string Set, IReadOnlyList<string> SetBonus, string? GroupSkill)
 {
     public string Name => Piece.Name;
@@ -23,7 +23,7 @@ public sealed class CatalogIndex
         var armor = new Dictionary<string, ArmorEntry>();
         foreach (var set in catalog.ArmorSets)
             foreach (var p in set.Pieces)
-                armor[p.Name] = new ArmorEntry(p, set.Name, set.SetBonus, set.GroupSkill);
+                armor[p.Name] = new ArmorEntry(p, set.Name, p.SetBonus ?? set.SetBonus, set.GroupSkill);
         ArmorByName = armor;
         DecorationsByName = catalog.Decorations.GroupBy(d => d.Name).ToDictionary(g => g.Key, g => g.First());
         CharmsByName = catalog.Charms.GroupBy(c => c.Name).ToDictionary(g => g.Key, g => g.Last());

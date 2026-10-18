@@ -1,9 +1,9 @@
 @inherits AppComponent
+@inject IJSRuntime JS
 
 @if (App.Request is { } request)
 {
     var o = request.Options;
-    var excluded = o.ExcludeSets.ToHashSet();
     var cores = OptimizerOptions.ProcessorCount;
     var threads = o.MaxThreads;
     var threadPresets = new List<SegmentOption<int>> { new(0, $"All ({cores})", Hint: "every core of this browser") };
@@ -11,19 +11,18 @@
     threadPresets.Add(new(1, "One", Hint: "single-threaded"));
     var isThreadPreset = threadPresets.Any(p => p.Value == threads);
     if (!isThreadPreset) threadPresets.Add(new(-1, "Custom", Hint: "custom value"));
-    var setWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.exclude_sets")).ToList() ?? [];
-    var sets = LooseSearch.Filter(Catalog.ArmorSets.Where(s => s.Rarity >= o.MinRarity), s => string.Join(' ', [s.Name, .. s.SetBonus, s.GroupSkill ?? ""]), _query);
+    var listed = Catalog.ArmorSets.Where(s => s.Rarity >= o.MinRarity).ToList();
+    var setStates = listed.ToDictionary(s => s.Name, s => SetState(o, s));
+    var sets = LooseSearch.Filter(listed.Where(s => _setFilter == SetFilter.All || setStates[s.Name] == _setFilter),
+        s => string.Join(' ', [s.Name, .. s.SetBonus, s.GroupSkill ?? "", .. s.Pieces.Select(p => p.Name)]), _query);
+    var allowedSets = listed.Count(s => setStates[s.Name] != SetFilter.Off);
+    var partlySets = listed.Count(s => setStates[s.Name] == SetFilter.Partly);
+    var locked = o.LockedPieces(KindOf);
     var weaponName = App.Name ?? "the new weapon";
     var pairOptimized = request.SkillPair.Mode == SkillPairMode.Optimize;
     var perSolve = Math.Min(Core.Optimize.CpSatParameters.MaxWorkersPerSolve, cores);
-    var included = o.IncludeArmor.ToHashSet();
-    var armorWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.include_armor")).ToList() ?? [];
-    var pieceSearch = _pieceQuery.Trim() != "";
-    List<ArmorEntry> matches = !pieceSearch ? [] : LooseSearch.Filter(Cat.ArmorByName.Values
-        .Where(p => p.Rarity >= o.MinRarity)
-        .OrderBy(p => p.Set).ThenBy(p => p.Kind), p => $"{p.Name} {p.Set}", _pieceQuery)
-        .Take(60)
-        .ToList();
+    var lockWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.include_armor")).ToList() ?? [];
+    var setWarnings = App.Resolved?.Warnings.Where(w => w.StartsWith("options.exclude_sets") || w.StartsWith("options.exclude_armor")).ToList() ?? [];
 
     <p class="scope-note small">
         These options belong to <b>@weaponName</b>: every weapon keeps its own. What the whole profile shares (talismans, the condition presets)
@@ -67,8 +66,8 @@
         </div>
 
         <div class="col">
-            <Section Key="allowed-armor" Title="@($"Allowed armor ({o.IncludeArmor.Count})")"
-                     Hint="Optimize around armor you own or wear: an armor kind with pieces listed here only uses those, kinds without stay open. The minimum rarity and the excluded sets below still apply.">
+            <Section Key="allowed-armor" Title="@($"Locked armor ({o.IncludeArmor.Count})")"
+                     Hint="Optimize around armor you wear: every run uses a locked piece for its kind, kinds without stay open. Lock pieces in the sets below, on a result or from a build.">
                 <Actions>
                     @if (o.IncludeArmor.Count > 0)
                     {
@@ -76,7 +75,7 @@
                     }
                 </Actions>
                 <ChildContent>
-                    @foreach (var w in armorWarnings)
+                    @foreach (var w in lockWarnings)
                     {
                         <p @key="w" class="warn small">@w</p>
                     }
@@ -86,14 +85,14 @@
                             <span class="muted small">Use the armor of</span>
                             @foreach (var b in App.Builds)
                             {
-                                <button @key="b" class="chip" title="Allow exactly the armor pieces of this build" @onclick="() => AllowBuild(b)">@b.Name</button>
+                                <button @key="b" class="chip" title="Lock exactly the armor pieces of this build" @onclick="() => AllowBuild(b)">@b.Name</button>
                             }
                         </div>
                     }
                     <div class="allow-kinds">
                         @foreach (var k in Enum.GetValues<ArmorPieceKind>())
                         {
-                            var pieces = o.IncludeArmor.Where(n => Cat.ArmorByName.TryGetValue(n, out var e) && e.Kind == k).ToList();
+                            var pieces = o.IncludeArmor.Where(n => KindOf(n) == k).ToList();
                             <div @key="k" class="allow-kind">
                                 <span class="muted small allow-kind-name">@k</span>
                                 <span class="chip-row">
@@ -106,43 +105,22 @@
                                         var e = Cat.ArmorByName[n];
                                         <span @key="n" class="chip">
                                             <img src="@GameIcons.Armor(k, e.Rarity)" alt="" width="18" height="18" />@n
-                                            <button class="linklike" title="Remove" @onclick="() => TogglePiece(n)">×</button>
+                                            <button class="linklike" title="Remove" @onclick="() => Unlock(n)">×</button>
                                         </span>
                                     }
                                 </span>
                             </div>
                         }
                     </div>
-                    <SearchBox Value="@_pieceQuery" ValueChanged="v => _pieceQuery = v ?? string.Empty" Placeholder="Search armor pieces or sets to allow…" />
-                    @if (pieceSearch)
-                    {
-                        <div class="setlist">
-                            @foreach (var p in matches)
-                            {
-                                <label @key="p.Name" class="setrow allow">
-                                    <input type="checkbox" checked="@included.Contains(p.Name)" @onchange="() => TogglePiece(p.Name)" />
-                                    <img class="icon" src="@GameIcons.Armor(p.Kind, p.Rarity)" alt="" width="22" height="22" />
-                                    <span class="setmain">
-                                        <span class="setname">@p.Name <RarityBadge Rarity="p.Rarity" /></span>
-                                        <span class="muted small">@p.Kind · @p.Set</span>
-                                    </span>
-                                </label>
-                            }
-                            @if (matches.Count == 0)
-                            {
-                                <p class="muted small allow-none">No pieces match.</p>
-                            }
-                        </div>
-                    }
                 </ChildContent>
             </Section>
 
-            <Section Key="excluded-sets" Title="@($"Excluded armor sets ({o.ExcludeSets.Count})")"
-                     Hint="Leave out sets you do not own, e.g. event or collaboration gear. Only sets at or above the minimum rarity are listed.">
+            <Section Key="armor-sets" Title="@($"Allowed armor sets ({allowedSets}/{listed.Count})")"
+                     Hint="Turn off sets or single pieces you do not own, e.g. event or collaboration gear. The pieces button picks single pieces. Only sets at or above the minimum rarity are listed.">
                 <Actions>
-                    @if (o.ExcludeSets.Count > 0)
+                    @if (o.ExcludeSets.Count > 0 || o.ExcludeArmor.Count > 0)
                     {
-                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Patch(x => x with { ExcludeSets = [] })">Clear</MudButton>
+                        <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="() => Patch(x => x with { ExcludeSets = [], ExcludeArmor = [] })">Allow all</MudButton>
                     }
                 </Actions>
                 <ChildContent>
@@ -150,30 +128,19 @@
                     {
                         <p @key="w" class="warn small">@w</p>
                     }
-                    <SearchBox Value="@_query" ValueChanged="v => _query = v ?? string.Empty" Placeholder="Search sets, set bonuses, group skills…" />
-                    <div class="setlist">
+                    <SearchBox Value="@_query" ValueChanged="v => _query = v ?? string.Empty" Placeholder="Search sets, pieces, set bonuses, group skills..." />
+                    <div class="btn-row">
+                        <Segmented T="SetFilter" Value="_setFilter" ValueChanged="v => _setFilter = v" Options="SetFilters" />
+                        <span class="muted small">@allowedSets of @listed.Count allowed@(partlySets > 0 ? $", {partlySets} partly" : "")</span>
+                    </div>
+                    <div class="setlist" @ref="_setList">
                         @foreach (var s in sets)
                         {
-                            <label @key="s.Name" class="setrow @(excluded.Contains(s.Name) ? "excluded" : "")">
-                                <input type="checkbox" checked="@excluded.Contains(s.Name)" @onchange="() => ToggleSet(s.Name)" />
-                                <img class="icon" src="@GameIcons.Armor(ArmorPieceKind.Head, s.Rarity)" alt="" width="22" height="22" />
-                                <span class="setmain">
-                                    <span class="setname">@s.Name <RarityBadge Rarity="s.Rarity" /> <span class="muted small">@Fmt.Plural(s.Pieces.Count, "piece")</span></span>
-                                    @if (s.SetBonus.Count > 0 || s.GroupSkill is not null)
-                                    {
-                                        <span class="muted small setinfo">
-                                            @foreach (var b in s.SetBonus)
-                                            {
-                                                <SkillHover @key="b" Name="@b" Class="with-icon"><SkillIcon Name="@b" Kind="SkillKind.Set" Size="14" />@b</SkillHover>
-                                            }
-                                            @if (s.GroupSkill is { } group)
-                                            {
-                                                <SkillHover Name="@group" Class="with-icon"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" />@group</SkillHover>
-                                            }
-                                        </span>
-                                    }
-                                </span>
-                            </label>
+                            <ArmorSetRow @key="s.Name" Set="s" Options="o" Locked="locked" KindOf="KindOf" OnPatch="Patch" />
+                        }
+                        @if (sets.Count == 0)
+                        {
+                            <p class="muted small allow-none">No sets match.</p>
                         }
                     </div>
                 </ChildContent>
@@ -187,28 +154,45 @@
         .Select(r => new SegmentOption<int>(r, $"R{r}+", RarityLabel(r)))
         .ToList();
 
+    private enum SetFilter { All, Off, Partly }
+
+    private static readonly IReadOnlyList<SegmentOption<SetFilter>> SetFilters =
+    [
+        new(SetFilter.All, "All"),
+        new(SetFilter.Off, "Disallowed", Hint: "sets with every piece turned off"),
+        new(SetFilter.Partly, "Partly", Hint: "sets with some pieces turned off"),
+    ];
+
     private string _query = "";
+    private SetFilter _setFilter = SetFilter.All;
+    private ElementReference _setList;
 
     private static RenderFragment RarityLabel(int r) =>
         @<span class="with-icon"><img src="@GameIcons.Armor(ArmorPieceKind.Chest, r)" alt="" width="18" height="18" /> R@(r)+</span>;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (App.Request is null) return;
+        try { await JS.InvokeVoidAsync("mhwo.syncMixed", _setList); }
+        catch (JSException) { }
+    }
+
     private void Patch(Func<OptimizerOptions, OptimizerOptions> fn) => App.PatchOptions(fn);
 
-    private string _pieceQuery = "";
+    private ArmorPieceKind? KindOf(string name) => Cat.ArmorByName.TryGetValue(name, out var e) ? e.Kind : null;
 
-    private void TogglePiece(string name) => Patch(o => o with
+    // All doubles as "every piece allowed"
+    private static SetFilter SetState(OptimizerOptions o, ArmorSetDto s)
     {
-        IncludeArmor = o.IncludeArmor.Contains(name) ? o.IncludeArmor.Where(n => n != name).ToList() : [.. o.IncludeArmor, name],
-    });
+        var on = s.Pieces.Count(p => o.Allows(s.Name, p.Name));
+        return on == s.Pieces.Count ? SetFilter.All : on == 0 ? SetFilter.Off : SetFilter.Partly;
+    }
 
-    /// <summary>Allows exactly the build's armor: every kind it wears is restricted to that piece.</summary>
+    private void Unlock(string name) => Patch(o => o with { IncludeArmor = o.IncludeArmor.Where(n => n != name).ToList() });
+
+    /// <summary>Locks exactly the build's armor: every kind it wears is restricted to that piece.</summary>
     private void AllowBuild(BuildInput b) => Patch(o => o with
     {
         IncludeArmor = new[] { b.Head, b.Chest, b.Arms, b.Waist, b.Legs }.Where(a => a is not null).Select(a => a!.Piece).ToList(),
-    });
-
-    private void ToggleSet(string name) => Patch(o => o with
-    {
-        ExcludeSets = o.ExcludeSets.Contains(name) ? o.ExcludeSets.Where(s => s != name).ToList() : [.. o.ExcludeSets, name],
     });
 }
