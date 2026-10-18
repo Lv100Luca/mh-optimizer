@@ -31,3 +31,4 @@ many skill states survive a rigorous bound against a bar, kind by kind, and the 
 | gs-fixed-allcharms | every possible talisman (roll table) |
 | ls-everything, bow-everything | other weapons, optimize everything |
 | bow-tech-stamina | tech tree bow, Constitution 5 + Stamina Surge 2 (hard proofs) |
+| gs-main-48parts | Luca's Main GS: 6-step sequence x Latent Power x Azure Bolt x Offensive Guard = 48 parts, 120 s / 25 s limits (the hardest proof) |

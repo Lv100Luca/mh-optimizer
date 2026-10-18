@@ -112,12 +112,35 @@ and the jewels move with them, so the finder tries one and two swaps and refills
 capped levels (`FillTo`, a small search; the same jewels when they still fit). In the browser this enumeration (about
 9,000 combinations per proved build) runs on the page thread; natively it is ~20 ms, interpreted maybe half a second.
 
+### 4c. Luca's Main GS (48 parts): the hardest case, measured in the browser and natively
+
+Luca's own run (`bench/scenarios/gs-main-48parts.json`: a six-step sequence x Latent Power x Azure Bolt x Offensive
+Guard = 48 parts, 19 skill groups, 27-36 pieces per kind, limits 120 s / 25 s) took 411 s in the Debug dev build just
+to build the damage model, then never proved builds 3-5. What was found and changed:
+
+- The model phase was the interpreted .NET prober: `feature/score-model-speed` (merged into this branch) probes each
+  set of active timed skills once; in the Release build the 48-part model builds in 7.7 s (12-part proxy: 1.0 s, with
+  AOT 0.2 s; AOT not adopted: 3x the download for a phase that is now small).
+- The 48 sides group into 4 chains (Offensive Guard changes the raw multiplier, Burst the procs), so the CP model is
+  about the size of a 4-part one. Build 1 is proved at 73 s in the browser on 16 threads (100-117 s natively on 8),
+  where this profile never proved before.
+- "narrowed 0 of 68 damage factors": the half-second narrowing solves do not get past presolve on a model this size
+  and return nothing. They now give up after the first empty answer (0.6 s instead of 16 s). A 2 s limit finds 60
+  of 68 caps but costs 49 s on two lanes for half a percent of bound: not worth it.
+- The top-N parts search needs a proof per part per build: 48 parts x 4 builds never finished (2 builds after 220 s).
+  Now the parts get a probe of twice the rank limit; when their first floor does not finish in that time, builds 2-N
+  come from whole-model solves with the time left shared out evenly (ranked, or proved when such a solve closes with
+  every earlier build left out). Natively: 5 builds in the 220 s budget (5,815 proved, 5,804 / 5,772 / 5,770 / 5,440
+  ranked) instead of 2.
+
+The run stays budget-bound: build 1's proof alone is most of the two minutes. The limits in Options decide the rest.
+
 ## 5. Where this leaves the goals
 
-- **One or two minutes, top 5 good:** with 4a + 4b every bench scenario finishes well inside two minutes on 8 threads
-  with all five builds proved; see the table in 4a. The 10 s rank limit for builds 2-N stays as it is: with the smaller
-  model the proofs fit in it on these runs. If a run still shows "ranked", raising `cp_sat_rank_time_limit_seconds`
-  is the knob; a pooled budget for builds 2-N (each next build gets what the earlier ones left) is a small follow-up.
+- **One or two minutes, top 5 good:** with 4a + 4b every bench scenario but the 48-part one finishes well inside two
+  minutes on 8 threads with all five builds proved; see the table in 4a. On the 48-part model the budget (120 s + 4 x
+  25 s) is spent on build 1's proof and four ranked builds (4c). Lower limits there mean build 1 comes back "time
+  limit" instead of proved; that is the trade the limits in Options make.
 - **More cores:** the parts of a split search already use every lane. 16 threads = 4 lanes; the native B&B engine
   would be the way to scale linearly, and section 3 says what it needs.
 - **Big gaps below build 1:** these were ranked builds found in 10 s; proved builds 2-5 are the true next best.

@@ -60,7 +60,7 @@ internal sealed class CpSatSearch
     /// </summary>
     public double TightenAfterSeconds { get; init; } = 8;
     /// <summary>Time limit of each of the tightening solves; most are proved well within it, and a stopped one still gives a valid cap.</summary>
-    public const double TightenSolveSeconds = 0.5;
+    public static readonly double TightenSolveSeconds = double.TryParse(Environment.GetEnvironmentVariable("MHW_CAP_LIMIT"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var capLimit) ? capLimit : 0.5;
     private bool _tightened;
 
     /// <summary>
@@ -321,6 +321,16 @@ internal sealed class CpSatSearch
         }
     }
 
+    /// <summary>Extra progress lines for the solver work (<c>MHW_CPSAT_TRACE=1</c>).</summary>
+    private static readonly bool Trace = Environment.GetEnvironmentVariable("MHW_CPSAT_TRACE") == "1";
+
+    /// <summary>
+    /// How long the parts look for the top N before a model that makes no progress (nothing found, no part settled) has its
+    /// next builds ranked by whole-model solves instead (<see cref="SplitTopAsync"/>). Null: always prove in parts.
+    /// Default twice the rank time limit; <c>MHW_RANK_PROBE</c> overrides (seconds).
+    /// </summary>
+    public double? RankProbeSeconds { get; init; }
+
     public bool FindTiesNatively { get; init; } = Environment.GetEnvironmentVariable("MHW_NATIVE_TIES") != "0";
 
     /// <summary>The combinations one or two swaps away: other candidates of one or two kinds, with or without another talisman.</summary>
@@ -527,6 +537,7 @@ internal sealed class CpSatSearch
         var sw = Stopwatch.StartNew();
         var limit = _defaultParameters.TimeLimitSeconds;
         var rank = Math.Min(RankTimeLimitSeconds ?? limit, limit);
+        var rankProbe = RankProbeSeconds ?? (double.TryParse(Environment.GetEnvironmentVariable("MHW_RANK_PROBE"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var probeSeconds) ? probeSeconds : 2 * rank);
         var budget = limit + (topN - 1) * rank;
         double Left() => budget - sw.Elapsed.TotalSeconds;
         string Points(double objective) => Damage(objective / ObjectiveScale / Micro);
@@ -803,18 +814,55 @@ internal sealed class CpSatSearch
                 _progress?.Report($"  build {proved.Count}: {Points(t.ObjectiveValue)}, ties build 1 (the same skills on other pieces)");
             }
         var floors = 0;
+        var ranked = 0;
+        var reported = new HashSet<string>();
         if (topN > 1 && proved.Count < topN)
         {
             stage = $"top {topN}";
             // the first build often leaves no other build found, and every part proving its own best before there are N builds
-            // to beat took minutes: the parts look above a floor a little below the best first, lowered while fewer than N clear it
-            foreach (var step in FloorSteps.Append(double.NaN))
+            // to beat took minutes: the parts look above a floor a little below the best first, lowered while fewer than N clear it.
+            // First for a short while: a hard model (no part settled, nothing new found) would need a proof per part per build,
+            // far beyond the budget, so its next builds are ranked by whole-model solves instead, one per build, each with the
+            // time left shared out evenly and every build found so far left out
+            var probeEnd = sw.Elapsed.TotalSeconds + Math.Min(Left(), rankProbe);
+            floor = Cut(1) is { } best0 ? best0 - Math.Abs(best0) * FloorSteps[0] : null;
+            floors++;
+            await PhaseAsync(topN, () => Math.Min(Left(), probeEnd - sw.Elapsed.TotalSeconds));
+            // the parts are productive when the first floor is done before the probe's time runs out
+            var progress = sw.Elapsed.TotalSeconds < probeEnd - 0.2 || all.All(p => Settled(p, topN));
+            if (!progress && rankProbe > 0 && Left() > 0.5)
             {
-                floor = Cut(1) is { } best && !double.IsNaN(step) ? best - Math.Abs(best) * step : null;
-                floors++;
-                await PhaseAsync(topN, Left);
-                if (floor is null || Left() < 0.05 || all.All(p => Settled(p, topN))) break;
+                stage = $"top {topN}, ranked";
+                while (proved.Count + ranked < topN && Left() > 0.5)
+                {
+                    var number = proved.Count + ranked + 1;
+                    Stage?.Set(2, $"build {number} of {topN}: ranked by a whole search with the time left");
+                    var extra = found.Values.Select(r => NotAll(Used(r).Used)).ToList();
+                    var whole = PartModel(model, [], extra);
+                    await Pacer.PauseAsync();
+                    var give = Math.Min(Math.Max(rank, Left() / (topN - number + 1)), Left());
+                    var r = await Backend.SolveAsync(whole, ParametersOn(Lane, give), Lane, _ct);
+                    _ct.ThrowIfCancellationRequested();
+                    solves++;
+                    if (r.Status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible)) break;
+                    var used = Used(r).Used;
+                    var key = string.Join(",", used.Select(l => l.GetIndex()));
+                    Add(r, used);
+                    ranked++;
+                    reported.Add(key);
+                    // its best with every earlier build left out: the next best, proved
+                    if (r.Status == CpSolverStatus.Optimal && proved.Count + 1 == number) proved.Add(key);
+                    _progress?.Report($"  build {number}: {Points(r.ObjectiveValue)}, " + (r.Status == CpSolverStatus.Optimal ? "proved the next best" : "ranked, not proved") + $" by a whole search of {give:0} s");
+                }
             }
+            else
+                foreach (var step in FloorSteps.Append(double.NaN))
+                {
+                    floor = Cut(1) is { } best && !double.IsNaN(step) ? best - Math.Abs(best) * step : null;
+                    floors++;
+                    await PhaseAsync(topN, Left);
+                    if (floor is null || Left() < 0.05 || all.All(p => Settled(p, topN))) break;
+                }
         }
         Solves += solves;
         SolveTime += sw.Elapsed;
@@ -822,7 +870,7 @@ internal sealed class CpSatSearch
         var open = all.Where(p => !Settled(p, topN)).ToList();
         var notDone = open.Count;
         var openBound = open.Select(p => p.Bound).DefaultIfEmpty(double.NegativeInfinity).Max();
-        LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (resplits > 0 ? $", {Plural(resplits, "part")} split again" : "") +
+        LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (ranked > 0 ? $", {Plural(ranked, "build")} ranked by whole searches" : "") + (resplits > 0 ? $", {Plural(resplits, "part")} split again" : "") +
                     (restarts > 0 ? $", {Plural(restarts, "solve")} restarted above a better build" : "") +
                     (floors > 1 ? $", {floors} floors" : "") + (notDone > 0 ? $", {notDone} not finished" : "");
         _progress?.Report($"  top {topN} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s (build 1 after {firstAt:0.0} s)");
@@ -845,7 +893,7 @@ internal sealed class CpSatSearch
             _statuses.Add(isProved ? "optimal" : k == 0 ? "time limit" : "ranked");
             var proof = isProved ? new SolveProof(ProofKind.Proved, 0, limit)
                 : new SolveProof(k == 0 ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, k == 0 ? limit : rank);
-            Record(r, proof, k + 1, bound, "", report: k >= proved.Count);
+            Record(r, proof, k + 1, bound, "", report: k >= proved.Count && !reported.Contains(string.Join(",", Used(r).Used.Select(l => l.GetIndex()))));
         }
         // ties of the other proved builds, should the top N not be full yet
         for (var k = 1; k < Math.Min(top.Count, proved.Count) && _builds.Count < topN; k++)
@@ -1093,15 +1141,21 @@ internal sealed class CpSatSearch
         var keys = _vars!.Keys;
         var firsts = keys.Select((key, k) => (key.Sig, k)).DistinctBy(x => x.Sig).ToList();
         var found = new long?[firsts.Count];
+        var hopeless = false;
         await OnLanesAsync(firsts.Count, firstLane, Math.Max(1, lanes), async (i, lane) =>
         {
+            if (Volatile.Read(ref hopeless)) return;
             var m = new CpModel();
             m.Model.MergeFrom(aux.Model);
             m.Model.Objective = null;
             m.Maximize(auxVars.Keys[firsts[i].k].Var);
             var response = await Backend.SolveAsync(m, ParametersOn(lane, TightenSolveSeconds), lane, ct);
             ct.ThrowIfCancellationRequested();
+            // a solve stopped before its first solution reports no usable bound (0 on a large model that is still in presolve)
             found[i] = response.Status is CpSolverStatus.Optimal or CpSolverStatus.Feasible ? (long)Math.Floor(response.BestObjectiveBound) : null;
+            // no solution within the short limit: the model is too large for these solves, the rest would find nothing either
+            if (response.Status == CpSolverStatus.Unknown) Volatile.Write(ref hopeless, true);
+            if (Trace) _progress?.Report($"    cap {keys[firsts[i].k].Sig.Split('|')[0]}: {response.Status.ToString().ToLowerInvariant()}, bound {response.BestObjectiveBound:0} of {keys[firsts[i].k].Ub} in {response.WallTime:0.0} s");
         }, ct);
         return (firsts.Select((x, i) => (x.Sig, Bound: found[i])).ToDictionary(x => x.Sig, x => x.Bound), sw.Elapsed);
     }
