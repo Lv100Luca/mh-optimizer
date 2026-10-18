@@ -15,6 +15,12 @@ candidate scores worse anywhere (a lost build). Each result keeps the run's time
 `bench probe <request> <best score>` looks at the score model in skill space: units, monotonicity, cost of one
 evaluation, and how many skill-level vectors score at least the best build.
 
+`bench sides <request>` shows which damage factors of the score model are the same across its sides (parts of an uptime,
+segments of an attack): what the CP model shares in one chain per group of sides.
+
+`bench bb <request> <bar> [--threads n]` is the branch-and-bound experiment of notes/solver_review_2026-10-18.md: how
+many skill states survive a rigorous bound against a bar, kind by kind, and the exact decoration fill of the survivors.
+
 | scenario | what it stresses |
 |---|---|
 | gs-fixed | the everyday run: GS, fixed pair, Stun Resistance 3 + Focus 3, own talismans |

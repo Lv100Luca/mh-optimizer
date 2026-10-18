@@ -30,6 +30,14 @@ internal static class Bench
             if (args.Count < 3) { Console.Error.WriteLine("usage: bench probe <request.json> <best score>"); return 2; }
             return Probe(data, RequestLoader.Load(args[1], data), double.Parse(args[2], System.Globalization.CultureInfo.InvariantCulture));
         }
+        if (args.Count > 0 && args[0] == "sides")
+            return SidesDump.Run(data, RequestLoader.Load(args[1], data));
+        if (args.Count > 0 && args[0] == "bb")
+        {
+            if (args.Count < 3) { Console.Error.WriteLine("usage: bench bb <request.json> <bar> [--threads n]"); return 2; }
+            var t = args.IndexOf("--threads") is var ti && ti >= 0 ? int.Parse(args[ti + 1]) : 8;
+            return BbExperiment.Run(data, RequestLoader.Load(args[1], data), double.Parse(args[2], System.Globalization.CultureInfo.InvariantCulture), t);
+        }
         if (args.Count > 0 && args[0] == "compare")
         {
             if (args.Count < 3) { Console.Error.WriteLine("usage: bench compare <baseline.json> <candidate.json>"); return 2; }
