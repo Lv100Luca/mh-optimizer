@@ -67,6 +67,10 @@
                 }
             </StatHover>
             <StatHover Class="statchip crit" Tip="CritTip(b)">CRIT <b>x@(Fmt.N(s.CritMultiplier, 2))</b></StatHover>
+            @if (b.Armor.Count > 0)
+            {
+                <StatHover Class="statchip def" Tip="DefenseTip(b)"><img src="@GameIcons.Defense" alt="" />DEF <b>@b.Armor.Sum(a => a.DefenseMax)</b></StatHover>
+            }
             @if (s.Sharpness is { } sharp)
             {
                 <span class="statchip sharp" style="--tint: @GameIcons.SharpnessCss[sharp]"><img src="@GameIcons.Sharpness" alt="" />@Fmt.TitleCase(sharp)</span>
@@ -163,7 +167,14 @@
                     {
                         <tr @key="a.Kind">
                             <td class="icon-cell"><img class="icon" src="@GameIcons.Armor(a.Kind, a.Rarity)" alt="" width="32" height="32" /></td>
-                            <td class="piece">@BuildHelpers.PieceLabel(a.Kind)</td>
+                            <td class="piece">
+                                @BuildHelpers.PieceLabel(a.Kind)
+                                @if (OnToggleLock.HasDelegate)
+                                {
+                                    var locked = Locked?.Contains(a.Name) == true;
+                                    <LockButton Name="@a.Name" Kind="a.Kind" Locked="locked" OnClick="() => OnToggleLock.InvokeAsync(a)">@(locked ? "Locked" : "Lock")</LockButton>
+                                }
+                            </td>
                             <td class="name">
                                 <b>@a.Name</b> <RarityBadge Rarity="a.Rarity" Transcended="a.Transcended" />
                                 <div class="muted small">
@@ -318,6 +329,9 @@
     [Parameter] public bool Compact { get; set; }
     /// <summary>With weapon tuning: "Use this weapon" puts the build's weapon on the Weapon tab.</summary>
     [Parameter] public EventCallback<GogmaWeaponSpecInput> OnUseWeapon { get; set; }
+    /// <summary>With a handler, each armor row gets a lock button; <see cref="Locked"/> names the pieces shown as locked.</summary>
+    [Parameter] public EventCallback<BuildArmorDto> OnToggleLock { get; set; }
+    [Parameter] public IReadOnlySet<string>? Locked { get; set; }
 
     private bool _open;
     private bool _breakdown;
@@ -439,6 +453,34 @@
         {
             <span class="muted">Negative affinity: feeble hits do x0.75 instead.</span>
         }
+    };
+
+    private static readonly (Element Element, Func<Core.Data.Resistances, int> Of)[] ResistanceOrder =
+    [
+        (Element.Fire, r => r.Fire), (Element.Water, r => r.Water), (Element.Thunder, r => r.Thunder), (Element.Ice, r => r.Ice), (Element.Dragon, r => r.Dragon),
+    ];
+
+    private static RenderFragment DefenseTip(BuildDto b) => __builder =>
+    {
+        <table>
+            @foreach (var a in b.Armor)
+            {
+                <tr><td>@BuildHelpers.PieceLabel(a.Kind)</td><td>@a.DefenseMax</td></tr>
+            }
+            <tr class="total"><td>Defense</td><td>@b.Armor.Sum(a => a.DefenseMax)</td></tr>
+            @if (b.Armor.All(a => a.Resistances is not null))
+            {
+                @foreach (var (e, of) in ResistanceOrder)
+                {
+                    var v = b.Armor.Sum(a => of(a.Resistances!));
+                    <tr>
+                        <td><span class="with-icon"><img src="@GameIcons.Element(e)" alt="" width="14" height="14" />@Fmt.TitleCase(e) resistance</span></td>
+                        <td class="@(v < 0 ? "err" : v > 0 ? "ok" : "muted")">@(v > 0 ? "+" : "")@v</td>
+                    </tr>
+                }
+            }
+        </table>
+        <span class="muted">Armor fully upgraded, without weapon or skill bonuses.</span>
     };
 
     private static RenderFragment StatsBlock(string title, StatsDto r, string weaponType) => __builder =>

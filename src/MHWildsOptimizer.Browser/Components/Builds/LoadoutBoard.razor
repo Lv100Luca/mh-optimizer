@@ -1,0 +1,190 @@
+@inject AppState App
+
+@* The build as seven tiles (weapon, five armor pieces, talisman), like the game's equipment screen. Click a tile to pick for
+   it, a slot square to pick a jewel for it; both open the palette. "Keep" marks what fill the rest must leave alone. *@
+@{
+    var rw = App.Resolved?.Weapon;
+}
+<div class="board">
+    @{
+        var wsel = Selection?.Slot == BuildSlot.Weapon;
+        var wslots = BoardSlots.WeaponSlots(App);
+    }
+    <div class="tile kept @(wsel ? "sel" : "")" @onclick="() => Select(BuildSlot.Weapon)" title="Click for the weapon's jewels and its rolled pair">
+        <div class="tile-head"><img src="@GameIcons.Weapon(rw?.Type ?? App.WeaponKind)" alt="" />Weapon</div>
+        @if (rw is not null)
+        {
+            <div class="tile-name">@rw.Label</div>
+            <div class="tile-stat"><b>@rw.TrueRaw</b> attack · <b>@rw.Affinity%</b> affinity@(rw.Element == Element.None ? "" : $" · {rw.ElementDisplay} {Fmt.TitleCase(rw.Element)}")</div>
+        }
+        else
+        {
+            <div class="tile-name err">Weapon has errors</div>
+        }
+        <div class="tile-chips">
+            @{
+                var setBonus = Build.SetBonus ?? rw?.SetBonus;
+                var group = Build.GroupSkill ?? rw?.GroupSkill;
+            }
+            @if (setBonus is not null) { <span class="chip skill set tiny" title="@(Build.SetBonus is not null ? "set bonus this build sets" : "as rolled")"><SkillIcon Name="@setBonus" Kind="SkillKind.Set" Size="14" /><span>@setBonus</span></span> }
+            @if (group is not null) { <span class="chip skill group tiny" title="@(Build.GroupSkill is not null ? "group skill this build sets" : "as rolled")"><SkillIcon Name="@group" Kind="SkillKind.Group" Size="14" /><span>@group</span></span> }
+            @if (setBonus is null && group is null) { <span class="muted tiny">no skill pair</span> }
+        </div>
+        <div class="tile-foot">
+            @SlotSquares(BuildSlot.Weapon, wslots, Build.WeaponDecorations)
+            <span class="tile-note" title="The weapon is the Weapon tab's. Fill the rest chooses its jewels again.">from the Weapon tab</span>
+        </div>
+    </div>
+
+    @foreach (var slot in BuildDiff.ArmorSlots.Keys)
+    {
+        var kind = BuildDiff.ArmorSlots[slot];
+        var a = Build.Armor(kind);
+        var p = a is not null ? App.Index.ArmorByName.GetValueOrDefault(a.Piece) : null;
+        var sel = Selection?.Slot == slot;
+        var kept = Kept.Contains(slot);
+        var s = slot;
+        if (p is not null)
+        {
+            <div @key="@($"{slot}-piece")" class="tile @(sel ? "sel" : "") @(kept ? "kept" : "")" @onclick="() => Select(s)" title="Click to pick another piece">
+                <div class="tile-head"><img src="@GameIcons.Armor(kind, p.Rarity)" alt="" />@BuildHelpers.PieceLabel(kind)
+                    <button type="button" class="tile-x" title="Take the piece off" @onclick="() => Update.Invoke(b => b.WithArmor(kind, null))" @onclick:stopPropagation="true">✕</button>
+                </div>
+                <div class="tile-name">@p.Name <RarityBadge Rarity="p.Rarity" Transcended="@(a!.Transcended && BoardSlots.CanTranscend(p))" /></div>
+                <div class="tile-skills">
+                    @foreach (var g in p.Piece.Skills)
+                    {
+                        <SkillHover Name="@g.Skill" Level="g.Level" Class="tile-skill"><SkillIcon Name="@g.Skill" Size="14" /><span>@g.Skill</span><b>@g.Level</b></SkillHover>
+                    }
+                </div>
+                <div class="tile-chips">
+                    @foreach (var x in p.SetBonus) { <SkillHover Name="@x" Class="chip skill set tiny"><SkillIcon Name="@x" Kind="SkillKind.Set" Size="14" /><span>@x</span></SkillHover> }
+                    @if (p.GroupSkill is { } gs) { <SkillHover Name="@gs" Class="chip skill group tiny"><SkillIcon Name="@gs" Kind="SkillKind.Group" Size="14" /><span>@gs</span></SkillHover> }
+                </div>
+                <div class="tile-foot">
+                    @SlotSquares(slot, BoardSlots.ArmorSlots(App, a!), a!.Decorations)
+                    @KeepButton(slot)
+                </div>
+            </div>
+        }
+        else if (a is not null)
+        {
+            <div @key="@($"{slot}-unknown")" class="tile @(sel ? "sel" : "")" @onclick="() => Select(s)">
+                <div class="tile-head"><img src="@GameIcons.ArmorBase(kind)" alt="" />@BuildHelpers.PieceLabel(kind)</div>
+                <div class="tile-name err">@a.Piece (unknown)</div>
+                <div class="tile-msg"><b>click to pick another</b></div>
+            </div>
+        }
+        else
+        {
+            <div @key="@($"{slot}-empty")" class="tile empty @(sel ? "sel" : "")" @onclick="() => Select(s)">
+                <div class="tile-head"><img src="@GameIcons.ArmorBase(kind)" alt="" />@BuildHelpers.PieceLabel(kind)</div>
+                <div class="tile-msg"><b>@(sel ? "pick from the palette" : "click to pick")</b><span class="fillnote">fill the rest may fill this</span></div>
+            </div>
+        }
+    }
+
+    @{
+        var t = Build.Talisman;
+        var tsel = Selection?.Slot == BuildSlot.Talisman;
+        var tkept = Kept.Contains(BuildSlot.Talisman);
+        var random = t is not null ? App.Talismans.FirstOrDefault(x => x.Name == t.Name) : null;
+        var charm = t is not null && random is null ? App.Index.CharmsByName.GetValueOrDefault(t.Name) : null;
+        var tskills = random is not null ? random.Skills.Select(kv => new SkillGrant(kv.Key, 0, kv.Value)).ToList()
+            : charm?.Skills.ToList() ?? t?.Skills?.Select(kv => new SkillGrant(kv.Key, 0, kv.Value)).ToList() ?? [];
+        var trarity = random?.Rarity ?? charm?.Rarity ?? t?.Rarity ?? 8;
+    }
+    @if (t is not null)
+    {
+        <div class="tile @(tsel ? "sel" : "") @(tkept ? "kept" : "")" @onclick="() => Select(BuildSlot.Talisman)" title="Click to pick another talisman">
+            <div class="tile-head"><img src="@GameIcons.Talisman(trarity)" alt="" />Talisman
+                <button type="button" class="tile-x" title="Take the talisman off" @onclick="() => Update.Invoke(b => b with { Talisman = null })" @onclick:stopPropagation="true">✕</button>
+            </div>
+            <div class="tile-name">@t.Name <RarityBadge Rarity="trarity" /></div>
+            <div class="tile-skills">
+                @if (random is null && charm is null && t.Skills is null) { <span class="err">not in your talismans; pick it again</span> }
+                @foreach (var g in tskills)
+                {
+                    <SkillHover Name="@g.Skill" Level="g.Level" Class="tile-skill"><SkillIcon Name="@g.Skill" Size="14" /><span>@g.Skill</span><b>@g.Level</b></SkillHover>
+                }
+            </div>
+            <div class="tile-stat muted">@(random is not null ? "your random talisman" : charm is not null ? "craftable charm" : "")</div>
+            <div class="tile-foot">
+                @SlotSquares(BuildSlot.Talisman, BoardSlots.TalismanSlots(App, t), t.Decorations)
+                @KeepButton(BuildSlot.Talisman)
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="tile empty @(tsel ? "sel" : "")" @onclick="() => Select(BuildSlot.Talisman)">
+            <div class="tile-head"><img src="@GameIcons.Talisman(0)" alt="" />Talisman</div>
+            <div class="tile-msg"><b>@(tsel ? "pick from the palette" : "click to pick")</b><span class="fillnote">fill the rest may fill this</span></div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public BuildInput Build { get; set; } = default!;
+    [Parameter, EditorRequired] public Action<Func<BuildInput, BuildInput>> Update { get; set; } = default!;
+    [Parameter] public BoardSelection? Selection { get; set; }
+    [Parameter] public EventCallback<BoardSelection?> SelectionChanged { get; set; }
+    [Parameter] public IReadOnlySet<BuildSlot> Kept { get; set; } = new HashSet<BuildSlot>();
+    [Parameter] public EventCallback<BuildSlot> OnToggleKeep { get; set; }
+
+    /// <summary>Clicking the selected tile again closes the palette.</summary>
+    private Task Select(BuildSlot slot) =>
+        SelectionChanged.InvokeAsync(Selection?.Slot == slot && Selection.DecoIndex is null ? null : new BoardSelection(slot));
+
+    private Task SelectDeco(BuildSlot slot, int index) =>
+        SelectionChanged.InvokeAsync(Selection?.Slot == slot && Selection.DecoIndex == index ? new BoardSelection(slot) : new BoardSelection(slot, index));
+
+    private RenderFragment SlotSquares(BuildSlot slot, IReadOnlyList<SlotSpec> slots, IReadOnlyList<string?> decos) => __builder =>
+    {
+        <div class="tile-slots">
+            @if (slots.Count == 0)
+            {
+                <span class="muted tiny">no slots</span>
+            }
+            @for (var i = 0; i < slots.Count; i++)
+            {
+                var index = i;
+                var spec = slots[i];
+                var name = i < decos.Count ? decos[i] : null;
+                var deco = name is not null ? App.Index.DecorationsByName.GetValueOrDefault(name) : null;
+                var sel = Selection?.Slot == slot && Selection.DecoIndex == index;
+                var bad = deco is not null && !BuildHelpers.Fits(deco, spec);
+                <button type="button" class="dslot @(spec.Kind == SkillKind.Weapon ? "weapon" : "") @(deco is not null ? "filled" : "") @(sel ? "sel" : "") @(bad ? "bad" : "")"
+                        title="@(deco is not null ? $"{deco.Name}: {string.Join(", ", deco.Skills.Select(g => $"{g.Skill} {g.Level}"))}{(bad ? " (does not fit this slot)" : "")}" : $"empty level {spec.Level} {spec.Kind.ToString().ToLowerInvariant()} slot: click to pick a jewel")"
+                        @onclick="() => SelectDeco(slot, index)" @onclick:stopPropagation="true">
+                    @if (deco is not null)
+                    {
+                        <img class="icon deco" width="22" height="22" src="@GameIcons.Decoration(deco.Slot, deco.Kind, deco.IconColor)" alt="" />
+                    }
+                    else if (name is not null)
+                    {
+                        <span class="err">?</span>
+                    }
+                    else
+                    {
+                        <span>@spec.Level</span>
+                    }
+                </button>
+            }
+        </div>
+    };
+
+    private RenderFragment KeepButton(BuildSlot slot) => __builder =>
+    {
+        var on = Kept.Contains(slot);
+        <button type="button" class="keep-btn @(on ? "on" : "")" aria-pressed="@(on ? "true" : "false")"
+                title="@(on ? "Kept: fill the rest leaves this piece in place (its jewels are chosen again)" : "Keep: fill the rest must not replace this piece")"
+                @onclick="() => OnToggleKeep.InvokeAsync(slot)" @onclick:stopPropagation="true">
+            <svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+                <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
+                <path d="@(on ? "M5 7V5a3 3 0 0 1 6 0v2" : "M5 7V5a3 3 0 0 1 5.8-1")" fill="none" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+            @(on ? "kept" : "keep")
+        </button>
+    };
+}

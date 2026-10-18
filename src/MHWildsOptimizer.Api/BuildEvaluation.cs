@@ -12,7 +12,8 @@ namespace MHWildsOptimizer.Api;
 /// One requirement of the request checked against a build: <paramref name="Required"/> / <paramref name="Actual"/> are skill
 /// levels, or equipped pieces for set bonuses and group skills.
 /// </summary>
-public sealed record TargetCheckDto(string Skill, SkillKind Kind, string Label, int Required, int Actual, bool Met, bool FromCore);
+/// <param name="Own">The build's own target (<see cref="BuildInput.Targets"/>) rather than the request's; <paramref name="WeaponLevel"/> is the request's level it overrides, if any.</param>
+public sealed record TargetCheckDto(string Skill, SkillKind Kind, string Label, int Required, int Actual, bool Met, bool FromCore, bool Own = false, int? WeaponLevel = null);
 
 /// <summary>A hand-entered build scored under the request's conditions; <paramref name="Build"/> is null when the weapon cannot be resolved.</summary>
 public sealed record EvaluatedBuildDto(string Name, IReadOnlyList<string> Errors, IReadOnlyList<string> Warnings, BuildDto? Build, IReadOnlyList<TargetCheckDto> Targets);
@@ -202,23 +203,47 @@ public static class BuildEvaluation
             var conditions = input.ConditionsFor(r.Conditions);
             var ranked = new RankedBuild(loadout, DamageCalculator.Calculate(loadout, data, conditions), pair, $"{w.SetBonus ?? "-"} + {w.GroupSkill ?? "-"}");
             var build = ResultMapper.MapBuild(0, ranked, conditions, data, input.Name);
-            var targets = CheckTargets(r, SkillAggregator.Aggregate(loadout, data), payload.Request.TargetSkills, data);
+            var targets = CheckTargets(r, SkillAggregator.Aggregate(loadout, data), payload.Request.TargetSkills, input.Targets, data);
             var conditionWarnings = input.ConditionErrors().Select(k => $"'{k}' is not a hunt condition; it is ignored.");
             return new EvaluatedBuildDto(input.Name, c.Errors, [.. c.Warnings, .. conditionWarnings, .. requestWarning], build, targets);
         }).ToList();
     }
 
     /// <param name="requested">The user's own targets, to tell them apart from the weapon core skills the options add.</param>
-    private static List<TargetCheckDto> CheckTargets(ResolvedRequest r, ActiveSkills skills, IReadOnlyDictionary<string, int> requested, GameData data)
+    /// <param name="own">The build's own targets: added to the request's, or replacing the request's level of the same skill.</param>
+    private static List<TargetCheckDto> CheckTargets(ResolvedRequest r, ActiveSkills skills, IReadOnlyDictionary<string, int> requested,
+        IReadOnlyDictionary<string, int> own, GameData data)
     {
         var core = r.AppliedCoreSkills.Select(c => c.Skill).ToHashSet();
-        return r.TargetSkills
+        var checks = r.TargetSkills
+            .Where(kv => !own.ContainsKey(kv.Key))
             .Select(kv => Check(kv.Key, data.SkillsByName.TryGetValue(kv.Key, out var s) ? s.Kind : SkillKind.Armor, $"{kv.Key} {kv.Value}", kv.Value,
                 skills.Level(kv.Key), core.Contains(kv.Key) && !requested.ContainsKey(kv.Key)))
-            .Concat(r.TargetSetBonuses.Select(kv => Check(kv.Key, SkillKind.Set, ResolvedRequest.SetBonusLabel(kv.Key, kv.Value), kv.Value,
+            .Concat(r.TargetSetBonuses.Where(kv => !own.ContainsKey(kv.Key)).Select(kv => Check(kv.Key, SkillKind.Set, ResolvedRequest.SetBonusLabel(kv.Key, kv.Value), kv.Value,
                 skills.SetBonusPieces.GetValueOrDefault(kv.Key), false)))
-            .Concat(r.TargetGroupSkills.Select(kv => Check(kv.Key, SkillKind.Group, ResolvedRequest.GroupSkillLabel(kv.Key, kv.Value), kv.Value,
+            .Concat(r.TargetGroupSkills.Where(kv => !own.ContainsKey(kv.Key)).Select(kv => Check(kv.Key, SkillKind.Group, ResolvedRequest.GroupSkillLabel(kv.Key, kv.Value), kv.Value,
                 skills.GroupSkillPieces.GetValueOrDefault(kv.Key), false)))
+            .ToList();
+        foreach (var (name, level) in own)
+        {
+            if (!data.SkillsByName.TryGetValue(name, out var skill)) continue;
+            int? weaponLevel = requested.TryGetValue(name, out var w) ? w : null;
+            switch (skill.Kind)
+            {
+                case SkillKind.Set:
+                    var setPieces = RequestLoader.PiecesRequired(skill, level);
+                    checks.Add(Check(name, SkillKind.Set, ResolvedRequest.SetBonusLabel(name, setPieces), setPieces, skills.SetBonusPieces.GetValueOrDefault(name), false) with { Own = true, WeaponLevel = weaponLevel });
+                    break;
+                case SkillKind.Group:
+                    var groupPieces = RequestLoader.PiecesRequired(skill, level);
+                    checks.Add(Check(name, SkillKind.Group, ResolvedRequest.GroupSkillLabel(name, groupPieces), groupPieces, skills.GroupSkillPieces.GetValueOrDefault(name), false) with { Own = true, WeaponLevel = weaponLevel });
+                    break;
+                default:
+                    checks.Add(Check(name, skill.Kind, $"{name} {level}", level, skills.Level(name), false) with { Own = true, WeaponLevel = weaponLevel });
+                    break;
+            }
+        }
+        return checks
             .OrderBy(t => t.FromCore).ThenBy(t => t.Kind is SkillKind.Set or SkillKind.Group ? 1 : 0).ThenBy(t => t.Skill)
             .ToList();
 

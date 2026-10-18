@@ -28,6 +28,18 @@ public sealed record CpSatParameters(int Workers, double TimeLimitSeconds, IRead
         _ => new(4, timeLimitSeconds, ["max_lp", "reduced_costs", "pseudo_costs", "quick_restart"]),
     };
 
+    /// <summary>
+    /// Workers of each lane for this many threads: lanes of <see cref="MaxWorkersPerSolve"/>, the rest in one more lane
+    /// (14 threads: 4, 4, 4, 2), so every thread works.
+    /// </summary>
+    public static IReadOnlyList<int> LaneWorkers(int threads)
+    {
+        threads = Math.Max(1, threads);
+        var lanes = Enumerable.Repeat(MaxWorkersPerSolve, threads / MaxWorkersPerSolve).ToList();
+        if (threads % MaxWorkersPerSolve > 0) lanes.Add(threads % MaxWorkersPerSolve);
+        return lanes;
+    }
+
     /// <summary>SatParameters in text format, as <see cref="CpSolver.StringParameters"/> takes them.</summary>
     public string ToText()
     {

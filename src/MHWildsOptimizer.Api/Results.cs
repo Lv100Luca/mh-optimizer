@@ -19,7 +19,7 @@ public sealed record BuildWeaponDto(
 
 public sealed record BuildArmorDto(
     ArmorPieceKind Kind, int Id, string Name, string? Set, int Rarity, bool Transcended, IReadOnlyList<int> Slots, IReadOnlyList<DecoDto?> Decorations,
-    IReadOnlyList<SkillGrant> Skills, IReadOnlyList<string> SetBonus, string? GroupSkill, int DefenseMax);
+    IReadOnlyList<SkillGrant> Skills, IReadOnlyList<string> SetBonus, string? GroupSkill, int DefenseMax, Resistances? Resistances = null);
 
 public sealed record BuildTalismanDto(string Name, int Rarity, TalismanSource Source, IReadOnlyList<SkillGrant> Skills, IReadOnlyList<string> Slots, IReadOnlyList<DecoDto?> Decorations);
 
@@ -104,7 +104,7 @@ public static class ResultMapper
 
         var armor = loadout.ArmorPieces.Select(a => new BuildArmorDto(
             a.Piece.Piece, a.Piece.Id, a.Piece.Name, a.Piece.Set, a.Piece.Rarity, a.Transcended, a.EffectiveSlots, a.Decos.Select(Deco).ToList(),
-            a.Piece.Skills, a.Piece.SetBonus, a.Piece.GroupSkill, a.Piece.DefenseMax)).ToList();
+            a.Piece.Skills, a.Piece.SetBonus, a.Piece.GroupSkill, a.Piece.DefenseMax, a.Piece.Resistances)).ToList();
 
         var talisman = loadout.Talisman is { } t
             ? new BuildTalismanDto(t.Talisman.Name, t.Talisman.Rarity, t.Talisman.Source, t.Talisman.Skills, t.Talisman.Slots.Select(x => x.ToString()).ToList(), t.Decos.Select(Deco).ToList())

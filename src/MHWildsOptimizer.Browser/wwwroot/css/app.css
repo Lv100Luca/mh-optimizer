@@ -423,9 +423,25 @@ dl.stats dd { margin: 0; }
 .setrow { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-bottom: 1px solid var(--border); cursor: pointer; }
 .setrow:last-child { border-bottom: none; }
 .setrow:hover { background: var(--panel-2); }
-.setrow.excluded { opacity: 0.55; text-decoration: line-through; }
-.setrow input { accent-color: var(--err); }
-.setrow.allow input { accent-color: var(--ok); }
+.setrow input[type=checkbox], .armor-piece input[type=checkbox] { accent-color: var(--ok); width: 16px; height: 16px; flex: none; cursor: pointer; margin: 0; }
+.armor-set-main { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: pointer; }
+.armor-set.off .setmain { opacity: 0.55; }
+.armor-set.off .nm { text-decoration: line-through; }
+.armor-set-kind { flex: none; }
+.armor-set .lock-btn, .armor-piece .lock-btn { margin-top: 0; flex: none; }
+.armor-set-pieces { display: inline-flex; align-items: center; gap: 4px; flex: none; padding: 2px 6px 2px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); font-size: 11.5px; cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.armor-set-pieces:hover, .armor-set-pieces.open { color: var(--text); border-color: var(--border-2); }
+.armor-set-pieces.mixed { color: var(--warn); border-color: rgba(232, 176, 75, 0.5); }
+.lockmark { color: var(--accent); font-weight: 400; }
+.mud-popover.armor-pieces-pop { width: 340px; max-width: calc(100vw - 32px); padding: 6px 0; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); box-shadow: var(--shadow); }
+.armor-pieces-head { display: flex; align-items: center; gap: 8px; padding: 4px 12px 6px; border-bottom: 1px solid var(--border); }
+.armor-pieces-count { margin-left: auto; }
+.armor-piece { display: flex; align-items: center; gap: 8px; padding: 5px 12px; cursor: pointer; }
+.armor-piece:hover { background: var(--panel); }
+.armor-piece-name { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.armor-piece-name b { font-weight: 500; font-size: 13px; }
+.armor-piece.off .armor-piece-name b { color: var(--muted); text-decoration: line-through; }
+.armor-piece.blocked .armor-piece-name b { color: var(--muted); }
 .allow-from { margin-bottom: 10px; }
 .allow-kinds { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .allow-kind { display: flex; align-items: center; gap: 10px; }
@@ -531,6 +547,7 @@ dl.stats dd { margin: 0; }
 .statchip.atk b { color: #f26b5c; }
 .statchip.aff b { color: var(--accent); }
 .statchip.crit b { color: #ffa14f; }
+.statchip.def b { color: #6fa8dc; }
 .statchip.sharp, .statchip.ele { border-color: var(--tint); color: var(--tint); }
 .stathover .statchip { cursor: help; }
 .stattip table { border-collapse: collapse; }
@@ -544,6 +561,9 @@ dl.stats dd { margin: 0; }
 .table.equip .icon-cell { width: 40px; }
 .table.equip .piece { width: 70px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 .table.equip .name { min-width: 180px; }
+.lock-btn { display: flex; align-items: center; gap: 4px; margin-top: 4px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 11px; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.lock-btn:hover { color: var(--text); border-color: var(--border-2); }
+.lock-btn.on { color: var(--accent); border-color: var(--accent); background: rgba(227, 182, 78, 0.1); }
 .table.equip .name .small { display: flex; gap: 10px; flex-wrap: wrap; }
 .table.equip .decos { width: 270px; }
 .slotdecos { display: inline-flex; flex-direction: column; gap: 4px; align-items: flex-start; }
@@ -923,7 +943,12 @@ body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 .table.results-table td { vertical-align: middle; }
 .results-table td.result-build { min-width: 240px; max-width: 420px; vertical-align: top; }
 .results-table .result-sets { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-.results-table .result-armor { margin-top: 4px; white-space: normal; line-height: 1.4; }
+.results-table .result-armor { margin-top: 4px; white-space: normal; line-height: 1.4; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+.lock-btn.inline { margin: 0; padding: 0 5px 0 3px; border-color: transparent; color: inherit; font-size: inherit; }
+.lock-btn.inline svg { opacity: 0.4; }
+.lock-btn.inline:hover svg, .lock-btn.inline.on svg { opacity: 1; }
+.lock-btn.inline.on { color: var(--accent); border-color: var(--accent); }
+.result-talisman { padding: 0 5px; }
 .results-table td.result-skills { vertical-align: top; }
 .results-table td.result-skills .chip-row { gap: 4px; }
 .results-table .dmg { font-size: 15px; color: var(--ok); }

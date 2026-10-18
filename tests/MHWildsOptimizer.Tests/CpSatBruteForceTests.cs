@@ -41,8 +41,8 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
 
     /// <summary>
     /// The plain case, and a Great Sword attack sequence whose Strong Charged Slash step runs without Maximum Might (after a
-    /// tackle): the CP model adds the sequence's segments up weighted by their motion value. <paramref name="split"/> solves
-    /// every build after the first as parts on four lanes at once (<see cref="CpSatSearch.SplitLanes"/>).
+    /// tackle): the CP model adds the sequence's segments up weighted by their motion value. <paramref name="split"/> looks for
+    /// the top N in parts on four lanes at once, one of them with 2 workers (<see cref="CpSatSearch.Split"/>).
     /// </summary>
     [Theory]
     [InlineData("long sword", false)]
@@ -131,7 +131,10 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
             Assert.Equal(brute.BestOfCandidates[0].Key, Key(cp.Builds[0].Loadout));
     }
 
-    /// <summary>The fixed pair's search with every solve after the first split into parts on four lanes, no short solve first.</summary>
+    /// <summary>
+    /// The fixed pair's search split into parts on lanes of 4, 4, 4 and 2 workers at once, no short solve first, and an idle lane
+    /// splits a running part again at once.
+    /// </summary>
     private static SkillPairResult SplitSearch(GameData data, ResolvedRequest resolved, Relevance rel)
     {
         var armor = Candidates.Armor(data, rel, resolved.Options);
@@ -139,7 +142,7 @@ public class CpSatBruteForceTests(ITestOutputHelper output)
         var search = new CpSatSearch(data, rel, resolved.Weapon, resolved.Conditions, new DecorationFiller(data, rel), armor, kinds,
             Candidates.Talismans(resolved.Talismans, rel), TopN, 16, resolved.Options.CpSatTimeLimitSeconds, null, CancellationToken.None)
         {
-            SplitLanes = 4, SplitAfterSeconds = 0,
+            LaneWorkers = [4, 4, 4, 2], Split = true, SplitAfterSeconds = 0, ResplitAfterSeconds = 0,
         };
         var builds = search.Run();
         Assert.Contains("parts on 4 lanes", search.LastSplit ?? "");

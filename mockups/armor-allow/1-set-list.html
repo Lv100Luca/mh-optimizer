@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Armor allow list · mockup</title>
+<link rel="stylesheet" href="mock.css">
+<style>
+  main { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .scope-note { margin: 0; padding: 8px 12px; border-radius: var(--radius); background: var(--bg-2); border: 1px solid var(--border); color: var(--muted); }
+  .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; max-width: 1400px; }
+  .two-col .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .phone .two-col { grid-template-columns: 1fr; }
+  .frame { margin: 0 auto; width: 100%; }
+  .phone .frame { width: 375px; border: 1px dashed rgba(255, 122, 182, 0.55); padding: 8px; }
+  .btn { padding: 4px 10px; border-radius: 6px; border: none; background: none; color: var(--accent-2); cursor: pointer; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .btn:hover { background: var(--panel-2); }
+  .placeholder { color: var(--muted); font-size: 12.5px; }
+
+  /* copied from app.css */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .allow-kinds { display: flex; flex-direction: column; gap: 6px; }
+  .allow-kind { display: flex; align-items: center; gap: 10px; }
+  .allow-kind-name { width: 48px; flex: none; }
+  .allow-kind .chip .linklike { padding: 0 2px; line-height: 1; }
+  .searchbox { width: 100%; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-2); background: var(--bg-2); }
+  .setlist { display: flex; flex-direction: column; max-height: 520px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); }
+  .setrow { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-bottom: 1px solid var(--border); cursor: pointer; position: relative; }
+  .setrow:last-child { border-bottom: none; }
+  .setrow:hover { background: var(--panel-2); }
+  .setmain { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+  .setname { font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .setinfo { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .lock-btn { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 11px; cursor: pointer; }
+  .lock-btn:hover { color: var(--text); border-color: var(--border-2); }
+  .lock-btn.on { color: var(--accent); border-color: var(--accent); background: rgba(227, 182, 78, 0.1); }
+
+  /* new */
+  .setrow input[type=checkbox], .piecerow input[type=checkbox] { accent-color: var(--ok); width: 16px; height: 16px; flex: none; cursor: pointer; }
+  .setrow.off .setmain { opacity: 0.55; }
+  .setrow.off .setname > .nm { text-decoration: line-through; }
+  .setrow .icon { width: 22px; height: 22px; }
+  .sub-btn { display: inline-flex; align-items: center; gap: 4px; flex: none; padding: 2px 6px 2px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); font-size: 11.5px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .sub-btn:hover, .sub-btn.open { color: var(--text); border-color: var(--border-2); }
+  .sub-btn.mixed { color: var(--warn); border-color: rgba(232, 176, 75, 0.5); }
+  .sub-btn svg { width: 12px; height: 12px; }
+  .single-kind { flex: none; font-size: 11px; color: var(--muted); padding: 0 4px; }
+  .lockmark { color: var(--accent); font-size: 11px; display: inline-flex; align-items: center; gap: 3px; }
+  .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 6px; overflow: hidden; }
+  .seg button { border: none; background: none; padding: 4px 10px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border-2); }
+  .seg button.on { background: var(--panel-2); color: var(--text); }
+
+  .pop { position: fixed; z-index: 10; width: min(340px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--border-2); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55); padding: 6px 0; cursor: default; }
+  .pop-head { display: flex; align-items: center; gap: 8px; padding: 4px 12px 6px; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .piecerow { display: flex; align-items: center; gap: 8px; padding: 5px 12px; cursor: pointer; }
+  .piecerow:hover { background: var(--panel-2); }
+  .piecerow img { width: 20px; height: 20px; }
+  .piecerow .pn { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .piecerow .pn b { font-weight: 500; font-size: 13px; }
+  .piecerow.off .pn b { color: var(--muted); text-decoration: line-through; }
+  .piecerow.blocked .pn b { color: var(--muted); }
+
+  .json { font: 12px/1.5 ui-monospace, Consolas, monospace; white-space: pre-wrap; background: #22161d; border: 1px solid rgba(255, 122, 182, 0.4); border-radius: var(--radius); padding: 10px 14px; color: #ffd6e8; }
+</style>
+</head>
+<body>
+<div class="mockbar">
+  <span class="title">Mockup</span><b>Options · armor allow list</b>
+  <span class="muted">Variant:</span>
+  <label><input type="radio" name="v" value="A"> A: checkboxes only <span class="verdict bad">not picked</span></label>
+  <label><input type="radio" name="v" value="B" checked> B: checkboxes + lock <span class="verdict current">picked</span></label>
+  <label><input type="checkbox" id="phone"> 375 px</label>
+  <span class="right muted">All 151 sets from data/armor_hr.json. Click anything; the request options update below.</span>
+</div>
+
+<main>
+  <div class="notes">
+    <h3>Design notes</h3>
+    <ol>
+      <li><span class="n">1</span><span>One card, <b>Allowed armor sets</b>, replaces "Excluded armor sets" and the piece search of "Allowed armor". Every set at or above the minimum rarity is listed, allowed by default.</span></li>
+      <li><span class="n">2</span><span>Set checkbox: checked = every piece allowed, empty = set disallowed, dash (indeterminate) = some pieces disallowed. Clicking a dash allows the whole set.</span></li>
+      <li><span class="n">3</span><span>The piece button shows allowed/total and opens a popover (MudPopover, like the Picker) with one checkbox per piece. Sets with one piece have no button: the set checkbox is the piece.</span></li>
+      <li><span class="n">4</span><span>Mapping: a whole set off goes to <code>exclude_sets</code> (as today, old profiles keep working). Single pieces off go to a new <code>exclude_armor</code> list. When the last piece of a set is turned off it folds into <code>exclude_sets</code>.</span></li>
+      <li><span class="n">5</span><span>Locks stay <code>include_armor</code>, stored exactly like the Results lock button (the only allowed piece of its kind). The <b>Locked armor</b> card keeps the per-kind chips and "Use the armor of". Pieces shut out by a lock show dimmed with the lock named; their checkbox is unchanged.</span></li>
+      <li><span class="n">6</span><span>B adds the lock button to each popover row, so a piece can be locked from Options too. Locking a disallowed piece allows it again; disallowing a locked piece drops the lock.</span></li>
+    </ol>
+  </div>
+
+  <div class="frame">
+    <p class="scope-note small">These options belong to <b>Dark Fang</b>: every weapon keeps its own.</p>
+    <div class="two-col" style="margin-top:12px">
+      <div class="col">
+        <section class="card">
+          <header class="card-head"><div class="card-title"><h2>Search options</h2></div></header>
+          <div class="card-body"><span class="placeholder">unchanged: transcendence, top N, minimum rarity (R5+ here), time limits, threads</span></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <header class="card-head">
+            <div class="card-title"><h2 id="lock-title">Locked armor</h2>
+              <p class="hint">Every run uses a locked piece for its kind; kinds without stay open. Lock pieces from a result or a build.</p></div>
+            <div class="card-actions"><button class="btn" id="lock-clear">Clear</button></div>
+          </header>
+          <div class="card-body">
+            <div class="chip-row"><span class="muted small">Use the armor of</span><button class="chip" id="use-build">Arkveld crit</button><button class="chip">Old raw build</button></div>
+            <div class="allow-kinds" id="kinds"></div>
+          </div>
+        </section>
+
+        <section class="card newpart">
+          <header class="card-head">
+            <div class="card-title"><h2 id="set-title">Allowed armor sets</h2>
+              <p class="hint">Turn off sets or single pieces you do not own, e.g. event or collaboration gear. Only sets at or above the minimum rarity are listed.</p></div>
+            <div class="card-actions"><button class="btn" id="allow-all">Allow all</button></div>
+          </header>
+          <div class="card-body">
+            <input class="searchbox" id="q" placeholder="Search sets, pieces, set bonuses, group skills...">
+            <div class="filters">
+              <span class="seg" id="filter"><button data-f="all" class="on">All</button><button data-f="off">Disallowed</button><button data-f="mixed">Partly</button></span>
+              <span class="muted small" id="counts"></span>
+            </div>
+            <div class="setlist" id="sets"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h3 style="font-size:13px;color:var(--note);margin-bottom:6px">options (as the optimizer reads them)</h3>
+    <div class="json" id="json"></div>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script>
+const ICO = '../../src/MHWildsOptimizer.Web/client/public/icons/';
+const KINDS = ['head', 'chest', 'arms', 'waist', 'legs'];
+const LABEL = { head: 'Head', chest: 'Chest', arms: 'Arms', waist: 'Waist', legs: 'Legs' };
+const armorIcon = (k, r) => `${ICO}armor/${k}-r${r}.png`;
+const rarity = (r) => `<span class="rarity r${r}">R${r}</span>`;
+const PIECES = {};
+for (const [set, , , , ps] of SETS) for (const [n, k, r] of ps) PIECES[n] = { name: n, kind: k, rarity: r, set };
+const MIN_RARITY = 5;
+
+const st = { excludeSets: new Set(['Sororal α']), excludeArmor: new Set(['Rey Sandhelm β', 'Rey Sandcoil β']), includeArmor: new Set(['Arkvulcan Helm β']) };
+let variant = 'B', filter = 'all', query = '', openSet = null;
+
+const pieceOn = (n) => !st.excludeSets.has(PIECES[n].set) && !st.excludeArmor.has(n);
+const lockOf = (kind) => [...st.includeArmor].filter((n) => PIECES[n]?.kind === kind);
+const blockedBy = (n) => { const l = lockOf(PIECES[n].kind); return l.length && !l.includes(n) ? l : null; };
+function setState(s) {
+  const on = s[4].filter(([n]) => pieceOn(n)).length;
+  return on === s[4].length ? 'on' : on === 0 ? 'off' : 'mixed';
+}
+function normalize(s) {
+  const names = s[4].map(([n]) => n);
+  if (names.every((n) => st.excludeArmor.has(n))) { names.forEach((n) => st.excludeArmor.delete(n)); st.excludeSets.add(s[0]); }
+}
+function toggleSet(s) {
+  const names = s[4].map(([n]) => n);
+  names.forEach((n) => st.excludeArmor.delete(n));
+  if (s._was === 'on') { st.excludeSets.add(s[0]); names.forEach((n) => st.includeArmor.delete(n)); }
+  else st.excludeSets.delete(s[0]);
+}
+function togglePiece(s, n) {
+  if (pieceOn(n)) { st.excludeArmor.add(n); st.includeArmor.delete(n); normalize(s); }
+  else allowPiece(s, n);
+}
+function allowPiece(s, n) {
+  if (st.excludeSets.has(s[0])) { st.excludeSets.delete(s[0]); s[4].forEach(([m]) => { if (m !== n) st.excludeArmor.add(m); }); }
+  st.excludeArmor.delete(n);
+}
+function toggleLock(s, n) {
+  const kind = PIECES[n].kind;
+  if (st.includeArmor.has(n) && lockOf(kind).length === 1) st.includeArmor.delete(n);
+  else { lockOf(kind).forEach((m) => st.includeArmor.delete(m)); st.includeArmor.add(n); if (!pieceOn(n)) allowPiece(s, n); }
+}
+
+const lockSvg = (on) => `<svg viewBox="0 0 16 16" width="12" height="12"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor"/><path d="${on ? 'M5 7V5a3 3 0 0 1 6 0v2' : 'M5 7V5a3 3 0 0 1 5.8-1'}" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const chevron = '<svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+function matches(s) {
+  if (!query) return true;
+  const hay = [s[0], ...s[2], s[3] ?? '', ...s[4].map(([n]) => n)].join(' ').toLowerCase();
+  return query.toLowerCase().split(/\s+/).every((t) => hay.includes(t));
+}
+
+function popover(s) {
+  const rows = s[4].map(([n, k, r]) => {
+    const on = pieceOn(n), b = blockedBy(n), locked = st.includeArmor.has(n);
+    const sub = b ? `<span class="lockmark">${lockSvg(true)} ${LABEL[k]} locked to ${b.join(', ')}</span>` : `<span class="muted tiny">${LABEL[k]}</span>`;
+    const lock = variant === 'B' ? `<button class="lock-btn ${locked ? 'on' : ''}" data-lock="${n}" title="${locked ? 'Unlock' : 'Lock: every run uses it'}">${lockSvg(locked)}${locked ? 'Locked' : 'Lock'}</button>`
+      : locked ? `<span class="lockmark">${lockSvg(true)} locked</span>` : '';
+    return `<label class="piecerow ${on ? '' : 'off'} ${b ? 'blocked' : ''}"><input type="checkbox" data-piece="${n}" ${on ? 'checked' : ''}>
+      <img src="${armorIcon(k, r)}" alt=""><span class="pn"><b>${n}</b>${sub}</span>${lock}</label>`;
+  }).join('');
+  return `<div class="pop" data-pop><div class="pop-head"><b>${s[0]}</b>${rarity(s[1])}<span class="right muted">${s[4].filter(([n]) => pieceOn(n)).length} of ${s[4].length} allowed</span></div>${rows}</div>`;
+}
+
+function render() {
+  const listed = SETS.filter((s) => s[1] >= MIN_RARITY);
+  const states = listed.map((s) => setState(s));
+  document.getElementById('counts').textContent = `${states.filter((x) => x !== 'off').length} of ${listed.length} allowed, ${states.filter((x) => x === 'mixed').length} partly`;
+  document.getElementById('set-title').textContent = `Allowed armor sets (${listed.length - states.filter((x) => x === 'off').length}/${listed.length})`;
+  document.getElementById('lock-title').textContent = `Locked armor (${st.includeArmor.size})`;
+  const shown = listed.filter((s, i) => matches(s) && (filter === 'all' || states[i] === filter));
+  document.getElementById('sets').innerHTML = shown.map((s) => {
+    const state = setState(s), single = s[4].length === 1;
+    const onCount = s[4].filter(([n]) => pieceOn(n)).length;
+    const locks = s[4].filter(([n]) => st.includeArmor.has(n)).length;
+    const icon = single ? armorIcon(s[4][0][1], s[1]) : armorIcon('head', s[1]);
+    const info = [...s[2].map((b) => `<span class="with-icon" style="color:var(--set)">${b}</span>`), s[3] ? `<span class="with-icon" style="color:var(--group)">${s[3]}</span>` : ''].join('');
+    const right = single ? `<span class="single-kind">${LABEL[s[4][0][1]]}</span>`
+      : `<button class="sub-btn ${state === 'mixed' ? 'mixed' : ''} ${openSet === s[0] ? 'open' : ''}" data-sub="${s[0]}" title="Choose pieces">${onCount}/${s[4].length} pieces ${chevron}</button>`;
+    return `<label class="setrow ${state}" data-set="${s[0]}"><input type="checkbox" data-setbox="${s[0]}" ${state === 'on' ? 'checked' : ''} data-mixed="${state === 'mixed'}">
+      <img class="icon" src="${icon}" alt="">
+      <span class="setmain"><span class="setname"><span class="nm">${s[0]}</span>${rarity(s[1])}${locks ? `<span class="lockmark">${lockSvg(true)} ${locks} locked</span>` : ''}</span>
+      ${info ? `<span class="muted small setinfo">${info}</span>` : ''}</span>${right}${openSet === s[0] ? popover(s) : ''}</label>`;
+  }).join('') || '<p class="muted small" style="padding:8px 10px">No sets match.</p>';
+  document.querySelectorAll('[data-setbox]').forEach((c) => { c.indeterminate = c.dataset.mixed === 'true'; });
+  placePop();
+
+  document.getElementById('kinds').innerHTML = KINDS.map((k) => {
+    const ps = lockOf(k);
+    return `<div class="allow-kind"><span class="muted small allow-kind-name">${LABEL[k]}</span><span class="chip-row">${ps.length === 0 ? '<span class="muted small">any</span>'
+      : ps.map((n) => `<span class="chip"><img src="${armorIcon(k, PIECES[n].rarity)}" alt="" width="18" height="18">${n}<button class="linklike" data-unlock="${n}" title="Remove">x</button></span>`).join('')}</span></div>`;
+  }).join('');
+
+  const o = { min_rarity: MIN_RARITY, exclude_sets: [...st.excludeSets], exclude_armor: [...st.excludeArmor], include_armor: [...st.includeArmor] };
+  document.getElementById('json').textContent = JSON.stringify(o, null, 2);
+}
+
+// MudPopover renders outside the scrolling list; fixed positioning stands in for that here
+function placePop() {
+  const pop = document.querySelector('[data-pop]'), btn = openSet && document.querySelector(`[data-sub="${openSet}"]`);
+  if (!pop || !btn) return;
+  const r = btn.getBoundingClientRect();
+  pop.style.top = `${r.bottom + 4}px`;
+  pop.style.left = `${Math.max(8, r.right - pop.offsetWidth)}px`;
+}
+window.addEventListener('scroll', placePop, true);
+const bySet = (name) => SETS.find((s) => s[0] === name);
+document.getElementById('sets').addEventListener('click', (e) => {
+  const sub = e.target.closest('[data-sub]');
+  if (sub) { e.preventDefault(); openSet = openSet === sub.dataset.sub ? null : sub.dataset.sub; render(); return; }
+  const lock = e.target.closest('[data-lock]');
+  if (lock) { e.preventDefault(); toggleLock(bySet(PIECES[lock.dataset.lock].set), lock.dataset.lock); render(); return; }
+  if (e.target.closest('[data-pop]') && !e.target.matches('input')) { if (!e.target.closest('label.piecerow')) e.preventDefault(); }
+});
+document.getElementById('sets').addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset.piece) { togglePiece(bySet(PIECES[t.dataset.piece].set), t.dataset.piece); render(); return; }
+  if (t.dataset.setbox) {
+    const s = bySet(t.dataset.setbox);
+    if (s[4].length === 1 && openSet !== s[0]) openSet = null;
+    s._was = setState(s); toggleSet(s); render();
+  }
+});
+document.addEventListener('click', (e) => { if (openSet && !e.target.closest('[data-pop]') && !e.target.closest('[data-sub]')) { openSet = null; render(); } });
+document.getElementById('kinds').addEventListener('click', (e) => { const b = e.target.closest('[data-unlock]'); if (b) { st.includeArmor.delete(b.dataset.unlock); render(); } });
+document.getElementById('lock-clear').onclick = () => { st.includeArmor.clear(); render(); };
+document.getElementById('use-build').onclick = () => { st.includeArmor = new Set(['Arkvulcan Helm β', 'Gore Mail β', 'Arkvulcan Vambraces β', 'Gore Coil β', 'Rey Sandgreaves β']); render(); };
+document.getElementById('allow-all').onclick = () => { st.excludeSets.clear(); st.excludeArmor.clear(); render(); };
+document.getElementById('q').oninput = (e) => { query = e.target.value.trim(); render(); };
+document.getElementById('filter').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; filter = b.dataset.f; document.querySelectorAll('#filter button').forEach((x) => x.classList.toggle('on', x === b)); render(); };
+document.querySelectorAll('input[name=v]').forEach((r) => r.onchange = () => { variant = r.value; render(); });
+document.getElementById('phone').onchange = (e) => document.body.classList.toggle('phone', e.target.checked);
+render();
+</script>
+</body>
+</html>
