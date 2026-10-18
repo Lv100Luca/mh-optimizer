@@ -102,6 +102,10 @@ internal sealed class CpSatSearch
     private static readonly double[] FloorSteps = [0.005, 0.02, 0.08];
     private CpSolverResponse? _incumbent;
     private string? _split;
+    /// <summary>Since a split search started: its time is the time limit plus the rank time limit per further build.</summary>
+    private Stopwatch? _splitClock;
+    /// <summary>A split search proved build 1 early and goes on one solve at a time, until one is not proved (<see cref="SplitTopAsync"/>).</summary>
+    private bool _splitPending;
     /// <summary>How the last split solve went ("48 parts on 4 lanes"); null if none was split.</summary>
     public string? LastSplit { get; private set; }
     /// <summary>Builds a split solve found besides its best: the next build's split starts from the best one not excluded yet.</summary>
@@ -235,6 +239,12 @@ internal sealed class CpSatSearch
                 continue;
             }
             Solves++;
+            // a split search that proved build 1 early: once the solves one at a time stop proving, its parts take over
+            if (_splitPending && ranking && tie is null && status is (CpSolverStatus.Feasible or CpSolverStatus.Unknown) && _splitClock!.Elapsed.TotalSeconds < SplitBudget(topN))
+            {
+                await SplitTopAsync(topN, response);
+                return Finish(topN);
+            }
             if (status is not (CpSolverStatus.Optimal or CpSolverStatus.Feasible))
             {
                 _statuses.Add(status.ToString().ToLowerInvariant());
@@ -340,6 +350,13 @@ internal sealed class CpSatSearch
         return (used, (chosen, talisman >= 0 ? _talismans[talisman].Talisman : null, rolled?.Talisman));
     }
 
+    /// <summary>The time a split search for the top N gets: what the solves one at a time would (see <see cref="SplitTopAsync"/>).</summary>
+    private double SplitBudget(int topN)
+    {
+        var limit = _defaultParameters.TimeLimitSeconds;
+        return limit + (topN - 1) * Math.Min(RankTimeLimitSeconds ?? limit, limit);
+    }
+
     /// <summary>
     /// The search spread over every lane (<see cref="Split"/>). The first lane looks for a build for <see cref="SplitAfterSeconds"/>
     /// while the others narrow the damage factors; a first build proved by then is kept, and the search goes on one solve at a
@@ -351,46 +368,65 @@ internal sealed class CpSatSearch
     /// it again by more skill groups, so a few slow parts do not leave lanes idle. A build is proved, and reported, once no part
     /// that is not finished can beat it. The time is what the solves one at a time would get: the time limit for the first
     /// build, the rank time limit for each further one.
+    /// <paramref name="from"/>: a build the solves one at a time found but could not prove (<see cref="_splitClock"/>); the
+    /// parts look for the builds still missing from it on, within what is left of that time.
     /// </summary>
-    private async Task<bool> SplitTopAsync(int topN)
+    private async Task<bool> SplitTopAsync(int topN, CpSolverResponse? from = null)
     {
         var (model, vars) = (_model!, _vars!);
         var sw = Stopwatch.StartNew();
         var limit = _defaultParameters.TimeLimitSeconds;
         var rank = Math.Min(RankTimeLimitSeconds ?? limit, limit);
-        var budget = limit + (topN - 1) * rank;
+        // the builds found before (from the solves one at a time), and the ones still to find
+        var offset = _builds.Count;
+        var need = topN - offset;
+        var budget = SplitBudget(topN) - (from is not null ? _splitClock!.Elapsed.TotalSeconds : 0);
         double Left() => budget - sw.Elapsed.TotalSeconds;
         string Points(double objective) => Damage(objective / ObjectiveScale / Micro);
 
-        // a first build on the first lane while the others narrow the damage factors (applied once the first solve is back)
-        var seedFor = Math.Min(SplitAfterSeconds, limit / 4);
-        Stage?.Set(2, $"build 1 of {topN}: looking for it while narrowing the search");
-        var seedTask = seedFor > 0 ? Backend.SolveAsync(model, ParametersOn(Lane, seedFor), Lane, _ct) : null;
-        using var narrowing = CancellationTokenSource.CreateLinkedTokenSource(_ct);
-        var caps = seedTask is null ? CapsAsync(0, SplitLanes, narrowing.Token) : CapsAsync(1, SplitLanes - 1, narrowing.Token);
-        var seed = seedTask is null ? new CpSolverResponse { Status = CpSolverStatus.Unknown } : await seedTask;
-        _ct.ThrowIfCancellationRequested();
-        if (seedTask is not null) Solves++;
-        if (seed.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown))
+        CpSolverResponse seed;
+        if (from is null)
         {
-            narrowing.Cancel();
-            try { await caps; } catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { }
-            SolveTime += sw.Elapsed;
-            if (seed.Status == CpSolverStatus.Optimal)
+            _splitClock = sw;
+            // a first build on the first lane while the others narrow the damage factors (applied once the first solve is back)
+            var seedFor = Math.Min(SplitAfterSeconds, limit / 4);
+            Stage?.Set(2, $"build 1 of {topN}: looking for it while narrowing the search");
+            var seedTask = seedFor > 0 ? Backend.SolveAsync(model, ParametersOn(Lane, seedFor), Lane, _ct) : null;
+            using var narrowing = CancellationTokenSource.CreateLinkedTokenSource(_ct);
+            var caps = seedTask is null ? CapsAsync(0, SplitLanes, narrowing.Token) : CapsAsync(1, SplitLanes - 1, narrowing.Token);
+            seed = seedTask is null ? new CpSolverResponse { Status = CpSolverStatus.Unknown } : await seedTask;
+            _ct.ThrowIfCancellationRequested();
+            if (seedTask is not null) Solves++;
+            if (seed.Status is not (CpSolverStatus.Feasible or CpSolverStatus.Unknown))
             {
-                _statuses.Add("optimal");
-                Record(seed, new SolveProof(ProofKind.Proved, 0, limit), 1, 0, $" in {sw.Elapsed.TotalSeconds:0.0} s");
-                _lastProved = seed.Value(vars.Score);
-                return false;
+                narrowing.Cancel();
+                try { await caps; } catch (OperationCanceledException) when (!_ct.IsCancellationRequested) { }
+                SolveTime += sw.Elapsed;
+                if (seed.Status == CpSolverStatus.Optimal)
+                {
+                    _statuses.Add("optimal");
+                    Record(seed, new SolveProof(ProofKind.Proved, 0, limit), 1, 0, $" in {sw.Elapsed.TotalSeconds:0.0} s");
+                    _lastProved = seed.Value(vars.Score);
+                    _splitPending = true;
+                    return false;
+                }
+                _statuses.Add(seed.Status.ToString().ToLowerInvariant());
+                if (seed.Status == CpSolverStatus.Infeasible) _progress?.Report("  no build reaches the targets");
+                return true;
             }
-            _statuses.Add(seed.Status.ToString().ToLowerInvariant());
-            if (seed.Status == CpSolverStatus.Infeasible) _progress?.Report("  no build reaches the targets");
-            return true;
+            _progress?.Report((seedTask is null ? "  " : $"  build 1 not proved within {seedFor:0.#} s" +
+                                  (seed.Status == CpSolverStatus.Feasible ? $" (best so far {Points(seed.ObjectiveValue)}, at most {Points(seed.BestObjectiveBound)} possible)" : "") + ": ") +
+                              $"narrowing the search and looking for the top {topN} in parts on {SplitLanes} lanes");
+            ApplyCaps(await caps);
         }
-        _progress?.Report((seedTask is null ? "  " : $"  build 1 not proved within {seedFor:0.#} s" +
-                              (seed.Status == CpSolverStatus.Feasible ? $" (best so far {Points(seed.ObjectiveValue)}, at most {Points(seed.BestObjectiveBound)} possible)" : "") + ": ") +
-                          $"narrowing the search and looking for the top {topN} in parts on {SplitLanes} lanes");
-        ApplyCaps(await caps);
+        else
+        {
+            seed = from;
+            _splitPending = false;
+            _progress?.Report($"  build {offset + 1} not proved within the {OptimizerText.Seconds(rank)} limit for builds 2 and on: " +
+                              $"{(_tightened ? "" : "narrowing the search and ")}looking for builds {offset + 1} to {topN} in parts on {SplitLanes} lanes ({Left():0} s left)");
+            if (!_tightened) ApplyCaps(await CapsAsync(0, SplitLanes, _ct));
+        }
 
         var (split, parts) = Parts(vars);
         // the best build of each armor + talisman combination found anywhere
@@ -438,7 +474,7 @@ internal sealed class CpSatSearch
             {
                 if (proved.Count >= n || r.ObjectiveValue < open) break;
                 proved.Add(key);
-                _progress?.Report($"  build {proved.Count}: {Points(r.ObjectiveValue)}, {(proved.Count == 1 ? "proved the best" : "proved the next best")} at {sw.Elapsed.TotalSeconds:0.0} s");
+                _progress?.Report($"  build {offset + proved.Count}: {Points(r.ObjectiveValue)}, {(offset + proved.Count == 1 ? "proved the best" : "proved the next best")} at {sw.Elapsed.TotalSeconds:0.0} s");
             }
         }
         // the best build rose: solves still beating a lower one stop and start again above it, as proving their own best
@@ -617,55 +653,57 @@ internal sealed class CpSatSearch
 
         // first the best build, as a solve one at a time would prove it (each part must beat the best so far), within the
         // time limit; then the top N from the builds the parts found, within what is left
-        stage = $"build 1 of {topN}";
-        await PhaseAsync(1, () => limit - sw.Elapsed.TotalSeconds);
+        stage = $"build {offset + 1} of {topN}";
+        await PhaseAsync(1, from is null ? () => limit - sw.Elapsed.TotalSeconds : Left);
         var firstAt = sw.Elapsed.TotalSeconds;
         var floors = 0;
-        if (topN > 1)
+        if (need > 1)
         {
-            stage = $"top {topN}";
+            stage = offset == 0 ? $"top {topN}" : $"builds {offset + 1} to {topN}";
             // the first build often leaves no other build found, and every part proving its own best before there are N builds
             // to beat took minutes: the parts look above a floor a little below the best first, lowered while fewer than N clear it
             foreach (var step in FloorSteps.Append(double.NaN))
             {
                 floor = Cut(1) is { } best && !double.IsNaN(step) ? best - Math.Abs(best) * step : null;
                 floors++;
-                await PhaseAsync(topN, Left);
-                if (floor is null || Left() < 0.05 || all.All(p => Settled(p, topN))) break;
+                await PhaseAsync(need, Left);
+                if (floor is null || Left() < 0.05 || all.All(p => Settled(p, need))) break;
             }
         }
         Solves += solves;
         SolveTime += sw.Elapsed;
 
-        var open = all.Where(p => !Settled(p, topN)).ToList();
+        var open = all.Where(p => !Settled(p, need)).ToList();
         var notDone = open.Count;
         var openBound = open.Select(p => p.Bound).DefaultIfEmpty(double.NegativeInfinity).Max();
         LastSplit = $"{parts.Count} parts on {SplitLanes} lanes" + (resplits > 0 ? $", {Plural(resplits, "part")} split again" : "") +
                     (restarts > 0 ? $", {Plural(restarts, "solve")} restarted above a better build" : "") +
                     (floors > 1 ? $", {floors} floors" : "") + (notDone > 0 ? $", {notDone} not finished" : "");
-        _progress?.Report($"  top {topN} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s (build 1 after {firstAt:0.0} s)");
+        _progress?.Report($"  {(offset == 0 ? $"top {topN}" : $"builds {offset + 1} to {topN}")} searched in {LastSplit}: {Plural(solves, "solve")} in {sw.Elapsed.TotalSeconds:0.0} s (build {offset + 1} after {firstAt:0.0} s)");
         var top = proved.Select(k => found[k])
             .Concat(found.Where(kv => !proved.Contains(kv.Key)).Select(kv => kv.Value).OrderByDescending(r => r.ObjectiveValue))
-            .Take(topN).ToList();
+            .Take(need).ToList();
         if (top.Count == 0)
         {
             _statuses.Add(notDone == 0 ? "infeasible" : "unknown");
-            if (notDone == 0) _progress?.Report("  no build reaches the targets");
+            if (notDone == 0) _progress?.Report(offset == 0 ? "  no build reaches the targets" : $"  no further build reaches the targets ({Plural(offset, "build")} in all)");
             return true;
         }
         for (var k = 0; k < top.Count; k++)
         {
             var r = top[k];
             var isProved = k < proved.Count || r.ObjectiveValue >= openBound;
-            if (!isProved && k == 0) ProvedOptimal = false;
+            // the first build stopped by the time limit; after it, the builds are ranked
+            var first = offset + k == 0;
+            if (!isProved && first) ProvedOptimal = false;
             var objective = r.ObjectiveValue / ObjectiveScale / Micro;
             var bound = Math.Max(openBound, r.ObjectiveValue) / ObjectiveScale / Micro;
-            _statuses.Add(isProved ? "optimal" : k == 0 ? "time limit" : "ranked");
+            _statuses.Add(isProved ? "optimal" : first ? "time limit" : "ranked");
             var proof = isProved ? new SolveProof(ProofKind.Proved, 0, limit)
-                : new SolveProof(k == 0 ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, k == 0 ? limit : rank);
-            Record(r, proof, k + 1, bound, "", report: k >= proved.Count);
+                : new SolveProof(first ? ProofKind.TimeLimit : ProofKind.Ranked, objective > 0 ? Math.Max(0, (bound - objective) / objective * 100) : 0, first ? limit : rank);
+            Record(r, proof, offset + k + 1, bound, "", report: k >= proved.Count);
         }
-        if (notDone == 0 && top.Count < topN) _progress?.Report($"  no further build reaches the targets ({Plural(top.Count, "build")} in all)");
+        if (notDone == 0 && top.Count < need) _progress?.Report($"  no further build reaches the targets ({Plural(offset + top.Count, "build")} in all)");
         return true;
     }
 

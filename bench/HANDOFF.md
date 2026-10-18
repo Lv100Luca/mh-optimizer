@@ -39,11 +39,22 @@ bin/bench-cli/MHWildsOptimizer.Cli.exe --data data bench compare bench/results/<
   optimize mode. Asking "is there a build above X?" costs about as much as a proof: the bottleneck is proof hardness (the
   weak bound of the product chain in the CP model), not how the questions are ordered.
 - Tie search (5d6c1c2, `MHW_TIES=0` turns it off): before proving the next build in the single-solve loop (first build proved
-  within 8 s, optimize mode), look 1.5 s for a build that ties the last proved one. All tests pass; not benchmarked cleanly yet.
+  within 8 s, optimize mode), look 1.5 s for a build that ties the last proved one. All tests pass.
+- Laptop A/B (i5-13500H, 2 rounds off/on/on/off, `baseline-laptop-ties-off.json` / `-on.json`): ties lose no build and are
+  faster on gs-fixed (30.5 -> 18.9 s), bow-everything (115 -> 99 s) and ls-everything (61 -> 55 s); the rest is within noise.
+- 8 s cliff in `SplitTopAsync`: when the seed proves build 1 within `SplitAfterSeconds`, the narrowing is cancelled and the
+  single-solve loop takes over, where builds 2+ get only the 10 s rank limit. gs-fixed-uptimes (build 1 at 7.2 s) then kept
+  1 proved + 4 ranked and lost both 678.21 builds; at 8.3 s the same request proves all 5. Off-r1 vs off-r2 also swings
+  0.6x on gs-fixed-allcharms and bow-tech-stamina for the same reason. This is most of the run-to-run noise, ties on or off.
+- Cliff fixed (uncommitted): after an early build 1 the loop goes on one solve at a time; the first build 2+ it cannot
+  prove hands the rest to the parts (narrowing included) within the shared budget (120 s + 10 s per further build). Forced with
+  SplitAfterSeconds = 10 (`laptop-fix-split10-uptimes.json`): 5 of 5 proved, baseline scores, 130 s. Full suite x2
+  (`laptop-fix-r1/r2.json`): no build lost, speed within noise of ties on. New brute-force test case covers the fallback.
+- `bench compare` checks every candidate repeat against the baseline's first run (it only checked the first repeat).
 
 ## Next steps
 
-1. Clean baseline of this branch with `MHW_TIES=0`, and the same with ties on: A/B, 2 rounds.
-2. Then the bigger ideas: (B) exact search over skill pair classes x weapon variants instead of coordinate-descent weapon
+1. Done: laptop baselines (ties off/on) and the 8 s cliff fix. Review and commit.
+2. The bigger ideas: (B) exact search over skill pair classes x weapon variants instead of coordinate-descent weapon
    tuning; (C) a tighter bound for the damage model, or a custom engine (in the browser that needs AOT + web workers).
 3. After any change to the search: `dotnet test --filter FullyQualifiedName~CpSat`.
