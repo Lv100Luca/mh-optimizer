@@ -141,6 +141,29 @@ public class RequestTests
     }
 
     [Fact]
+    public void ExcludedArmorLeavesOutSinglePieces()
+    {
+        var data = TestData.Data;
+        var blango = data.Armor.Where(a => a.Set == "Blango α").ToList();
+        var head = blango.Single(a => a.Piece == ArmorPieceKind.Head);
+        var options = new OptimizerOptions { MinRarity = 5, ExcludeArmor = [head.Name] };
+
+        var allowed = options.AllowedArmor(data.Armor);
+        Assert.DoesNotContain(head, allowed);
+        Assert.All(blango.Where(a => a != head), a => Assert.Contains(a, allowed));
+
+        var request = new OptimizationRequest
+        {
+            Weapon = new WeaponStatsInput { Type = "great-sword", Attack = 1000 },
+            Talismans = new TalismanSettings { IncludeCraftable = false },
+            Options = options with { ExcludeArmor = [head.Name, "Imaginary Helm"], IncludeArmor = [head.Name] },
+        };
+        var r = RequestLoader.Resolve(request, data, RepoRoot);
+        Assert.Contains(r.Warnings, w => w.Contains("options.exclude_armor: no armor piece named 'Imaginary Helm'"));
+        Assert.Contains(r.Warnings, w => w.Contains($"'{head.Name}' is excluded"));
+    }
+
+    [Fact]
     public void AllowedArmorRestrictsOnlyTheKindsItLists()
     {
         var data = TestData.Data;

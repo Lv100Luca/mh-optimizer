@@ -1,6 +1,6 @@
-@* Locks an armor piece into Allowed armor; the caller decides what locked means and what the click does. *@
+@* Locks an armor piece into Locked armor (Options); the caller decides what locked means and what the click does. *@
 <button type="button" class="lock-btn @Class @(Locked ? "on" : "")" aria-pressed="@(Locked ? "true" : "false")" @onclick="OnClick" @onclick:stopPropagation="true"
-        title="@(Locked ? $"Unlock {Piece.Name}: other {BuildHelpers.PieceLabel(Piece.Kind).ToLowerInvariant()} pieces are allowed again" : $"Lock {Piece.Name}: every new run uses it (Allowed armor in Options)")">
+        title="@(Locked ? $"Unlock {Name}: other {BuildHelpers.PieceLabel(Kind).ToLowerInvariant()} pieces are allowed again" : $"Lock {Name}: every new run uses it (Locked armor in Options)")">
     <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
         <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
         <path d="@(Locked ? "M5 7V5a3 3 0 0 1 6 0v2" : "M5 7V5a3 3 0 0 1 5.8-1")" fill="none" stroke="currentColor" stroke-width="1.6" />
@@ -9,7 +9,8 @@
 </button>
 
 @code {
-    [Parameter, EditorRequired] public BuildArmorDto Piece { get; set; } = default!;
+    [Parameter, EditorRequired] public string Name { get; set; } = default!;
+    [Parameter] public ArmorPieceKind Kind { get; set; }
     [Parameter] public bool Locked { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
