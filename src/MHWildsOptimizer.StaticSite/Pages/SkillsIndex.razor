@@ -1,5 +1,5 @@
 @* Every skill by kind, each with its one-line summary. *@
-<Layout Path="/wiki/skills/" Title="@($"All skills · {SiteIndex.Game} · {SiteIndex.Name}")"
+<Layout Path="/wiki/skills/" Title="@($"All skills · {SiteIndex.TitleGame}")"
         Description="@($"Every {SiteIndex.Game} skill with exact numbers per level: {Site.Skills.Count(s => s.Kind == SkillKind.Armor)} armor skills, set bonuses, group skills and weapon skills, and where to get each one.")"
         Crumbs="@([("Wiki", "/wiki/")])">
     <h1>@SiteIndex.Game skills</h1>

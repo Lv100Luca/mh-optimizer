@@ -10,7 +10,7 @@
         ("/wiki/meals/", "Meals", $"How meals work and all {Site.Meals?.Skills.Count ?? 0} meal skills."),
     ];
 }
-<Layout Path="/wiki/" Title="@($"{SiteIndex.Game} wiki: skills, armor, items · {SiteIndex.Name}")"
+<Layout Path="/wiki/" Title="@($"{SiteIndex.Game} wiki (MH Wilds): skills, armor, weapons, items")"
         Description="@($"{SiteIndex.Game} wiki with exact numbers: every skill and level, every armor piece in low and high rank, every crafted weapon with its tree and cost, items and meal skills.")">
     <h1>@SiteIndex.Game wiki</h1>
     <p class="lead">The game reference behind the @SiteIndex.Name optimizer: skills, armor, items and meals in @SiteIndex.Game, with the exact numbers from the game data.</p>

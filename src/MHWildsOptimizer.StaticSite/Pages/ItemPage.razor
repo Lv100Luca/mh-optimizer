@@ -4,7 +4,7 @@
     var category = Site.CategoryOf(item);
     var heading = SiteIndex.CategoryHeading(category);
 }
-<Layout Path="@Urls.Item(item.Name)" Title="@($"{item.Name} · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+<Layout Path="@Urls.Item(item.Name)" Title="@($"{item.Name} · {SiteIndex.TitleGame}")" Description="@Meta()"
         Crumbs="@([("Wiki", "/wiki/"), ("Items", "/wiki/items/"), (heading, Urls.Category(category.Key))])">
     <article>
         <div class="head">

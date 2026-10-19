@@ -4,13 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wilds Builds · Monster Hunter Wilds build optimizer</title>
+    <title>Wilds Builds · Monster Hunter Wilds (MH Wilds) build optimizer</title>
     <meta name="description" content="Free Monster Hunter Wilds build optimizer: finds the best armor, decorations and talismans for your weapon, including Gogma Artian skill rolls, scored by damage per attack. Plus a skill, armor and item wiki." />
+    <!-- every app route (/Luca/weapon/...) is this page; they all point search engines here -->
+    <link rel="canonical" href="https://wildsbuilds.com/" />
     <meta name="theme-color" content="#121419" />
     <!-- link previews (Discord, Reddit, ...); the image is made from tools/brand/og-card.html -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Wilds Builds" />
-    <meta property="og:title" content="Wilds Builds · Monster Hunter Wilds build optimizer" />
+    <meta property="og:title" content="Wilds Builds · Monster Hunter Wilds (MH Wilds) build optimizer" />
     <meta property="og:description" content="Best armor, decorations and talismans for your weapon, scored by damage per attack. Plus a skill, armor and item wiki." />
     <meta property="og:url" content="https://wildsbuilds.com/" />
     <meta property="og:image" content="https://wildsbuilds.com/og.png" />
@@ -28,6 +30,16 @@
             "operatingSystem": "Any (runs in the browser)",
             "browserRequirements": "Requires JavaScript and WebAssembly",
             "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+        }
+    </script>
+    <!-- the site name Google shows above results; the wiki titles leave it out -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Wilds Builds",
+            "alternateName": ["WildsBuilds", "wildsbuilds.com"],
+            "url": "https://wildsbuilds.com/"
         }
     </script>
     <base href="/" />

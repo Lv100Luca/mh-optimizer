@@ -120,7 +120,7 @@ else
 
     /// <summary>The browser tab's title; while a run goes it leads with the run's stage, so a background tab shows how far it got.</summary>
     private string Title => (App.Run.Status == RunStatus.Running ? $"⏳ {RunTitle(App.Run)} · " : "") + (App.Tab == Tab.Inventory || App.Request is null
-        ? $"{AppName} · Monster Hunter Wilds build optimizer"
+        ? $"{AppName} · Monster Hunter Wilds (MH Wilds) build optimizer"
         : App.Tab.IsWikiTab() ? $"{App.WikiEntry ?? Nav().First(n => n.Tab == App.Tab).Label} · MH Wilds wiki · {AppName}"
         : App.Tab == Tab.Compare ? $"Compare · {AppName}"
         : $"{App.Name ?? "New weapon"} · {Nav().First(n => n.Tab == App.Tab).Label} · {AppName}");

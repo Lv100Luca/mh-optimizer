@@ -2,7 +2,7 @@
 @{
     var m = Site.Meals;
 }
-<Layout Path="/wiki/meals/" Title="@($"Meals and meal skills · {SiteIndex.Game} · {SiteIndex.Name}")"
+<Layout Path="/wiki/meals/" Title="@($"Meals and meal skills · {SiteIndex.TitleGame}")"
         Description="@Text.Cut($"How meals work in {SiteIndex.Game}: what each meal gives (health, stamina, attack, defense, duration) and all {m?.Skills.Count ?? 0} meal skills with their effects.")"
         Crumbs="@([("Wiki", "/wiki/")])">
     <article>

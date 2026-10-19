@@ -12,11 +12,11 @@
         <ul class="bonuses">
             @foreach (var name in SiteIndex.SetBonuses(set))
             {
-                <li><span class="tag set">Set bonus</span> @SkillLink(name) <span class="muted">@Tiers(name)</span></li>
+                <li><span class="tag set">Set bonus</span> @SkillLink(name)@Tiers(name)</li>
             }
             @if (set.GroupSkill is { } group)
             {
-                <li><span class="tag group">Group skill</span> @SkillLink(group) <span class="muted">@Tiers(group)</span></li>
+                <li><span class="tag group">Group skill</span> @SkillLink(group)@Tiers(group)</li>
             }
         </ul>
     }
@@ -34,7 +34,8 @@
             <tbody>
                 @foreach (var p in pieces)
                 {
-                    <tr>
+                    @* a single piece set has the piece's name: the section's id already points here *@
+                    <tr id="@(Urls.Slug(p.Name) is var id && id != Urls.Slug(set.Name) ? id : null)">
                         <td class="piece">
                             <div>
                                 @Parts.Icon(Urls.Armor(p.Piece, p.Rarity), 24, p.Piece.ToString())
@@ -109,8 +110,14 @@
             @name@if (level is not null) { <text> </text><b>@level</b> }
         }</text>;
 
-    /// <summary>"2 pieces: Thunderous Roar I; 4 pieces: Thunderous Roar II".</summary>
-    private string Tiers(string name) => Site.SkillsByName.GetValueOrDefault(name) is { } skill
-        ? string.Join("; ", skill.Ranks.Select(r => $"{r.Pieces} pieces: {r.Name}"))
-        : "";
+    private RenderFragment Tiers(string name) =>
+        @<text>@if (Site.SkillsByName.GetValueOrDefault(name) is { } skill)
+        {
+            <ul class="tiers">
+                @foreach (var r in skill.Ranks)
+                {
+                    <li><span class="muted">@r.Pieces pieces · @r.Name@(r.Description is null ? "" : ":")</span> @r.Description</li>
+                }
+            </ul>
+        }</text>;
 }

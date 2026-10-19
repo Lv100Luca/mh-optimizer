@@ -6,7 +6,7 @@
     var finals = weapons.Where(w => w.IsFinal).OrderByDescending(w => w.Rarity).ThenByDescending(w => w.Raw).ThenBy(w => w.Name).ToList();
     var gunner = Kind is "bow" or "light-bowgun" or "heavy-bowgun";
 }
-<Layout Path="@Urls.WeaponType(Kind)" Title="@($"{label} tree and weapons · {SiteIndex.Game} · {SiteIndex.Name}")"
+<Layout Path="@Urls.WeaponType(Kind)" Title="@($"{label} tree and weapons · {SiteIndex.TitleGame}")"
         Description="@Text.Cut($"Every {label} in {SiteIndex.Game}: {weapons.Count} weapons in {trees.Count} trees with attack, affinity, element, sharpness, slots and skills, and what forging and upgrading each one costs. Final forms: {string.Join(", ", finals.Take(5).Select(w => w.Name))} and more.")"
         Crumbs="@([("Wiki", "/wiki/"), ("Weapons", "/wiki/weapons/")])">
     <article>

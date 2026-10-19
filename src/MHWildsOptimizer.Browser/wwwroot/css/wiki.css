@@ -74,6 +74,7 @@ table.armor td:nth-child(2) { min-width: 11rem; }
 .list li .muted { font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .bonuses { list-style: none; padding: 0; margin: 0.4em 0; }
 .bonuses li { padding: 2px 0; }
+.tiers { list-style: none; padding: 0 0 0 1.2em; margin: 2px 0 4px; font-size: 0.92rem; }
 .tag { font-size: 0.75rem; font-weight: 650; padding: 1px 6px; border-radius: 4px; margin-right: 4px; background: var(--panel-2); }
 .tag.set { color: var(--set); }
 .tag.group { color: var(--group); }

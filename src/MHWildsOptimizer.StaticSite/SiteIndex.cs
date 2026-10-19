@@ -12,11 +12,14 @@ public sealed partial class SiteIndex
     public const string Name = "Wilds Builds";
     public const string Game = "Monster Hunter Wilds";
 
+    // both spellings people search for; titles drop the site name since Google shows it from og:site_name
+    public const string TitleGame = "Monster Hunter Wilds (MH Wilds)";
+
     /// <summary>
-    /// The sections listed in sitemap.xml. Armor is left out at first so Google spends its attention on the skill pages; the
-    /// pages exist and are linked either way, the sitemap only says which ones to look at first.
+    /// The sections listed in sitemap.xml. Single weapon pages are left out: the type pages link to all of them, and the
+    /// sitemap only says which pages to look at first.
     /// </summary>
-    public static readonly IReadOnlySet<string> SitemapSections = new HashSet<string> { "wiki", "skills", "items", "meals", "weapons" };
+    public static readonly IReadOnlySet<string> SitemapSections = new HashSet<string> { "wiki", "skills", "armor", "items", "meals", "weapons" };
 
     /// <summary>Items people search for by name get a page of their own; the rest are shown in full on their category's page.</summary>
     private static readonly string[] OwnPageItemNames =
@@ -216,11 +219,14 @@ public static class Text
     };
 
     /// <summary>A meta description: whole words, at most about <paramref name="limit"/> characters.</summary>
-    public static string Cut(string text, int limit = 300)
+    public static string Cut(string text, int limit = 160)
     {
         text = Regex.Replace(text, @"\s+", " ").Trim();
         if (text.Length <= limit) return text;
         var cut = text[..limit];
+        // a whole sentence reads better than a cut one, unless it throws away most of the text
+        var stop = cut.LastIndexOf(". ", StringComparison.Ordinal);
+        if (stop > limit / 2) return cut[..(stop + 1)];
         var space = cut.LastIndexOf(' ');
         return (space > 0 ? cut[..space] : cut).TrimEnd(',', ';', ':') + "…";
     }

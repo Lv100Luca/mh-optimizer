@@ -5,7 +5,7 @@
     var bonus = s.Kind is SkillKind.Set or SkillKind.Group;
     var src = s.Sources;
 }
-<Layout Path="@Urls.Skill(s.Name)" Title="@($"{s.Name} {Text.KindLabel[s.Kind].ToLowerInvariant()} · {SiteIndex.Game} · {SiteIndex.Name}")"
+<Layout Path="@Urls.Skill(s.Name)" Title="@($"{s.Name} {Text.KindLabel[s.Kind].ToLowerInvariant()} · {SiteIndex.TitleGame}")"
         Description="@Meta()" Crumbs="@([("Wiki", "/wiki/"), ("Skills", "/wiki/skills/")])">
     <article>
         <div class="head">
@@ -183,6 +183,7 @@
         }
         else
             text = head + SiteIndex.Summary(s);
-        return Text.Cut(text + " Exact numbers for every level and where to get it.");
+        const string tail = " Exact numbers for every level and where to get it.";
+        return Text.Cut(text.Length + tail.Length <= 160 ? text + tail : text);
     }
 }

@@ -8,7 +8,7 @@
     var total = path.Sum(x => x.Step?.Zenny ?? 0);
     var allMats = path.SelectMany(x => x.Step?.Materials ?? []).GroupBy(m => m.Name).Select(g => (g.Key, g.Sum(m => m.Quantity))).ToList();
 }
-<Layout Path="@Urls.WeaponPage(w)" Title="@($"{w.Name} · {label} · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+<Layout Path="@Urls.WeaponPage(w)" Title="@($"{w.Name} · {label} · {SiteIndex.TitleGame}")" Description="@Meta()"
         Crumbs="@([("Wiki", "/wiki/"), ("Weapons", "/wiki/weapons/"), (label, Urls.WeaponType(w.Kind))])">
     <article>
         <div class="head">

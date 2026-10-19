@@ -4,7 +4,7 @@
     var heading = SiteIndex.CategoryHeading(Category);
     var materials = Category.Key == "materials";
 }
-<Layout Path="@Urls.Category(Category.Key)" Title="@($"{heading} · {SiteIndex.Game} · {SiteIndex.Name}")"
+<Layout Path="@Urls.Category(Category.Key)" Title="@($"{heading} · {SiteIndex.TitleGame}")"
         Description="@Text.Cut($"{heading} in {SiteIndex.Game}: {string.Join(", ", items.Select(i => i.Name))}. {Category.About}")"
         Crumbs="@([("Wiki", "/wiki/"), ("Items", "/wiki/items/")])">
     <article>

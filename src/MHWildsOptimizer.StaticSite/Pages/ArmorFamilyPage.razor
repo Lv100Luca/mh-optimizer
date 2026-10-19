@@ -2,7 +2,7 @@
 @{
     var top = Sets[^1];
 }
-<Layout Path="@Urls.Family(Family)" Title="@($"{Family} armor · {SiteIndex.Game} · {SiteIndex.Name}")" Description="@Meta()"
+<Layout Path="@Urls.Family(Family)" Title="@($"{Family} armor · {SiteIndex.TitleGame}")" Description="@Meta()"
         Crumbs="@([("Wiki", "/wiki/"), ("Armor", "/wiki/armor/")])">
     <article>
         <div class="head">
@@ -50,10 +50,14 @@
 
     private string Meta()
     {
-        var bonuses = SiteIndex.Bonuses(Sets);
-        var skills = Sets.SelectMany(s => s.Pieces).SelectMany(p => p.Skills).Select(k => k.Skill).Distinct().ToList();
-        return Text.Cut($"{Family} armor in {SiteIndex.Game}: " + (bonuses.Count > 0 ? string.Join(", ", bonuses) + "; " : "")
-                        + $"skills {string.Join(", ", skills.Take(6))}{(skills.Count > 6 ? " and more" : "")}. "
-                        + $"Slots, defense and resistances for {string.Join(", ", Sets.Select(SiteIndex.SetLabel))}.");
+        // Google shows about 160 characters: lead with what the strongest set gives
+        var top = Sets[^1];
+        var bonuses = SiteIndex.Bonuses([top]);
+        var totals = top.Pieces.SelectMany(p => p.Skills).GroupBy(k => k.Skill)
+            .OrderByDescending(g => g.Sum(k => k.Level)).ThenBy(g => g.Key, StringComparer.Ordinal)
+            .Select(g => $"{g.Key} {g.Sum(k => k.Level)}").ToList();
+        return Text.Cut($"{Family} armor in {SiteIndex.Game}" + (Sets.Count > 1 ? $", {SiteIndex.SetLabel(top)}" : "") + ": "
+                        + string.Join(", ", totals.Take(3)) + (bonuses.Count > 0 ? " with " + Text.JoinAnd(bonuses) : "")
+                        + ". Slots and defense per piece.");
     }
 }
